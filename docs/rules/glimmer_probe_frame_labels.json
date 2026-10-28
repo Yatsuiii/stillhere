@@ -1,0 +1,167 @@
+{
+ "source": "tears_of_steel_720p.mov (Blender Foundation 2012, CC BY 3.0), SHA-256 efa9062d9cdb7a338e40ad530dfdf234806743f29ae6a1a136b97ece4e588e8f",
+ "frames": "ffmpeg -ss 20 -t 60 -vf fps=0.5 -q:v 2, 30 frames at film 20..78 s (as probe 1e)",
+ "question": "Is any human face recognisable?",
+ "labeller": "Claude (event session), by looking at each frame",
+ "probe1e_answers_seen_before_labelling": true,
+ "labels": [
+  {
+   "film_s": 20,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 22,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 24,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 26,
+   "face": true,
+   "probe1e_answer_seen": "yes"
+  },
+  {
+   "film_s": 28,
+   "face": true,
+   "probe1e_answer_seen": "yes"
+  },
+  {
+   "film_s": 30,
+   "face": true,
+   "probe1e_answer_seen": "yes"
+  },
+  {
+   "film_s": 32,
+   "face": true,
+   "probe1e_answer_seen": "yes"
+  },
+  {
+   "film_s": 34,
+   "face": true,
+   "probe1e_answer_seen": "yes"
+  },
+  {
+   "film_s": 36,
+   "face": true,
+   "probe1e_answer_seen": "unparsed"
+  },
+  {
+   "film_s": 38,
+   "face": true,
+   "probe1e_answer_seen": "yes"
+  },
+  {
+   "film_s": 40,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 42,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 44,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 46,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 48,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 50,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 52,
+   "face": true,
+   "probe1e_answer_seen": "yes"
+  },
+  {
+   "film_s": 54,
+   "face": true,
+   "probe1e_answer_seen": "yes"
+  },
+  {
+   "film_s": 56,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 58,
+   "face": false,
+   "probe1e_answer_seen": "no",
+   "note": "borderline: out-of-focus face behind the brain prop, mostly cut off"
+  },
+  {
+   "film_s": 60,
+   "face": true,
+   "probe1e_answer_seen": "yes"
+  },
+  {
+   "film_s": 62,
+   "face": true,
+   "probe1e_answer_seen": "yes"
+  },
+  {
+   "film_s": 64,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 66,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 68,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 70,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 72,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 74,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 76,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  },
+  {
+   "film_s": 78,
+   "face": false,
+   "probe1e_answer_seen": "no"
+  }
+ ],
+ "n_face": 11,
+ "n_no_face": 19,
+ "agreement_with_probe1e": {
+  "parsed": 29,
+  "agree": 29,
+  "unparsed_labelled_face": 1
+ }
+}
