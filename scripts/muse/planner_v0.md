@@ -1,0 +1,25 @@
+You are working in a clone of the StillHere product repository (this workspace). Build Planner v0 for StillHere Pilot: a researcher types the study they want to run; the planner turns it into a StudySpec, declines anything outside what has been validated, and runs the stimulus tools. Read stillhere/egress.py, stillhere/meta_client.py, stillhere/conditions.py, stillhere/validation_table.json and tests/ first.
+
+Hard rules:
+- Every model call goes through egress.Request and meta_client.call only. Planner requests may carry PublicText (SHA-256 allowlisted), PublicQuestion and TableEnums. Never TierD in a planner request (TierD can never go to the Fireworks backend).
+- Do NOT edit stillhere/egress.py or stillhere/meta_client.py. If you think they need a change, stop and explain it in your final answer.
+- No live model calls and no network in tests: use a stub client. Do not read anything outside this repository. Do not commit any data file other than the small JSON or text files described below.
+
+Build:
+1. stillhere/planner.py
+   - Load stillhere/validation_table.json on EVERY request and rebuild the enums from it: population, language (status validated or group_level_only), brain_area, condition, stimulus (status validated only; exclude failed_check, pending and not_offered entries).
+   - StudySpec: ONE flat json_schema object, additionalProperties false, every property required. Nullable fields use a type list with null and an enum that includes null: population, language, stimulus. Array fields: brain_areas, conditions (items from their enums; may be empty). decline_reason: enum of none, population_not_validated, language_not_validated, brain_area_not_validated, condition_not_validated, stimulus_not_validated, analysis_not_offered, clinical_out_of_scope.
+   - Two backends behind one switch: "spark-1.3" -> model "muse-spark-1.3"; "spark-open" -> model "fireworks/muse-spark-open". Use reasoning effort "low".
+   - plan(question, backend): one json_schema call. Client validator: the answer must match the schema, and be consistent: if decline_reason is not none, then population, language and stimulus are null and the arrays are empty; if it is none, then population, language and stimulus are set and conditions has at least 2 items including "intact". On failure, re-prompt EXACTLY ONCE, adding egress.TableEnums({"rejected": [codes]}) with codes from schema_invalid or decline_inconsistent. A second failure becomes a deterministic decline card (never an unchecked answer).
+   - run_tools(spec, backend): when the spec is not a decline, a second call that offers four tools with parallel_tool_calls=False: list_stimuli, make_conditions, check_conditions, forecast (parameters are identifier enums from the table), with the spec passed as egress.TableEnums. The client executes the returned tool calls deterministically and in order: list_stimuli returns the table's validated stimuli; make_conditions builds the requested conditions with stillhere.conditions on the LibriVox asset in assets/; check_conditions reads results/conditions_manipulation_check.json (cached, no live call); forecast reads results/live_tribe_librivox.json (cached). Tool results go to the researcher's card only, never back to a model.
+   - A Card: the StudySpec, the tool results, the label "exploratory" on every result and "forecast, not validated" on forecasts. A decline names its reason and the nearest validated option from the table.
+2. Public texts in stillhere/public_text/, each SHA-256 added to stillhere/public_text_allowlist.txt: planner_system.txt (choose only from the given enums; decline anything outside them; never invent populations, ages, languages, brain areas, conditions, stimuli or analyses; no lag or timing changes are offered), planner_reprompt.txt, one description per tool, and the menu prompt q_plan_6yo.txt with the text "Plan this study for 6-year-olds." (q_lag_plus_2.txt already exists).
+3. tests/test_planner.py with a stub client:
+   - the enums are rebuilt from a modified copy of the table on each request (a new validated id appears with no code change; failed_check and pending ids never appear);
+   - "Plan this study for 6-year-olds." declines with population_not_validated, and "Try lag +2 s." declines with analysis_not_offered, under both backend switches (stubbed answers, plus the validator rejecting a stub that tries to accept them);
+   - the validator re-prompts exactly once, then declines;
+   - tool calls run in order, with parallel_tool_calls False in the request;
+   - no planner request ever contains a TierD part, and egress refuses one for spark-open.
+4. scripts/plan_demo.py: prints the card for a menu prompt and a backend. It makes live calls only when a person runs it with keys set.
+
+Run the full test suite with python3 -m pytest -q, run the guard with STILLHERE_GUARD_SCOPE=repo PYTHONPATH=. python3 -m stillhere.prereg_check --registry prereg_registry.json, and commit with a message starting "Planner v0:". Final answer, short: files changed, test counts, guard output, the commit hash, and any egress change you think is needed (do not make it).

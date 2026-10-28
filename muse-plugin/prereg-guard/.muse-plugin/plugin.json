@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "name": "stillhere-prereg-guard",
+  "displayName": "StillHere PREREG guard",
+  "version": "0.1.0",
+  "description": "Runs the StillHere pre-registration check each time a turn stops.",
+  "compat": {"source": "native", "manifestDir": ".muse-plugin"},
+  "capabilities": {
+    "skills": [],
+    "commands": [],
+    "hooks": [{"id": "prereg-check", "event": "Stop", "command": ["sh", "hooks/prereg-check.sh"], "timeoutMs": 30000, "statusMessage": "Checking the PREREG registry"}],
+    "mcpServers": [],
+    "reminders": []
+  }
+}

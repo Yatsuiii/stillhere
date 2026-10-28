@@ -1,0 +1,225 @@
+{
+ "deep_effective_n": 12,
+ "format": "stillhere-desk-results/1",
+ "gate1": {
+  "awake_hearing_gate": true,
+  "bars": {
+   "D16": {
+    "n": 15,
+    "p": 3.0517578125e-05,
+    "pass": true
+   },
+   "P1": {
+    "hl": 1.1074505559432497,
+    "hl_ci": [
+     0.43330930365983167,
+     1.7771699698441328
+    ],
+    "k": 9,
+    "k_star": 10,
+    "n": 12,
+    "p": 0.00341796875,
+    "pass": false
+   },
+   "P2a": {
+    "hl": 2.0471139786350956,
+    "holm_pass": true,
+    "holm_threshold": 0.01,
+    "n": 12,
+    "p": 0.00244140625,
+    "pass": true
+   },
+   "P2b": {
+    "H": {
+     "isc_rate": 100.0,
+     "n": 15,
+     "pass": true,
+     "tribe_rate": 100.0
+    },
+    "L": {
+     "isc_rate": 60.0,
+     "n": 15,
+     "pass": false,
+     "tribe_rate": 40.0
+    },
+    "holm_pass": false,
+    "holm_threshold": 0.025,
+    "p": 1.0,
+    "pass": false
+   },
+   "P3": {
+    "ci": [
+     -3.5615675983015853,
+     -0.7869206425788429
+    ],
+    "hl": -2.318060760891896,
+    "n": 12,
+    "pass": false
+   },
+   "P4": {
+    "H_descriptive": {
+     "auc": 0.9513888888888888,
+     "auc_ci": [
+      0.875,
+      1.0
+     ],
+     "n": 12
+    },
+    "L": {
+     "auc": 0.7986111111111112,
+     "auc_ci": [
+      0.6041666666666666,
+      0.9583333333333334
+     ],
+     "delta_auc": -0.0625,
+     "isc_auc": 0.8611111111111112,
+     "isc_auc_ci": [
+      0.6875,
+      0.9791666666666666
+     ],
+     "n": 12,
+     "pass": false
+    },
+    "LmH": {
+     "auc": 0.2013888888888889,
+     "auc_ci": [
+      0.041666666666666664,
+      0.4029513888888864
+     ],
+     "delta_auc": 0.03472222222222224,
+     "isc_auc": 0.16666666666666666,
+     "isc_auc_ci": [
+      0.027777777777777776,
+      0.3194444444444444
+     ],
+     "n": 12,
+     "pass": false
+    },
+    "holm_pass": false,
+    "holm_threshold": 0.05,
+    "p": 1.0,
+    "pass": false
+   },
+   "P5_H": {
+    "holm_pass": true,
+    "holm_threshold": 0.008333333333333333,
+    "n3": {
+     "n": 15,
+     "p": 3.0517578125e-05,
+     "pass": true,
+     "ratio": 0.00344867289062939,
+     "ratio_ci": [
+      -0.000961616813759228,
+      0.007725986846279299
+     ]
+    },
+    "n4": {
+     "n": 15,
+     "p": 3.0517578125e-05,
+     "pass": true,
+     "ratio": 0.20601310295565192,
+     "ratio_ci": [
+      0.09772856097089608,
+      0.3110359253775755
+     ]
+    },
+    "p": 3.0517578125e-05,
+    "pass": true
+   },
+   "P5_L": {
+    "holm_pass": true,
+    "holm_threshold": 0.016666666666666666,
+    "n3": {
+     "n": 15,
+     "p": 0.001007080078125,
+     "pass": true,
+     "ratio": -0.0068367108781937184,
+     "ratio_ci": [
+      -0.019648604611713853,
+      0.0026447662318212096
+     ]
+    },
+    "n4": {
+     "n": 15,
+     "p": 0.01507568359375,
+     "pass": true,
+     "ratio": -0.08849954845443544,
+     "ratio_ci": [
+      -0.5829392595889429,
+      0.4886640573181016
+     ]
+    },
+    "p": 0.01507568359375,
+    "pass": true
+   },
+   "P6": {
+    "holm_pass": true,
+    "holm_threshold": 0.0125,
+    "median_awake": 0.9433518078328538,
+    "median_recovery": 0.8055108499342103,
+    "n": 12,
+    "p": 0.010498046875,
+    "pass": true
+   },
+   "P7": {
+    "n_aud_deep": 12,
+    "n_fpn": 12,
+    "p_aud_deep_gt_0": 0.000732421875,
+    "p_fpn_awake_gt_deep": 0.001708984375,
+    "pass": true
+   },
+   "P8": {
+    "hl": 0.5407503360359833,
+    "hl_ci": [
+     0.11628493076643026,
+     0.9404154918314698
+    ],
+    "k": 10,
+    "n": 15,
+    "p": 0.017669677734375,
+    "pass": true
+   }
+  },
+  "come_back_on_waking": false,
+  "deep_effective_n": 12,
+  "full_headline": false,
+  "rows": [
+   "P1 fails -> HEARING + ISC replication",
+   "P3 fails -> one combined gauge"
+  ],
+  "sedation_stage_line": false
+ },
+ "included": {
+  "awake": 15,
+  "deep": 12,
+  "light": 12,
+  "recovery": 15
+ },
+ "isc_loo_reference": 14,
+ "lag_sensitive": {
+  "P1": true,
+  "P2a": true,
+  "P2b": false,
+  "P3": false,
+  "P4": false,
+  "P5_H": true,
+  "P5_L": true,
+  "P6": true,
+  "P7": false,
+  "P8": true,
+  "sedation": false
+ },
+ "source": "real",
+ "sources": {
+  "merged/tierD_merged_gate1.json": "279a088202bf83167bbe4d2b53337377397e0c9b55808977805231bc73602f76",
+  "primary/tierD_primary_d7_headphone.json": "a53c0bfcade03f247a02c566b64a99f7d7bbfe97b566528cbb514b81dc42d276",
+  "primary/tierD_primary_gate1.json": "4fefb7ccbafc91f08a02c9ed314d5a6ffc253b5d2400e429965a6b0cbd148158",
+  "primary/tierD_primary_inputs.json": "e531b21b43b25dd66fd0e54ccf7adedfa2754bf7a74bc88e4baeebb0ef23b888"
+ },
+ "timing_notes": [
+  "D24",
+  "D25"
+ ],
+ "tr_s": 2.0,
+ "trs_per_state": 145
+}

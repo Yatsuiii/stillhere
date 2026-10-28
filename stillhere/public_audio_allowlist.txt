@@ -1,0 +1,9 @@
+# SHA-256 of public audio clips allowed for Voice Transcribe and the live TRIBE run (never any confidential clip)
+40c70200dd0c2f61e3b7d88b78b8c1d1547d3c917286dbf8031519d76ecbc6de  LibriVox Alice in Wonderland ch. 1 (wonderland_ch_01_64kb.mp3), 60 s from 20 s, mono 16 kHz wav
+bb845c45468dd1b7214bd38bb281d4fbfc27bfcd049926f48e2845d7eaa2aecb  LibriVox Alice in Wonderland ch. 1 (wonderland_ch_01_64kb.mp3), 20 s from 20 s, mono 16 kHz wav (assets/librivox_alice_ch01_20s.wav; live TRIBE demo)
+7d758efedc32f63b838ec275b9a14b1ece6ccfc3345c3a29c51aa1729e6fe9d7  LibriVox Alice ch. 1 (Kristen McQuillin), 75 s from 20 s, mono 16 kHz wav (assets/librivox_alice_ch01_75s.wav; Pilot conditions source)
+816db0f487454a1ff93569b61120ed7869ced67ebf5be4072d9d2d718d42b7f5  condition intact (assets/conditions/alice_ch01_75s_intact.wav)
+9b9a643bc6146af8812e39ae10661b15df76fb3e74907f12742473a8a6174020  condition sentence scramble (assets/conditions/alice_ch01_75s_sentence_scramble.wav)
+c44565e2b0c5adb49b4cbcd3455bc4ce8ad78bcceb652957d6d185f75fc4045b  condition word scramble (assets/conditions/alice_ch01_75s_word_scramble.wav)
+e7ba002b1954959f71e603e8f20a1399345f03d40684831cef17a7ece145aac1  condition reversed (assets/conditions/alice_ch01_75s_reversed.wav)
+43f74ccb1eafeca4cd3af9ae1613fef46188454e01c03e392dbc642f93864c72  two-reader known-turns clip for the diarisation check (assets/diarization/two_readers_6turns.wav; LibriVox Alice ch. 1 Kristen McQuillin and ch. 2 Brad Bush, public domain)

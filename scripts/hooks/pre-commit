@@ -1,0 +1,6 @@
+#!/bin/sh
+# PREREG guard (stillhere/prereg_check.py): warn-only until 2026-10-29 00:00 ET, then a finding blocks the commit.
+# Install for this repo: git config core.hooksPath scripts/hooks
+top=$(git rev-parse --show-toplevel) || exit 1
+PYTHONPATH="$top" python3 -m stillhere.prereg_check --registry "$top/prereg_registry.json" || exit 1
+exec "$top/scripts/hooks/run-global" pre-commit "$@"

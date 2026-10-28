@@ -1,0 +1,6 @@
+#!/bin/sh
+# Hygiene scan before any push (scripts/hygiene_scan.py). It fails closed: without the laptop-only blocklist nothing is pushed.
+# Install for this repo: git config core.hooksPath scripts/hooks
+top=$(git rev-parse --show-toplevel) || exit 1
+python3 "$top/scripts/hygiene_scan.py" --repo "$top" || exit 1
+exec "$top/scripts/hooks/run-global" pre-push "$@"

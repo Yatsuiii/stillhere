@@ -1,0 +1,1 @@
+Look up the frozen, precomputed result of one registered analysis by its ID. Nothing is computed live.

@@ -1,0 +1,12 @@
+Registered analyses (PREREG reference in brackets). Use these IDs only.
+sedation [§6 Gate 1 table, §7, D11, D21 Part B]: whether the sedation stage line is licensed: language fades under deep sedation while hearing holds, in k of N volunteers.
+P7 [§6 P7, D10]: pipeline sanity, read first: LOO-ISC in FPN Awake > Deep, and AUD LOO-ISC in Deep above its null.
+P1 [§6 P1]: co-primary: LANGUAGE Awake > Deep, paired Wilcoxon, in at least k* of N volunteers.
+P3 [§6 P3]: co-primary: the LANGUAGE change from Awake to Deep exceeds the HEARING change (Hodges-Lehmann, bootstrap CI).
+P8 [§6 P8, D12]: co-primary: in Awake, LANGUAGE with the real words exceeds LANGUAGE with shuffled words.
+P2a [§6 P2a, D10]: HEARING in Deep above the rest null.
+P2b [§6 P2b, D17]: TRIBE's individual detection rate within 15 points of LOO-ISC's, for both gauges.
+P4 [§6 P4, D17]: AUC for Awake vs Deep at least 0.80 for LANGUAGE and for LANGUAGE minus HEARING, and within 0.05 of LOO-ISC's.
+P5_H, P5_L [§6 P5, D13]: HEARING or LANGUAGE story score well above the rest-run null (N3) and the wrong-story null (N4).
+P6 [§6 P6]: LANGUAGE Recovery > Deep, and median Recovery at least half of median Awake.
+Frozen settings (lag, high-pass cutoff, motion threshold, volumes, subjects, tests and thresholds) cannot be changed; a request to change one is not pre-registered.

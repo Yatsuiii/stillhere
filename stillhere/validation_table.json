@@ -1,0 +1,29 @@
+{
+ "about": "What StillHere Pilot has checked against real public brain scans or manipulation checks. The planner rebuilds its enums from this table on every request; anything not listed here is declined. Public data only; the sedation case study (ds003171) is reported separately as frozen group statistics and never enters the planner.",
+ "population": [
+  {"id": "healthy_adults", "evidence": "LPP (ds003643) English and French listeners; Narratives (ds002345); Emo-FilM (ds004892) viewers", "status": "validated"}
+ ],
+ "language": [
+  {"id": "english", "evidence": "LPP English, held-out section 8 (recomputed with code built during the event; first measured Oct 22-23)", "status": "validated"},
+  {"id": "french", "evidence": "LPP French, development section only, group level, no numbers on stage", "status": "group_level_only"}
+ ],
+ "brain_area": [
+  {"id": "auditory", "gauge": "HEARING", "evidence": "AUD parcels, LPP held-out section 8", "status": "validated"},
+  {"id": "language_network", "gauge": "LANGUAGE", "evidence": "LANG parcels, LPP held-out section 8", "status": "validated"}
+ ],
+ "condition": [
+  {"id": "intact", "evidence": "Voice Transcribe manipulation check PASS (recall 0.992, order 0.989), exploratory", "status": "validated"},
+  {"id": "sentence_scramble", "evidence": "manipulation check PASS (recall 0.981, order vs expected 0.981), exploratory", "status": "validated"},
+  {"id": "reversed", "evidence": "no word check by design (unintelligible); exploratory", "status": "validated"},
+  {"id": "word_scramble", "evidence": "manipulation check FAIL (recall 0.163 < 0.60), exploratory", "status": "failed_check"}
+ ],
+ "stimulus": [
+  {"id": "librivox_audiobook", "evidence": "public-domain LibriVox; conditions built and checked; audio-only TRIBE runs live on the laptop", "status": "validated"},
+  {"id": "le_petit_prince", "evidence": "LPP public audio and listeners", "status": "validated"},
+  {"id": "blender_film", "evidence": "Tears of Steel (CC BY 3.0) with Emo-FilM viewers; TRIBE video path probe pending", "status": "pending"}
+ ],
+ "analysis": [
+  {"id": "forecast_tribe_stock", "evidence": "stock TRIBE v2, the only model", "status": "validated"},
+  {"id": "lag_search", "evidence": "no per-study lag search: timing comes only from each dataset's documented onset", "status": "not_offered"}
+ ]
+}

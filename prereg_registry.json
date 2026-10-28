@@ -1,0 +1,382 @@
+{
+ "analysis_root": "../stillhere",
+ "hard_fail_from": "2026-10-29T00:00:00-04:00",
+ "prereg": {
+  "path": "PREREG.md",
+  "chain": [
+   {
+    "bytes": 31561,
+    "sha256": "46474ea7f9152a99bf56e15b4c96f941aad351cf8a33b4a6fa3d5e44552c2c1f"
+   },
+   {
+    "bytes": 60377,
+    "sha256": "cdbe14d46eb644b3fa8f1b8e9f76aedd5d9428682a610e009fbbd243f79eeb60"
+   },
+   {
+    "bytes": 62844,
+    "sha256": "bc065307e1c8dde9b916dc7e2e4b063eed7cca103360c59f239704f9ff985e29"
+   },
+   {
+    "bytes": 76179,
+    "sha256": "95b93761606c13204701fcfc14245d16a3e95bdb2b928b47c57d7f8ada97436b"
+   },
+   {
+    "bytes": 76961,
+    "sha256": "8cefc885806951235c4205d9cfd1a75802ade0b424df9a6b396e5799d0969993"
+   },
+   {
+    "bytes": 77614,
+    "sha256": "bc5b7bf055761f2df8426efb81ebc2b19f8be73efaa9e420e8fcf1b3bb4605a9"
+   },
+   {
+    "bytes": 79729,
+    "sha256": "9f4ac56805bda6419d49cecab5e9084d8dc637864cd3a6547c92e60973768ca2"
+   },
+   {
+    "bytes": 86075,
+    "sha256": "6ab943a5325752d709c0cf39add5143a7a93e4b754807bc997c2178b6a2b4394"
+   },
+   {
+    "bytes": 98295,
+    "sha256": "310854864a0154ebeb1b31201010192f8a4c577c73d61883078d20acd78a3c36"
+   }
+  ]
+ },
+ "entry_point_rule": {
+  "roots": [
+   "d22"
+  ],
+  "patterns": [
+   "stillhere_*.py",
+   "*_bars.py",
+   "*_scores.py",
+   "score_core.py"
+  ],
+  "exclude": [
+   "test_*.py"
+  ]
+ },
+ "entries": [
+  {
+   "path": "timing/timing.py",
+   "sha256": "21495483fef2dec415a4fe61618106864e8b479936d9461f6bb9757e50183b1a",
+   "role": "analysis",
+   "implements": [
+    "§2",
+    "D3",
+    "D8"
+   ],
+   "what": "HRF regressors and TRIBE alignment in PREREG's lag convention; hash cited in D3"
+  },
+  {
+   "path": "d22/pred/kernels/clip/stillhere_pred.py",
+   "sha256": "591291f15e61370fde8932bd11e2674d219b1d803d55b0143df2441857ab478b",
+   "role": "analysis",
+   "implements": [
+    "§2",
+    "D6",
+    "D12",
+    "D22 D6 and N4"
+   ],
+   "what": "clip predictions, stock and tuned: full, audio-only, text-only, shuffled-word"
+  },
+  {
+   "path": "d22/d6/score_core.py",
+   "sha256": "a4e778b80eabb82794b75c288abc3bbe4a47850c842b290585e959c41bc79607",
+   "role": "analysis",
+   "implements": [
+    "§2",
+    "§3",
+    "§4",
+    "§5",
+    "D6",
+    "D7",
+    "D8",
+    "D9"
+   ],
+   "what": "D7 motion, D6 high-pass (N3 sliding windows), D8 onset check, §4 headphone check, gauges"
+  },
+  {
+   "path": "d22/d6/score_kernel/stillhere_score.py",
+   "sha256": "011535a339750e0a03bd66deba141f96afca853f33201555ffcbea9b6253bb64",
+   "role": "analysis",
+   "implements": [
+    "§4",
+    "D6",
+    "D7",
+    "D8"
+   ],
+   "what": "private kernel: D7 -> D6 -> D8 -> headphone, stops before Gate 1"
+  },
+  {
+   "path": "d22/gate1/gate1_scores.py",
+   "sha256": "98517f3bc571204d9cf21b366073bddc6de1b3a09c7a7df47bf30e0eae65fde0",
+   "role": "analysis",
+   "implements": [
+    "§2",
+    "§3",
+    "§5",
+    "D12",
+    "D13",
+    "D16",
+    "D17",
+    "D24",
+    "D9"
+   ],
+   "what": "story scores, rest nulls, z_rest, detection, LOO-ISC, N4, encompassing test"
+  },
+  {
+   "path": "d22/gate1/gate1_bars.py",
+   "sha256": "f4c12e6ca5b463db093e8899b3b832edb8677a9c08e868dc8268218c8aec037b",
+   "role": "analysis",
+   "implements": [
+    "§6",
+    "P1",
+    "P2a",
+    "P2b",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "P7",
+    "P8",
+    "D10",
+    "D11",
+    "D14",
+    "D16",
+    "D17"
+   ],
+   "what": "Gate 1 bars, Holm, decision rows"
+  },
+  {
+   "path": "d22/gate1/stillhere_gate1.py",
+   "sha256": "2a0bd099c821ef660a7b3595a0d0f9dc53424b515e2a1fa800c9094a56fb9be5",
+   "role": "analysis",
+   "implements": [
+    "§1",
+    "§2",
+    "§4",
+    "§5",
+    "§6",
+    "D14",
+    "D24",
+    "D7"
+   ],
+   "what": "private Gate 1 kernel: D7, headphone at the configured L, scores, bars"
+  },
+  {
+   "path": "d22/d6/diag_kernel/stillhere_onset_diag.py",
+   "sha256": "597fa5362179f9963fd56a9cac85c629af788c813ef45095aabf29cfcf547d15",
+   "role": "diagnostic (reported only, chooses nothing)",
+   "implements": [
+    "D8"
+   ],
+   "what": "envelope-only onset diagnostic on Awake (D8 estimator)"
+  },
+  {
+   "path": "d22/d6/diag_states/kernel/stillhere_onset_diag_states.py",
+   "sha256": "3af908bd94159a9ff3b84b9dc1622ea9fab99de8a54fdf5a1fa8ab5fed32ce15",
+   "role": "diagnostic (reported only, chooses nothing)",
+   "implements": [
+    "D8",
+    "D24"
+   ],
+   "what": "envelope-only onset corroboration on Light and Recovery (D8 estimator)"
+  },
+  {
+   "path": "d22/d6/onset_wide/stillhere_onset_wide.py",
+   "sha256": "bb387a5ef837dda2589a46fb72e65c6b99ec308450a5f111592cc89bc1e8d6f3",
+   "role": "D24 adoption check (13:07 UTC run)",
+   "implements": [
+    "D8",
+    "D24"
+   ],
+   "what": "D8 estimator on the widened lag grid [-14, +30] s with pre-onset silence; global max lag and D24 criteria 1-3"
+  },
+  {
+   "path": "d22/d6/onset_wide/v1/stillhere_onset_wide.py",
+   "sha256": "fa1ea1a91a852a6eef8a66a9075d5c9621e8d380339a1e2df16a55803cd3e0a2",
+   "role": "D24 adoption check (12:51 UTC run, location only)",
+   "implements": [
+    "D8",
+    "D24"
+   ],
+   "what": "first widened-grid run; global max lag only, superseded by the 13:07 run for criteria 1-3"
+  },
+  {
+   "path": "d22/gate1/gate1_merge.py",
+   "sha256": "bbdb15c781f719da48f67abb392496dc79f95e8e6b7ba9625a0284d761ce1798",
+   "role": "analysis",
+   "implements": [
+    "§2",
+    "D24"
+   ],
+   "what": "merges the Gate 1 variant outputs; marks bars and rows lag-sensitive at L +/- 1 s and dL = 0 (D24)"
+  },
+  {
+   "path": "d22/gate1/kernels/primary/kernel_primary.py",
+   "sha256": "9ad5847017da56df92e43c18808ce45f63ccd133768f7d70949f7ba7db1d4cdc",
+   "role": "Kaggle stub (calls stillhere_gate1.run)",
+   "implements": [
+    "§6"
+   ],
+   "what": "Gate 1 variant primary"
+  },
+  {
+   "path": "d22/gate1/kernels/s17/kernel_s17.py",
+   "sha256": "27aac1ee54c03c26bd5f46633409a8f79bdc8b92876c244aafe0701eada9fc51",
+   "role": "Kaggle stub (calls stillhere_gate1.run)",
+   "implements": [
+    "§2",
+    "D24"
+   ],
+   "what": "Gate 1 variant s17"
+  },
+  {
+   "path": "d22/gate1/kernels/lm1/kernel_lm1.py",
+   "sha256": "746e31e07d919174c5ef0bfc976004bc391e78f26f81614885fc8209d2da0c25",
+   "role": "Kaggle stub (calls stillhere_gate1.run)",
+   "implements": [
+    "§2",
+    "D24"
+   ],
+   "what": "Gate 1 variant lm1"
+  },
+  {
+   "path": "d22/gate1/kernels/lm05/kernel_lm05.py",
+   "sha256": "c7b90fac2269da24e5e1feeb871e9fd4b534af7e84d9e23464d149821e159bcb",
+   "role": "Kaggle stub (calls stillhere_gate1.run)",
+   "implements": [
+    "§2",
+    "D24"
+   ],
+   "what": "Gate 1 variant lm05"
+  },
+  {
+   "path": "d22/gate1/kernels/lp05/kernel_lp05.py",
+   "sha256": "5b38fb177c9b3513f598cb69bada273b8ac21961395ffbf5d833009e92fa3063",
+   "role": "Kaggle stub (calls stillhere_gate1.run)",
+   "implements": [
+    "§2",
+    "D24"
+   ],
+   "what": "Gate 1 variant lp05"
+  },
+  {
+   "path": "d22/gate1/kernels/lp1/kernel_lp1.py",
+   "sha256": "07693f5272aba4a33122973b5c301ed4af8a9e8c8fbae6419bd9e6bfb4a3a268",
+   "role": "Kaggle stub (calls stillhere_gate1.run)",
+   "implements": [
+    "§2",
+    "D24"
+   ],
+   "what": "Gate 1 variant lp1"
+  },
+  {
+   "path": "d22/gate1/kernels/dl0/kernel_dl0.py",
+   "sha256": "a27fe0b1c1c993849a634be9f27899605ae2dd20c5d8514fee57a5725fd40dcf",
+   "role": "Kaggle stub (calls stillhere_gate1.run)",
+   "implements": [
+    "§2",
+    "D24"
+   ],
+   "what": "Gate 1 variant dl0"
+  },
+  {
+   "path": "d22/gate1/kernels/deeplag/kernel_deeplag.py",
+   "sha256": "049da3c8e0a4eac8a0a783ca9a23c940d2e71823d9fcd8444dd9e014843fa052",
+   "role": "Kaggle stub (calls stillhere_gate1.run)",
+   "implements": [
+    "§2",
+    "D24"
+   ],
+   "what": "Gate 1 variant deeplag"
+  },
+  {
+   "path": "../stillhere-app/stillhere/heldout.py",
+   "sha256": "ea3b8942ec3b28c954a31b79b13e24fca1337e8b402bcb39a51e8248ecc64bf4",
+   "role": "analysis",
+   "implements": [
+    "§3",
+    "§5",
+    "§8"
+   ],
+   "what": "event-built held-out section scorer: section-8 stage numbers, M1 control-equivalent, M2 hybrid, wrong-story checks"
+  },
+  {
+   "path": "../stillhere-app/scripts/heldout_section8.py",
+   "sha256": "81cbccee6e3f36253e9972cf4208928279ff7cec5b1d125f2fa2b42f44701d1b",
+   "role": "analysis",
+   "implements": [
+    "§8"
+   ],
+   "what": "CLI for the section-8 recompute with the HELDOUT.md settings (lag, cutoff, seeds, resample counts)"
+  },
+  {
+   "path": "d22/d20/kernel/stillhere_d20_pred.py",
+   "sha256": "8d6d22e53b17c704b7f17e330c3907b1514f7d00e7ad9c87bd66ca7a56801257",
+   "role": "analysis",
+   "implements": [
+    "D20"
+   ],
+   "what": "private GPU kernel: stock TRIBE v2 predictions for the three notthefall versions, no BOLD"
+  },
+  {
+   "path": "d22/d20/kernel_asr/stillhere_d20_pred_asr.py",
+   "sha256": "c39f4e40b24021acfcc973f58a59227ca6b62524065ce94dc2bc09790cecc356",
+   "role": "analysis",
+   "implements": [
+    "D20",
+    "D27"
+   ],
+   "what": "private GPU kernel: one speech-to-text pass per notthefall version and all three predictions from it, no BOLD"
+  },
+  {
+   "path": "d22/d6/diag_states/out_v1/stillhere_onset_diag_states_v1.py",
+   "sha256": "979142afb3f67378918a3e16866a76cfedfafca5ed7b47e6da16f0f3cd16acac",
+   "role": "diagnostic (reported only, chooses nothing)",
+   "implements": [
+    "D24",
+    "D25"
+   ],
+   "what": "archived source of stillhere-onset-diag-states v1 (Light and Recovery, envelope only)"
+  },
+  {
+   "path": "d22/picker_pred/kernels/picker_pred/stillhere_picker_pred.py",
+   "sha256": "682c2a01db932ddac95bd17c0c2d6e172f761a3bef485c0ac4d99dca8e96dedf",
+   "role": "analysis",
+   "implements": [
+    "§9",
+    "D19",
+    "D26"
+   ],
+   "what": "private GPU kernel: stock TRIBE v2 predictions for the 42 picker clips from cached stimulus features under D26 (b), no BOLD"
+  },
+  {
+   "path": "d22/gate1_tuned/n4_kernel/kernel/stillhere_n4_tuned.py",
+   "sha256": "59b4c14027cb43a7068fccdaa286a953b3423767ad79046cece3f10a9da9e1d6",
+   "role": "analysis",
+   "implements": [
+    "§2",
+    "D3",
+    "D13",
+    "D22"
+   ],
+   "what": "private GPU kernel: tuned TRIBE v2 prediction for public LPP-EN section 2 (N4 for the pre-registered second model)"
+  }
+ ],
+ "not_entry_points": [
+  {
+   "path": "d22/pred/stillhere_pred_tpl.py",
+   "reason": "template; make_pred.py renders it into the registered clip kernel and the LPP test kernel"
+  },
+  {
+   "path": "d22/pred/kernels/test/stillhere_pred.py",
+   "reason": "wiring test of the prediction kernel on a public LPP stand-in; scores nothing"
+  },
+  {
+   "path": "d22/d20/score/kernel_score/stillhere_d20_score.py",
+   "reason": "one-call stub rendered at push time with the posted picker manifest hash; all D20 scoring code is in the hashed stillhere-d20-score-code dataset (MANIFEST 92efa035b62a63d9badb5871716f86d7395cf0fecf544ba14ed3aadc3b8eab14)"
+  }
+ ]
+}

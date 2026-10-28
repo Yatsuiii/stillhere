@@ -1,0 +1,8 @@
+#!/bin/sh
+# Hands a hook to the global hooks directory (git config --global core.hooksPath), if one is set and has that hook. Setting
+# core.hooksPath for this repo would otherwise silence the global hooks; every hook in this directory ends by calling this.
+name=$1; shift
+dir=$(git config --global --get core.hooksPath) || exit 0
+case "$dir" in "~/"*) dir="$HOME/${dir#"~/"}" ;; esac
+[ -x "$dir/$name" ] && exec "$dir/$name" "$@"
+exit 0

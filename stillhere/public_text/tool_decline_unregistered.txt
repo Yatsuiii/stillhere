@@ -1,0 +1,1 @@
+Decline a request that is not pre-registered, naming the nearest registered analysis.

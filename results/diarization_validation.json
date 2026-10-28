@@ -1,0 +1,80 @@
+{
+ "label": "exploratory",
+ "n_labels": 2,
+ "n_turns": 6,
+ "agreement": 0.9845878746594006,
+ "speaker_changes": 5,
+ "true_speaker_changes": 5,
+ "pass": true,
+ "criterion": {
+  "n_labels": 2,
+  "agreement_min": 0.9,
+  "changes_tolerance": 1
+ },
+ "turns": [
+  {
+   "speaker": "A",
+   "startMs": 140,
+   "endMs": 10380
+  },
+  {
+   "speaker": "B",
+   "startMs": 10540,
+   "endMs": 20460
+  },
+  {
+   "speaker": "A",
+   "startMs": 20460,
+   "endMs": 30300
+  },
+  {
+   "speaker": "B",
+   "startMs": 30620,
+   "endMs": 41020
+  },
+  {
+   "speaker": "A",
+   "startMs": 41180,
+   "endMs": 50620
+  },
+  {
+   "speaker": "B",
+   "startMs": 51180,
+   "endMs": 60060
+  }
+ ],
+ "truth": [
+  {
+   "reader": "A",
+   "start_ms": 0,
+   "end_ms": 10155
+  },
+  {
+   "reader": "B",
+   "start_ms": 10155,
+   "end_ms": 20185
+  },
+  {
+   "reader": "A",
+   "start_ms": 20185,
+   "end_ms": 30335
+  },
+  {
+   "reader": "B",
+   "start_ms": 30335,
+   "end_ms": 40615
+  },
+  {
+   "reader": "A",
+   "start_ms": 40615,
+   "end_ms": 50625
+  },
+  {
+   "reader": "B",
+   "start_ms": 50625,
+   "end_ms": 60550
+  }
+ ],
+ "audio_ms": 60560,
+ "gate_allowed": true
+}

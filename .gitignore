@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.venvs/
+out/
+*.npz
+*.nii
+*.nii.gz
+.env

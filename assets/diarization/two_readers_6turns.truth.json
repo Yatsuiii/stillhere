@@ -1,0 +1,52 @@
+{
+ "label": "exploratory",
+ "file": "two_readers_6turns.wav",
+ "sha256": "43f74ccb1eafeca4cd3af9ae1613fef46188454e01c03e392dbc642f93864c72",
+ "sr": 16000,
+ "duration_ms": 60550,
+ "readers": {
+  "A": {
+   "name": "Kristen McQuillin",
+   "source": "https://archive.org/download/alice_in_wonderland_librivox/wonderland_ch_01_64kb.mp3",
+   "excerpt_start_s": 100.0
+  },
+  "B": {
+   "name": "Brad Bush",
+   "source": "https://archive.org/download/alice_in_wonderland_librivox/wonderland_ch_02_64kb.mp3",
+   "excerpt_start_s": 20.0
+  }
+ },
+ "licence": "LibriVox recordings are in the public domain",
+ "turns": [
+  {
+   "reader": "A",
+   "start_ms": 0,
+   "end_ms": 10155
+  },
+  {
+   "reader": "B",
+   "start_ms": 10155,
+   "end_ms": 20185
+  },
+  {
+   "reader": "A",
+   "start_ms": 20185,
+   "end_ms": 30335
+  },
+  {
+   "reader": "B",
+   "start_ms": 30335,
+   "end_ms": 40615
+  },
+  {
+   "reader": "A",
+   "start_ms": 40615,
+   "end_ms": 50625
+  },
+  {
+   "reader": "B",
+   "start_ms": 50625,
+   "end_ms": 60550
+  }
+ ]
+}
