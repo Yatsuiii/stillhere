@@ -35,3 +35,12 @@ def test_audio_deleted_even_if_transcription_fails_and_refusals(tmp_path, monkey
     outside = Path("/tmp") / "not_home.wav"
     with pytest.raises(SystemExit):
         B.build(outside, tmp_path / "bl.txt", transcriber=lambda p: "")
+
+
+def test_keep_audio_leaves_the_file_and_still_refuses_outside_home(tmp_path, monkeypatch):
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    audio = tmp_path / "private.wav"; audio.write_bytes(b"x")
+    B.build(audio, tmp_path / "bl.txt", transcriber=lambda p: "zorblax", keep_audio=True)
+    assert audio.exists()
+    with pytest.raises(SystemExit):
+        B.build(Path("/tmp") / "not_home.wav", tmp_path / "bl.txt", transcriber=lambda p: "", keep_audio=True)
