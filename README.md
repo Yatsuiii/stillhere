@@ -21,7 +21,7 @@ Every new result is labelled exploratory. A forecast is labelled "forecast, not 
 
 | Part | Files |
 |---|---|
-| Typed egress: the only way anything reaches a model API (numbers and enums, SHA-256-allowlisted public text, scanned questions, allowlisted public audio and film frames; hosts api.meta.ai and api.fireworks.ai only) | `stillhere/egress.py`, `stillhere/meta_client.py` |
+| Typed egress: the only way anything reaches a model API (numbers and enums, SHA-256-allowlisted public text, scanned questions, allowlisted public audio and film frames; hosts api.meta.ai, api.fireworks.ai and inference.baseten.co only) | `stillhere/egress.py`, `stillhere/meta_client.py` |
 | Models | Meta Muse Spark 1.3 (Meta Model API), Meta Muse Spark Open (open weights, served by Fireworks), Muse Voice Transcribe, Meta TRIBE v2 |
 | Spark analysis desk: answers only with lines the frozen bars license | `stillhere/desk.py`, `stillhere/frozen.py`, `stillhere/verifier.py`, `replay/` |
 | Stimulus conditions (intact, sentence scramble, word scramble, reversed) and their Voice Transcribe manipulation checks | `stillhere/conditions.py`, `stillhere/manipulation_check.py`, `assets/` |

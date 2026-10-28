@@ -21,11 +21,12 @@ from pydantic import BaseModel, ConfigDict, StrictBool, StrictFloat, StrictInt, 
 from stillhere import blockterms
 
 ALLOWED_MODELS = frozenset({"muse-spark-1.3", "muse-spark-1.2", "muse-voice-transcribe-1.0",
-                            "fireworks/muse-spark-open"})               # Meta's open-weights Muse Spark, served by Fireworks (Meta models only)
+                            "fireworks/muse-spark-open",                # Meta's open-weights Muse Spark, served by Fireworks (Meta models only)
+                            "baseten/muse-spark-open-1026"})            # the same family on Baseten (the hackathon model id)
 ALLOWLIST = Path(__file__).with_name("public_text_allowlist.txt")
 AUDIO_ALLOWLIST = Path(__file__).with_name("public_audio_allowlist.txt")
 FRAME_ALLOWLIST = Path(__file__).with_name("public_frame_allowlist.txt")
-FIREWORKS_MODELS = frozenset(m for m in ALLOWED_MODELS if m.startswith("fireworks/"))
+HOSTED_MODELS = frozenset(m for m in ALLOWED_MODELS if m.startswith(("fireworks/", "baseten/")))   # served by a host other than Meta
 VALIDATION_TABLE = Path(__file__).with_name("validation_table.json")
 PLANNER_CODES = frozenset({"none", "population_not_validated", "language_not_validated", "brain_area_not_validated", "condition_not_validated",
                            "stimulus_not_validated", "analysis_not_offered", "clinical_out_of_scope", "schema_invalid", "decline_inconsistent",
@@ -193,10 +194,11 @@ class Request(_Strict):
     parallel_tool_calls: bool = True
 
     @model_validator(mode="after")
-    def _fireworks_public_only(self):
-        """Fireworks carries public text, scanned questions and public film frames only: no tier-D values (they come from ds003171)."""
-        if self.model in FIREWORKS_MODELS and any(isinstance(p, TierD) for p in self.user):
-            raise EgressRefused("tier-D values never go to Fireworks: public text and public film frames only")
+    def _hosted_public_only(self):
+        """Fireworks and Baseten carry public text, scanned questions and public film frames only: no tier-D values (they come from
+        ds003171)."""
+        if self.model in HOSTED_MODELS and any(isinstance(p, TierD) for p in self.user):
+            raise EgressRefused("tier-D values never go to Fireworks or Baseten: public text and public film frames only")
         return self
 
     @model_validator(mode="after")

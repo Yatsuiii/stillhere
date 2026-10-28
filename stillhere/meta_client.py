@@ -1,7 +1,8 @@
 """Meta model client (Chat Completions with tools or strict json_schema output). Accepts only an egress.Request; builds the message
-text, tool definitions and response format from its typed parts alone. Two providers, both serving Meta models: Meta's Model API
-(muse-spark-1.x; key from MODEL_API_KEY or Muse Code's credential store) and Fireworks serverless for Meta's open-weights Muse Spark Open
-(egress id "fireworks/muse-spark-open"; key from the FIREWORKS_API_KEY environment variable only). Keys are read at call time, never
+text, tool definitions and response format from its typed parts alone. Three providers, all serving Meta models: Meta's Model API
+(muse-spark-1.x; key from MODEL_API_KEY or Muse Code's credential store), Fireworks serverless for Meta's open-weights Muse Spark Open
+(egress id "fireworks/muse-spark-open"; key from the FIREWORKS_API_KEY environment variable only) and Baseten's Model API for the
+hackathon's Muse Spark Open (egress id "baseten/muse-spark-open-1026"; key from BASETEN_API_KEY only). Keys are read at call time, never
 logged or saved. Only the hosts in HOSTS are ever contacted.
 Each call appends one usage line (time, provider, model, schema name, token counts, latency) to a local log; no request or response text."""
 import base64
@@ -34,12 +35,20 @@ def _fireworks_key() -> str:
     return k
 
 
+def _baseten_key() -> str:
+    k = os.environ.get("BASETEN_API_KEY")
+    if not k:
+        raise egress.EgressRefused("BASETEN_API_KEY is not set: Baseten calls are refused")
+    return k
+
+
 # egress model id -> (provider, base URL, the provider's model id, key reader); Meta model ids not listed here go to Meta's API.
 PROVIDERS = {"fireworks/muse-spark-open": ("fireworks", "https://api.fireworks.ai/inference/v1", "accounts/fireworks/models/muse-spark-open",
-                                           _fireworks_key)}
+                                           _fireworks_key),
+             "baseten/muse-spark-open-1026": ("baseten", "https://inference.baseten.co/v1", "meta-models/muse-spark-open-1026", _baseten_key)}
 
 
-HOSTS = frozenset({"api.meta.ai", "api.fireworks.ai"})                 # the only hosts a model call may reach
+HOSTS = frozenset({"api.meta.ai", "api.fireworks.ai", "inference.baseten.co"})   # the only hosts a model call may reach
 
 
 def route(model: str) -> tuple:
