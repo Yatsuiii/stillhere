@@ -343,14 +343,19 @@
   },
   {
    "path": "d22/picker_pred/kernels/picker_pred/stillhere_picker_pred.py",
-   "sha256": "682c2a01db932ddac95bd17c0c2d6e172f761a3bef485c0ac4d99dca8e96dedf",
+   "sha256": "1a9f18128ed582fe0dc8f8afe239d3669d5df07b20a4a687ed1d12787e2b41c9",
    "role": "analysis",
    "implements": [
     "§9",
     "D19",
     "D26"
    ],
-   "what": "private GPU kernel: stock TRIBE v2 predictions for the 42 picker clips from cached stimulus features under D26 (b), no BOLD"
+   "what": "private GPU kernel: stock TRIBE v2 predictions for the 42 picker clips from cached stimulus features under D26 (b), no BOLD",
+   "changed_after_freeze": {
+    "old_sha256": "682c2a01db932ddac95bd17c0c2d6e172f761a3bef485c0ac4d99dca8e96dedf",
+    "why": "input paths only: Kaggle moved attached notebook outputs; analysis unchanged (project thread ruling, Oct 28)",
+    "note": "docs/frozen_code_changes.md"
+   }
   },
   {
    "path": "d22/gate1_tuned/n4_kernel/kernel/stillhere_n4_tuned.py",

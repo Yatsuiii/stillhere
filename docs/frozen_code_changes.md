@@ -1,6 +1,6 @@
 # Changes to frozen code
 
-## picker-pred input paths (Oct 28, 16:10 UTC)
+## picker-pred input paths (Oct 28, first committed 16:06 UTC)
 
 picker-pred's input paths were changed after the freeze because Kaggle moved attached notebook outputs; the analysis is unchanged; the diff is in the repo.
 
