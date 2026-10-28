@@ -35,9 +35,10 @@ each run's own logged onset, the run table printed from metadata, the volume-cou
 
 ## Run check (before scoring, from metadata only)
 - Expected volume count: 607, the Tears of Steel scan length in TRs with both washouts in the data descriptor's Table 1 ("Scan duration
-  (TRs) - includes washout"). Chosen because it is the designed length, fixed before any data, and equal to the median of the 30 runs'
+  (TRs) - includes washout"). Chosen because it is the designed length, fixed before any brain data, and equal to the median of the 30 runs'
   counts. The events files cannot serve as the reference: every run's last logged washout ends at 772.6 to 773.6 s (595 TRs), yet every
   run has 605 to 613 volumes (the scan continues after the last logged row), so an events-based check would drop every run.
+  607 was chosen after the volume counts were seen (QC table only, no images).
 - A run is dropped if its volume count (the raw run's `size_t` in the MRIQC group table) is off by more than 2 TRs (`volume_check`).
 - `scripts/emofilm_run_table.py` prints, for all 30 runs, the subject, session, logged film onset, film duration, end of the last logged
   washout, volume count, the check and the scored volume count. Result before any brain data: 28 runs kept; 2 dropped, sub-S13 and
@@ -60,6 +61,9 @@ each run's own logged onset, the run table printed from metadata, the volume-cou
   `stillhere-pilot-bridge-intact` (name kept from the bridge rule) on release 0 to 190 s: the 10 s margin keeps prediction samples
   through 180 s away from the segment's end. Words and their timings come from the harness's own speech-to-text pass on that segment's
   audio (`words.csv`). The prediction is read at film time - 5 s, linear between its 1 Hz sample times.
+- Onset validation: the dataset's own onset check (derivatives/onset_validation, derived from brain data) is not read before
+  scoring. It is read right after the film score and reported beside it; if it puts the onsets somewhere else, the film result
+  carries that caveat. A run at the authors' stated onset is labelled exploratory and is never the headline.
 
 ## Motion and quality
 - FD (Power): from the six MCFLIRT parameters (rotations in radians times 50 mm, translations in mm). Source: the session's FEAT motion
