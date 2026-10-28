@@ -30,8 +30,15 @@ shown". No correction across baselines or gauges (descriptive).
   (b) A baseline wall: D19's own-minus-wrong d per listener with each regressor in place of TRIBE (raw r, own clip's regressor vs the wrong
   families' regressors aligned from their own onsets, the same volumes as D19's pairs), lit, family and N of M rules as D19, the fake-own
   check as D19; reported for TRIBE raw, WORD RATE and ENVELOPE beside the frozen wall.
-- notthefall (D20): inside the same Kaggle session as the frozen scoring call: a hook records, for every run the frozen code scores, the
-  raw gauges on the same in-memory series and returns the frozen function's own value unchanged (the hashed code dataset is not modified
-  and the frozen outputs are identical with and without the hook). Then, per regressor, D20's own test (intact > shortscram, and the
-  secondary intact > longscram if scored) with D20's paired_test.
+- notthefall (D20): a separate private Kaggle CPU kernel, stillhere-d20-baselines (stillhere/d20_baselines.py, built by
+  scripts/make_d20_baselines.py), pushed only after the frozen stillhere-d20-score run is COMPLETE; the frozen stub and its code dataset
+  (MANIFEST 92efa035...) are pushed exactly as posted. Before any fetch it refuses unless the attached frozen tierD_d20_score.json exists
+  with status "scored" and names that MANIFEST. It imports the frozen code dataset unchanged and re-reads the public notthefall data with
+  it: the same fail-closed allow-list (d20_keys.json; internet only for those keys), descriptor exclusions, FD QC, scored volumes and onset
+  clock (d20_score.run_one), for the versions the frozen run scored. Word rate comes from the onsets of the one speech-to-text pass (D27)
+  and the envelope from each version's audio (stillhere-d20-pred-asr's regressors.npz). As a check it recomputes the frozen T1 per run and
+  reports whether the listeners and values equal the frozen output (a baseline is reported only if they do). Then, per regressor and
+  network, D20's own test (paired_test: one-sided Wilcoxon intact > shortscram, HL with 10,000 bootstrap resamples, default_rng(20261028);
+  and intact > longscram if the frozen run scored it), written to tierD_d20_baselines.json beside the frozen TRIBE primary. The frozen
+  output is only read.
 - Blender film (Emo-FilM): see docs/rules/emofilm_rule.md (word rate, envelope, frame brightness and motion).
