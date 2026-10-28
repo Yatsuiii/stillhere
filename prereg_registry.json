@@ -363,6 +363,15 @@
     "D22"
    ],
    "what": "private GPU kernel: tuned TRIBE v2 prediction for public LPP-EN section 2 (N4 for the pre-registered second model)"
+  },
+  {
+   "path": "d22/onset_kandeepan/kernel/stillhere_onset_kandeepan.py",
+   "sha256": "67c6512a35c7a9f68779334021a2390566fabaf377f1f14b4a97f8d42fdca64b",
+   "role": "diagnostic (reported only, chooses nothing)",
+   "implements": [
+    "D24"
+   ],
+   "what": "exploratory envelope check at the dataset author's reported timing; counts only, no change to L"
   }
  ],
  "not_entry_points": [
