@@ -41,4 +41,5 @@ shown". No correction across baselines or gauges (descriptive).
   network, D20's own test (paired_test: one-sided Wilcoxon intact > shortscram, HL with 10,000 bootstrap resamples, default_rng(20261028);
   and intact > longscram if the frozen run scored it), written to tierD_d20_baselines.json beside the frozen TRIBE primary. The frozen
   output is only read.
-- Blender film (Emo-FilM): see docs/rules/emofilm_rule.md (word rate, envelope, frame brightness and motion).
+- Blender film (Emo-FilM): see docs/rules/emofilm_rule.md version 2 (the opening three minutes of Tears of Steel; word rate, envelope,
+  frame brightness and motion, each scored like TRIBE and compared with `compare` as above).

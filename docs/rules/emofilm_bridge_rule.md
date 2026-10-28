@@ -1,5 +1,10 @@
 # Rule: TRIBE v2 forecast vs Emo-FilM viewers, Tears of Steel opening bridge conversation (StillHere Pilot, exploratory)
 
+> SUPERSEDED FOR SCORING on 2026-10-28 by `emofilm_rule.md` version 2, before any Emo-FilM brain data was read: 11 or 12
+> volumes per viewer are too few to test a forecast. The scored window is now the opening three minutes of the cut. The bridge
+> scene stays only for the SAM 3.1 edits and the video, as forecasts with no BOLD. The window functions named below were removed
+> from `stillhere/emofilm_score.py` in the same commit; this text is kept as the record.
+
 Fixed on 2026-10-28 and committed with its scoring code (`stillhere/emofilm_score.py`: `window_mask`, `window_score`,
 `bridge_viewer_scores`, `frame_stats`, `per_second`, `tribe_beats`) BEFORE any Emo-FilM brain data was downloaded or read. The commit
 time is the record. It amends `emofilm_rule.md` (commit 2762956) for this window only; everything not stated here follows that rule.

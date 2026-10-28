@@ -1,36 +1,51 @@
 """Emo-FilM scorer (StillHere Pilot, exploratory): TRIBE v2's forecast for Tears of Steel against the Emo-FilM viewers (ds004892).
 
-The rule is docs/rules/emofilm_rule.md, committed with this code before any Emo-FilM brain data was read. This module takes arrays and
-paths only and holds no data. It reuses the held-out section scorer's gauge, null and volunteer-equivalent rule (stillhere.heldout),
-with the Emo-FilM TR (1.3 s from the sidecar) in place of LPP's 2.0 s.
+The rule is docs/rules/emofilm_rule.md (version 2: the opening three minutes of the cut), committed with this code before any Emo-FilM
+brain data was read. This module takes arrays and paths only and holds no data. It reuses the held-out section scorer's gauge, null,
+HRF regressor and volunteer-equivalent rule (stillhere.heldout) and the cheap-baselines comparison (stillhere.cheap_baselines), with
+the Emo-FilM TR (1.3 s from the sidecar) in place of LPP's 2.0 s.
 
-Per viewer: scored volumes = film time (j x TR + slice offset - film onset) from DROP_S to the end of the cut, with TRIBE's sample
-(film time - TRIBE_OFFSET) inside the prediction; FD (Power) censoring and the D7 run rule; detrend + high-pass 0.03 Hz + z-score;
-HEARING, LANGUAGE, VISUAL gauges against circular shifts of the prediction. Group: median z with a viewer bootstrap CI, share detected,
-and ISC(k) on a common film-time grid with TRIBE placed on that curve."""
+Per viewer: scored volumes = film time (j x TR + slice offset - film onset) of at least DROP_S, with TRIBE's sample (film time -
+TRIBE_OFFSET) inside OPENING_S and inside the prediction; FD (Power) censoring and the D7 run rule; detrend + high-pass 0.03 Hz +
+z-score; HEARING, LANGUAGE, VISUAL gauges and the unpartialled TRIBE and baseline gauges against circular shifts of the regressor.
+Group: median z with a viewer bootstrap CI, share detected, TRIBE minus each baseline paired over viewers, and ISC(k) on a common
+film-time grid with TRIBE placed on that curve."""
 import numpy as np
 
+from . import cheap_baselines as CB
 from . import heldout as H
 
-CUT_S, DROP_S, TRIBE_OFFSET, FD_MAX, FD_SHARE, HP = 588.0, 10.0, 5.0, 0.5, 0.30, 0.03
+DROP_S, TRIBE_OFFSET, FD_MAX, FD_SHARE, HP = 10.0, 5.0, 0.5, 0.30, 0.03
+OPENING_S = (0.0, 180.0)        # release seconds = film time (the cut starts at release 0): the first three minutes, the scored window
+BRIDGE_S = (25.0, 40.25)        # the bridge conversation: SAM 3.1 edits and the video only, never scored (11 or 12 volumes)
+BASELINES = ("word_rate", "envelope", "brightness", "motion")
+MATCHED = (("LANG", "word_rate"), ("AUD", "envelope"), ("VIS", "brightness"), ("VIS", "motion"))    # the primary comparisons
 SEED, NBOOT, ISC_KS, ISC_REPS = 20261028, 10_000, tuple(range(1, 16)), 20
 LABEL = "exploratory"
 
 
 # ---- timing -------------------------------------------------------------------------------------------------------------------
-def film_volumes(n_vols: int, tr: float, onset: float, slice_offset: float, n_pred_s: int) -> tuple:
-    """(volume indices, film times, TRIBE sample times) of the scored volumes: film time in [DROP_S, CUT_S] and the TRIBE sample
-    (film time - TRIBE_OFFSET) inside the 1 Hz prediction [0, n_pred_s - 1]."""
+def film_volumes(n_vols: int, tr: float, onset: float, slice_offset: float, starts, win=OPENING_S) -> tuple:
+    """(volume indices, film times, TRIBE sample times) of the scored volumes: film time at least DROP_S, and the TRIBE sample (film
+    time - TRIBE_OFFSET) inside the window `win` and inside the prediction's sample times [starts[0], starts[-1]]."""
     j = np.arange(n_vols); ft = j * tr + slice_offset - onset; ts = ft - TRIBE_OFFSET
-    ok = (ft >= DROP_S) & (ft <= CUT_S) & (ts >= 0) & (ts <= n_pred_s - 1)
+    st = np.asarray(starts, float)
+    ok = (ft >= DROP_S) & (ts >= win[0]) & (ts <= win[1]) & (ts >= st[0]) & (ts <= st[-1])
     return j[ok], ft[ok], ts[ok]
 
 
-def tribe_at(P, t) -> np.ndarray:
-    """P (n_s, V) at 1 Hz, read at times t (s) with linear interpolation -> (V, len(t))."""
-    t = np.asarray(t, float); i0 = np.clip(np.floor(t).astype(int), 0, len(P) - 1); i1 = np.minimum(i0 + 1, len(P) - 1)
-    w = (t - i0)[None, :]
-    return ((1 - w) * P[i0].T + w * P[i1].T).astype(float)
+def tribe_at(P, starts, t) -> np.ndarray:
+    """P (n, V), row i predicting stimulus time starts[i] (s, 1 Hz), read at times t inside [starts[0], starts[-1]] with linear
+    interpolation (as heldout.align) -> (V, len(t))."""
+    st = np.asarray(starts, float); t = np.asarray(t, float)
+    i0 = np.clip(np.searchsorted(st, t, side="right") - 1, 0, len(st) - 1); i1 = np.minimum(i0 + 1, len(st) - 1)
+    w = np.where(i1 > i0, (t - st[i0]) / np.where(i1 > i0, st[i1] - st[i0], 1.0), 0.0)[None, :]
+    return ((1 - w) * np.asarray(P)[i0].T + w * np.asarray(P)[i1].T).astype(float)
+
+
+def common_grid(tr: float, win=OPENING_S) -> np.ndarray:
+    """The ISC grid: film times from DROP_S to the window's last TRIBE sample + TRIBE_OFFSET, in steps of one TR."""
+    return np.arange(DROP_S, win[1] + TRIBE_OFFSET + 1e-9, tr)
 
 
 def parcel_means(vert_ts, sets: dict) -> dict:
@@ -145,66 +160,43 @@ def volunteer_equivalent(tribe_z, curve: dict) -> dict:
     return {"label": LABEL, **H.volunteer_equivalent(tribe_z, curve["ks"], curve["mean_z"])}
 
 
-# ---- bridge window (docs/rules/emofilm_bridge_rule.md) -----------------------------------------------------------------------
-BRIDGE_S = (25.0, 40.25)        # release seconds: the opening bridge conversation, one shot (frames 600 to 966 at 24 fps)
-SEG_GAP_S = 15.0                # wrong-segment null: segments start at least this far (film time) from the window's start
-VERSIONS = ("intact", "faces_removed", "area_matched")      # in this order; the last two need SAM 3.1 masks
-BASELINES = ("word_rate", "envelope", "brightness", "motion")
+# ---- baselines (docs/rules/cheap_baselines_rule.md conventions) ---------------------------------------------------------------
+def baseline_regressors(per_s: dict, ft) -> dict:
+    """{baseline: per-second series covering stimulus second [k, k+1)} -> {baseline: HRF x series read at film times ft} (the SPM HRF
+    on a 0.1 s grid, heldout.hrf_regressor; no lag, as the base rule's word rate)."""
+    return {b: H.hrf_regressor(per_s[b], ft) for b in BASELINES}
 
 
-def window_mask(ft, win=BRIDGE_S) -> np.ndarray:
-    """Scored volumes whose TRIBE sample (film time - TRIBE_OFFSET) lies inside the window."""
-    ts = np.asarray(ft, float) - TRIBE_OFFSET
-    return (ts >= win[0]) & (ts <= win[1])
+def word_rate_per_s(onsets, n_s: int) -> np.ndarray:
+    """Per-second word onset counts (onsets in film seconds) over [0, n_s)."""
+    on = np.asarray(onsets, float); on = on[(on >= 0) & (on < n_s)]
+    return np.bincount(on.astype(int), minlength=n_s).astype(float)
 
 
-def _fz(B, X) -> float:
-    """Fisher-z mean over rows of r(B_p, X_p); a single regressor row is used for every BOLD row."""
-    B = np.asarray(B, float); X = np.broadcast_to(np.atleast_2d(np.asarray(X, float)), B.shape)
-    b = B - B.mean(1, keepdims=True); x = X - X.mean(1, keepdims=True)
-    r = (b * x).sum(1) / np.sqrt((b * b).sum(1) * (x * x).sum(1))
-    return float(np.arctanh(np.clip(r, -0.999, 0.999)).mean())
+def baseline_gauges(bold: dict, pred: dict, regs: dict, keep, tr: float, visual: bool) -> dict:
+    """One viewer, the cheap-baselines gauges: raw (unpartialled) gauge z against circular shifts for TRIBE and each baseline, on LANG
+    (TRIBE full), AUD (TRIBE audio-only) and VIS (TRIBE full; only if the video path ran). bold: parcel rows on the scored volumes; pred:
+    {"audio": {AUD, LANG}, "full": {LANG[, VIS]}}; regs: {baseline: one row}, all on the same volumes; one baseline row is tiled over the
+    parcels. Everything is cleaned on the kept frames, exactly as the TRIBE gauges."""
+    c = lambda a: clean(a, tr, keep); zc = H.zeros_control(int(np.sum(keep))); out = {}
+    for net, kind in (("LANG", "full"), ("AUD", "audio"), ("VIS", "full")):
+        if net == "VIS" and not visual:
+            out[net] = "not run"; continue
+        B = c(bold[net]); X = {"tribe": c(pred[kind][net])}
+        X.update({b: np.tile(c(np.atleast_2d(regs[b])), (B.shape[0], 1)) for b in BASELINES})
+        out[net] = {k: gauge_null(B, x, zc)["z"] for k, x in X.items()}
+    return out
 
 
-def _resid(A, C) -> np.ndarray:
-    """Rows of A minus their OLS fit on an intercept and the rows of C (C None: demeaned only)."""
-    A = np.atleast_2d(np.asarray(A, float))
-    if C is None:
-        return A - A.mean(1, keepdims=True)
-    M = np.column_stack([np.ones(A.shape[1]), np.atleast_2d(np.asarray(C, float)).T])
-    return A - np.linalg.lstsq(M, A.T, rcond=None)[0].T @ M.T
-
-
-def window_score(Bc, Xw, win_idx, ft, controls_w=None, gap_s: float = SEG_GAP_S) -> dict:
-    """One gauge in the bridge window. Bc: BOLD rows cleaned over the whole run's kept scored frames (p, T); ft: their film times;
-    win_idx: the window's frame indices into Bc (consecutive); Xw: regressor rows on those frames; controls_w: control rows on those
-    frames or None. Real: Fisher-z mean r of window BOLD and Xw, both residualised on the controls. Null (wrong segment): the same
-    score with the BOLD of every other run of len(win_idx) consecutive kept frames whose first film time is at least gap_s from the
-    window's first film time. z = (real - null mean) / null SD; detected = real above the null's 95th percentile."""
-    win_idx = np.asarray(win_idx); n = len(win_idx); T = Bc.shape[1]; ft = np.asarray(ft, float)
-    xr = _resid(Xw, controls_w)
-    real = _fz(_resid(Bc[:, win_idx], controls_w), xr)
-    starts = [s for s in range(T - n + 1) if abs(ft[s] - ft[win_idx[0]]) >= gap_s]
-    null = np.array([_fz(_resid(Bc[:, s:s + n], controls_w), xr) for s in starts])
-    return {"label": LABEL, "z": float((real - null.mean()) / null.std()), "real": real,
-            "detected": bool(real > np.percentile(null, 95)), "n_window": int(n), "n_null": int(len(starts))}
-
-
-def bridge_viewer_scores(bold: dict, pred: dict, regs: dict, keep, ft, tr: float, visual: bool) -> dict:
-    """One viewer, bridge window. bold: {AUD, LANG[, VIS]} parcel rows on the scored volumes; keep: uncensored frames; ft: film times of
-    the scored volumes. BOLD is cleaned over the whole run's kept frames (the base rule); the window is then cut from it. pred:
-    {"audio": {AUD, LANG}, "full": {LANG[, VIS]}} on the window's kept frames; regs: {baseline: one row on the window's kept frames}.
-    Regressors are only z-scored inside the window (12 or so frames are too few to high-pass). TRIBE gauges as the base rule; each
-    baseline is scored as one regressor against AUD, LANG and VIS (if run) with the same wrong-segment null."""
-    keep = np.asarray(keep, bool); ftk = np.asarray(ft, float)[keep]; w = np.where(window_mask(ftk))[0]
-    Bc = {k: clean(v, tr, keep) for k, v in bold.items()}
-    zs = lambda a: H.zrow(np.atleast_2d(np.asarray(a, float)))
-    lang_ctl = np.vstack([zs(np.asarray(pred["audio"]["LANG"]).mean(0, keepdims=True)), zs(regs["word_rate"])])
-    out = {"TRIBE": {"HEARING": window_score(Bc["AUD"], zs(pred["audio"]["AUD"]), w, ftk),
-                     "LANGUAGE": window_score(Bc["LANG"], zs(pred["full"]["LANG"]), w, ftk, lang_ctl),
-                     "VISUAL": window_score(Bc["VIS"], zs(pred["full"]["VIS"]), w, ftk) if visual else "not run"}}
-    for b in BASELINES:
-        out[b] = {g: (window_score(Bc[p], zs(regs[b]), w, ftk) if p in Bc else "not run") for g, p in (("AUD", "AUD"), ("LANG", "LANG"), ("VIS", "VIS"))}
+def compare_baselines(per_viewer: list) -> dict:
+    """TRIBE minus each baseline, paired over viewers (cheap_baselines.compare: n, k, Hodges-Lehmann with a 95% viewer bootstrap,
+    two-sided Wilcoxon p, verdict), per network. The MATCHED pairs are the primary comparisons; the rest are reported beside them."""
+    out = {"label": LABEL, "primary": [f"{n}:{b}" for n, b in MATCHED]}
+    for net in ("LANG", "AUD", "VIS"):
+        rows = [v[net] for v in per_viewer if isinstance(v.get(net), dict)]
+        if not rows:
+            out[net] = "not run"; continue
+        out[net] = {b: CB.compare([r["tribe"] for r in rows], [r[b] for r in rows]) for b in BASELINES}
     return out
 
 
@@ -221,14 +213,3 @@ def per_second(x, fps: float) -> np.ndarray:
     """Mean of a per-frame series in each whole second (the 1 Hz grid the HRF regressors use)."""
     x = np.asarray(x, float); n = int(len(x) // fps)
     return np.array([x[int(round(i * fps)):int(round((i + 1) * fps))].mean() for i in range(n)])
-
-
-def tribe_beats(tribe_z, base_z, nboot: int = NBOOT, seed: int = SEED) -> dict:
-    """The pitch rule: TRIBE 'beats' a baseline on a gauge only if its group median z is higher AND the viewer-paired Hodges-Lehmann
-    median of (TRIBE z - baseline z) has a 95% bootstrap CI above 0."""
-    d = np.asarray(tribe_z, float) - np.asarray(base_z, float); rng = np.random.default_rng(seed)
-    hl = lambda v: float(np.median((v[:, None] + v[None, :])[np.triu_indices(len(v))] / 2))
-    bs = np.array([hl(d[rng.integers(0, len(d), len(d))]) for _ in range(nboot)])
-    lo, hi = float(np.percentile(bs, 2.5)), float(np.percentile(bs, 97.5))
-    beats = bool(np.median(tribe_z) > np.median(base_z) and lo > 0)
-    return {"label": LABEL, "hl": hl(d), "ci95": [lo, hi], "tribe_beats": beats}
