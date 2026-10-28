@@ -1,0 +1,1 @@
+Your previous StudySpec was rejected for the reasons listed under rejected. Reply again with exactly one StudySpec matching the schema, choosing only from the given enums.

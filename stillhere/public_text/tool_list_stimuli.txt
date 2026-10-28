@@ -1,0 +1,1 @@
+List the validated stimuli from the validation table. Nothing is computed live.

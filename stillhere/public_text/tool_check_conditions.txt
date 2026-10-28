@@ -1,0 +1,1 @@
+Read the cached manipulation-check results for the built conditions. No live call.
