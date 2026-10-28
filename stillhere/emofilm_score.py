@@ -143,3 +143,92 @@ def isc_curve(grid_series: dict, controls: list, ks=ISC_KS, reps: int = ISC_REPS
 def volunteer_equivalent(tribe_z, curve: dict) -> dict:
     """The section-8 rule (stillhere.heldout.volunteer_equivalent) on this curve, labelled exploratory."""
     return {"label": LABEL, **H.volunteer_equivalent(tribe_z, curve["ks"], curve["mean_z"])}
+
+
+# ---- bridge window (docs/rules/emofilm_bridge_rule.md) -----------------------------------------------------------------------
+BRIDGE_S = (25.0, 40.25)        # release seconds: the opening bridge conversation, one shot (frames 600 to 966 at 24 fps)
+SEG_GAP_S = 15.0                # wrong-segment null: segments start at least this far (film time) from the window's start
+VERSIONS = ("intact", "faces_removed", "area_matched")      # in this order; the last two need SAM 3.1 masks
+BASELINES = ("word_rate", "envelope", "brightness", "motion")
+
+
+def window_mask(ft, win=BRIDGE_S) -> np.ndarray:
+    """Scored volumes whose TRIBE sample (film time - TRIBE_OFFSET) lies inside the window."""
+    ts = np.asarray(ft, float) - TRIBE_OFFSET
+    return (ts >= win[0]) & (ts <= win[1])
+
+
+def _fz(B, X) -> float:
+    """Fisher-z mean over rows of r(B_p, X_p); a single regressor row is used for every BOLD row."""
+    B = np.asarray(B, float); X = np.broadcast_to(np.atleast_2d(np.asarray(X, float)), B.shape)
+    b = B - B.mean(1, keepdims=True); x = X - X.mean(1, keepdims=True)
+    r = (b * x).sum(1) / np.sqrt((b * b).sum(1) * (x * x).sum(1))
+    return float(np.arctanh(np.clip(r, -0.999, 0.999)).mean())
+
+
+def _resid(A, C) -> np.ndarray:
+    """Rows of A minus their OLS fit on an intercept and the rows of C (C None: demeaned only)."""
+    A = np.atleast_2d(np.asarray(A, float))
+    if C is None:
+        return A - A.mean(1, keepdims=True)
+    M = np.column_stack([np.ones(A.shape[1]), np.atleast_2d(np.asarray(C, float)).T])
+    return A - np.linalg.lstsq(M, A.T, rcond=None)[0].T @ M.T
+
+
+def window_score(Bc, Xw, win_idx, ft, controls_w=None, gap_s: float = SEG_GAP_S) -> dict:
+    """One gauge in the bridge window. Bc: BOLD rows cleaned over the whole run's kept scored frames (p, T); ft: their film times;
+    win_idx: the window's frame indices into Bc (consecutive); Xw: regressor rows on those frames; controls_w: control rows on those
+    frames or None. Real: Fisher-z mean r of window BOLD and Xw, both residualised on the controls. Null (wrong segment): the same
+    score with the BOLD of every other run of len(win_idx) consecutive kept frames whose first film time is at least gap_s from the
+    window's first film time. z = (real - null mean) / null SD; detected = real above the null's 95th percentile."""
+    win_idx = np.asarray(win_idx); n = len(win_idx); T = Bc.shape[1]; ft = np.asarray(ft, float)
+    xr = _resid(Xw, controls_w)
+    real = _fz(_resid(Bc[:, win_idx], controls_w), xr)
+    starts = [s for s in range(T - n + 1) if abs(ft[s] - ft[win_idx[0]]) >= gap_s]
+    null = np.array([_fz(_resid(Bc[:, s:s + n], controls_w), xr) for s in starts])
+    return {"label": LABEL, "z": float((real - null.mean()) / null.std()), "real": real,
+            "detected": bool(real > np.percentile(null, 95)), "n_window": int(n), "n_null": int(len(starts))}
+
+
+def bridge_viewer_scores(bold: dict, pred: dict, regs: dict, keep, ft, tr: float, visual: bool) -> dict:
+    """One viewer, bridge window. bold: {AUD, LANG[, VIS]} parcel rows on the scored volumes; keep: uncensored frames; ft: film times of
+    the scored volumes. BOLD is cleaned over the whole run's kept frames (the base rule); the window is then cut from it. pred:
+    {"audio": {AUD, LANG}, "full": {LANG[, VIS]}} on the window's kept frames; regs: {baseline: one row on the window's kept frames}.
+    Regressors are only z-scored inside the window (12 or so frames are too few to high-pass). TRIBE gauges as the base rule; each
+    baseline is scored as one regressor against AUD, LANG and VIS (if run) with the same wrong-segment null."""
+    keep = np.asarray(keep, bool); ftk = np.asarray(ft, float)[keep]; w = np.where(window_mask(ftk))[0]
+    Bc = {k: clean(v, tr, keep) for k, v in bold.items()}
+    zs = lambda a: H.zrow(np.atleast_2d(np.asarray(a, float)))
+    lang_ctl = np.vstack([zs(np.asarray(pred["audio"]["LANG"]).mean(0, keepdims=True)), zs(regs["word_rate"])])
+    out = {"TRIBE": {"HEARING": window_score(Bc["AUD"], zs(pred["audio"]["AUD"]), w, ftk),
+                     "LANGUAGE": window_score(Bc["LANG"], zs(pred["full"]["LANG"]), w, ftk, lang_ctl),
+                     "VISUAL": window_score(Bc["VIS"], zs(pred["full"]["VIS"]), w, ftk) if visual else "not run"}}
+    for b in BASELINES:
+        out[b] = {g: (window_score(Bc[p], zs(regs[b]), w, ftk) if p in Bc else "not run") for g, p in (("AUD", "AUD"), ("LANG", "LANG"), ("VIS", "VIS"))}
+    return out
+
+
+def frame_stats(frames) -> tuple:
+    """Per-frame mean Rec. 709 luma (brightness) and mean absolute luma difference from the previous frame (motion; 0 for the first),
+    for frames (n, h, w, 3) uint8 at the release's native 24 fps and resolution, the frames TRIBE's video path samples from."""
+    f = np.asarray(frames, float); y = 0.2126 * f[..., 0] + 0.7152 * f[..., 1] + 0.0722 * f[..., 2]
+    bright = y.reshape(len(y), -1).mean(1)
+    motion = np.r_[0.0, np.abs(np.diff(y, axis=0)).reshape(len(y) - 1, -1).mean(1)]
+    return bright, motion
+
+
+def per_second(x, fps: float) -> np.ndarray:
+    """Mean of a per-frame series in each whole second (the 1 Hz grid the HRF regressors use)."""
+    x = np.asarray(x, float); n = int(len(x) // fps)
+    return np.array([x[int(round(i * fps)):int(round((i + 1) * fps))].mean() for i in range(n)])
+
+
+def tribe_beats(tribe_z, base_z, nboot: int = NBOOT, seed: int = SEED) -> dict:
+    """The pitch rule: TRIBE 'beats' a baseline on a gauge only if its group median z is higher AND the viewer-paired Hodges-Lehmann
+    median of (TRIBE z - baseline z) has a 95% bootstrap CI above 0."""
+    d = np.asarray(tribe_z, float) - np.asarray(base_z, float); rng = np.random.default_rng(seed)
+    hl = lambda v: float(np.median((v[:, None] + v[None, :])[np.triu_indices(len(v))] / 2))
+    bs = np.array([hl(d[rng.integers(0, len(d), len(d))]) for _ in range(nboot)])
+    lo, hi = float(np.percentile(bs, 2.5)), float(np.percentile(bs, 97.5))
+    beats = bool(np.median(tribe_z) > np.median(base_z) and lo > 0)
+    return {"label": LABEL, "hl": hl(d), "ci95": [lo, hi], "tribe_beats": beats}

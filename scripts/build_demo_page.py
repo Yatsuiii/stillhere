@@ -255,6 +255,23 @@ def lpp_html(s8d: dict, lines: dict, v: dict) -> str:
     return "".join(P)
 
 
+def baselines_html(b: dict, lines: dict) -> str:
+    """Section 8: TRIBE next to two cheap baselines (HRF x word rate, HRF x sound envelope), scored the same way; exploratory, with the
+    rule-timing note next to the table."""
+    head = s8(f'Cheap baselines, held-out English section 8, {b["145"]["n"]} listeners ({b["label"]}; {b["rule_timing"]})', lines)
+    P = [f'<div class="tablewrap"><table><tr><th>{E(head)}</th><th>TRIBE z</th><th>Word rate z</th><th>TRIBE minus word rate</th>'
+         f'<th>Envelope z</th><th>TRIBE minus envelope</th></tr>']
+    for win, wlab in (("145", "145 TRs"), ("full", "full length")):
+        for net, nlab in (("LANG", "language parcels"), ("AUD", "auditory parcels")):
+            r = b[win][net]; m, vs = r["mean_z"], r["tribe_vs"]
+            cell = lambda c: f'{sgn(c["hl"])} [{sgn(c["hl_ci95"][0])}, {sgn(c["hl_ci95"][1])}], {c["k_tribe_higher"]} of {c["n"]}'
+            P.append(f'<tr><td>{E(wlab + ", " + nlab)}</td><td>{f2(m["tribe"])}</td><td>{f2(m["word_rate"])}</td><td>{E(cell(vs["word_rate"]))}</td>'
+                     f'<td>{f2(m["envelope"])}</td><td>{E(cell(vs["envelope"]))}</td></tr>')
+    P.append('</table></div><p class="cap">Hodges-Lehmann median of TRIBE minus the baseline with its 95% listener-bootstrap interval, and '
+             'the number of listeners for whom TRIBE is higher. Same parcels, nulls and listeners for all three; no partialling.</p>')
+    return "".join(P)
+
+
 def build() -> str:
     g, s8d, lines = load("results/gate1_real.json"), load("results/section8.json"), load("demo/lines.json")
     vt, cm, dz, lt = load("stillhere/validation_table.json"), load("results/conditions_manipulation_check.json"), \
@@ -281,7 +298,7 @@ def build() -> str:
             P.append(f'<p class="pending">{E(PLACEHOLDERS[k])}</p>')
         elif k == "lpp":
             P.append(f'<p class="cap">{E(s8("Public Le Petit Prince listeners, no same-story volunteers; English numbers from held-out section 8", lines))}.</p>')
-            P.append(lpp_html(s8d, lines, v))
+            P.append(lpp_html(s8d, lines, v)); P.append(baselines_html(load("results/section8_baselines.json"), lines))
         elif k == "sedation":
             P.append(sedation_html(g, fz))
     # 3. desk, 4. tiers

@@ -28,6 +28,10 @@ Every new result is labelled exploratory. A forecast is labelled "forecast, not 
 | Held-out section scorer (LPP section 8) | `stillhere/heldout.py`, `scripts/heldout_section8.py` |
 | Validation table the study planner is limited to | `stillhere/validation_table.json` |
 | Pre-registration guard (git hook and Muse Code Stop hook) and the pre-push hygiene scan | `stillhere/prereg_check.py`, `muse-plugin/`, `scripts/hygiene_scan.py`, `scripts/hooks/` |
+| Cheap baselines beside every TRIBE result (HRF x word rate, HRF x sound envelope); section 8 table on the Pilot page, labelled exploratory, rule committed after section 8 was first read (Oct 22-23) | `stillhere/cheap_baselines.py`, `scripts/section8_baselines.py`, `scripts/wall_baselines.py`, `results/section8_baselines.json` |
+| Rules committed before each dataset's brain data is read (the commit time is the record) | `docs/rules/` |
+| Pilot page and video skeleton | `demo/`, `video/`, `scripts/build_demo_page.py`, `scripts/render_video.py` |
+| Sedation case study write-up (frozen group statistics; exploratory variants labelled) | `docs/writeup_sedation.md` |
 | Results (public data, or frozen group statistics) | `results/` |
 
 Install the hooks with `git config core.hooksPath scripts/hooks`. The pre-push hygiene scan reads a laptop-only word list kept outside

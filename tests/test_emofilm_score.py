@@ -86,3 +86,42 @@ def test_isc_curve_rises_with_k_and_tribe_is_placed():
     assert curve["mean_z"][-1] > curve["mean_z"][0]
     ve = E.volunteer_equivalent([curve["mean_z"][2]] * 10, curve)
     assert ve["label"] == "exploratory" and isinstance(ve["claim_k"], int) and 1 <= ve["point_k"] <= 15
+
+
+# ---- bridge window (docs/rules/emofilm_bridge_rule.md) -------------------------------------------------------------------------
+def test_window_mask_uses_the_tribe_sample_time():
+    ft = np.arange(0, 60, 1.3)
+    m = E.window_mask(ft)
+    assert np.all((ft[m] - E.TRIBE_OFFSET >= 25.0) & (ft[m] - E.TRIBE_OFFSET <= 40.25)) and m.sum() in (11, 12)          # 15.25 s at TR 1.3 s, phase-dependent
+
+
+def test_window_score_finds_a_planted_window_and_not_noise():
+    rng = np.random.default_rng(5); T = 400; ft = np.arange(T) * 1.3
+    w = np.where(E.window_mask(ft))[0]; x = rng.standard_normal(len(w))
+    B = rng.standard_normal((6, T)); B[:, w] += 3.0 * x
+    s = E.window_score(B, x, w, ft)
+    assert s["z"] > 3 and s["detected"] and s["n_window"] == len(w)
+    s0 = E.window_score(rng.standard_normal((6, T)), x, w, ft)
+    assert abs(s0["z"]) < 3 and s0["n_null"] == sum(abs(ft[st] - ft[w[0]]) >= E.SEG_GAP_S for st in range(T - len(w) + 1))
+
+
+def test_frame_stats_per_second_and_pitch_rule():
+    f = np.zeros((48, 4, 4, 3), np.uint8); f[24:] = 200
+    b, m = E.frame_stats(f)
+    assert b[0] == 0 and abs(b[-1] - 200) < 1e-9 and m[24] > 0 and m[1:24].sum() == 0 and m[25:].sum() == 0
+    assert np.allclose(E.per_second(np.r_[np.zeros(24), np.ones(24)], 24), [0, 1])
+    rng = np.random.default_rng(6)
+    assert E.tribe_beats(rng.normal(3, 0.5, 30), rng.normal(0, 0.5, 30), nboot=500)["tribe_beats"]
+    z = rng.normal(1, 0.5, 30)
+    assert not E.tribe_beats(z, z + 0.01, nboot=500)["tribe_beats"]
+
+
+def test_bridge_viewer_scores_keys_and_visual_not_run():
+    rng = np.random.default_rng(7); T = 300; ft = np.arange(T) * 1.3; keep = np.ones(T, bool)
+    w = E.window_mask(ft); n = int(w.sum())
+    bold = {"AUD": rng.standard_normal((2, T)), "LANG": rng.standard_normal((3, T))}
+    pred = {"audio": {"AUD": rng.standard_normal((2, n)), "LANG": rng.standard_normal((3, n))}, "full": {"LANG": rng.standard_normal((3, n))}}
+    regs = {b: rng.standard_normal(n) for b in E.BASELINES}
+    out = E.bridge_viewer_scores(bold, pred, regs, keep, ft, 1.3, visual=False)
+    assert out["TRIBE"]["VISUAL"] == "not run" and set(out) == {"TRIBE", *E.BASELINES}
+    assert out["motion"]["VIS"] == "not run" and out["word_rate"]["LANG"]["n_window"] == n

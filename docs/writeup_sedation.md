@@ -37,9 +37,9 @@ Sensitivities listed in PREREG before Gate 1, with code written after the main r
 
 P3 fails in every variant. P1 is borderline: it passes under some analysis choices and fails in the pre-registered one.
 
-Word rate against TRIBE (same language parcels, volunteers, timing and rest null): in Awake, TRIBE's full prediction edged out a
-word-rate-only regressor (10 of 15, p = 0.018), but word rate explains most of what the language parcels track in this clip (about 70%
-of what the two explain together). Under deep sedation, TRIBE's full prediction fell in 11 of 12 volunteers (p = 0.0012).
+Word rate against TRIBE (same language parcels, volunteers, timing and rest null): in this clip, TRIBE and word rate largely track the
+same part of the language signal. TRIBE alone explains slightly more (r² 0.048 vs 0.045 for word rate), and together they reach 0.065.
+From Awake to Deep, TRIBE's full prediction drops in 11 of 12 volunteers (p = 0.001) and word rate's in 9 of 12 (p = 0.017).
 
 Wrong-story check (Awake, scored against a different public story's prediction): HEARING 5 of 15 (33%), LANGUAGE 0 of 15 (0%).
 

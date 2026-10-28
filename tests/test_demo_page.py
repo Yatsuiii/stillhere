@@ -123,3 +123,13 @@ def _lum(hexc):
 def test_text_colours_pass_wcag_aa_on_white():
     for colr in (BP.INK, BP.MUTED, *BP.COL.values()):
         assert (1.05) / (_lum(colr) + 0.05) >= 4.5, colr
+
+
+def test_section8_baselines_table_with_label_and_rule_timing():
+    b = BP.load("results/section8_baselines.json")
+    assert html.escape(b["rule_timing"]) in PAGE and "rule committed after section 8 was first read (Oct 22-23)" in b["rule_timing"]
+    assert b["label"] == "exploratory"
+    for win in ("145", "full"):
+        for net in ("LANG", "AUD"):
+            r = b[win][net]
+            assert BP.f2(r["mean_z"]["tribe"]) in PAGE and BP.sgn(r["tribe_vs"]["word_rate"]["hl"]) in PAGE and BP.sgn(r["tribe_vs"]["envelope"]["hl"]) in PAGE
