@@ -1,4 +1,4 @@
-"""The hygiene scan on throwaway git repositories with a temporary blocklist: a planted blocklisted word fails, a clean tree passes, a
+"""The hygiene scan on throwaway git repositories with a temporary blocklist: a planted blocklisted word or 4-word phrase fails, a clean tree passes, a
 missing or malformed blocklist fails closed, and each other rule (links, keys, user paths, subject IDs, the clip name, em dashes,
 size, commit messages) fails when planted."""
 import hashlib
@@ -34,7 +34,13 @@ def test_clean_tree_passes_and_planted_word_fails(tmp_path):
     bl = blocklist(tmp_path)
     assert H.main(["--repo", str(repo(tmp_path, {"a.py": "x = 1\n# a normal comment\n"})), "--blocklist", str(bl)]) == 0
     r2 = tmp_path / "two"; r2.mkdir()
-    assert H.scan(repo(r2, {"notes.md": "line one\nthe Zorblax returns\n"}), bl) == ["notes.md:2: blocklisted_word"]
+    assert H.scan(repo(r2, {"notes.md": "line one\nthe Zorblax returns\n"}), bl) == ["notes.md:2: blocklisted_term"]
+
+
+def test_planted_phrase_fails_and_the_same_words_reordered_pass(tmp_path):
+    bl = blocklist(tmp_path, words=("zorblax", "set of rare things"))
+    findings = H.scan(repo(tmp_path, {"n.md": "a Set of rare things here\nrare things, a set of\n"}), bl)
+    assert findings == ["n.md:1: blocklisted_term"]
 
 
 def test_missing_or_malformed_blocklist_fails_closed(tmp_path):

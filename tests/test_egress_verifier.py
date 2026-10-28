@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from stillhere import egress, verifier
+from stillhere import blockterms, egress, verifier
 
 PT = Path(egress.__file__).with_name("public_text")
 SYS = egress.PublicText(text=(PT / "desk_system.txt").read_text())
@@ -61,7 +61,7 @@ def test_question_fail_closed_without_blocklist(tmp_path, monkeypatch):
 
 def test_question_blocked_word_and_length(tmp_path, monkeypatch):
     salt = bytes(range(32)); bl = tmp_path / "bl.txt"; monkeypatch.setattr(egress, "BLOCKLIST", bl)
-    bl.write_text(f"# salted\nsalt {salt.hex()}\n{egress.word_hash(salt, 'secretword')}\n")
+    bl.write_text(f"# salted\nsalt {salt.hex()}\n{blockterms.term_hash(salt, 'secretword')}\n")
     assert egress.PublicQuestion(text="Can we say language fades under deep sedation?")
     with pytest.raises(ValueError):
         egress.PublicQuestion(text="what about SecretWord here")
@@ -74,7 +74,7 @@ def test_question_blocklist_stores_no_word_and_refuses_malformed_files(tmp_path,
     bl.write_text("secretword\n")                                   # plaintext words: malformed, so every question is refused
     with pytest.raises(ValueError):
         egress.PublicQuestion(text="Can we say language fades under deep sedation?")
-    salt = b"\x07" * 32; bl.write_text(f"salt {salt.hex()}\n{egress.word_hash(salt, 'secretword')}\n")
+    salt = b"\x07" * 32; bl.write_text(f"salt {salt.hex()}\n{blockterms.term_hash(salt, 'secretword')}\n")
     assert "secretword" not in bl.read_text() and egress.PublicQuestion(text="is hearing above the rest null")
     with pytest.raises(ValueError):
         egress.PublicQuestion(text="secretword?")

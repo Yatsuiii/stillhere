@@ -18,6 +18,8 @@ from typing import Union
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictFloat, StrictInt, field_validator, model_validator
 
+from stillhere import blockterms
+
 ALLOWED_MODELS = frozenset({"muse-spark-1.3", "muse-spark-1.2", "muse-voice-transcribe-1.0",
                             "fireworks/muse-spark-open"})               # Meta's open-weights Muse Spark, served by Fireworks (Meta models only)
 ALLOWLIST = Path(__file__).with_name("public_text_allowlist.txt")
@@ -142,25 +144,18 @@ class PublicQuestion(_Strict):
     def _scan(cls, t):
         if len(t) > 280:
             raise EgressRefused("question longer than 280 characters")
-        salt, blocked = blocklist()
-        if any(word_hash(salt, w) in blocked for w in re.findall(r"[a-z']+", t.lower())):
-            raise EgressRefused("question contains a blocked word")
+        if blockterms.hits(t, *blocklist()):
+            raise EgressRefused("question contains a blocked word or phrase")
         return t
 
 
-def word_hash(salt: bytes, word: str) -> str:
-    return hashlib.sha256(salt + word.encode()).hexdigest()
-
-
 def blocklist() -> tuple:
-    """The laptop-only question blocklist: a 'salt <hex>' line, then one salted SHA-256 per blocked word (no word is stored).
-    Missing or malformed means every question is refused (fail closed)."""
-    if not BLOCKLIST.exists():
-        raise EgressRefused("question blocklist missing: questions are refused until it exists")
-    lines = [l.strip() for l in BLOCKLIST.read_text().splitlines() if l.strip() and not l.startswith("#")]
-    if not lines or not lines[0].startswith("salt ") or not all(re.fullmatch(r"[0-9a-f]{64}", h) for h in lines[1:]):
-        raise EgressRefused("question blocklist malformed: questions are refused")
-    return bytes.fromhex(lines[0].split()[1]), frozenset(lines[1:])
+    """The laptop-only question blocklist (format and matching in stillhere/blockterms.py). Missing or malformed means every
+    question is refused (fail closed)."""
+    try:
+        return blockterms.load(BLOCKLIST)
+    except ValueError as e:
+        raise EgressRefused(f"question {e}: questions are refused") from None
 
 
 Part = Union[TierD, PublicText, PublicQuestion, PublicFrame, TableEnums]

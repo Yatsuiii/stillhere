@@ -1,9 +1,9 @@
 """Hygiene scan for the public StillHere repository: the pre-push hook runs it, and it can be run by hand. It FAILS CLOSED.
 
 It scans every file in the HEAD tree and every commit message, and fails on:
-- any word whose salted SHA-256 is on the laptop-only blocklist built from the privately shared clip (same format as
-  stillhere/egress.py: a 'salt <hex>' line, then one hash per line). The list is read from outside the repository
-  (STILLHERE_QUESTION_BLOCKLIST or ~/.config/stillhere/question_blocklist.txt); if it is missing or malformed, the scan fails;
+- any line holding a word or 4-word phrase whose salted SHA-256 is on the laptop-only blocklist built from the privately shared clip
+  (format and matching in stillhere/blockterms.py, the same rules egress.PublicQuestion uses). The list is read from outside the
+  repository (STILLHERE_QUESTION_BLOCKLIST or ~/.config/stillhere/question_blocklist.txt); if it is missing or malformed, the scan fails;
 - links to agent sessions or shared transcripts;
 - API keys and tokens (Hugging Face, Fireworks, OpenAI, Kaggle, and long secrets assigned to key, token, secret or password names);
 - absolute paths that name the laptop user;
@@ -12,12 +12,14 @@ It scans every file in the HEAD tree and every commit message, and fails on:
 Findings name the file, the line and the rule, never the matched text. Standard library only.
 usage: python scripts/hygiene_scan.py [--repo DIR] [--blocklist PATH]"""
 import argparse
-import hashlib
 import os
 import re
 import subprocess
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from stillhere import blockterms  # noqa: E402  (standard library only)
 
 MAX_BYTES = 10 * 1024 * 1024
 USER = "Yat" + "suiii"                                                # spelled in pieces so the scanner never flags itself
@@ -36,17 +38,6 @@ RULES = [
 ]
 
 
-def load_blocklist(path: Path):
-    """(salt, hashes) or raises ValueError; a missing or malformed list fails the scan."""
-    if not path.is_file():
-        raise ValueError(f"blocklist missing: {path}")
-    lines = [l.strip() for l in path.read_text().splitlines() if l.strip() and not l.startswith("#")]
-    if not lines or not lines[0].startswith("salt ") or not re.fullmatch(r"[0-9a-f]{64}", lines[0].split()[1] if len(lines[0].split()) == 2 else "") \
-            or not all(re.fullmatch(r"[0-9a-f]{64}", h) for h in lines[1:]):
-        raise ValueError(f"blocklist malformed: {path}")
-    return bytes.fromhex(lines[0].split()[1]), frozenset(lines[1:])
-
-
 def git(repo: Path, *args) -> bytes:
     return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True).stdout
 
@@ -54,14 +45,14 @@ def git(repo: Path, *args) -> bytes:
 def scan_text(name: str, text: str, salt: bytes, blocked: frozenset) -> list:
     out = []
     for i, line in enumerate(text.splitlines(), 1):
-        if any(hashlib.sha256(salt + w.encode()).hexdigest() in blocked for w in re.findall(r"[a-z']+", line.lower())):
-            out.append(f"{name}:{i}: blocklisted_word")
+        if blockterms.hits(line, salt, blocked):
+            out.append(f"{name}:{i}: blocklisted_term")
         out += [f"{name}:{i}: {rule}" for rule, rx in RULES if rx.search(line)]
     return out
 
 
 def scan(repo: Path, blocklist: Path) -> list:
-    salt, blocked = load_blocklist(blocklist)
+    salt, blocked = blockterms.load(blocklist)
     findings = []
     if not git(repo, "rev-parse", "--verify", "--quiet", "HEAD").strip():
         return findings
