@@ -5,11 +5,13 @@ brain data was read. This module takes arrays and paths only and holds no data. 
 HRF regressor and volunteer-equivalent rule (stillhere.heldout) and the cheap-baselines comparison (stillhere.cheap_baselines), with
 the Emo-FilM TR (1.3 s from the sidecar) in place of LPP's 2.0 s.
 
-Per viewer: scored volumes = film time (j x TR + slice offset - film onset) of at least DROP_S, with TRIBE's sample (film time -
-TRIBE_OFFSET) inside OPENING_S and inside the prediction; FD (Power) censoring and the D7 run rule; detrend + high-pass 0.03 Hz +
-z-score; HEARING, LANGUAGE, VISUAL gauges and the unpartialled TRIBE and baseline gauges against circular shifts of the regressor.
-Group: median z with a viewer bootstrap CI, share detected, TRIBE minus each baseline paired over viewers, and ISC(k) on a common
-film-time grid with TRIBE placed on that curve."""
+Per run: the volume-count check (EXPECTED_VOLS +- VOL_TOL); film time 0 = the run's own logged film onset (film_onset; the run opens
+with 90 s of fixation); scored volumes = film time (j x TR + slice offset - film onset) of at least DROP_S, with TRIBE's sample (film
+time - TRIBE_OFFSET, a fixed offset: no lag search) inside OPENING_S and inside the prediction; FD (Power) censoring and the D7 run
+rule; the BOLD cleaned (detrend + high-pass 0.03 Hz + z-score) over the whole run, then cropped to the scored volumes
+(clean_full_then_crop); HEARING, LANGUAGE, VISUAL gauges and the unpartialled TRIBE and baseline gauges against circular shifts of the
+regressor. Group: median z with a viewer bootstrap CI, share detected, TRIBE minus each baseline paired over viewers, and ISC(k) on a
+common film-time grid with TRIBE placed on that curve."""
 import numpy as np
 
 from . import cheap_baselines as CB
@@ -21,7 +23,24 @@ BRIDGE_S = (25.0, 40.25)        # the bridge conversation: SAM 3.1 edits and the
 BASELINES = ("word_rate", "envelope", "brightness", "motion")
 MATCHED = (("LANG", "word_rate"), ("AUD", "envelope"), ("VIS", "brightness"), ("VIS", "motion"))    # the primary comparisons
 SEED, NBOOT, ISC_KS, ISC_REPS = 20261028, 10_000, tuple(range(1, 16)), 20
+EXPECTED_VOLS, VOL_TOL = 607, 2  # Tears of Steel scan length in TRs, washouts included (data descriptor Table 1); runs off by > 2 drop
 LABEL = "exploratory"
+
+
+# ---- run selection ------------------------------------------------------------------------------------------------------------
+def film_onset(rows) -> float:
+    """Film time 0 of one run: the onset (s from the run's first volume) of the single 'film' row of its events file (rows of dicts
+    with onset, duration and trial_type: rest, film, rest)."""
+    films = [r for r in rows if r["trial_type"] == "film"]
+    if len(films) != 1:
+        raise ValueError(f"{len(films)} film rows in the events file (need exactly 1)")
+    return float(films[0]["onset"])
+
+
+def volume_check(n_vols: int, expected: int = EXPECTED_VOLS, tol: int = VOL_TOL) -> dict:
+    """The run's volume count against the designed scan length: kept only if it is off by at most `tol` TRs."""
+    off = int(n_vols) - int(expected)
+    return {"n_vols": int(n_vols), "expected": int(expected), "off_by": off, "keep": abs(off) <= tol}
 
 
 # ---- timing -------------------------------------------------------------------------------------------------------------------
@@ -97,6 +116,14 @@ def clean(A, tr: float, keep=None) -> np.ndarray:
     return signal.clean(A.T, detrend=True, high_pass=HP, t_r=tr, standardize="zscore_sample", sample_mask=sm).T
 
 
+def clean_full_then_crop(A_full, tr: float, keep_full, idx) -> tuple:
+    """BOLD rows of the whole run (p, n_vols), washouts included, cleaned on the run's uncensored frames (`clean`), then cropped to the
+    scored volumes `idx` (film_volumes). Returns (cleaned rows at the scored uncensored volumes (p, n), mask over idx of those volumes)."""
+    keep_full = np.asarray(keep_full, bool); idx = np.asarray(idx)
+    C = clean(A_full, tr, keep_full); pos = np.cumsum(keep_full) - 1; k = keep_full[idx]
+    return C[:, pos[idx[k]]], k
+
+
 def gauge_null(B, X, controls) -> dict:
     """The section-8 gauge (stillhere.heldout.gauge) with its null kept: z, real score, and detection = real above the 95th
     percentile of the circular-shift null (shifts of the regressor rows by heldout.MIN .. T - MIN - 1 frames)."""
@@ -112,13 +139,15 @@ def gauge_null(B, X, controls) -> dict:
 
 
 def viewer_scores(bold: dict, pred: dict, wr, keep, tr: float, visual: bool) -> dict:
-    """One viewer. bold: {AUD, LANG[, VIS]} parcel rows on the scored volumes; pred: {"audio": {AUD, LANG}, "full": {LANG[, VIS]}} on
-    the same volumes; wr: HRF x word rate on the same volumes; keep: uncensored frames. Gauges cleaned on the kept frames."""
+    """One viewer. bold: {AUD, LANG[, VIS]} parcel rows already cleaned over the whole run and cropped (clean_full_then_crop), at the
+    scored uncensored volumes; pred: {"audio": {AUD, LANG}, "full": {LANG[, VIS]}} and wr (HRF x word rate) on all scored volumes;
+    keep: the uncensored scored volumes. The predictions and controls exist only inside the forecast window, so they are cleaned on the
+    kept scored frames."""
     c = lambda a: clean(a, tr, keep)
-    out = {"HEARING": gauge_null(c(bold["AUD"]), c(pred["audio"]["AUD"]), H.zeros_control(int(np.sum(keep)))),
-           "LANGUAGE": gauge_null(c(bold["LANG"]), c(pred["full"]["LANG"]),
+    out = {"HEARING": gauge_null(bold["AUD"], c(pred["audio"]["AUD"]), H.zeros_control(int(np.sum(keep)))),
+           "LANGUAGE": gauge_null(bold["LANG"], c(pred["full"]["LANG"]),
                                   [c(pred["audio"]["LANG"].mean(0, keepdims=True)), c(np.atleast_2d(wr))])}
-    out["VISUAL"] = gauge_null(c(bold["VIS"]), c(pred["full"]["VIS"]), H.zeros_control(int(np.sum(keep)))) if visual else "not run"
+    out["VISUAL"] = gauge_null(bold["VIS"], c(pred["full"]["VIS"]), H.zeros_control(int(np.sum(keep)))) if visual else "not run"
     return out
 
 
@@ -175,14 +204,14 @@ def word_rate_per_s(onsets, n_s: int) -> np.ndarray:
 
 def baseline_gauges(bold: dict, pred: dict, regs: dict, keep, tr: float, visual: bool) -> dict:
     """One viewer, the cheap-baselines gauges: raw (unpartialled) gauge z against circular shifts for TRIBE and each baseline, on LANG
-    (TRIBE full), AUD (TRIBE audio-only) and VIS (TRIBE full; only if the video path ran). bold: parcel rows on the scored volumes; pred:
-    {"audio": {AUD, LANG}, "full": {LANG[, VIS]}}; regs: {baseline: one row}, all on the same volumes; one baseline row is tiled over the
-    parcels. Everything is cleaned on the kept frames, exactly as the TRIBE gauges."""
+    (TRIBE full), AUD (TRIBE audio-only) and VIS (TRIBE full; only if the video path ran). bold: parcel rows cleaned over the whole run
+    and cropped (clean_full_then_crop); pred: {"audio": {AUD, LANG}, "full": {LANG[, VIS]}} and regs: {baseline: one row}, on all scored
+    volumes, cleaned here on the kept frames exactly as the TRIBE gauges; one baseline row is tiled over the parcels."""
     c = lambda a: clean(a, tr, keep); zc = H.zeros_control(int(np.sum(keep))); out = {}
     for net, kind in (("LANG", "full"), ("AUD", "audio"), ("VIS", "full")):
         if net == "VIS" and not visual:
             out[net] = "not run"; continue
-        B = c(bold[net]); X = {"tribe": c(pred[kind][net])}
+        B = np.asarray(bold[net], float); X = {"tribe": c(pred[kind][net])}
         X.update({b: np.tile(c(np.atleast_2d(regs[b])), (B.shape[0], 1)) for b in BASELINES})
         out[net] = {k: gauge_null(B, x, zc)["z"] for k, x in X.items()}
     return out

@@ -1,7 +1,7 @@
-"""Emo-FilM scorer on synthetic data only (no Emo-FilM file is read): the opening-window volume mapping, prediction sample times,
-alignment sign and onset, a planted forecast recovered and a null not, censoring and the D7 run rule, FD, motion-row mapping, bootstrap
-determinism, the ISC(k) curve with TRIBE placed on it, and the four baselines scored and compared with TRIBE. Needs nilearn (skipped
-without it)."""
+"""Emo-FilM scorer on synthetic data only (no Emo-FilM file is read): film time 0 from the run's logged onset, the volume-count check,
+whole-run cleaning before the crop, the opening-window volume mapping, prediction sample times, alignment sign and onset, a planted
+forecast recovered and a null not, censoring and the D7 run rule, FD, motion-row mapping, bootstrap determinism, the ISC(k) curve with
+TRIBE placed on it, and the four baselines scored and compared with TRIBE. Needs nilearn (skipped without it)."""
 import numpy as np
 import pytest
 
@@ -23,11 +23,46 @@ SETS = {"AUD": [np.arange(0, 10), np.arange(10, 20)], "LANG": [np.arange(0, 10),
 
 
 def viewer(rng, planted=True, onset=ONSET, gain=1.0):
-    """Parcel rows on the scored volumes: the prediction read at the true sample times (planted) plus noise."""
+    """A whole run (NVOL volumes, a slow drift, noise) with the prediction read at the true sample times planted in the scored volumes;
+    returned cleaned over the whole run and cropped to the scored volumes, with the mask of those kept."""
     j, ft, ts = E.film_volumes(NVOL, TR, onset, SLICE, STARTS)
     sig = E.parcel_means(E.tribe_at(P_AUD, STARTS, ts), SETS)["AUD"] if planted else np.zeros((2, len(j)))
     sig = (sig - sig.mean(1, keepdims=True)) / (sig.std(1, keepdims=True) + 1e-12)     # gain = signal-to-noise ratio
-    return j, ft, ts, gain * sig + rng.standard_normal((2, len(j)))
+    full = rng.standard_normal((2, NVOL)) + np.linspace(0.0, 4.0, NVOL); full[:, j] += gain * sig
+    B, keep = E.clean_full_then_crop(full, TR, np.ones(NVOL, bool), j)
+    return j, ft, ts, B, keep
+
+
+def test_film_time_zero_is_the_runs_logged_onset():
+    rows = [{"onset": 3.0, "duration": 90.0, "trial_type": "rest"}, {"onset": 94.0, "duration": 588.0, "trial_type": "film"},
+            {"onset": 683.0, "duration": 90.0, "trial_type": "rest"}]
+    assert E.film_onset(rows) == 94.0
+    with pytest.raises(ValueError):
+        E.film_onset(rows[:1])
+    with pytest.raises(ValueError):
+        E.film_onset(rows + [rows[1]])
+    j, ft, _ = E.film_volumes(NVOL, TR, E.film_onset(rows), SLICE, STARTS)
+    assert ft[0] >= E.DROP_S > ft[0] - TR                                         # the first volume at least 10 s into the film
+    j2, _, _ = E.film_volumes(NVOL, TR, E.film_onset(rows) + TR, SLICE, STARTS)
+    assert j2[0] == j[0] + 1                                                       # a film logged one TR later scores one volume later
+
+
+def test_volume_count_check():
+    assert (E.EXPECTED_VOLS, E.VOL_TOL) == (607, 2)
+    assert all(E.volume_check(n)["keep"] for n in (605, 606, 607, 608, 609))
+    assert not any(E.volume_check(n)["keep"] for n in (604, 610, 613))
+    assert E.volume_check(613) == {"n_vols": 613, "expected": 607, "off_by": 6, "keep": False}
+
+
+def test_whole_run_is_cleaned_before_the_crop():
+    rng = np.random.default_rng(21); A = rng.standard_normal((3, NVOL)) + np.linspace(0.0, 5.0, NVOL)
+    j, _, _ = E.film_volumes(NVOL, TR, ONSET, SLICE, STARTS)
+    keep_full = np.ones(NVOL, bool); keep_full[[20, j[5], j[6], 500]] = False          # censored in a washout, the window, the film
+    B, k = E.clean_full_then_crop(A, TR, keep_full, j)
+    assert B.shape == (3, len(j) - 2) and k.sum() == len(j) - 2 and not k[5] and not k[6]
+    full = E.clean(A, TR, keep_full)
+    assert np.allclose(B, full[:, (np.cumsum(keep_full) - 1)[j[k]]])               # the whole-run cleaned rows at the kept volumes
+    assert not np.allclose(B, E.clean(A[:, j], TR, keep_full[j]))                   # not the window cleaned on its own
 
 
 def test_scored_volumes_map_film_time_and_tribe_offset():
@@ -53,11 +88,11 @@ def test_tribe_at_reads_the_prediction_at_its_sample_times():
 
 
 def test_alignment_sign_and_onset_matter():
-    rng = np.random.default_rng(1); j, ft, ts, B = viewer(rng)
-    keep = np.ones(len(j), bool); X = lambda t: E.parcel_means(E.tribe_at(P_AUD, STARTS, t), SETS)["AUD"]
-    z_true = E.gauge_null(E.clean(B, TR, keep), E.clean(X(ts), TR, keep), [np.zeros((1, len(j)))])["z"]
-    z_late = E.gauge_null(E.clean(B, TR, keep), E.clean(X(ts + 8.0), TR, keep), [np.zeros((1, len(j)))])["z"]
-    z_sign = E.gauge_null(E.clean(B, TR, keep), E.clean(X(ts - 8.0), TR, keep), [np.zeros((1, len(j)))])["z"]
+    rng = np.random.default_rng(1); j, ft, ts, B, keep = viewer(rng)
+    X = lambda t: E.parcel_means(E.tribe_at(P_AUD, STARTS, t), SETS)["AUD"]
+    z_true = E.gauge_null(B, E.clean(X(ts), TR, keep), [np.zeros((1, len(j)))])["z"]
+    z_late = E.gauge_null(B, E.clean(X(ts + 8.0), TR, keep), [np.zeros((1, len(j)))])["z"]
+    z_sign = E.gauge_null(B, E.clean(X(ts - 8.0), TR, keep), [np.zeros((1, len(j)))])["z"]
     assert z_true > 3 and z_true > z_late + 2 and z_true > z_sign + 2
 
 
@@ -66,9 +101,9 @@ def test_planted_group_recovered_and_null_not():
     for planted in (True, False):
         rng = np.random.default_rng(11 if planted else 12); out = []
         for _ in range(12):
-            j, ft, ts, B = viewer(rng, planted=planted, gain=0.6)
-            keep = np.ones(len(j), bool); X = E.parcel_means(E.tribe_at(P_AUD, STARTS, ts), SETS)["AUD"]
-            out.append(E.gauge_null(E.clean(B, TR, keep), E.clean(X, TR, keep), [np.zeros((1, len(j)))])["z"])
+            j, ft, ts, B, keep = viewer(rng, planted=planted, gain=0.6)
+            X = E.parcel_means(E.tribe_at(P_AUD, STARTS, ts), SETS)["AUD"]
+            out.append(E.gauge_null(B, E.clean(X, TR, keep), [np.zeros((1, len(j)))])["z"])
         zs[planted] = E.group(out, nboot=2000)
     assert zs[True]["ci_excludes_0"] and zs[True]["median_z"] > 2 and zs[True]["label"] == "exploratory"
     assert not zs[False]["ci_excludes_0"]
@@ -90,7 +125,7 @@ def test_bootstrap_is_deterministic():
 
 
 def test_viewer_scores_keys_and_visual_not_run():
-    rng = np.random.default_rng(5); j, ft, ts, B = viewer(rng); keep = np.ones(len(j), bool)
+    rng = np.random.default_rng(5); j, ft, ts, B, keep = viewer(rng)
     pa = E.parcel_means(E.tribe_at(P_AUD, STARTS, ts), SETS); pf = E.parcel_means(E.tribe_at(P_FULL, STARTS, ts), SETS)
     out = E.viewer_scores({"AUD": B, "LANG": B}, {"audio": pa, "full": pf}, rng.standard_normal(len(j)), keep, TR, visual=False)
     assert set(out) == {"HEARING", "LANGUAGE", "VISUAL"} and out["VISUAL"] == "not run" and out["HEARING"]["z"] > 2
@@ -128,7 +163,7 @@ def test_baselines_scored_like_tribe_and_compared_over_viewers():
     does not carry (word rate beats TRIBE there)."""
     rng = np.random.default_rng(13); per_viewer = []
     for _ in range(12):
-        j, ft, ts, _B = viewer(rng); T = len(j); keep = np.ones(T, bool)
+        j, ft, ts, _B, keep = viewer(rng); T = len(j)
         pf = E.parcel_means(E.tribe_at(P_FULL, STARTS, ts), SETS); pa = E.parcel_means(E.tribe_at(P_AUD, STARTS, ts), SETS)
         per_s = {b: smooth(NPRED, 1, rng)[:, 0] for b in E.BASELINES}; regs = E.baseline_regressors(per_s, ft)
         zr = lambda a: (a - a.mean(-1, keepdims=True)) / a.std(-1, keepdims=True)

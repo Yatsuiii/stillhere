@@ -7,6 +7,10 @@ group table (volume counts). No BOLD image, preprocessed series or motion file. 
 after the BOLD is read; a later change is reported as a change, with both results. Every number it produces is labelled "exploratory".
 It is not part of the frozen PREREG.
 
+Additions of 2026-10-28 (project thread ruling), committed separately, also before any Emo-FilM brain data was read: film time 0 from
+each run's own logged onset, the run table printed from metadata, the volume-count check, and cleaning the whole run before cropping
+(sections "Run check" and "Window and timing", and the cleaning line under "TRIBE gauges"). The 10 s drop stays, as in T1 and the wall.
+
 ## Why version 2
 - The bridge-window amendment (`emofilm_bridge_rule.md`, commit 53d14b4) scored 11 or 12 volumes per viewer: too few to test a
   forecast. The bridge scene is no longer scored (see "Bridge scene" below).
@@ -19,8 +23,8 @@ It is not part of the frozen PREREG.
 - Stimulus: Tears of Steel (Blender Foundation 2012, CC BY 3.0), official release `tears_of_steel_720p.mov` from
   download.blender.org (SHA-256 efa9062d...; 1280x534 at 24 fps, 44.1 kHz stereo). The Emo-FilM scanned cut is release 0 to 588 s, so
   film time equals release time.
-- Viewers: OpenNeuro ds004892 (Emo-FilM fMRI, CC0), all 30 viewers, their Tears of Steel run. sub-S06 uses its ses-4 events (its BOLD
-  run is in ses-4; the extra ses-3 events file is ignored).
+- Viewers: OpenNeuro ds004892 (Emo-FilM fMRI, CC0), all 30 viewers, their Tears of Steel run, minus the runs the run check drops
+  (below). sub-S06 uses its ses-4 events (its BOLD run is in ses-4; the extra ses-3 events file is ignored).
 - Input image: `derivatives/preprocessing/.../*_task-TearsOfSteel_space-MNI_desc-ppres_bold.nii.gz` (FSL FEAT: MCFLIRT motion
   correction, BET, 6 mm FWHM smoothing, grand-mean scaling, high-pass sigma 50 s; then WM, CSF and six motion regressors removed, and
   registration to MNI). No further nuisance regression is added.
@@ -29,13 +33,29 @@ It is not part of the frozen PREREG.
 - TR 1.3 s from the BOLD sidecar. Slice timing: the derivative is in MNI space, so per-vertex slice times cannot be recovered; every
   vertex uses the run's mean SliceTiming as one offset (0.616 s in every Tears of Steel sidecar).
 
+## Run check (before scoring, from metadata only)
+- Expected volume count: 607, the Tears of Steel scan length in TRs with both washouts in the data descriptor's Table 1 ("Scan duration
+  (TRs) - includes washout"). Chosen because it is the designed length, fixed before any data, and equal to the median of the 30 runs'
+  counts. The events files cannot serve as the reference: every run's last logged washout ends at 772.6 to 773.6 s (595 TRs), yet every
+  run has 605 to 613 volumes (the scan continues after the last logged row), so an events-based check would drop every run.
+- A run is dropped if its volume count (the raw run's `size_t` in the MRIQC group table) is off by more than 2 TRs (`volume_check`).
+- `scripts/emofilm_run_table.py` prints, for all 30 runs, the subject, session, logged film onset, film duration, end of the last logged
+  washout, volume count, the check and the scored volume count. Result before any brain data: 28 runs kept; 2 dropped, sub-S13 and
+  sub-S22 (613 volumes each, +6). Kept runs: 605 to 609 volumes; film onsets 93.608 to 94.575 s over all 30.
+- When a preprocessed image is opened, its number of volumes must equal that count: the logged onsets count from the raw run's first
+  volume, so a derivative that lost or gained volumes cannot be aligned. A mismatch drops the run and is reported.
+
 ## Window and timing (no lag search)
 - Stimulus window: release 0 to 180 s, the first three minutes of the cut.
-- Film time of volume j: j x TR + slice offset - film onset, where the film onset is the run's own film row in its events file.
+- Film time 0 of each run is that run's own logged film onset: the onset of the single film row in its events file
+  (`func/*_task-scan_acq-TearsOfSteel_events.tsv`; rows rest, film, rest), in seconds from the run's first volume. Emo-FilM runs open
+  with 90 s of fixation, so film time 0 falls about 94 s into the run (`film_onset`).
+- Film time of volume j: j x TR + slice offset - film onset.
+- No lag search anywhere: the only offset is TRIBE's fixed 5 s, the same for every run, network and baseline.
 - Scored volumes: film time at least 10 s (version 1's drop of the response to the film's start after the 90 s washout), and the TRIBE
   sample (film time - 5 s, TRIBE's offset) inside 0 to 180 s and inside the prediction. That is film time 10 to 185 s: 134 or 135
-  volumes per viewer (counted from the 30 events files and sidecars: 27 viewers 135, 3 viewers 134). The ruling's "about 138" is
-  180 s / 1.3 s; the 10 s drop removes 3 or 4 of them.
+  volumes per viewer (counted from the 30 events files and sidecars: 27 viewers 135, 3 viewers 134; of the 28 kept runs, 25 and 3). The
+  ruling's "about 138" is 180 s / 1.3 s; the 10 s drop (kept by the project thread, as in T1 and the wall) removes 3 or 4 of them.
 - TRIBE v2 stock predictions (the only model), full (video + audio + text) and audio-only, from the private Kaggle kernel
   `stillhere-pilot-bridge-intact` (name kept from the bridge rule) on release 0 to 190 s: the 10 s margin keeps prediction samples
   through 180 s away from the segment's end. Words and their timings come from the harness's own speech-to-text pass on that segment's
@@ -47,10 +67,13 @@ It is not part of the frozen PREREG.
   session's runs (from the raw sidecars). If the rows cannot be located unambiguously, frames are not censored and run exclusion uses
   MRIQC's `fd_mean` only; that case is reported per viewer.
 - Run exclusion as D7, on the scored volumes: mean FD <= 0.5 mm and at most 30% of scored frames with FD > 0.5 mm. Censoring: frames
-  with FD > 0.5 mm are dropped before scoring.
+  with FD > 0.5 mm anywhere in the run are left out of the whole-run cleaning and dropped before scoring.
 
 ## TRIBE gauges (per viewer)
-- Cleaning: detrend, Butterworth high-pass 0.03 Hz, z-score, on the scored, uncensored frames of the window (the LPP stage harness).
+- Cleaning, BOLD: detrend, Butterworth high-pass 0.03 Hz, z-score over the whole run (all its volumes, washouts included), on its
+  uncensored frames (nilearn `signal.clean` with the censoring mask), then cropped to the scored volumes (`clean_full_then_crop`).
+  TRIBE's predictions, the controls and the baseline regressors exist only inside the forecast window, so they get the same cleaning on
+  the scored, uncensored frames. (Version 2 as first committed cleaned the BOLD on the window only; replaced before any data was read.)
 - HEARING: AUD parcels (SomMotB_Aud, both hemispheres), Fisher-z mean of r(BOLD, audio-only prediction).
 - LANGUAGE: LANG parcels (left TempPar, DefaultB_Temp, DefaultB_PFCv, DefaultB_PFCl), Fisher-z mean of the partial r(BOLD, full
   prediction) given the LANG-mean audio-only prediction and HRF x word rate.
