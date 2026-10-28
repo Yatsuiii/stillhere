@@ -13987,5 +13987,20 @@
    ],
    "tools": []
   }
- ]
+ ],
+ "agreement": {
+  "fireworks_repeat_agreement": 0.8899,
+  "baseten_vs_fireworks_agreement": 0.892,
+  "pairs": {
+   "within": 318,
+   "cross": 954
+  },
+  "bar": "cross >= within - 0.05",
+  "pass": true,
+  "modal_label_agreement": {
+   "with_spark-open_fireworks": "101/106",
+   "with_spark-1.3_meta": "94/106"
+  },
+  "note": "labels include rule-made declines, whose type comes from the planner's fixed rules, not the model; reported as two hosted versions of Muse Spark Open, never a same-weights check"
+ }
 }
