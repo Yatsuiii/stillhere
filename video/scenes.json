@@ -1,0 +1,227 @@
+{
+ "format": "stillhere-video-scenes/1",
+ "source": "PLAN.md §7 storyboard, reshaped for StillHere Pilot. Claim text is quoted word for word from PREREG.md (\"prereg\", with D18's replacement for §7's first line) or PLAN.md §1 (\"plan\"), or comes from demo/lines.json and the Spark desk's licensed lines; numbers are filled from results/*.json and stillhere/validation_table.json at render time. The sedation case study carries only frozen group statistics. \"caption\" items are neutral labels. tests/test_video.py checks all of it.",
+ "crossfade_s": 0.5,
+ "fps": 30,
+ "size": [
+  1920,
+  1080
+ ],
+ "scenes": [
+  {
+   "id": "hook",
+   "seconds": 10,
+   "title": "StillHere Pilot",
+   "items": [
+    {
+     "kind": "prereg",
+     "text": "Passive listening tests can show that a brain still processes speech without asking the patient to do anything, which marks patients worth a full follow-up scan."
+    },
+    {
+     "kind": "chart",
+     "name": "flow"
+    },
+    {
+     "kind": "caption",
+     "text": "Research tool for brain-imaging labs, built on Meta's TRIBE v2. Healthy volunteers, public data. Not a diagnosis or medical advice."
+    }
+   ]
+  },
+  {
+   "id": "problem",
+   "seconds": 20,
+   "title": "The problem",
+   "items": [
+    {
+     "kind": "plan",
+     "text": "Families and doctors decide on life support for unresponsive patients, and about 40% of these patients are misdiagnosed",
+     "note": "PMC6139817"
+    },
+    {
+     "kind": "plan",
+     "text": "About 1 in 4 people who seem unresponsive after brain injury can covertly follow commands in their head",
+     "note": "Bodien, NEJM 2024; that figure comes from command-following tests, not passive listening"
+    },
+    {
+     "kind": "prereg",
+     "text": "Passive listening tests can show that a brain still processes speech without asking the patient to do anything, which marks patients worth a full follow-up scan."
+    },
+    {
+     "kind": "prereg",
+     "text": "But every new story needs its own 12-15 healthy volunteers scanned on it, in that language."
+    },
+    {
+     "kind": "prereg",
+     "text": "StillHere needs none: Meta's TRIBE v2 stands in for them, and every reading is measured against the person's own resting brain."
+    }
+   ]
+  },
+  {
+   "id": "gauges",
+   "seconds": 12,
+   "title": "Two gauges, each in units of the person's own rest scan",
+   "items": [
+    {
+     "kind": "plan",
+     "text": "auditory cortex follows TRIBE's audio-only prediction",
+     "note": "HEARING (sound and speech tracking)"
+    },
+    {
+     "kind": "plan",
+     "text": "language cortex follows what TRIBE's language pathway adds on top of the audio and the word rate",
+     "note": "LANGUAGE"
+    },
+    {
+     "kind": "plan",
+     "text": "Both gauges are expressed in units of the person's own rest scan (\"times above your own rest scan\"), so no control group enters the scoring."
+    }
+   ]
+  },
+  {
+   "id": "plan",
+   "seconds": 15,
+   "title": "Plan a study (planner v0 in progress)",
+   "items": [
+    {
+     "kind": "plan_items"
+    }
+   ]
+  },
+  {
+   "id": "sedation",
+   "seconds": 22,
+   "title": "Sedation case study: frozen group statistics (OpenNeuro ds003171)",
+   "items": [
+    {
+     "kind": "sedation_caption"
+    },
+    {
+     "kind": "desk_line",
+     "line_id": "sedation_no_line"
+    },
+    {
+     "kind": "desk_line",
+     "line_id": "P7_pass"
+    },
+    {
+     "kind": "desk_line",
+     "line_id": "P1_fallback"
+    },
+    {
+     "kind": "desk_line",
+     "line_id": "P3_fallback"
+    },
+    {
+     "kind": "desk_line",
+     "line_id": "P8_pass"
+    },
+    {
+     "kind": "desk_line",
+     "line_id": "P2a_pass"
+    },
+    {
+     "kind": "timing_note"
+    }
+   ]
+  },
+  {
+   "id": "curves",
+   "seconds": 22,
+   "title": "The volunteer curve (held-out English section 8)",
+   "items": [
+    {
+     "kind": "lpp_line",
+     "index": 1
+    },
+    {
+     "kind": "lpp_line",
+     "index": 2
+    },
+    {
+     "kind": "chart",
+     "name": "curve"
+    },
+    {
+     "kind": "chart",
+     "name": "hybrid"
+    },
+    {
+     "kind": "m3"
+    },
+    {
+     "kind": "s8_label"
+    }
+   ]
+  },
+  {
+   "id": "lpp",
+   "seconds": 22,
+   "title": "No same-story volunteers: public Le Petit Prince listeners",
+   "items": [
+    {
+     "kind": "lpp_line",
+     "index": 0
+    },
+    {
+     "kind": "lpp_line",
+     "index": 3
+    },
+    {
+     "kind": "lpp_line",
+     "index": 4
+    },
+    {
+     "kind": "s8_table"
+    }
+   ]
+  },
+  {
+   "id": "scans",
+   "seconds": 10,
+   "title": "How the forecasts did against real scans",
+   "items": [
+    {
+     "kind": "scans_items"
+    }
+   ]
+  },
+  {
+   "id": "desk",
+   "seconds": 18,
+   "title": "Spark analysis desk",
+   "items": [
+    {
+     "kind": "desk_card"
+    }
+   ]
+  },
+  {
+   "id": "tiers",
+   "seconds": 10,
+   "title": "Where the data go",
+   "items": [
+    {
+     "kind": "chart",
+     "name": "tier"
+    },
+    {
+     "kind": "egress_refusals"
+    }
+   ]
+  },
+  {
+   "id": "close",
+   "seconds": 6,
+   "title": "StillHere",
+   "items": [
+    {
+     "kind": "caption",
+     "text": "Research tool, not a diagnosis. Built with Llama."
+    },
+    {
+     "kind": "credits"
+    }
+   ]
+  }
+ ]
+}

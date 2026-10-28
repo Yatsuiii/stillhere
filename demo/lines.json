@@ -1,0 +1,45 @@
+{
+ "format": "stillhere-demo-lines/1",
+ "source": "PREREG.md section 7, quoted word for word; {placeholders} are filled from results/section8.json, and tests/test_demo_page.py checks each filled line against PREREG.md",
+ "limit_pct": 7,
+ "pitch": [
+  "Passive listening tests can show that a brain still processes speech without asking the patient to do anything, which marks patients worth a full follow-up scan.",
+  "But every new story needs its own 12-15 healthy volunteers scanned on it, in that language. StillHere needs none: Meta's TRIBE v2 stands in for them, and every reading is measured against the person's own resting brain."
+ ],
+ "lpp": [
+  {
+   "quote": "With zero matched volunteers, both readouts picked up English and French listeners as a group, and the language readout followed the real story over a word-shuffled one.",
+   "note": "public LPP, group level, {trs} TRs = {minutes} minutes; English confirmed on held-out section 8; French from the development section"
+  },
+  {
+   "quote": "On a story it had never seen, TRIBE alone did the work of about {k_about} healthy volunteers, and at least {k_claim}.",
+   "note": "the single volunteers line; held-out English section 8, LANGUAGE gauge: point estimate {k_point}, lower 95% bound {k_lower}, floored to {k_claim}; development-section estimates are not quoted. M3 caveat applies."
+  },
+  {
+   "quote": "Add TRIBE to the few volunteers a hospital already has, and the test performs as if it had a few more.",
+   "note": "held-out English section 8 ({listeners} listeners): LANGUAGE paired gain at k = 1 {dz1} [95% CI {dz1_lo}, {dz1_hi}] and at k = 2 {dz2} [{dz2_lo}, {dz2_hi}]; wrong-story check worst case {ws_n} of {listeners} ({ws_pct}%) detections at k = {ws_k}, inside the {limit_pct}% limit. M3 caveat applies."
+  },
+  {
+   "quote": "In English, TRIBE's language readout beat the classic word-level references we tested (frequency, syntax, and language-model surprisal) in healthy listeners ({trs} TRs, {minutes} minutes; the held-out English section, LPP English section 8, supplies the number used on stage).",
+   "note": ""
+  },
+  {
+   "quote": "On hearing, TRIBE agrees with the classic sound test, a built-in check.",
+   "note": ""
+  }
+ ],
+ "m3": "On held-out English section 8, TRIBE alone against the other story: hearing {m3_h_pct}% ({m3_h_n} of {m3_n}, at or below {limit_pct}%, a detection percentage may be shown), language {m3_l_pct}% ({m3_l_n} of {m3_n}, above {limit_pct}%, so no language detection percentage is shown on stage; language is quoted as z only).",
+ "planner_examples": [
+  {
+   "request": "Plan this study for 6-year-olds.",
+   "dimension": "population",
+   "asked": "children_6y"
+  },
+  {
+   "request": "Try lag +2 s.",
+   "dimension": "analysis",
+   "asked": "lag_search"
+  }
+ ],
+ "s8_label": "recomputed with code built during the event; first measured Oct 22-23"
+}

@@ -35,7 +35,7 @@ the repository and refuses to push without it.
 
 ## Licences and credits
 
-- StillHere code: licence not chosen yet (see `LICENSE`, a placeholder).
+- StillHere code: MIT (see `LICENSE`). TRIBE v2 is CC BY-NC 4.0 and is not included (see `NOTICE`).
 - TRIBE v2: Meta FAIR (d'Ascoli et al. 2026), weights and code released under CC BY-NC 4.0.
 - Data: Le Petit Prince fMRI corpus (OpenNeuro ds003643); Narratives (ds002345); Emo-FilM (ds004892, ds004872, CC0); LibriVox
   recordings (public domain); Tears of Steel and Sintel (Blender Foundation, CC BY 3.0).
