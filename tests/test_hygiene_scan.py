@@ -71,3 +71,11 @@ def test_commit_messages_and_size_are_checked(tmp_path, monkeypatch):
     monkeypatch.setattr(H, "MAX_BYTES", 10)
     r2 = tmp_path / "two"; r2.mkdir()
     assert any(f.endswith("file_over_10MB") for f in H.scan(repo(r2, {"big.bin": b"\0" * 64}), blocklist(tmp_path)))
+
+
+def test_a_term_removed_in_a_later_commit_still_fails(tmp_path):
+    r = repo(tmp_path, {"n.md": "the Zorblax returns\n"})
+    (r / "n.md").write_text("fixed\n")
+    subprocess.run(["git", "-C", str(r), "commit", "-q", "-am", "fix"], check=True, capture_output=True)
+    [finding] = H.scan(r, blocklist(tmp_path))
+    assert finding.startswith("n.md (history ") and finding.endswith("):1: blocklisted_term")

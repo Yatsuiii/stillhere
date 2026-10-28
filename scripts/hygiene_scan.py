@@ -1,6 +1,7 @@
 """Hygiene scan for the public StillHere repository: the pre-push hook runs it, and it can be run by hand. It FAILS CLOSED.
 
-It scans every file in the HEAD tree and every commit message, and fails on:
+It scans every file in the HEAD tree, every older blob reachable from HEAD (a push carries the whole history) and every commit
+message, and fails on:
 - any line holding a word or 4-word phrase whose salted SHA-256 is on the laptop-only blocklist built from the privately shared clip
   (format and matching in stillhere/blockterms.py, the same rules egress.PublicQuestion uses). The list is read from outside the
   repository (STILLHERE_QUESTION_BLOCKLIST or ~/.config/stillhere/question_blocklist.txt); if it is missing or malformed, the scan fails;
@@ -42,6 +43,14 @@ def git(repo: Path, *args) -> bytes:
     return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True).stdout
 
 
+def history_blobs(repo: Path) -> list:
+    """(path, blob sha) for every blob reachable from HEAD."""
+    objs = git(repo, "rev-list", "--objects", "HEAD")
+    out = subprocess.run(["git", "-C", str(repo), "cat-file", "--batch-check=%(objectname) %(objecttype) %(rest)"],
+                         input=objs, check=True, capture_output=True).stdout.decode()
+    return [(rest, sha) for sha, kind, rest in (l.split(" ", 2) for l in out.splitlines() if l.count(" ") >= 2) if kind == "blob"]
+
+
 def scan_text(name: str, text: str, salt: bytes, blocked: frozenset) -> list:
     out = []
     for i, line in enumerate(text.splitlines(), 1):
@@ -65,6 +74,12 @@ def scan(repo: Path, blocklist: Path) -> list:
         if b"\0" in data[:8192]:
             continue                                                  # binary: size rule only
         findings += scan_text(name, data.decode("utf-8", "replace"), salt, blocked)
+    head = {e.split()[2] for e in git(repo, "ls-tree", "-r", "-z", "HEAD").decode().split("\0") if e}
+    for path, blob in history_blobs(repo):
+        if blob not in head:
+            data = git(repo, "cat-file", "blob", blob)
+            if b"\0" not in data[:8192]:
+                findings += scan_text(f"{path} (history {blob[:8]})", data.decode("utf-8", "replace"), salt, blocked)
     for sha in git(repo, "rev-list", "HEAD").decode().split():
         findings += scan_text(f"commit {sha[:12]}", git(repo, "log", "-1", "--format=%B", sha).decode("utf-8", "replace"), salt, blocked)
     return findings
@@ -86,7 +101,7 @@ def main(argv=None) -> int:
         print("\n".join(f"  {f}" for f in findings))
         return 1
     files = len([n for n in git(a.repo, "ls-tree", "-r", "-z", "--name-only", "HEAD").decode().split("\0") if n])
-    print(f"hygiene-scan: clean ({files} files and every commit message)")
+    print(f"hygiene-scan: clean ({files} files, every older blob and every commit message)")
     return 0
 
 
