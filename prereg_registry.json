@@ -381,6 +381,89 @@
     "D24"
    ],
    "what": "exploratory envelope check at the dataset author's reported timing; counts only, no change to L"
+  },
+  {
+   "path": "d22/picker_pred/kernels/picker_pred_part1/stillhere_picker_pred_part1.py",
+   "sha256": "57d1cdada46769fd942ba2ebcaa2495a194de6319a26a2e2675869ba70198c42",
+   "role": "analysis",
+   "implements": [
+    "§9",
+    "D19",
+    "D26"
+   ],
+   "what": "D26 fallback part 1 of 3 (used only if the rerun's self-check fails): picker-pred 1a9f1812 plus a clip-list input (13 clips in Part E row order, plus self-check clips ['lppFR_section8', 'pieman']); no feature outputs attached, so every clip is extracted fresh"
+  },
+  {
+   "path": "d22/picker_pred/kernels/picker_pred_part2/stillhere_picker_pred_part2.py",
+   "sha256": "435edc5744f5dbbe75e034f65ad1ae3029b53d7506815a4a91a97d6584cbcee1",
+   "role": "analysis",
+   "implements": [
+    "§9",
+    "D19",
+    "D26"
+   ],
+   "what": "D26 fallback part 2 of 3 (used only if the rerun's self-check fails): picker-pred 1a9f1812 plus a clip-list input (19 clips in Part E row order, plus self-check clips ['pieman']); no feature outputs attached, so every clip is extracted fresh"
+  },
+  {
+   "path": "d22/picker_pred/kernels/picker_pred_part3/stillhere_picker_pred_part3.py",
+   "sha256": "45a7b03ffc5d7d603b2544e0006a40a62ed7b201a4600cf2223c5b5baf843221",
+   "role": "analysis",
+   "implements": [
+    "§9",
+    "D19",
+    "D26"
+   ],
+   "what": "D26 fallback part 3 of 3 (used only if the rerun's self-check fails): picker-pred 1a9f1812 plus a clip-list input (10 clips in Part E row order, plus self-check clips ['lppFR_section8']); no feature outputs attached, so every clip is extracted fresh"
+  },
+  {
+   "path": "d22/picker_pred/merge_picker_parts.py",
+   "sha256": "6e76b1fba6fc9102784e82ce525cb2839fb9f994c2d1cfee41c24f76b4d26954",
+   "role": "runner",
+   "implements": [
+    "§9",
+    "D26"
+   ],
+   "what": "D26 fallback: merges the three parts by file copy with per-file SHA-256 checks"
+  },
+  {
+   "path": "d22/picker_pred/check_pred_inputs.py",
+   "sha256": "57d1ccabede93c075db9b4aa6ea182998c9bf0ca68fa15eab160b24c2bcfc78d",
+   "role": "runner",
+   "implements": [
+    "§9",
+    "D26"
+   ],
+   "what": "42/42 input check before the picker's single scoring call (refuses unless all 42 verified stock predictions)"
+  },
+  {
+   "path": "d22/picker_pred/make_picker_pred_parts.py",
+   "sha256": "ec370c63c53cf5929b4b91b4430d87eb5f021eac86adabbde105ebf48be981c6",
+   "role": "runner",
+   "implements": [
+    "§9",
+    "D26"
+   ],
+   "what": "D26 fallback: builds the three part kernels from picker-pred 1a9f1812 (clip-list input only)"
+  },
+  {
+   "path": "d22/picker_pred/saturday_chain.sh",
+   "sha256": "a55061bbb2ef3fe58f9a01cf640cb4ac32998579e0c57d738485be9a9bfea900",
+   "role": "runner",
+   "implements": [
+    "§9",
+    "D26"
+   ],
+   "what": "Saturday chain: rerun, D26 fallback if needed, film, scoring call with the wall, wall baselines, Glimmer"
+  },
+  {
+   "path": "d22/picker/score_job.sh",
+   "sha256": "7979e51896cf4f0a64232d527a14785594abc6513a940c06de3c3dcaa91f10cd",
+   "role": "runner",
+   "implements": [
+    "§9",
+    "D19"
+   ],
+   "what": "the picker's single scoring call with the wall, then the wall baselines, via run_frozen.sh; posted hash and 42/42 checks first"
   }
  ],
  "not_entry_points": [
