@@ -31,6 +31,7 @@ Every new result is labelled exploratory. A forecast is labelled "forecast, not 
 | Pre-registration guard (git hook and Muse Code Stop hook) and the pre-push hygiene scan | `stillhere/prereg_check.py`, `muse-plugin/`, `scripts/hygiene_scan.py`, `scripts/hooks/` |
 | Cheap baselines beside every TRIBE result (HRF x word rate, HRF x sound envelope); section 8 table on the Pilot page, labelled exploratory, rule committed after section 8 was first read (Oct 22-23) | `stillhere/cheap_baselines.py`, `scripts/section8_baselines.py`, `scripts/wall_baselines.py`, `results/section8_baselines.json` |
 | Rules committed before each dataset's brain data is read (the commit time is the record) | `docs/rules/` |
+| Face edits of the Tears of Steel bridge scene (SAM 3.1 masks: intact, faces removed, area matched) and the Glimmer face check's frames | `stillhere/face_edit.py`, `scripts/make_bridge_edit_cuts.py`, `scripts/make_glimmer_edit_frames.py`, `docs/rules/glimmer_face_edit_rule.md`, `requirements-face-edits.txt` |
 | Pilot page and video skeleton | `demo/`, `video/`, `scripts/build_demo_page.py`, `scripts/render_video.py` |
 | Sedation case study write-up (frozen group statistics; exploratory variants labelled) | `docs/writeup_sedation.md` |
 | Results (public data, or frozen group statistics) | `results/` |
@@ -42,5 +43,8 @@ the repository and refuses to push without it.
 
 - StillHere code: MIT (see `LICENSE`). TRIBE v2 is CC BY-NC 4.0 and is not included (see `NOTICE`).
 - TRIBE v2: Meta FAIR (d'Ascoli et al. 2026), weights and code released under CC BY-NC 4.0.
+- SAM 3.1 (Meta): the face masks for the Tears of Steel edits come from SAM 3.1 through Meta's Model API and are decoded with
+  meta-sam-parser (Meta's package, SAM License; a dependency listed in `requirements-face-edits.txt`, not included). We acknowledge
+  the use of SAM in this work, as the SAM License requires.
 - Data: Le Petit Prince fMRI corpus (OpenNeuro ds003643); Narratives (ds002345); Emo-FilM (ds004892, ds004872, CC0); LibriVox
   recordings (public domain); Tears of Steel and Sintel (Blender Foundation, CC BY 3.0).

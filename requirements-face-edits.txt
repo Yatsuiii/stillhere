@@ -1,0 +1,4 @@
+# Face edits (stillhere/face_edit.py, scripts/make_bridge_edit_cuts.py, scripts/make_glimmer_edit_frames.py) decode SAM 3.1 masks from
+# Meta's Model API with meta-sam-parser: Meta's package on PyPI, SAM License, no runtime dependencies. A dependency, not included here.
+# Install with: pip install --require-hashes -r requirements-face-edits.txt   (the edits also need numpy and opencv-python-headless)
+meta-sam-parser==0.1.0 --hash=sha256:eca156907911c56cef3a350ffc81c34b7e70655e5fa3ccdddb77042c541a0152 --hash=sha256:d59ca55993c5975fc8910f29b76e33499bc2870f79e9afcc30c916f17ef3bb40
