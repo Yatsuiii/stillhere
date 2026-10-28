@@ -8,6 +8,7 @@ controls, and check them. Meta's TRIBE v2 forecasts the healthy-adult brain resp
 against real public scans:
 
 - LPP English section 8 (Le Petit Prince, held out): recomputed with code built during the event; first measured Oct 22-23.
+  `stillhere/heldout.py`: 12 of 215 lines follow pre-event code (language-area parcel list, lag and resampling, one alignment call); the rest was written from Oct 27.
 - The story wall across public Narratives and LPP stories (scored Thursday Oct 29).
 - notthefall, intact against sentence-shuffled (Narratives).
 - An Emo-FilM Blender film (Tears of Steel, CC BY 3.0) and its viewers.

@@ -1,4 +1,5 @@
 """Held-out section scorer (PREREG §8): the stage numbers of LPP English section 8, written during the event from the frozen definitions.
+12 of 215 lines follow pre-event code (language-area parcel list, lag and resampling, one alignment call); the rest was written from Oct 27.
 
 New code that re-implements the pre-event harness behind the Oct 23 section-8 numbers (HELDOUT.md; p1/hold8.py, m1_en8.py,
 m2_en8.py, m3_en8.py and their helpers noise_floor, hearing, understanding, timing): same parcels, cleaning, regressors, alignment,

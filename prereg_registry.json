@@ -294,14 +294,18 @@
   },
   {
    "path": "../stillhere-app/stillhere/heldout.py",
-   "sha256": "ea3b8942ec3b28c954a31b79b13e24fca1337e8b402bcb39a51e8248ecc64bf4",
+   "sha256": "d7ca658e4e3171bed19ad3c0fd37d4fb986f98c8373892b6ce57a589722939d7",
    "role": "analysis",
    "implements": [
     "§3",
     "§5",
     "§8"
    ],
-   "what": "event-built held-out section scorer: section-8 stage numbers, M1 control-equivalent, M2 hybrid, wrong-story checks"
+   "what": "event-built held-out section scorer: section-8 stage numbers, M1 control-equivalent, M2 hybrid, wrong-story checks",
+   "changed_after_registration": {
+    "old_sha256": "ea3b8942ec3b28c954a31b79b13e24fca1337e8b402bcb39a51e8248ecc64bf4",
+    "why": "one header line only (project thread ruling, Oct 28): the code outside the docstring is identical; the section-8 numbers were computed with the old bytes (stillhere-app c68b0e9)"
+   }
   },
   {
    "path": "../stillhere-app/scripts/heldout_section8.py",
