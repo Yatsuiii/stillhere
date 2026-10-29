@@ -49,10 +49,11 @@ one that happened. On a d20 fail the notthefall scene leaves and the story wall 
 
 - 53.0-59.8 s: "Spark Open adds a second opinion on the conditions. It is advisory, and never blocks a build." (17 words, 2.5 words/s)
 
-## 60-76 s · live_run · headline: "Live on a laptop GPU, uncut"
+## 60-76 s · live_run · headline: "Live on a laptop, uncut"
 
-- Note: Open question for the cloud thread: Fork W measured 39-56 s per warm worker job, so an uncut live run does not fit the LIVE beat (60-92 s, 32 s) as planned. The slot and timings are unchanged until it is decided. Options: a shorter clip, a longer beat, or a visible cut with the clock shown.
-- 60.2-65.6 s: "This part runs live and uncut, on a laptop GPU." (10 words, 1.9 words/s)
+- 60.2-65.6 s, one reading per live ending:
+  - inset: "This part runs live and uncut, on a laptop." (9 words, 1.7 words/s)
+  - cut: "This part runs live, on a laptop." (7 words, 1.3 words/s)
 - 65.6-71.6 s: "A judge picks a public clip, a condition and a seed." (11 words, 1.8 words/s)
 - 71.6-76.0 s: "TRIBE v2 forecasts the brain response, stage by stage." (9 words, 2.0 words/s)
 
@@ -75,10 +76,10 @@ one that happened. On a d20 fail the notthefall scene leaves and the story wall 
 
 - 107.6-112.0 s: "Every story we scored stays on the wall, weak ones too." (11 words, 2.5 words/s)
 
-## 112-118 s · trust_d20 · headline: "A new story, real listeners"
+## 112-118 s · trust_d20 · headline: "A different story, real listeners"
 
 - 112.0-117.8 s, one reading per d20 ending:
-  - pass: "On a new story, TRIBE's language readout was stronger intact than shuffled." (12 words, 2.1 words/s)
+  - pass: "On a different story, TRIBE's language readout was stronger intact than shuffled." (12 words, 2.1 words/s)
   - fail: "Where no public scan exists, the forecast stays gray." (9 words, 1.6 words/s)
 
 ## 118-126 s · film_edit · headline: "Remove the faces, keep the film"
@@ -121,4 +122,4 @@ one that happened. On a d20 fail the notthefall scene leaves and the story wall 
 
 - 168.0-171.8 s: "Research use only. Not a diagnosis or medical advice." (9 words, 2.4 words/s)
 
-Total: 382 words in 172 s (2.22 words/s, longest reading of each slot counted).
+Total: 381 words in 172 s (2.22 words/s, longest reading of each slot counted).

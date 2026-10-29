@@ -28,8 +28,7 @@ GHOST = REPO / "results/ghostline_lpp_s8.json"
 FILM_GHOST = REPO / "results/ghostline_film.json"                         # the film ghost line (display rule, film section), Sunday
 FILM = REPO.parent / "stillhere/pilot/film/film_stim_v2"                   # seg_intact.mp4, faces_removed_v2.mp4, area_matched_v2.mp4
 RC_FILES = (REPO / "results/face_map_RC.json", REPO.parent / "stillhere-pilot-public/results/face_map_RC.json")
-ORDER = REPO / "results/order_map_gonogo.json"                            # the laptop forecasts behind the LIVE beat (NO-GO: no order map)
-LIVE_CLIP = "alice_ch01"
+CACHE = REPO / "data/forecast_cache.json"                                # the page's saved runs (recomputed Oct 29 17:07 UTC), LIVE beat
 GHOST_ORDER = ("forecast", "chip", "group", "five", "one")                # display rule draw order (group and five are "listeners")
 BOX = (104, 176, 1712, 640)                                              # x, y, w, h of a scene's moving picture
 E = html.escape
@@ -65,7 +64,8 @@ def timeline(spec: dict, endings: dict) -> list:
         if resolve(sc, endings) is None:
             prev, a, _ = out[-1]; out[-1] = (prev, a, sc["end"])
         else:
-            out.append((sc, sc["start"], sc["end"]))
+            hv = sc.get("headline_variants", {}).get(endings.get(sc.get("slot")))
+            out.append(({**sc, "headline": hv} if hv else sc, sc["start"], sc["end"]))
     return out
 
 
@@ -180,51 +180,46 @@ def curve_svg(show: list) -> str:
     return "".join(p) + "</svg>"
 
 
-def live_runs() -> dict:
-    return json.loads(ORDER.read_text())["clips"][LIVE_CLIP]
+def cache_entry(spec: dict, which: str) -> dict:
+    """The saved run behind a LIVE panel: spec["live"][which] names its clip and condition (default seed)."""
+    want = spec["live"][which]; d = json.loads(CACHE.read_text())
+    return next(e for e in d["entries"].values() if all(e["recipe"][k] == v for k, v in want.items()))
 
 
-def livetc_svg(cond: str, W: int = 1712, H: int = 330) -> str:
-    """Laptop forecasts from results/order_map_gonogo.json (stock TRIBE v2, LibriVox Alice ch. 1, 40 s), gray only: language and hearing
-    areas side by side. intact: the intact forecast; reversed: the reversed audio's forecast in its own time; order: the intact forecast
-    with the sentence-shuffled forecast put back in the original order (kept seconds only, dots)."""
-    tc = live_runs()["timecourses_raw_units"]
-    pw = W / 2; out = [f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">']
-    for n, (reg, name) in enumerate((("LANGUAGE", "Language areas"), ("HEARING", "Hearing areas"))):
-        x0, y0, w, h = n * pw + 20, 44, pw - 60, H - 110
-        vals = tc[reg]["reversed"] if cond == "reversed" else tc[reg]["intact"]
-        pts = tc[reg]["unshuffled_kept"]
-        allv = vals + (pts["value"] if cond == "order" else [])
-        yr = (min(allv) - 0.05, max(allv) + 0.05); xr = (0, 40)
-        out.append(f'<text x="{x0}" y="28" font-size="26" fill="#1d1f23" font-weight="600">{name}</text>')
-        out.append(f'<path d="{_path(np.arange(len(vals)), vals, x0, y0, w, h, xr, yr)}" {STYLE["forecast"]}/>')
-        if cond == "order":
-            for t, v in zip(pts["original_time_s"], pts["value"]):
-                cx = x0 + t / 40 * w; cy = y0 + h - (v - yr[0]) / (yr[1] - yr[0]) * h
-                out.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="5" fill="#5d6470"/>')
-        out.append(f'<text x="{x0}" y="{y0 + h + 30}" font-size="20" fill="#5d6470">0 to 40 s of the clip</text>')
-    lab = {"intact": "TRIBE v2 forecast, intact (dashed)", "reversed": "TRIBE v2 forecast, the same audio reversed (dashed, in its own time)",
-           "order": "Intact (dashed); shuffled, then put back in order (dots)"}[cond]
-    out.append(f'<text x="20" y="{H - 12}" font-size="22" fill="#1d1f23">{lab}. LibriVox, Alice ch. 1, 40 s. Forecasts, not scans.</text>')
-    return "".join(out) + "</svg>"
+COND = {"intact": "intact", "sentence_scramble": "sentences shuffled", "word_scramble": "words shuffled", "reversed": "reversed"}
 
 
-def lanes_html(cond: str) -> str:
-    """TRIBE's three input lanes as that run logged them (results/order_map_gonogo.json)."""
-    r = live_runs()["runs"][cond]
-    assert r["video_lane"].startswith("off") and r["audio_lane"] and r["text_lane"]["loaded"]
-    n = r["word_events_reaching_text_lane"]
+def livetc_svg(e: dict, W: int = 1712, H: int = 330) -> str:
+    """One saved run (data/forecast_cache.json), gray only: language and hearing areas side by side, 1 s samples."""
+    out = [f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">']
+    pw = W / 2; n = e["seconds"]
+    for k, (reg, name) in enumerate((("language", "Language areas"), ("hearing", "Hearing areas"))):
+        x0, y0, w, h = k * pw + 20, 44, pw - 60, H - 110
+        vals = e["regions"][reg]; yr = (min(vals) - 0.05, max(vals) + 0.05)
+        out.append(f'<text x="{x0}" y="28" font-size="26" fill="#1d1f23" font-weight="600">{name}</text>'
+                   f'<path d="{_path(np.arange(len(vals)) * e["tr_s"], vals, x0, y0, w, h, (0, n), yr)}" {STYLE["forecast"]}/>'
+                   f'<text x="{x0}" y="{y0 + h + 30}" font-size="20" fill="#5d6470">0 to {n} s of the clip</text>')
+    r = e["recipe"]; ch = r["clip_id"].replace("alice_ch", "Alice ch. ").replace("ch. 0", "ch. ")
+    seed = f", seed {r['seed']}" if r["seed"] else ""
+    out.append(f'<text x="20" y="{H - 12}" font-size="22" fill="#1d1f23">TRIBE v2 forecast, {COND[r["condition"]]}{seed}. LibriVox, {ch}, '
+               f'{n} s. Saved run. Forecast, not a scan.</text>')
+    return '<div class="chip saved">saved run</div>' + "".join(out) + "</svg>"
+
+
+def lanes_html(e: dict) -> str:
+    """TRIBE's three input lanes for a saved run, as data/forecast_cache.json records them."""
+    m = e["models"]; n = e["n_words_text_lane"]
+    assert m["v_jepa_2"].startswith("off")
     rows = [("w2v-BERT: sound", "on", 100), ("Llama 3.2: words in context", f"{n} words", 100 if n else 0), ("V-JEPA 2: off (audio)", "off", 0)]
     return '<div class="lanes">' + "".join(
         f'<div class="lane"><div class="bar"><div class="fill" style="width:{pct}%"></div></div><span>{E(a)}</span>'
         f'<span class="st">{E(st)}</span></div>' for a, st, pct in rows) + "</div>"
 
 
-def receipt_text(cond: str) -> str:
-    r = live_runs()["runs"][cond]; t = r["text_lane"]
-    return (f"{r['device'].replace('NVIDIA GeForce ', '')}, {r['utc'][:10]} {r['utc'][11:16]} UTC: model load {r['model_load_s']:.1f} s, "
-            f"predict {r['predict_s']:.1f} s, peak {r['peak_vram_gb']:.1f} GB; Llama 3.2 3B text features {t['features_s']:.0f} s "
-            f"({', '.join(t['dtypes'])}, no quantization).")
+def receipt_text(e: dict) -> str:
+    t = e["timings_s"]
+    return (f"Saved run, {e['computed_utc'][:10]} {e['computed_utc'][11:16]} UTC: total {t['total']:.1f} s (text lane {t['text_lane']:.1f} s, "
+            f"audio lane {t['audio_lane']:.1f} s, predict {t['predict']:.1f} s).")
 
 
 def face_ticks() -> list:
@@ -290,7 +285,7 @@ def filmghost_svg(doc: dict, show: list, title_html: str, values: dict) -> str:
 def endscreen_html(pair: str, values: dict, ctx: dict) -> str:
     """The LIVE beat's last screen: the laptop forecast alone in gray, and beside it, as a separate tile, real listeners on another story:
     notthefall on a D20 pass ("Real listeners, different story."), the LPP ghost line on a fail ("Real listeners, held-out story")."""
-    left = ('<div class="chip">Forecast only · audio-only, laptop</div>' + livetc_svg("order", 1060, 330)
+    left = ('<div class="chip">Forecast only · audio-only, laptop</div>' + livetc_svg(ctx["live"]["live"], 1060, 330)
             + '<div class="small">No public scan of this clip. Forecast, not a scan.</div>')
     if pair == "d20":
         right = ('<div class="chip">notthefall: rule 340b74b</div><div class="tiletitle">Real listeners, different story.</div>'
@@ -344,6 +339,9 @@ table{font-size:34px;border-collapse:collapse} td{padding:10px 40px 10px 0;verti
 .col{width:1060px;display:flex;flex-direction:column;gap:12px} .tile{width:600px;border:2px solid #e3e0d8;border-radius:14px;padding:14px;background:#fff;display:flex;flex-direction:column;gap:10px}
 .tiletitle{font-size:34px;font-weight:700;color:#1f6fb4} .charttitle{font-size:30px;font-weight:600}
 .maps2{display:flex;gap:32px} .maps2 figure{margin:0;width:840px} .maps2 img{width:840px;display:block} .maptitle{font-size:28px;font-weight:600;margin-bottom:6px}
+.chip.saved{background:#eceef1;border-color:#9aa3ad;color:#5d6470;font-size:24px;padding:4px 16px;margin-bottom:6px}
+.tag2{align-self:flex-start;font-size:26px;padding:4px 16px;border-radius:20px;background:#eceef1;color:#5d6470;font-weight:600}
+.cutnote{align-self:flex-start;font-size:34px;font-weight:700;color:#fff;background:#11141a;padding:8px 20px;border-radius:10px}
 .receipt{font-size:24px;color:#5d6470;font-family:"Noto Sans Mono",monospace}
 .foot{position:absolute;left:104px;right:104px;bottom:12px;font-size:18px;color:#5d6470;line-height:1.3}
 """
@@ -389,11 +387,11 @@ def item_html(it: dict, values: dict, ctx: dict) -> str:
     if k == "curve":
         return curve_svg(it["show"])
     if k == "livetc":
-        return livetc_svg(it["condition"])
+        return livetc_svg(ctx["live"][it["entry"]])
     if k == "lanes":
-        return lanes_html(it["condition"])
+        return lanes_html(ctx["live"][it["entry"]])
     if k == "receipt":
-        return f'<div class="receipt">{E(receipt_text(it["condition"]))}</div>'
+        return f'<div class="receipt">{E(receipt_text(ctx["live"][it["entry"]]))}</div>'
     if k == "endscreen":
         return endscreen_html(it["pair"], values, ctx)
     if k == "filmghost":
@@ -401,6 +399,13 @@ def item_html(it: dict, values: dict, ctx: dict) -> str:
     if k == "maps":
         return '<div class="maps2">' + "".join(f'<figure><div class="maptitle">{fill(m["title"], values)}</div>'
                                                f'<img src="{ctx["maps"][m["key"]].as_uri()}"></figure>' for m in it["maps"]) + "</div>"
+    if k == "tag":
+        return f'<div class="tag2">{E(it["text"])}</div>'
+    if k == "cutnote":
+        return f'<div class="cutnote">{fill(it["text"], values)}</div>'
+    if k == "take":
+        return '<div class="box"></div>' if values.get("live_take") else \
+            '<div class="phbox">PLACEHOLDER: the filmed take, cut once (values live_take, run_s and n from its receipt)</div>'
     if k == "stamp":
         return f'<div class="stamp {it["tone"]}">{E(it["text"])}</div>'
     if k == "rail":
@@ -413,7 +418,7 @@ def item_html(it: dict, values: dict, ctx: dict) -> str:
     raise ValueError(k)
 
 
-MOVING = ("cast", "film3")
+MOVING = ("cast", "film3", "take")
 
 
 def scene_html(sc: dict, items: list, values: dict, spec: dict, ctx: dict) -> str:
@@ -483,11 +488,21 @@ def cast_clip(it: dict, seconds: float, out: Path) -> None:
     assert ff.wait() == 0, "ffmpeg failed on a cast clip"
 
 
-def moving_clip(it: dict, seconds: float, work: Path, idx: int):
+def moving_clip(it: dict, seconds: float, work: Path, idx: int, values: dict = None):
     """(path, x, y) of the scene's moving picture, already sized for its box and at least `seconds` long."""
     out = work / f"moving_{idx:02d}.mp4"
     if it["kind"] == "cast":
         cast_clip(it, seconds, out); return out, BOX[0], BOX[1]
+    if it["kind"] == "take":                                                # cut mode: the take's start, one cut, then its end
+        take = (values or {}).get("live_take")
+        if not take:
+            return None
+        w, h, head = BOX[2], BOX[3], it["keep_head_s"]
+        vf = f"scale={w}:{h}:force_original_aspect_ratio=decrease,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:color=0x11141a,fps=30,setsar=1"
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-t", f"{head}", "-i", take, "-sseof", f"-{seconds - head:.3f}", "-i", take,
+                        "-filter_complex", f"[0:v]{vf}[a];[1:v]{vf}[b];[a][b]concat=n=2:v=1:a=0[o]", "-map", "[o]", "-an", "-c:v", "libx264",
+                        "-crf", "18", "-pix_fmt", "yuv420p", str(out)], check=True)
+        return out, BOX[0], BOX[1]
     if it["kind"] == "film3":
         tw, th, gap = 552, 230, 28
         args = ["ffmpeg", "-y", "-loglevel", "error"]
@@ -500,6 +515,31 @@ def moving_clip(it: dict, seconds: float, work: Path, idx: int):
                                "-pix_fmt", "yuv420p", str(out)], check=True)
         return out, 104, 176
     raise ValueError(it["kind"])
+
+
+def inset_clip(spec: dict, values: dict, work: Path):
+    """(path, seconds) of the corner inset: the filmed live job (values live_take) uncut, or a placeholder of the same size with an
+    elapsed clock, run_s seconds long (values run_s from the take's receipt, timings_s.total; the spec's placeholder length otherwise)."""
+    ins = spec["live"]["inset"]; run_s = float(values.get("run_s") or ins["placeholder_s"])
+    take = values.get("live_take")
+    if take:
+        return Path(take), run_s
+    from PIL import Image, ImageDraw, ImageFont
+    import render_cast as RC
+    W, H, FPS = ins["w"], ins["h"], 10; out = work / "inset.mp4"
+    big, small = ImageFont.truetype(RC.BOLD, 40), ImageFont.truetype(RC.FONT, 15)
+    ff = subprocess.Popen(["ffmpeg", "-loglevel", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
+                           "-vf", "fps=30", "-c:v", "libx264", "-crf", "20", "-pix_fmt", "yuv420p", str(out)], stdin=subprocess.PIPE)
+    for k in range(int(run_s * FPS) + 1):
+        im = Image.new("RGB", (W, H), (17, 20, 24)); d = ImageDraw.Draw(im); t = k / FPS
+        d.rectangle([0, 0, W - 1, H - 1], outline=(212, 165, 0), width=4)
+        d.text((12, 10), "PLACEHOLDER: Sunday's live job, uncut", font=small, fill=(255, 229, 138))
+        d.text((16, H / 2 - 30), f"{int(t) // 60:02d}:{int(t) % 60:02d}", font=big, fill=(214, 218, 224))
+        d.text((16, H - 34), f"until it lands ({run_s:.0f} s)", font=small, fill=(128, 136, 148))
+        ff.stdin.write(im.tobytes())
+    ff.stdin.close()
+    assert ff.wait() == 0, "ffmpeg failed on the inset"
+    return out, run_s
 
 
 def scene_clip(pngs: list, ats: list, seconds: float, moving, out: Path, fps: int) -> None:
@@ -620,7 +660,10 @@ def main(argv=None) -> None:
         assert s in slots and e in slots[s], f"no ending {s}={e}"
     values = json.loads(a.values.read_text()) if a.values else {}
     work = a.work or Path(tempfile.mkdtemp(prefix="stillhere-v4-")); work.mkdir(parents=True, exist_ok=True)
-    ctx = {"ghost": ghost_doc(), "film_ghost": film_ghost_doc(), "maps": render_maps_for(spec, work), "d20_line": d20_line(spec)}
+    endings.setdefault("live", "inset")                                     # the plan; "cut" is the fallback if the inset reads badly
+    ctx = {"ghost": ghost_doc(), "film_ghost": film_ghost_doc(), "maps": render_maps_for(spec, work), "d20_line": d20_line(spec),
+           "live": {k: cache_entry(spec, k) for k in ("entry", "reversed")}}
+    ctx["live"]["live"] = ctx["live"]["entry"]
     fps, xf = spec["fps"], spec["crossfade_s"]
     tl = timeline(spec, endings); clips = []
     for i, (sc, start, end) in enumerate(tl):
@@ -630,7 +673,7 @@ def main(argv=None) -> None:
             h = work / f"scene_{i:02d}_{j}.html"; h.write_text(scene_html(sc, items, values, spec, ctx))
             p = work / f"scene_{i:02d}_{j}.png"; RV.capture(h, p, work, spec["size"]); pngs.append(p)
         mv = [it for _, items in steps for it in items if it["kind"] in MOVING]
-        moving = moving_clip(mv[0], secs, work, i) if mv else None
+        moving = moving_clip(mv[0], secs, work, i, values) if mv else None
         c = work / f"scene_{i:02d}.mp4"; scene_clip(pngs, [s for s, _ in steps], secs, moving, c, fps); clips.append(c)
         print(f"scene {i:02d} {sc['id']}: {secs:.1f} s, {len(pngs)} step(s){', moving picture' if mv else ''}", flush=True)
     cues = vo_cues(spec, endings)
@@ -643,6 +686,12 @@ def main(argv=None) -> None:
     prev = "v0"
     for i in range(1, len(clips)):
         fc.append(f"[{prev}][v{i}]xfade=transition=fade:duration={xf}:offset={tl[i][1]:.3f}[x{i}]"); prev = f"x{i}"
+    if endings["live"] == "inset":
+        ins = spec["live"]["inset"]; ip, run_s = inset_clip(spec, values, work)
+        args += ["-i", str(ip)]; n = len(clips)
+        fc.append(f"[{n}:v]scale={ins['w']}:{ins['h']},fps={fps},setpts=PTS+{ins['start']}/TB[ins]")
+        fc.append(f"[{prev}][ins]overlay={ins['x']}:{ins['y']}:eof_action=pass:enable='between(t,{ins['start']},{ins['start'] + run_s:.2f})'[inset]")
+        prev = "inset"
     fc.append(f"[{prev}]ass={ass}[out]")
     subprocess.run(args + ["-filter_complex", ";".join(fc), "-map", "[out]", "-an", "-c:v", "libx264", "-preset", "medium", "-crf", "21",
                            "-pix_fmt", "yuv420p", "-r", str(fps), "-movflags", "+faststart", str(a.out)], check=True)

@@ -48,8 +48,10 @@ On-screen captions:
    volunteers, and at least 2. It agreed with the classic sound test." What it had to beat: word rate and the sound envelope.
    Small print: "Le Petit Prince, section 8, held out: recomputed with code built during the event; first measured Oct 22-23."
 5. Real listeners, intact versus scrambled (notthefall), used only if it passes tonight:
-   - pass: "Real listeners' brains followed the intact story more than the scrambled one where TRIBE said they would ({k} of {N},
-     p = {p})." What it had to beat: word rate and the sound envelope of each version.
+   - pass: "With zero same-clip controls, stock TRIBE v2's language readout was stronger when the same healthy listeners heard a
+     public story intact than when they heard its sentences shuffled (Narratives `notthefall`, 22 listeners, 9.1 minutes = 365 TRs per
+     version; the order of their two runs is not public)." Voice-over: "On a different story, TRIBE's language readout was stronger
+     intact than shuffled." Changed after the D20 result to PREREG D20's pre-written line, which predates the result.
    - any other ending: the panel is left out.
 6. Planner: "Ask for something it cannot support and it says so, with the reason and the nearest thing it can do. On requests it had
    never seen, the default planner (Muse Spark 1.3) accepted 2.3% it should have declined (upper bound 6.5%). Private mode, Muse Spark
