@@ -166,7 +166,7 @@
    "language": "English",
    "readers": 1,
    "playtime_s": 413,
-   "public_scan": null
+   "public_scan": "naturalstories"
   },
   {
    "book": "Short Story Collection Vol. 002",
@@ -198,20 +198,90 @@
  ],
  "pool": [
   {
+   "book_id": "296",
+   "book": "Short Story Collection Vol. 001",
+   "section": 1,
+   "title": "The Black Cat",
+   "playtime_s": 1618,
+   "listen_url": "https://www.archive.org/download/stories_001_librivox/black_cat_poe_ty_64kb.mp3"
+  },
+  {
+   "book_id": "296",
+   "book": "Short Story Collection Vol. 001",
+   "section": 6,
+   "title": "The Nice People",
+   "playtime_s": 1187,
+   "listen_url": "https://www.archive.org/download/stories_001_librivox/nice_people_bunner_wsc_64kb.mp3"
+  },
+  {
+   "book_id": "296",
+   "book": "Short Story Collection Vol. 001",
+   "section": 7,
+   "title": "Pigs is Pigs",
+   "playtime_s": 1393,
+   "listen_url": "https://www.archive.org/download/stories_001_librivox/pigs_is_pigs_butler_blb_64kb.mp3"
+  },
+  {
+   "book_id": "296",
+   "book": "Short Story Collection Vol. 001",
+   "section": 9,
+   "title": "Taming the Bicycle",
+   "playtime_s": 1691,
+   "listen_url": "https://www.archive.org/download/stories_001_librivox/taming_the_bicycle_twain_ep_64kb.mp3"
+  },
+  {
+   "book_id": "296",
+   "book": "Short Story Collection Vol. 001",
+   "section": 10,
+   "title": "The Tell-tale Heart",
+   "playtime_s": 1088,
+   "listen_url": "https://www.archive.org/download/stories_001_librivox/telltale_heart_poe_dm_64kb.mp3"
+  },
+  {
    "book_id": "297",
    "book": "Short Story Collection Vol. 002",
-   "section": 7,
-   "title": "The Little Match Girl",
-   "reader": "Ted Hanley",
-   "playtime_s": 413,
-   "listen_url": "https://www.archive.org/download/stories_002_librivox/little_match_girl_anderson_th_64kb.mp3"
+   "section": 1,
+   "title": "A Baby Tramp",
+   "playtime_s": 794,
+   "listen_url": "https://www.archive.org/download/stories_002_librivox/baby_tramp_bierce_py_64kb.mp3"
+  },
+  {
+   "book_id": "297",
+   "book": "Short Story Collection Vol. 002",
+   "section": 3,
+   "title": "The Cask of Amontillado",
+   "playtime_s": 945,
+   "listen_url": "https://www.archive.org/download/stories_002_librivox/cask_of_amontillado_poe_zw-rh_64kb.mp3"
+  },
+  {
+   "book_id": "297",
+   "book": "Short Story Collection Vol. 002",
+   "section": 4,
+   "title": "The Diamond Necklace",
+   "playtime_s": 1165,
+   "listen_url": "https://www.archive.org/download/stories_002_librivox/diamond_necklace_maupassant_aa_64kb.mp3"
+  },
+  {
+   "book_id": "297",
+   "book": "Short Story Collection Vol. 002",
+   "section": 5,
+   "title": "Esme",
+   "playtime_s": 779,
+   "listen_url": "https://www.archive.org/download/stories_002_librivox/esme_saki_ib_64kb.mp3"
+  },
+  {
+   "book_id": "297",
+   "book": "Short Story Collection Vol. 002",
+   "section": 6,
+   "title": "The Last Leaf",
+   "playtime_s": 996,
+   "listen_url": "https://www.archive.org/download/stories_002_librivox/last_leaf_henry_jtm_64kb.mp3"
   },
   {
    "book_id": "297",
    "book": "Short Story Collection Vol. 002",
    "section": 9,
    "title": "The Toys of Peace",
-   "reader": "Tae Jensen",
    "playtime_s": 691,
    "listen_url": "https://www.archive.org/download/stories_002_librivox/toys_of_peace_saki_tyj_64kb.mp3"
   }

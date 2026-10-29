@@ -6,14 +6,14 @@ import re
 from stillhere import conditions as C
 from stillhere import manipulation_check as MC
 
-LENGTH_S = (240, 720)                     # section 1: listed length 4:00 to 12:00 inclusive
+LENGTH_S = (240, 1800)                    # section 1: listed length 4:00 to 30:00 inclusive (amended Oct 29, 19:55 UTC)
 POOL_SIZE = 25
 START_PHRASES = ("librivox org", "librivox dot org", "read by", "recorded by", "reading by")
 END_PHRASES = ("end of", "this recording is in the public domain", "the end")
 START_WITHIN_S, END_WITHIN_S = 90.0, 60.0
 CHUNK_S = 60.0
 BAR1_MIN_SHARE, BAR2_MAX_GAP_S, BAR3_MIN_AGREEMENT = 0.95, 5.0, 0.95
-SCREEN_CAP_USD = 25.0
+SCREEN_CAP_USD = 35.0                     # amended Oct 29, 19:55 UTC (was $25)
 PAD_S, WINDOW_MAX_S, WINDOW_MIN_S, WINDOW_MIN_SENTENCES = 0.3, 40.0, 30.0, 6
 MENU_SIZE = 10
 
@@ -34,7 +34,8 @@ EXCLUDED = {
                  "theclosetthatateeverything", "tildeath", "wheretheressmoke", "treasureisland", "goingthelibertyway", "kiksuya"],
     "wehbe2014": ["Harry Potter and the Philosopher's Stone", "Harry Potter and the Sorcerer's Stone", "The Midnight Duel"],
     "naturalstories": ["Boar", "The Boar", "Aqua", "Matchstick Seller", "The Matchstick Seller", "King of Birds", "The King of Birds",
-                       "Elvis", "Mr Sticky", "High School", "Roswell", "Tulips", "Tourettes"],
+                       "Elvis", "Mr Sticky", "High School", "Roswell", "Tulips", "Tourettes",
+                       "The Little Match Girl"],                 # excluded by name: its adapted text is in Natural Stories (amended rule)
 }
 
 

@@ -26,6 +26,7 @@ def test_pool_filters_orders_and_caps():
     b1 = {"id": "1", "title": "Vol 1", "sections": [sec(2, "Two", 300), sec(1, "One", 240), sec(3, "Long", 721), sec(4, "Pie Man", 300),
                                                     sec(5, "French", 300, lang="French"), sec(6, "Duo", 300, readers=2), sec(7, "Edge", 720)]}
     b2 = {"id": "2", "title": "Vol 2", "sections": [sec(i, f"S{i}", 400) for i in range(1, 40)]}
+    b1["sections"][2]["playtime"] = "1801"; b1["sections"][6]["playtime"] = "1800"
     p = SM.pool([b1, b2])
     assert [x["title"] for x in p[:3]] == ["One", "Two", "Edge"] and len(p) == SM.POOL_SIZE
 
@@ -34,13 +35,17 @@ def test_public_scan_exclusion():
     assert SM.public_scan("Pie Man") == "ds002345" and SM.public_scan("pie-man!") == "ds002345"
     assert SM.public_scan("The Matchstick Seller") == "naturalstories"
     assert SM.public_scan("Le Petit Prince") == "ds003643"
-    assert SM.public_scan("The Little Match Girl") is None and SM.public_scan("The Toys of Peace") is None
+    assert SM.public_scan("The Little Match Girl") == "naturalstories"          # by name (amended rule)
+    assert SM.public_scan("The Toys of Peace") is None and SM.public_scan("The Black Cat") is None
 
 
-def test_committed_pool_is_the_two_stories():
+def test_committed_pool():
+    """Amended rule (4:00-30:00, The Little Match Girl excluded): 11 stories, Vol. 001 first, all at or under 1800 s."""
     doc = json.loads((REPO / "results/story_menu/pool.json").read_text())
     assert [p["id"] for p in doc["projects"]] == ["296", "297"] and len(doc["sections_seen"]) == 20
-    assert [(p["title"], p["playtime_s"]) for p in doc["pool"]] == [("The Little Match Girl", 413), ("The Toys of Peace", 691)]
+    assert len(doc["pool"]) == 11 and all(240 <= p["playtime_s"] <= 1800 for p in doc["pool"])
+    assert [p["book_id"] for p in doc["pool"]] == ["296"] * 5 + ["297"] * 6
+    assert "The Little Match Girl" not in [p["title"] for p in doc["pool"]] and "Duplicity of Hargraves" not in [p["title"] for p in doc["pool"]]
 
 
 def test_trim():
