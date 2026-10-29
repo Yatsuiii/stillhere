@@ -6,8 +6,11 @@ decoded with meta-sam-parser (Meta's SAM License; a dependency, not included her
 - faces_removed: every face mask mapped to release pixels (nearest neighbour, then dilated by DILATE px to cover the 2x upscale) and
   filled with the local mean colour (the mean of a RING px band around the mask, other faces left out of the mean);
 - area_matched: each face mask's exact shape moved to a non-face region of the same frame (the first offset in OFFSETS whose box,
-  padded by GAP px, misses every face box and every earlier placement and stays inside the frame), filled the same way.
+  padded by GAP px, misses every face box and every earlier placement and stays inside the frame; for other windows than the
+  bridge, then the nearest such spot on a 20 px grid), filled the same way.
 Cut frame c is release frame 600 + c (the cut starts at release 25.0 s at 24 fps; checked against the release pixels)."""
+from functools import lru_cache
+
 import cv2
 import numpy as np
 
@@ -51,10 +54,18 @@ def hits(a, b):
     return not (a[2] < b[0] or b[2] < a[0] or a[3] < b[1] or b[3] < a[1])
 
 
-def place(m, occupied):
-    """The first offset that keeps the shape inside the frame and its padded box clear of every face and earlier placement."""
+@lru_cache(maxsize=None)
+def _grid():
+    """Fallback offsets for a shape the fixed OFFSETS cannot place: every 20 px step over the frame, nearest first."""
+    return tuple(sorted(((dx, dy) for dx in range(-REL_W, REL_W + 1, 20) for dy in range(-REL_H, REL_H + 1, 20) if (dx, dy) != (0, 0)),
+                  key=lambda o: (o[0] ** 2 + o[1] ** 2, o)))
+
+
+def place(m, occupied, search=False):
+    """The first offset that keeps the shape inside the frame and its padded box clear of every face and earlier placement; with
+    search, the nearest free spot on a 20 px grid is tried after the fixed OFFSETS."""
     x0, y0, x1, y1 = box(m)
-    for dx, dy in OFFSETS:
+    for dx, dy in OFFSETS + (list(_grid()) if search else []):
         b = (x0 + dx, y0 + dy, x1 + dx, y1 + dy)
         if b[0] < 0 or b[1] < 0 or b[2] >= REL_W or b[3] >= REL_H:
             continue
@@ -66,8 +77,10 @@ def place(m, occupied):
     raise SystemExit("no free non-face region for a mask")
 
 
-def edit(frame, masks):
-    """The three versions of one release frame, and per face its masked pixels and area-matched offset."""
+def edit(frame, masks, skip_unplaceable=False):
+    """The three versions of one release frame, and per face its masked pixels and area-matched offset. With skip_unplaceable, a face
+    whose shape fits none of the fixed offsets is searched for on a 20 px grid, and one that fits nowhere free gets no control patch
+    (its offset is None) instead of stopping the run."""
     faces = np.zeros((REL_H, REL_W), bool)
     for m in masks:
         faces |= m
@@ -76,7 +89,13 @@ def edit(frame, masks):
         fill(img["faces_removed"], m, faces & ~m)
     occupied, offs = [box(m, GAP) for m in masks], []
     for m in masks:
-        moved, off = place(m, occupied); occupied.append(box(moved, GAP)); offs.append(off)
+        try:
+            moved, off = place(m, occupied, search=skip_unplaceable)
+        except SystemExit:
+            if not skip_unplaceable:
+                raise
+            offs.append(None); continue
+        occupied.append(box(moved, GAP)); offs.append(off)
         fill(img["area_matched"], moved, faces)
     return img, [int(m.sum()) for m in masks], offs
 

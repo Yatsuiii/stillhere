@@ -95,3 +95,4 @@ b0eb3fe308a90d05bfea749323dc4c7b86db1ffa55e2c7b2fd902a45bd775927  tears_of_steel
 fbc8e2570ac5b3715b11f0ede6cb2789661f44478a7aac9f580d5c249446b80b  tears_of_steel bridge edited-test frame intact/t039.0.jpg (glimmer_edit_frames, MANIFEST e31e4b19)
 e6ae0afd24b489d5e5d488e6952d082dd06fc61709e179035cc73bf3e30951f6  tears_of_steel bridge edited-test frame intact/t039.5.jpg (glimmer_edit_frames, MANIFEST e31e4b19)
 06a12de73702a302f5e0c2dde4e694e192bbc2de778f5e3d24365a4584999ea0  tears_of_steel bridge edited-test frame intact/t040.0.jpg (glimmer_edit_frames, MANIFEST e31e4b19)
+6fb214df62b5e0db0ec49489a7a556e6201c4d26acbbcda842ab52fa3262922e  tears_of_steel film cut tos_film_000_190_640x360.mp4 (release 0-190 s, 4560 frames, 640x360 letterboxed like the bridge cut): SAM 3.1 face masks for the scored window

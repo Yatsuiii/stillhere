@@ -34,3 +34,14 @@ def test_no_free_region_is_refused():
     m = np.zeros((E.REL_H, E.REL_W), bool); m[10:520, 10:1270] = True
     with pytest.raises(SystemExit):
         E.place(m, [E.box(m, E.GAP)])
+
+
+def test_search_fallback_places_a_big_face_the_fixed_offsets_cannot():
+    m = np.zeros((E.REL_H, E.REL_W), bool); m[150:450, 380:700] = True       # a close-up: every fixed offset leaves the frame or hits it
+    with pytest.raises(SystemExit):
+        E.place(m, [E.box(m, E.GAP)])                                          # the bridge default: no search, refused as before
+    moved, off = E.place(m, [E.box(m, E.GAP)], search=True)
+    assert moved.sum() == m.sum() and off not in E.OFFSETS and not (moved & m).any()
+    f = np.zeros((E.REL_H, E.REL_W, 3), np.uint8)
+    img, px, offs = E.edit(f, [m], skip_unplaceable=True)
+    assert offs == [off] and px == [int(m.sum())]
