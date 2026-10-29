@@ -142,7 +142,7 @@ def test_protocol_end_to_end_with_fake_server(monkeypatch, tmp_path):
     token = "t" * 64; tf = tmp_path / "tok"; tf.write_text(token)
     st = F.State(token, jobs); port = _port(); srv = F.serve(port, st)
     monkeypatch.setenv("STILLHERE_JOBS_URL", f"http://127.0.0.1:{port}"); monkeypatch.setattr(T, "POLL_S", 0.01)
-    monkeypatch.setattr(T, "STATE", tmp_path)
+    monkeypatch.setattr(T, "STATE", tmp_path); monkeypatch.setattr(T, "within_hours", lambda *a, **k: True)
     try:
         T.main(["serve", "--token-file", str(tf), "--max-polls", "2"])
     finally:
@@ -190,6 +190,8 @@ def test_unit_has_every_sandbox_line_of_the_ruling():
     assert binds == ["@MODELS@:/opt/stillhere-worker/models", "@SITE@:/opt/stillhere-worker/site-packages",
                      "@SPACY@:/opt/stillhere-worker/spacy"]
     assert not any(ln.startswith(("BindPaths=", "PrivateDevices=yes", "ReadWritePaths=")) for ln in lines)
+    assert "[Install]" not in lines and "Restart=@RESTART@" in lines and "Wants=@WANTS@" in lines
+    assert "Environment=STILLHERE_HOURS_ET=10:00-14:00" in lines and "EnvironmentFile=-/etc/stillhere-worker/worker.env" in lines
 
 
 def test_install_script_renders_every_field_and_refuses_http():
@@ -197,9 +199,58 @@ def test_install_script_renders_every_field_and_refuses_http():
     assert subprocess.run(["bash", "-n", "worker/install_worker.sh"], cwd=REPO).returncode == 0
     assert subprocess.run(["bash", "-n", "worker/uninstall_worker.sh"], cwd=REPO).returncode == 0
     fields = set(re.findall(r"@[A-Z_]+@", UNIT))
-    assert fields == {"@ROLE@", "@TYPE@", "@COMMAND@", "@RESTART@", "@MODELS@", "@SITE@", "@SPACY@", "@JOBS_URL@", "@HIDDEN@"}
+    assert fields == {"@ROLE@", "@TYPE@", "@COMMAND@", "@RESTART@", "@WANTS@", "@MODELS@", "@SITE@", "@SPACY@", "@JOBS_URL@", "@HIDDEN@"}
+    assert 'render "serve" simple serve on-failure stillhere-worker-awake.service' in sh   # exit 0 at 14:00 ET stays down
+    assert re.findall(r"systemctl enable[^\n]*", sh) == ["systemctl enable --now stillhere-worker.timer"]   # only the timer
+    un = (REPO / "worker/uninstall_worker.sh").read_text()
+    assert all(u in un for u in ("stillhere-worker.timer", "stillhere-worker-awake.service", "stillhere-worker-selftest.service"))
     assert all(f"s#{f}#" in sh for f in fields)
     assert "^https://" in sh and "SELF-TEST FAILED" in sh and "--audit" in sh
+
+
+def test_timer_and_awake_units():
+    timer = (REPO / "worker/stillhere-worker.timer").read_text().splitlines()
+    for want in ("OnCalendar=2026-11-04..09 10:00:00 America/New_York", "Persistent=true", "Unit=stillhere-worker.service",
+                 "WantedBy=timers.target"):
+        assert want in timer, want
+    awake = (REPO / "worker/stillhere-worker-awake.service").read_text().splitlines()
+    assert "BindsTo=stillhere-worker.service" in awake
+    assert any(ln.startswith("ExecStart=/usr/bin/systemd-inhibit --what=sleep:idle:handle-lid-switch") and "--mode=block" in ln for ln in awake)
+
+
+def test_worker_hours(monkeypatch):
+    import datetime
+    from zoneinfo import ZoneInfo
+
+    from worker import tribe_worker as T
+    at = lambda h, m: datetime.datetime(2026, 11, 4, h, m, tzinfo=ZoneInfo("America/New_York"))
+    assert [T.within_hours(at(*hm), "10:00-14:00") for hm in ((9, 59), (10, 0), (13, 59), (14, 0))] == [False, True, True, False]
+    assert T.within_hours(at(23, 59), "00:00-24:00") and T.within_hours(at(0, 0), "00:00-24:00")
+    loaded = []
+
+    class NoLoad(StubEngine):
+        def load(self):
+            loaded.append(1); return self
+    import worker.engine
+    monkeypatch.setattr(worker.engine, "Engine", NoLoad); monkeypatch.setattr(T, "within_hours", lambda *a, **k: False)
+    assert T.main(["serve"]) == 0 and loaded == []                      # outside the hours: exit 0 before loading anything
+
+
+def test_serve_stops_with_exit_0_when_the_hours_end(monkeypatch, tmp_path):
+    import worker.engine
+    from worker import tribe_worker as T
+    monkeypatch.setattr(worker.engine, "Engine", StubEngine)
+    calls = iter([True, True, False])                                  # start check, first poll, then the hours are over
+    monkeypatch.setattr(T, "within_hours", lambda *a, **k: next(calls))
+    token = "t" * 64; tf = tmp_path / "tok"; tf.write_text(token)
+    st = F.State(token, []); port = _port(); srv = F.serve(port, st)
+    monkeypatch.setenv("STILLHERE_JOBS_URL", f"http://127.0.0.1:{port}"); monkeypatch.setattr(T, "POLL_S", 0.01)
+    monkeypatch.setattr(T, "STATE", tmp_path)
+    try:
+        assert T.main(["serve", "--token-file", str(tf)]) == 0
+    finally:
+        srv.shutdown()
+    assert st.claims == 1
 
 
 def test_forecast_cache():
@@ -207,12 +258,14 @@ def test_forecast_cache():
     if not p.exists():
         pytest.skip("cache not computed yet")
     doc = json.loads(p.read_text())
-    assert doc["models"] == IDX["models"] and len(doc["entries"]) == 48
+    extras = doc.get("extra_recipes", [])
+    assert doc["models"] == IDX["models"] and len(doc["entries"]) == 48 + len(extras)
+    assert {"clip_id": "alice_ch03", "condition": "sentence_scramble", "seed": 7} in extras    # the page's example chip 3
     seen = set()
     for key, e in doc["entries"].items():
         assert key == e["cache_key"] == R.cache_key(e["recipe"], IDX)
-        seen.add((e["recipe"]["clip_id"], e["recipe"]["condition"]))
-        assert e["recipe"]["seed"] in (0, IDX["default_seed"])
+        seen.add((e["recipe"]["clip_id"], e["recipe"]["condition"], e["recipe"]["seed"]))
+        assert e["recipe"]["seed"] in (0, IDX["default_seed"]) or e["recipe"] in extras
         assert e["worker_version"] == "2"                    # version 1 purged TRIBE's feature cache mid-process (docs/worker.md)
         assert e["recipe"]["condition"] == "reversed" or e["llama_placement"]["gpu_modules"] > 0
         for k in ("language", "hearing"):
@@ -222,7 +275,7 @@ def test_forecast_cache():
         assert n - 1 <= e["n_words_text_lane"] <= n          # TRIBE's own word steps may drop one (alice_ch06 word scramble: 145 of 146)
         assert e["input_sha256"] == R.build_condition(e["recipe"], IDX).wav_sha256
         assert not any(k in e for k in ("P", "vertices", "transcript", "audio"))
-    assert len(seen) == 48
+    assert len(seen) == 48 + len(extras)
 
 
 def test_serve_exits_for_a_fresh_restart_when_the_feature_cache_is_full(monkeypatch, tmp_path):
@@ -239,8 +292,10 @@ def test_serve_exits_for_a_fresh_restart_when_the_feature_cache_is_full(monkeypa
     token = "t" * 64; tf = tmp_path / "tok"; tf.write_text(token)
     st = F.State(token, jobs); port = _port(); srv = F.serve(port, st)
     monkeypatch.setenv("STILLHERE_JOBS_URL", f"http://127.0.0.1:{port}"); monkeypatch.setattr(T, "STATE", tmp_path)
+    monkeypatch.setattr(T, "within_hours", lambda *a, **k: True)
     try:
-        T.main(["serve", "--token-file", str(tf)])                    # no --max-polls: only the full cache can end it
+        code = T.main(["serve", "--token-file", str(tf)])             # no --max-polls: only the full cache can end it
     finally:
         srv.shutdown()
+    assert code == T.EXIT_RESTART != 0                                 # non-zero, so Restart=on-failure starts a fresh worker
     assert set(st.results) == {"j1"} and [j["id"] for j in st.queue] == ["j2"]
