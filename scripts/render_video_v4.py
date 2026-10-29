@@ -28,6 +28,8 @@ GHOST = REPO / "results/ghostline_lpp_s8.json"
 FILM_GHOST = REPO / "results/ghostline_film.json"                         # the film ghost line (display rule, film section), Sunday
 FILM = REPO.parent / "stillhere/pilot/film/film_stim_v2"                   # seg_intact.mp4, faces_removed_v2.mp4, area_matched_v2.mp4
 RC_FILES = (REPO / "results/face_map_RC.json", REPO.parent / "stillhere-pilot-public/results/face_map_RC.json")
+MENU = REPO / "stillhere/live_menu.json"                                 # the live menu; its screen summary fills {n_screened}
+SCREEN = REPO / "results/story_menu/screen_summary.json"                  # Spark Open's notes on every screened story
 CACHE = REPO / "data/forecast_cache.json"                                # the page's saved runs (recomputed Oct 29 17:07 UTC), LIVE beat
 GHOST_ORDER = ("forecast", "chip", "group", "five", "one")                # display rule draw order (group and five are "listeners")
 BOX = (104, 176, 1712, 640)                                              # x, y, w, h of a scene's moving picture
@@ -78,6 +80,24 @@ def vo_cues(spec: dict, endings: dict) -> list:
             text = c["variants"][e] if e else "{" + c["slot"] + "_vo}"
         out.append({"start": c["start"], "end": c["end"], "text": text})
     return out
+
+
+def auto_values() -> dict:
+    """Values read from committed files rather than typed in: the number of screened stories on the live menu."""
+    return {"n_screened": json.loads(MENU.read_text())["screen_summary"]["n_on_menu"]}
+
+
+def clip_title(clip_id: str) -> str:
+    return next((c["short"] for c in json.loads(MENU.read_text())["clips"] if c["id"] == clip_id), clip_id)
+
+
+def menu_notes_html() -> str:
+    """The screened stories on the live menu, in menu order, with how many notes Spark Open made and the first few of them."""
+    menu = [c for c in json.loads(MENU.read_text())["clips"] if c["id"].startswith("story_")]
+    notes = {x["id"]: x.get("notes_tags", []) for x in json.loads(SCREEN.read_text())["stories"]}
+    rows = "".join(f"<tr><td>{E(c['short'])}</td><td>{len(notes.get(c['id'], []))} notes</td>"
+                   f"<td>{E(', '.join(notes.get(c['id'], [])[:3]))}</td></tr>" for c in menu)
+    return f'<div class="small">Muse Spark Open, screening notes (results/story_menu/screen_summary.json)</div><table class="notes">{rows}</table>'
 
 
 def fill(text: str, values: dict) -> str:
@@ -199,9 +219,9 @@ def livetc_svg(e: dict, W: int = 1712, H: int = 330) -> str:
         out.append(f'<text x="{x0}" y="28" font-size="26" fill="#1d1f23" font-weight="600">{name}</text>'
                    f'<path d="{_path(np.arange(len(vals)) * e["tr_s"], vals, x0, y0, w, h, (0, n), yr)}" {STYLE["forecast"]}/>'
                    f'<text x="{x0}" y="{y0 + h + 30}" font-size="20" fill="#5d6470">0 to {n} s of the clip</text>')
-    r = e["recipe"]; ch = r["clip_id"].replace("alice_ch", "Alice ch. ").replace("ch. 0", "ch. ")
+    r = e["recipe"]; ch = clip_title(r["clip_id"])
     seed = f", seed {r['seed']}" if r["seed"] else ""
-    out.append(f'<text x="20" y="{H - 12}" font-size="22" fill="#1d1f23">TRIBE v2 forecast, {COND[r["condition"]]}{seed}. LibriVox, {ch}, '
+    out.append(f'<text x="20" y="{H - 12}" font-size="22" fill="#1d1f23">TRIBE v2 forecast, {COND[r["condition"]]}{seed}. LibriVox, {E(ch)}, '
                f'{n} s. Saved run. Forecast, not a scan.</text>')
     return "".join(out) + "</svg>"
 
@@ -341,6 +361,7 @@ table{font-size:34px;border-collapse:collapse} td{padding:10px 40px 10px 0;verti
 .maps2{display:flex;gap:32px} .maps2 figure{margin:0;width:840px} .maps2 img{width:840px;display:block} .maptitle{font-size:28px;font-weight:600;margin-bottom:6px}
 .tag2{align-self:flex-start;font-size:26px;padding:4px 16px;border-radius:20px;background:#eceef1;color:#5d6470;font-weight:600}
 .cutnote{align-self:flex-start;font-size:34px;font-weight:700;color:#fff;background:#11141a;padding:8px 20px;border-radius:10px}
+table.notes{font-size:32px} table.notes td{padding:10px 36px 10px 0} table.notes td:last-child{color:#5d6470;font-size:26px}
 .receipt{font-size:24px;color:#5d6470;font-family:"Noto Sans Mono",monospace}
 .foot{position:absolute;left:104px;right:104px;bottom:12px;font-size:18px;color:#5d6470;line-height:1.3}
 """
@@ -398,6 +419,8 @@ def item_html(it: dict, values: dict, ctx: dict) -> str:
     if k == "maps":
         return '<div class="maps2">' + "".join(f'<figure><div class="maptitle">{fill(m["title"], values)}</div>'
                                                f'<img src="{ctx["maps"][m["key"]].as_uri()}"></figure>' for m in it["maps"]) + "</div>"
+    if k == "menu_notes":
+        return menu_notes_html()
     if k == "tag":
         return f'<div class="tag2">{E(it["text"])}</div>'
     if k == "cutnote":
@@ -601,7 +624,7 @@ def vo_markdown(spec: dict) -> str:
              "Read at about 2.5 words a second. The first four lines are the frozen D23 opener, word for word; they start under the cold",
              "open. Lines in {braces} are filled before recording. The d20 and film result lines have one reading per ending; record the",
              "one that happened. On a d20 fail the notthefall scene leaves and the story wall runs on to 118 s. Yatsu records Monday.", ""]
-    total_words = 0
+    total_words = 0; auto = auto_values()
     for sc in spec["scenes"]:
         cues = [c for c in spec["vo"] if owner(spec, c) is sc]
         lines += [f"## {sc['start']:g}-{sc['end']:g} s · {sc['id']} · headline: \"{sc['headline']}\"", ""]
@@ -616,8 +639,11 @@ def vo_markdown(spec: dict) -> str:
                     lines.append(f"  - {e}: \"{txt}\" ({words(txt)} words, {words(txt) / (c['end'] - c['start']):.1f} words/s)")
                 total_words += max(words(t) for t in c["variants"].values())
             else:
-                n = words(c["text"]); total_words += n
-                lines.append(f"- {c['start']:.1f}-{c['end']:.1f} s: \"{c['text']}\" ({n} words, {n / (c['end'] - c['start']):.1f} words/s)")
+                text = c["text"]
+                for k, v in auto.items():
+                    text = text.replace("{" + k + "}", str(v))
+                n = words(text); total_words += n
+                lines.append(f"- {c['start']:.1f}-{c['end']:.1f} s: \"{text}\" ({n} words, {n / (c['end'] - c['start']):.1f} words/s)")
         lines.append("")
     lines += [f"Total: {total_words} words in {spec['total_s']} s ({total_words / spec['total_s']:.2f} words/s, longest reading of each slot counted).", ""]
     return "\n".join(lines)
@@ -659,7 +685,7 @@ def main(argv=None) -> None:
     slots = {sc["slot"]: sc["variants"] for sc in spec["scenes"] if "slot" in sc}
     for s, e in endings.items():
         assert s in slots and e in slots[s], f"no ending {s}={e}"
-    values = json.loads(a.values.read_text()) if a.values else {}
+    values = {**auto_values(), **(json.loads(a.values.read_text()) if a.values else {})}
     work = a.work or Path(tempfile.mkdtemp(prefix="stillhere-v4-")); work.mkdir(parents=True, exist_ok=True)
     endings.setdefault("live", "inset")                                     # the plan; "cut" is the fallback if the inset reads badly
     ctx = {"ghost": ghost_doc(), "film_ghost": film_ghost_doc(), "maps": render_maps_for(spec, work), "d20_line": d20_line(spec),

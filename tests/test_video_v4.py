@@ -9,7 +9,8 @@ D20 passed, so its scene carries the pass line with N = 22 and the PREREG small 
 parcels), and the PASS slide carries the PASS stamp and an "Exploratory" label; the LIVE beat says "on a laptop", draws from
 data/forecast_cache.json (saved runs labelled as such) and the filmed job, plays the job uncut as a corner inset (inset) or cut once
 with "{n} s of waiting cut" and no "uncut" (cut). Plan of Oct 29 19:20 UTC (1a): the LIVE beat's clip has no public scan (alice_ch02;
-ch01 is the Alice Datasets' stimulus), so "No one has scanned this yet" holds."""
+ch01 is the Alice Datasets' stimulus), so "No one has scanned this yet" holds; after Part 2 it is story_black_cat. Part 4: the 53.0 s
+and 65.6 s voice-over lines word for word, {n_screened} filled from the live menu's screen summary, AUDIT left to the page."""
 import importlib.util
 import json
 import re
@@ -225,12 +226,25 @@ def test_live_beat_draws_from_the_saved_runs():
 
 def test_live_clip_has_no_public_scan():
     clip = SPEC["live"]["entry"]["clip_id"]
-    assert SPEC["live"]["reversed"]["clip_id"] == clip == "alice_ch02"
+    assert SPEC["live"]["reversed"]["clip_id"] == clip == "story_black_cat"
     assert all(e["recipe"]["clip_id"] == clip for e in live_ctx().values())          # every 60-92 s panel reads this clip
     menu = {c["id"]: c for c in json.loads((ROOT / "stillhere/live_menu.json").read_text())["clips"]}
     if "public_scan" not in menu[clip]:
         pytest.skip("stillhere/live_menu.json has no public_scan field yet")
     assert menu[clip]["public_scan"] is None                                      # "No one has scanned this yet" must be true
+
+
+def test_part4_lines():
+    vo = {c["start"]: c for c in SPEC["vo"]}
+    assert vo[53.0]["text"] == "Spark Open read every screened story and noted what is in it, with the line and the time."
+    assert vo[65.6]["text"].replace("{n_screened}", "{n}") == "A judge picks one of {n} screened public stories, a condition and a seed."
+    assert vo[88.0]["text"] == "No one has scanned this yet."
+    menu = json.loads((ROOT / "stillhere/live_menu.json").read_text())
+    n = menu["screen_summary"]["n_on_menu"]
+    assert V.auto_values()["n_screened"] == n == sum(c["id"].startswith("story_") for c in menu["clips"])
+    assert f"A judge picks one of {n} screened public stories" in (ROOT / "docs/vo_script.md").read_text()
+    html = V.menu_notes_html()
+    assert html.count("<tr>") == n and "Advisory" not in all_text(SC["build_audit"]) and "audit_line" not in all_text(SC["build_audit"])
 
 
 def test_live_inset_or_one_cut():

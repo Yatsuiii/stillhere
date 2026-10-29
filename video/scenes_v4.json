@@ -344,20 +344,10 @@
    "beat": "build",
    "start": 53,
    "end": 60,
-   "headline": "Spark Open adds an advisory note",
+   "headline": "Spark Open read each screened story",
    "items": [
     {
-     "kind": "advisory",
-     "label": "Advisory check, not measured",
-     "text": "{audit_line}"
-    },
-    {
-     "kind": "small",
-     "text": "Muse Spark Open reads the plan and the checklist and writes one note. It never blocks a build."
-    },
-    {
-     "kind": "placeholder",
-     "text": "the AUDIT station's real card (Friday)"
+     "kind": "menu_notes"
     }
    ]
   },
@@ -1135,7 +1125,7 @@
   {
    "start": 53.0,
    "end": 59.8,
-   "text": "Spark Open adds a second opinion on the conditions. It is advisory, and never blocks a build."
+   "text": "Spark Open read every screened story and noted what is in it, with the line and the time."
   },
   {
    "start": 60.2,
@@ -1150,7 +1140,7 @@
   {
    "start": 65.6,
    "end": 71.6,
-   "text": "A judge picks a public clip, a condition and a seed."
+   "text": "A judge picks one of {n_screened} screened public stories, a condition and a seed."
   },
   {
    "start": 71.6,
@@ -1264,11 +1254,11 @@
  ],
  "live": {
   "entry": {
-   "clip_id": "alice_ch02",
+   "clip_id": "story_black_cat",
    "condition": "sentence_scramble"
   },
   "reversed": {
-   "clip_id": "alice_ch02",
+   "clip_id": "story_black_cat",
    "condition": "reversed"
   },
   "inset": {

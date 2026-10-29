@@ -45,16 +45,16 @@ one that happened. On a d20 fail the notthefall scene leaves and the story wall 
 
 - 50.0-53.0 s: "Our first word scramble failed this check." (7 words, 2.3 words/s)
 
-## 53-60 s · build_audit · headline: "Spark Open adds an advisory note"
+## 53-60 s · build_audit · headline: "Spark Open read each screened story"
 
-- 53.0-59.8 s: "Spark Open adds a second opinion on the conditions. It is advisory, and never blocks a build." (17 words, 2.5 words/s)
+- 53.0-59.8 s: "Spark Open read every screened story and noted what is in it, with the line and the time." (18 words, 2.6 words/s)
 
 ## 60-76 s · live_run · headline: "Live on a laptop, uncut"
 
 - 60.2-65.6 s, one reading per live ending:
   - inset: "This part runs live and uncut, on a laptop." (9 words, 1.7 words/s)
   - cut: "This part runs live, on a laptop." (7 words, 1.3 words/s)
-- 65.6-71.6 s: "A judge picks a public clip, a condition and a seed." (11 words, 1.8 words/s)
+- 65.6-71.6 s: "A judge picks one of 4 screened public stories, a condition and a seed." (14 words, 2.3 words/s)
 - 71.6-76.0 s: "TRIBE v2 forecasts the brain response, stage by stage." (9 words, 2.0 words/s)
 
 ## 76-82 s · live_reversed · headline: "Reversed speech: no words reach text"
@@ -122,4 +122,4 @@ one that happened. On a d20 fail the notthefall scene leaves and the story wall 
 
 - 168.0-171.8 s: "Research use only. Not a diagnosis or medical advice." (9 words, 2.4 words/s)
 
-Total: 381 words in 172 s (2.22 words/s, longest reading of each slot counted).
+Total: 385 words in 172 s (2.24 words/s, longest reading of each slot counted).
