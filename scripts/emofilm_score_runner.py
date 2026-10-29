@@ -6,9 +6,9 @@ the committed functions in stillhere/emofilm_score.py (and, through them, stillh
            volume counts: the file must be the session's runs concatenated (rows = sum of counts) or exactly one run whose count is the
            Tears of Steel run's and no other run's; otherwise the rule's fallback: no frame censoring and run exclusion by MRIQC fd_mean
            only. The image is projected to fsaverage5 exactly as the LPP harness (vol_to_surf, ball 3 mm, linear, the mid mesh between
-           pial and white) and averaged into Schaefer-400 parcels (AUD, LANG, VIS). Saved per run to CACHE (outside the repo): the raw
-           parcel rows over the whole run, FD and the censoring mask, plus a manifest with every input's and cache file's SHA-256. No
-           forecast is needed.
+           pial and white) and averaged into Schaefer-400 parcels (AUD, LANG, VIS, and all 400 for the face map). Saved per run to
+           CACHE (outside the repo): the raw parcel rows over the whole run, FD and the censoring mask, plus a manifest with every
+           input's and cache file's SHA-256. No forecast is needed.
   score    With the forecast kernel's output (pred_full.npz, pred_audio.npz, words.csv, tierD_bridge_forecast.json): refuses unless the
            forecast files exist and every cache file's SHA-256 equals the manifest's. Per viewer: scored volumes (no lag search, the
            10 s drop), clean_full_then_crop, the D7 rule, the HEARING / LANGUAGE / VISUAL gauges and the four baselines; group medians
@@ -32,6 +32,7 @@ import numpy as np
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO)
 from stillhere import emofilm_score as E  # noqa: E402
+from stillhere import face_map as FM  # noqa: E402
 from stillhere import heldout as H  # noqa: E402
 
 TOS_SHA = "efa9062d9cdb7a338e40ad530dfdf234806743f29ae6a1a136b97ece4e588e8f"
@@ -92,6 +93,7 @@ def mid_meshes():
 def parcel_index(atlas_dir) -> dict:
     lh, rh = (f"{atlas_dir}/{h}.Schaefer2018_400Parcels_17Networks_order.annot" for h in ("lh", "rh"))
     sets = H.parcel_sets(lh, rh); sets["VIS"] = E.visual_sets(lh, rh)
+    sets["ALL"] = FM.all_parcels(lh, rh)["vertices"]                          # all 400 parcels, for the face map (docs/rules/face_map_rule.md)
     return sets
 
 
@@ -112,6 +114,8 @@ def prepare_run(img_path, motion_path, row: dict, runs: list, mriqc_fd_mean: flo
     if vert.shape != (20484, n):
         raise ValueError(f"projection shape {vert.shape}")
     raw = E.parcel_means(vert, {k: sets[k] for k in NETS})
+    if "ALL" in sets:
+        raw["ALL"] = E.parcel_means(vert, {"ALL": sets["ALL"]})["ALL"]           # the face map's series; the intact score reads NETS only
     return {"status": "prepared", "n_vols": n, "raw": raw, "fd": fd, "keep": keep, "fd_source": src, "mriqc_fd_mean": mriqc_fd_mean}
 
 
