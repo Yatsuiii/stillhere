@@ -1,0 +1,12 @@
+{"version":3,"term":{"cols":100,"rows":30},"timestamp":1793264997,"command":"python3.12 scripts/run_demo_requests.py spark-open-baseten --round 2 --pause 2","env":{"SHELL":"/bin/bash"}}
+[0.216, "o", "StillHere Pilot: study planner, live (demo, not scored)\r\nPlanner v2 on Muse Spark Open (Baseten)\r\n\r\n"]
+[0.000, "o", "Request DEMO1b: Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: a\r\n  LibriVox chapter as recorded versus the same chapter with its sentences shuffled, in the\r\n  language network.\r\n... planning on Muse Spark Open (Baseten)\r\n"]
+[5.875, "o", "  StudySpec: population=healthy_adults, language=english, brain_areas=['language_network'],\r\n    conditions=['intact', 'sentence_scramble'], stimulus=librivox_audiobook,\r\n    analysis=forecast_tribe_stock.\r\n  Stimuli (exploratory): librivox_audiobook, le_petit_prince.\r\n"]
+[0.000, "o", "  Conditions from librivox_alice_ch01_75s.wav (exploratory): intact (1200000 samples).\r\n"]
+[0.000, "o", "  Conditions from librivox_alice_ch01_75s.wav (exploratory): sentence_scramble (1200000\r\n    samples).\r\n  Forecast, not validated (exploratory): TRIBE's predicted response strength (hearing, audio-\r\n    only). A forecast, not validated; it says nothing about language or understanding.\r\n"]
+[0.000, "o", "  decision: accept; tools: list_stimuli, make_conditions, make_conditions, forecast; 5.9 s, 2\r\n  call(s), 2480 tokens\r\n\r\n"]
+[2.001, "o", "Request DEMO2b: Plan an exploratory stock TRIBE forecast for healthy English-speaking adults\r\n  hearing Le Petit Prince read normally versus the same recording played backwards, in the\r\n  hearing areas.\r\n... planning on Muse Spark Open (Baseten)\r\n"]
+[4.246, "o", "  StudySpec: population=healthy_adults, language=english, brain_areas=['auditory'],\r\n    conditions=['intact', 'reversed'], stimulus=le_petit_prince, analysis=forecast_tribe_stock.\r\n  Stimuli (exploratory): librivox_audiobook, le_petit_prince.\r\n  Conditions from librivox_alice_ch01_75s.wav (exploratory): intact (1200000 samples).\r\n  Forecast, not validated (exploratory): TRIBE's predicted response strength (hearing, audio-\r\n    only). A forecast, not validated; it says nothing about language or understanding.\r\n"]
+[0.000, "o", "  decision: accept; tools: list_stimuli, make_conditions, forecast; 4.2 s, 2 call(s), 2349\r\n  tokens\r\n\r\n"]
+[2.001, "o", "2 requests; 2 planned, 0 declined; about $0.012\r\n"]
+[0.031, "x", "0"]
