@@ -10,18 +10,19 @@ fine-tuned model is the pre-registered second model. Gate 1 used the timing set 
 No sedation stage line: two of the three co-primary bars did not pass.
 
 - P7 (pipeline check, brain-to-brain ISC, not TRIBE): met.
-- P1 (LANGUAGE Awake > Deep): not met. LANGUAGE fell in 9 of 12 volunteers (needed 10), p = 0.0034, Hodges-Lehmann median change
-  +1.11 z [95% CI +0.43, +1.78]. The claim becomes "HEARING + ISC replication; TRIBE-only LANGUAGE did not reach the bar".
-  Lag-sensitive (D24): it passes at L + 1 s.
-- P3 (LANGUAGE falls more than HEARING): not met. Hodges-Lehmann median -2.32 z [-3.56, -0.79]: HEARING fell more than LANGUAGE.
-  The claim becomes "one combined gauge, no split".
+- P1: TRIBE-only LANGUAGE did not reach the bar: it fell from awake to deep sedation in 9 of 12 (needed 10; p 0.003, HL 1.11
+  [0.43, 1.78]). The claim becomes "HEARING + ISC replication".
+
+  Fine-tuned TRIBE v2, the pre-registered second model: 10 of 12 (p 0.008, HL 0.82).
+
+- P3: hearing dropped more than language (HL -2.32 [-3.56, -0.79]). The claim becomes "one combined gauge, no split".
 - P8 (LANGUAGE follows the real word order over shuffled words, Awake): met, 10 of 15, p = 0.018.
 - P2a (TRIBE HEARING in Deep above the rest null): met, p = 0.0024.
 - P5 (both gauges above the rest null and a wrong story, Awake): met for both. P6 (Recovery above Deep): met, lag-sensitive.
 
-Units: z against each volunteer's own rest scan (z_rest), 145 TRs = 4.8 minutes per state. LANGUAGE is reported in z only. No hearing
-detection percentage is reported for this dataset: against a wrong story, the HEARING gauge "detected" 5 of 15 Awake volunteers (33%),
-above the 7% limit (exploratory check below).
+Units: z against each volunteer's own rest scan (z_rest), 145 TRs = 4.8 minutes per state. LANGUAGE is reported in z only. No per-volunteer
+HEARING hit rate is reported for this dataset: against a wrong story, the HEARING gauge passed for 5 of 15 Awake volunteers (33%), above
+the 7% limit (exploratory check below).
 
 ## Exploratory, designed after seeing the Gate 1 result
 
@@ -35,7 +36,8 @@ Sensitivities listed in PREREG before Gate 1, with code written after the main r
 | Fine-tuned TRIBE (pre-registered second model) | met (10 of 12, p = 0.008) | not met (-2.55) | P6 not met |
 | Proportional P3 (each gauge's drop over its Awake median) | | +0.03 [-0.28, +0.99] | both gauges fall by a similar fraction |
 
-P3 fails in every variant. P1 is borderline: it passes under some analysis choices and fails in the pre-registered one.
+P3 fails in every variant. P1 does not reach the bar in the pre-registered analysis; it is marked lag-sensitive (D24: met at L + 1 s),
+and some variants above reach 10 of 12.
 
 Word rate against TRIBE (same language parcels, volunteers, timing and rest null): in this clip, TRIBE and word rate largely track the
 same part of the language signal. TRIBE alone explains slightly more (r² 0.048 vs 0.045 for word rate), and together they reach 0.065.
