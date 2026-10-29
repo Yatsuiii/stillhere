@@ -218,6 +218,18 @@ def test_film_ghost_line_follows_the_display_rule():
         assert ticks and all(0 <= s_ <= 185 and v > 0 for s_, v in ticks)
 
 
+def test_landed_lpp_ghost_file_is_drawn_as_is():
+    if not V.GHOST.exists():
+        pytest.skip("results/ghostline_lpp_s8.json not landed")
+    g = V.ghost_doc()
+    assert "placeholder" not in g and g["format"] == "stillhere-ghostline/1" and g["chip"]["short"] == "Checked: held-out LPP"
+    assert {k: v["label"] for k, v in g["lines"].items()} == {k: v["label"] for k, v in V.synthetic_ghost()["lines"].items()}
+    assert all(len(v["values"]) == len(g["time_s"]) for v in g["lines"].values())
+    assert g["frozen_line"]["text"] == "~5 volunteers' worth (at least 2). Group level."
+    for view in ("short", "full"):
+        assert "PLACEHOLDER" not in V.ghost_svg(g, view, list(V.GHOST_ORDER))
+
+
 def test_ghost_file_swaps_in(tmp_path, monkeypatch):
     doc = {k: v for k, v in V.synthetic_ghost().items() if k != "placeholder"}
     f = tmp_path / "ghostline_lpp_s8.json"; f.write_text(json.dumps(doc))

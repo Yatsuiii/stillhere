@@ -126,7 +126,9 @@ def ghost_svg(doc: dict, view: str, show: list, size: str = "full") -> str:
     W, H, x0, y0, w, h = {"full": (1712, 560, 70, 70, 1612, 400), "half": (820, 470, 30, 110, 770, 250),
                           "tile": (600, 420, 20, 104, 560, 190)}[size]
     half = size != "full"
-    xs = t[i0:i1]; L = doc["lines"]; yr = (-3.2, 3.2); xr = (xs[0], xs[-1])
+    xs = t[i0:i1]; L = doc["lines"]; xr = (xs[0], xs[-1])
+    top = max(abs(v) for k in ("forecast", "group", "five", "one") for v in L[k]["values"][i0:i1] if v is not None)
+    yr = (-max(3.2, top + 0.2), max(3.2, top + 0.2))                       # one axis for every step; the values are never rescaled
     parts = [f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">',
              f'<text x="{x0}" y="36" font-size="28" fill="#1d1f23" font-weight="600">{E(doc["title"])}</text>',
              f'<line x1="{x0}" y1="{y0 + h / 2}" x2="{x0 + w}" y2="{y0 + h / 2}" stroke="#e3e0d8" stroke-width="2"/>',
