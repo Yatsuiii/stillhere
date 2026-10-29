@@ -1,74 +1,103 @@
-# Captions for the page and the video (written before the results; Sunday fills the placeholders)
+# Captions, voice-over and slides (written before the results; Sunday fills the placeholders)
 
-Placeholders: {k} viewers or frames that met the condition, {N} the total, {p} the p value as computed, {lo} and {hi} interval ends,
-{veq} and {veq_lo} the volunteer-equivalent and its lower bound. Each slot has one caption per possible ending; Sunday picks the one
-that happened and fills its numbers. No caption changes wording after a result is known.
+Storyline of the project-thread ruling of Oct 29, 06:30 UTC. Placeholders: {k} viewers, listeners or frames that met the condition, {N}
+the total, {p} the p value as computed, {reason} why a test did not run. Each results slot has one caption per possible ending; Sunday
+picks the ending that happened and fills its numbers. No wording changes after a result is known.
 
 ## Wording rules
 
-- SAM edits the frames; Spark Open and Glimmer check the edits ("edit check", never "face check"); TRIBE forecasts. Nothing "detects
-  faces". Nothing is "validated": no viewer saw an edited cut.
-- What the edit does, said plainly: "SAM masked the faces and StillHere filled each one with the colour around it." (If the final cuts
-  blur instead of fill, this line changes to "SAM masked the faces and StillHere blurred them" before any edited forecast exists.)
-- The proof line: "a forecast worth about {veq} real volunteers, and at least {veq_lo}."
-- Cheap baselines are never a headline. Each evidence panel carries one row, "What it had to beat: {baselines}".
-- Hearing: "agreed with the classic sound test".
-- Every result is labelled exploratory unless it is a pre-registered bar; a failed bar is shown as failed.
-- Film frames on screen always carry the credit line below.
+- What the edit does: "SAM filled the faces it masked with the surrounding colour"; the control patches get exactly the same fill.
+- SAM edits the frames; Spark Open and Glimmer check the edits ("edit check"); TRIBE forecasts. Nothing here is "validated": no viewer
+  saw an edited cut.
+- StillHere is a research tool for labs. The words on the banned list (tests/test_captions_wording.py) never appear in captions,
+  voice-over or the write-up.
+- Every results slide carries: "Not a diagnosis or medical advice."
+- Every slide that shows film frames carries the credit line below.
+- Hearing: "agreed with the classic sound test". Cheap baselines are never a headline; a results panel may carry one row, "What it had to
+  beat: ...".
+- The sedation case study is never in the video.
 
 ## Credit line (on screen whenever film frames show)
 
 "Tears of Steel (CC) Blender Foundation | mango.blender.org, CC BY 3.0. Edited for this study."
 
-## Hero
+## a. Opening (spoken word for word: the frozen D23 opener)
 
-1. Question (typed): "If I remove the faces from this film scene, what changes in the brain?"
-2. Plan: "Muse Spark turned the question into a study: the intact film, a version with the faces removed, and an equal-area control with
-   the same amount of picture removed somewhere else."
-3. Edit: "SAM 3.1 masked every face in three minutes of film; StillHere removed them, and removed the same area elsewhere for the
-   control."
-4. Edit check:
-   - pass: "Edit check: Spark Open and Glimmer saw a face in {k_int} of {N} intact frames, none in {k_rem} of {N} edited ones, and
-     still saw faces in {k_am} of {N} control frames."
-   - fail: "Edit check failed ({detail}), so the face-map test did not run."
-5. Maps, one caption per ending (the test is scored once, at the logged onsets):
-   - PASS (also outside the visual network): "SAM masked the faces; TRIBE forecast the change; that forecast lined up with where {N} real
-     viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the equal-area control."
-   - PASS carried by visual-network parcels: the PASS line, then "Most of the match comes from visual-network areas."
-   - FAIL, not face-specific: "TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}), but no better
-     than its forecast for the equal-area control: not face-specific."
-   - FAIL: "TRIBE's forecast of the face edit did not line up with where {N} real viewers' brains tracked faces ({k} of {N} viewers,
-     p = {p}). We show it because we said we would."
-   - UNINFORMATIVE: "The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."
-   - NOT RUN: "The face-map test did not run: {reason}. It was set to run once, by rules written before any brain data was read."
+Voice-over: "Labs study people who can't respond after brain injury by playing them stories in the scanner. But every new story needs its
+own 12-15 healthy volunteers scanned first, in that language. For a new story, StillHere gives labs a first reading with zero volunteer
+scans, measured against each listener's own brain. It has been tested only in healthy volunteers."
 
-## Evidence panels
+On-screen captions:
+- "1 in 4 brain-injured patients who could not follow commands at the bedside showed command-following brain activity on fMRI or EEG
+  (Bodien et al., NEJM 2024)."
+- "At university scanner rates ($450-700 an hour), 12-15 volunteers is roughly $5,000-15,000 of scanner time per new story, before
+  recruitment."
 
-- Held-out speech (LPP section 8): "On a story chapter it never saw, TRIBE's forecast was worth about {veq} real volunteers, and at
-  least {veq_lo}. It agreed with the classic sound test." What it had to beat: word rate and the sound envelope. Label: "recomputed with
-  code built during the event; first measured Oct 22-23."
-- Story wall (Narratives and LPP stories), one per ending:
-  - scored: "Across {N} stories from public scans, TRIBE's forecast {wall_result}." What it had to beat: {baselines}.
-  - next step (too few stories passed the pre-registered checks): "Too few stories passed the pre-registered data checks to score the
-    wall; the rule says to report it as a next step."
-  - not run: "Pre-registered, not run (GPU time ran out)."
-- notthefall (intact story vs the same words scrambled), one per ending:
-  - pass: "Listeners' brains followed the intact story more than the scrambled one where TRIBE said they would ({k} of {N}, p = {p})."
-  - fail: "The intact-versus-scrambled test did not pass ({k} of {N}, p = {p})."
-  - not run: "Pre-registered, not run ({reason})."
-  - What it had to beat: word rate and the sound envelope of each version.
-- Planner: "Ask for something it cannot support and it says so, with the reason and the nearest thing it can do." Numbers (v2, on
-  62 requests written after v2 was frozen, never seen before): "False accepts: {k} of {N} ({p_upper} upper bound when {k} is 0).
-  Declines from the model: {k_model}; from the planner's fixed rules: {k_rules}."
-- Sedation case study: "Frozen group statistics only. Its two headline bars did not pass, and the write-up says so."
+## b. Why it matters (one line)
 
-## Disclosures (page footer and the video's last slide)
+"Passive tests play a story or a film, and every new one needs healthy volunteers scanned first (Naci et al., PNAS 2014, used a film)."
 
-- TRIBE v2 (Meta FAIR, CC BY-NC 4.0, not included in this repository) was trained on four datasets (Courtois NeuroMod, BoldMoments,
-  Lebel2023, Wen2017; 25 participants) and tested by its authors on four others (NNDb, LPP, Narratives, HCP): d'Ascoli et al. 2026,
-  arXiv 2605.04326, Table 1. Emo-FilM and the Blender films are not among them, so the 28 film viewers and Tears of Steel are new to
-  the model. LPP and Narratives are TRIBE's own held-out test sets, not its training data.
+## c. Demo beat A: a new story test
+
+1. Ask (typed): "Build a test from this new story, with a scrambled control."
+2. Plan: "Muse Spark 1.3 plans it: the intact story and a sentence-scrambled control, the only kinds it has evidence for."
+3. Check: "Muse Voice Transcribe checks every version before anyone is scanned: the intact story kept 99% of its words; the sentence
+   scramble kept 98% of its words in a new order."
+   Broken stimulus caught: "The word scramble kept only 16% of its words, so it was caught as broken before scanning and is not used."
+4. Forecast and proof: "TRIBE v2 forecasts the healthy-adult response. On a held-out audiobook, the forecast was worth about 5 real
+   volunteers, and at least 2. It agreed with the classic sound test." What it had to beat: word rate and the sound envelope.
+   Small print: "Le Petit Prince, section 8, held out: recomputed with code built during the event; first measured Oct 22-23."
+5. Real listeners, intact versus scrambled (notthefall), used only if it passes tonight:
+   - pass: "Real listeners' brains followed the intact story more than the scrambled one where TRIBE said they would ({k} of {N},
+     p = {p})." What it had to beat: word rate and the sound envelope of each version.
+   - any other ending: the panel is left out.
+6. Planner: "Ask for something it cannot support and it says so, with the reason and the nearest thing it can do. On requests it had
+   never seen, the default planner (Muse Spark 1.3) accepted 2.3% it should have declined (upper bound 6.5%). Private mode, Muse Spark
+   Open, which can run on your own servers: 7.6% (Fireworks), 6.8% (Baseten)."
+
+## d. Demo beat B: the same loop on video
+
+1. Ask (typed): "If the faces in this film scene are filled in, what changes in the brain?"
+2. Edit: "SAM filled the faces it masked with the surrounding colour. The control fills the same area somewhere else, with exactly the
+   same fill."
+3. Edit check, one per ending:
+   - pass: "Edit check: Spark Open and Glimmer saw a face in {k_int} of {N} intact frames, in {k_rem} of {N} filled ones, and in
+     {k_am} of {N} control frames."
+   - fail: "The edit check failed ({detail}), so the film test did not run."
+4. Forecast against 28 real viewers. Length and caption follow the outcome (the test is scored once, at the logged onsets):
+   - PASS (also outside the visual network; long panel): "SAM filled the faces it masked; TRIBE forecast the change; that forecast lined
+     up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the
+     control."
+   - PASS carried by visual-network parcels (long panel): the PASS line, then "Most of the match comes from visual-network areas."
+   - FAIL, not face-specific (short panel): "TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}),
+     but no better than its forecast for the control: not specific to faces."
+   - FAIL (short panel): "TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces ({k} of
+     {N} viewers, p = {p}). We show it because we said we would."
+   - UNINFORMATIVE (short panel): "The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."
+   - NOT RUN (short panel): "The film test did not run: {reason}. It was set to run once, by rules written before any brain data was
+     read."
+   Small print on every film results slide: "The one check on data TRIBE's authors never used."
+
+## e. Close
+
+"A first healthy reference for a new test, with zero scans, and evidence for how far to trust it."
+
+## Disclosures (close slide and page footer)
+
+- TRIBE v2 (Meta FAIR, CC BY-NC 4.0, not included in this repository) was trained on Courtois NeuroMod, BoldMoments, Lebel2023 and
+  Wen2017 (25 participants) and evaluated by its authors on NNDb, LPP, Narratives and HCP (d'Ascoli et al. 2026, arXiv 2605.04326,
+  Table 1). LPP and Narratives are therefore among TRIBE v2's own evaluation sets. Emo-FilM and the Blender films are in neither list:
+  the film is the one check on data TRIBE's authors never used.
 - SAM 3.1 through Meta's Model API, decoded with meta-sam-parser under Meta's SAM License; we acknowledge the use of SAM in this work.
 - Data: Emo-FilM (Morgenroth et al. 2025; OpenNeuro ds004892 and ds004872, CC0), Le Petit Prince (ds003643), Narratives (ds002345),
-  LibriVox (public domain), Tears of Steel and Sintel (Blender Foundation, CC BY 3.0).
-- Research tool for brain-imaging labs. Healthy volunteers and public data. Not a diagnosis or medical advice.
+  LibriVox (public domain), Tears of Steel (Blender Foundation, CC BY 3.0).
+- Research tool for labs. Tested only in healthy volunteers and public data. Not a diagnosis or medical advice.
+
+## Sources for the write-up
+
+- Bodien et al., NEJM 2024 (the 1 in 4 figure; cite by authors and journal, without the title).
+- Naci et al., PNAS 2014 (a passive test with a film).
+- Scanner rates: University of Michigan fMRI Lab, $620 an hour from Apr 16, 2025 (fmri.research.umich.edu/users/billing.php);
+  University of Kentucky MRISC, budget up to $625 an hour for proposals after June 30, 2026 (research.uky.edu/mrisc/rates-policies);
+  Yale MRRC, $696 (medicine.yale.edu/mrrc/users/charges; the page lists $696 per hour with a 1-hour minimum, so check the "for 1.5 h"
+  reading before quoting it).
