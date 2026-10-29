@@ -42,8 +42,14 @@ With TRIBE's in-RAM feature cache off, its text extractor loads Llama 3.2 for ea
 after the text lane. w2v-BERT and the brain model stay loaded.
 
 The engine writes each build at a content-addressed path, because TRIBE's feature cache keys audio by file path. Without that, a
-second job at the same path would silently reuse the first job's features. The development run hit this and it is now fixed. The
-engine also deletes each job's cached features afterwards.
+second job at the same path would silently reuse the first job's features. The development run hit this and it is now fixed.
+
+TRIBE's feature cache (exca) is emptied when the engine loads and never touched while the process runs, because exca keeps an
+in-process index into its memmap files. A first version deleted each job's cache files after the job, and every later job in the same
+process then read wrong features. That is why alice_ch02 intact once differed from the order-map run, and why the first 48-entry cache
+was wrong after each process's first job: its alice_ch02 intact reached r = 0.25 (language) and 0.69 (hearing) against the order-map
+forecast. That cache was discarded and recomputed. The cache now grows by about 36 MB a job. Past 2 GB (`STILLHERE_CACHE_LIMIT_GB`),
+`serve` exits after the job and systemd (`Restart=always`) starts it again with an empty cache.
 
 The word table TRIBE reads (`<wav>.tsv`, through pandas) is written with csv quoting and read back before every run. Unquoted, a word starting with a double quote (dialogue in chapters 7, 8
 and 12) opened a quoted field and silently swallowed the rows after it. The first precompute lost about half of alice_ch07's words
@@ -62,21 +68,33 @@ No vertex data, audio or transcript leaves.
 `data/live_clips.json` `models` names every model, revision, precision and device, and is part of every cache key. The engine refuses
 to start if what it loads differs.
 
-Check against the order-map run, which used the same clip, a GPU audio lane and a GPU brain model: the worker's reversed alice_ch02
-forecast matches it exactly (r = 1.0000, max difference 0.0000 in both regions). The intact forecast differs (language r = 0.93,
-hearing r = 0.83). The audio and the word table are identical, so the difference is in the text lane. The most likely cause is that
-accelerate places a different share of Llama's float16 layers on the CPU when the brain model is not on the GPU. That placement
-depends on free GPU memory when Llama loads, so the cache and live jobs are only comparable when the GPU is otherwise idle.
+### Repeatability (measured Oct 29, alice_ch02 intact, raw units; region SD about 0.12 language, 0.15 hearing)
+
+| Pair | Language max abs diff, r | Hearing max abs diff, r |
+|---|---|---|
+| Two fresh processes, GPU otherwise idle (same split: 22 Llama modules on GPU, 9 on CPU) | 0.00037, 1.000000 | 0.00027, 1.000000 |
+| After another job in the same process vs a fresh process | 0.00013, 1.000000 | 0.00029, 1.000000 |
+| Another process holding 1.5 GB of VRAM (split moves to 15 on GPU, 16 on CPU) vs idle | 0.00014, 1.000000 | 0.00017, 1.000000 |
+| Fork E's order-map forecast vs a fresh worker run | 0.00026, 1.000000 | 0.00023, 1.000000 |
+
+The device split is not a material cause. It depends on free GPU memory, but moving it changes the forecast only at float16
+run-to-run level, so it is recorded, not pinned. Every result carries `llama_placement` (module counts and a hash of the device map).
+It is kept out of `models` and the cache key, so free memory cannot change a key. Fork E's numbers fall inside the run-to-run spread.
+The earlier r = 0.93 / 0.83 came from the cache-purge bug above, not from the model or the split.
+
+A live run of a cached recipe therefore reproduces the cached line within 0.002 max abs difference and r >= 0.9999, the tolerance of
+the opt-in GPU test `tests/test_worker_gpu.py` (`STILLHERE_GPU_TESTS=1`). That test runs a recipe after another job in the same
+process.
 
 ## Timings (warm engine, 4050 laptop)
 
 | Job | Time | Breakdown |
 |---|---|---|
-| Intact or scrambled | about 47 to 73 s | text lane 20 to 35 s; audio lane on CPU 23 to 39 s; predict 2 to 4 s |
-| Reversed | about 25 to 39 s | no text lane |
+| Intact or scrambled | 35 to 56 s (median 43 intact, 45 sentence, 41 word scramble) | text lane about 20 to 25 s; audio lane on CPU about 15 to 25 s; predict 2 to 4 s |
+| Reversed | 14 to 15 s | no text lane |
 
 The page's job expiry is 120 s. `data/forecast_cache.json` holds the 12 clips x 4 conditions at the default seed, computed by
-`python worker/tribe_worker.py precompute` with the same engine.
+`python worker/tribe_worker.py precompute` with the same engine (version 2, in one process, Oct 29 16:39-17:07 UTC).
 
 ## The sandbox
 

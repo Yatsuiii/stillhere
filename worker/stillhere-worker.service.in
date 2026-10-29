@@ -59,7 +59,7 @@ Environment=STILLHERE_JOBS_URL=@JOBS_URL@
 Environment=STILLHERE_SELFTEST_HIDDEN=@HIDDEN@
 Environment=STILLHERE_SELFTEST_READONLY=/opt/stillhere-worker/models/hub:/opt/stillhere-worker/site-packages:/opt/stillhere-worker/spacy:/opt/stillhere-worker/app
 Restart=@RESTART@
-RestartSec=30
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

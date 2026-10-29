@@ -114,6 +114,9 @@ class StubEngine:
     def models(self):
         return IDX["models"]
 
+    def cache_full(self):
+        return False
+
     def run(self, built, workdir, emit):
         for st, status in EVENT_ORDER:
             lane = {"video_lane": "v-jepa-2", "text_lane": "llama-3.2", "audio_lane": "w2v-bert"}.get(st)
@@ -210,6 +213,8 @@ def test_forecast_cache():
         assert key == e["cache_key"] == R.cache_key(e["recipe"], IDX)
         seen.add((e["recipe"]["clip_id"], e["recipe"]["condition"]))
         assert e["recipe"]["seed"] in (0, IDX["default_seed"])
+        assert e["worker_version"] == "2"                    # version 1 purged TRIBE's feature cache mid-process (docs/worker.md)
+        assert e["recipe"]["condition"] == "reversed" or e["llama_placement"]["gpu_modules"] > 0
         for k in ("language", "hearing"):
             v = e["regions"][k]; assert 30 <= len(v) <= 60 and all(math.isfinite(x) for x in v)
         assert len(e["word_rate"]) == len(e["regions"]["language"])
@@ -218,3 +223,24 @@ def test_forecast_cache():
         assert e["input_sha256"] == R.build_condition(e["recipe"], IDX).wav_sha256
         assert not any(k in e for k in ("P", "vertices", "transcript", "audio"))
     assert len(seen) == 48
+
+
+def test_serve_exits_for_a_fresh_restart_when_the_feature_cache_is_full(monkeypatch, tmp_path):
+    """The engine never prunes TRIBE's feature cache while it runs; past the limit serve returns after the job (systemd restarts it)."""
+    import worker.engine
+    from worker import tribe_worker as T
+
+    class FullStub(StubEngine):
+        def cache_full(self):
+            return True
+    monkeypatch.setattr(worker.engine, "Engine", FullStub)
+    good = {"clip_id": "alice_ch04", "condition": "intact", "seed": 0}
+    jobs = [{"id": f"j{i}", "recipe": good, "cache_key": R.cache_key(good, IDX)} for i in (1, 2)]
+    token = "t" * 64; tf = tmp_path / "tok"; tf.write_text(token)
+    st = F.State(token, jobs); port = _port(); srv = F.serve(port, st)
+    monkeypatch.setenv("STILLHERE_JOBS_URL", f"http://127.0.0.1:{port}"); monkeypatch.setattr(T, "STATE", tmp_path)
+    try:
+        T.main(["serve", "--token-file", str(tf)])                    # no --max-polls: only the full cache can end it
+    finally:
+        srv.shutdown()
+    assert set(st.results) == {"j1"} and [j["id"] for j in st.queue] == ["j2"]

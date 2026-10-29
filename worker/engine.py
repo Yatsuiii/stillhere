@@ -25,8 +25,10 @@ STOCK_CKPT_SHA256 = "9c79ffff6b642b7b0c71d558c935fb3fa33f2788bfb509feead94fafbba
 N_VERTICES = 20484
 FEATURES = ["text", "audio"]
 AUDIO_DEVICE = os.environ.get("STILLHERE_AUDIO_DEVICE", "cpu")
+LLAMA_GPU_GIB = os.environ.get("STILLHERE_LLAMA_GPU_GIB")              # unset: accelerate decides from free GPU memory
 BRAIN_DEVICE = os.environ.get("STILLHERE_BRAIN_DEVICE", "cpu")
-WORKER_VERSION = "1"
+WORKER_VERSION = "2"
+CACHE_LIMIT_BYTES = int(float(os.environ.get("STILLHERE_CACHE_LIMIT_GB", "2")) * 1e9)
 
 
 def sha256_file(p) -> str:
@@ -84,12 +86,48 @@ def region_series(P: np.ndarray) -> dict:
     return out
 
 
+def placement(model) -> dict:
+    """Where accelerate put Llama 3.2's modules: counts and a hash of the full device map (equal hash = same split)."""
+    dmap = getattr(model, "hf_device_map", None) or {}
+    gpu = sorted(k for k, v in dmap.items() if str(v) not in ("cpu", "disk"))
+    return {"gpu_modules": len(gpu), "cpu_modules": sum(1 for v in dmap.values() if str(v) == "cpu"),
+            "map_sha256": hashlib.sha256(json.dumps(sorted((k, str(v)) for k, v in dmap.items())).encode()).hexdigest()[:16]}
+
+
+def install_llama_loader(engine) -> None:
+    """Wraps TRIBE's text extractor loader (neuralset HuggingFaceText._load_model) to record Llama 3.2's placement on every load and,
+    when engine.llama_gpu_gib is set, to pin it: accelerate then splits the model by a fixed GPU budget instead of by whatever GPU
+    memory happens to be free, so the split is the same on every run (and the load fails loudly if that budget is not free)."""
+    import torch
+    from neuralset.extractors import text as nst
+    orig = getattr(nst.HuggingFaceText._load_model, "_stillhere_orig", nst.HuggingFaceText._load_model)
+
+    def _load(self_, **kw):
+        if self_.device != "accelerate" or engine.llama_gpu_gib is None:
+            m = orig(self_, **kw)
+        else:
+            if self_.pretrained is not True:
+                raise RuntimeError("pinned loader handles the pretrained model only")
+            from transformers import AutoModel
+            m = AutoModel.from_pretrained(self_.model_name, device_map="auto", torch_dtype=torch.float16,
+                                          max_memory={0: f"{int(engine.llama_gpu_gib * 1024)}MiB", "cpu": "24GiB"})
+        engine.last_placement = placement(m)
+        return m
+    _load._stillhere_orig = orig
+    nst.HuggingFaceText._load_model = _load
+
+
+def tree_bytes(p: Path) -> int:
+    return sum(f.stat().st_size for f in Path(p).rglob("*") if f.is_file()) if Path(p).exists() else 0
+
+
 class Engine:
     """Load once (load), then run(built, workdir, emit) per job. emit(stage, lane, status, detail) posts a real stage event."""
 
-    def __init__(self, cache_dir, audio_device=AUDIO_DEVICE, brain_device=BRAIN_DEVICE):
+    def __init__(self, cache_dir, audio_device=AUDIO_DEVICE, brain_device=BRAIN_DEVICE, llama_gpu_gib=LLAMA_GPU_GIB, check_manifest=True):
         self.cache_dir, self.audio_device, self.brain_device = Path(cache_dir), audio_device, brain_device
-        self.m = None; self.ckpt = None
+        self.llama_gpu_gib = None if llama_gpu_gib in (None, "") else float(llama_gpu_gib)
+        self.check_manifest = check_manifest; self.m = None; self.ckpt = None; self.last_placement = None
 
     def load(self):
         import torch
@@ -99,7 +137,8 @@ class Engine:
         got = sha256_file(ckpt)
         if got != STOCK_CKPT_SHA256:
             raise RuntimeError("checkpoint is not the stock TRIBE v2 pin")
-        self.ckpt = got; t0 = time.time()
+        shutil.rmtree(self.cache_dir, ignore_errors=True)          # a fresh feature cache per process, never cleared while it runs
+        self.ckpt = got; t0 = time.time(); install_llama_loader(self)
         self.m = TribeModel.from_pretrained("facebook/tribev2", cache_folder=str(self.cache_dir), device=self.brain_device,
                                             config_update={"data.num_workers": 0, "data.features_to_use": FEATURES,
                                                            "data.text_feature.device": "accelerate",
@@ -112,13 +151,19 @@ class Engine:
         self.manifest = R.load_index()["models"]
         want = {"w2v_bert": self.m.data.audio_feature.model_name, "llama": self.m.data.text_feature.model_name,
                 "audio_lane_device": self.audio_device, "brain_device": self.brain_device}
+        if self.llama_gpu_gib is not None:
+            want["llama_gpu_budget"] = f"{self.llama_gpu_gib:g} GiB"
         for k, v in want.items():
-            if self.manifest[k].split("@")[0] != v:
+            if self.check_manifest and self.manifest.get(k, "").split("@")[0] != v:
                 raise RuntimeError(f"model manifest differs from the loaded engine: {k}")
-        if self.ckpt not in self.manifest["tribe"]:
+        if self.check_manifest and self.ckpt not in self.manifest["tribe"]:
             raise RuntimeError("model manifest differs from the loaded engine: tribe")
         self.gpu = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu"
         return self
+
+    def cache_full(self) -> bool:
+        """True once TRIBE's feature cache passes CACHE_LIMIT_BYTES; serve then exits after the job and systemd restarts it fresh."""
+        return tree_bytes(self.cache_dir) > CACHE_LIMIT_BYTES
 
     def models(self) -> dict:
         """The model manifest this engine runs, exactly data/live_clips.json "models" (part of every cache key); load() refuses to
@@ -128,8 +173,7 @@ class Engine:
     def run(self, built, workdir: Path, emit) -> dict:
         import torch
         from worker import recipe as R
-        m = self.m; t = {}; workdir = Path(workdir); workdir.mkdir(parents=True, exist_ok=True)
-        before = set(self.cache_dir.rglob("*")) if self.cache_dir.exists() else set()
+        m = self.m; t = {}; workdir = Path(workdir); workdir.mkdir(parents=True, exist_ok=True); self.last_placement = None
         torch.cuda.reset_peak_memory_stats() if torch.cuda.is_available() else None
         t0 = time.time(); emit("build", None, "start", {})
         # content-addressed path: TRIBE's feature cache keys audio by file path, so one path must never hold two different builds
@@ -158,12 +202,13 @@ class Engine:
         reg = {k: v[:seconds] for k, v in region_series(P).items()}
         emit("regions", None, "end", {})
         peak = round(torch.cuda.max_memory_allocated() / 1e9, 2) if torch.cuda.is_available() else None
-        for p in sorted(set(self.cache_dir.rglob("*")) - before, key=lambda p: len(p.parts), reverse=True):  # drop this job's features
-            shutil.rmtree(p, ignore_errors=True) if p.is_dir() else p.unlink(missing_ok=True)
+        # The job's audio file goes; its cached features stay. TRIBE's feature cache (exca) keeps an in-process index into its memmap
+        # files, so deleting them under a live process made later jobs read the wrong features (the first precompute's entries after
+        # each process's first job were wrong). The cache is emptied only at load(); the server restarts the worker past CACHE_LIMIT.
         shutil.rmtree(workdir, ignore_errors=True); gc.collect()
         t["total"] = round(time.time() - t0, 2)
         return {"tr_s": 1.0, "seconds": len(reg["language"]), "regions": reg, "word_rate": R.word_rate(built.words, len(reg["language"])),
-                "n_words_text_lane": int((ev.type == "Word").sum()), "input_sha256": built.wav_sha256, "models": self.models(),
+                "n_words_text_lane": int((ev.type == "Word").sum()), "llama_placement": self.last_placement, "input_sha256": built.wav_sha256, "models": self.models(),
                 "gpu": self.gpu, "peak_vram_gb": peak, "timings_s": t,
                 "first_start_s": float(segs[0].start) if len(segs) else 0.0, "worker_version": WORKER_VERSION,
                 "label": "Forecast, not a scan: TRIBE v2 on the laptop, audio only, no brain data",

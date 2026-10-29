@@ -120,6 +120,8 @@ def serve(args):
         if code == 200 and body and body.get("job"):
             backoff = POLL_S
             handle(body["job"], engine, jobs, index)
+            if engine.cache_full():                                   # restart fresh (systemd Restart=always) rather than prune live
+                log("feature cache past its limit; exiting for a fresh restart"); return
             continue
         if code is not None and code not in (200, 204):
             log(f"claim answered {code}")

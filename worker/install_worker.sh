@@ -51,7 +51,7 @@ render() {   # role type command restart -> stdout
   sed -e "s#@ROLE@#$1#" -e "s#@TYPE@#$2#" -e "s#@COMMAND@#$3#" -e "s#@RESTART@#$4#" -e "s#@MODELS@#$MODELS#" -e "s#@SITE@#$SITE#" \
       -e "s#@SPACY@#$SPACY#" -e "s#@JOBS_URL@#$URL#" -e "s#@HIDDEN@#$HIDDEN#" "$REPO/worker/stillhere-worker.service.in"
 }
-render "serve" simple serve on-failure > "$UNIT/stillhere-worker.service"
+render "serve" simple serve always > "$UNIT/stillhere-worker.service"
 render "self-test" oneshot self-test no | sed '/^\[Install\]/,$d' > "$UNIT/stillhere-worker-selftest.service"
 if grep -q "@[A-Z_]*@" "$UNIT/stillhere-worker.service" "$UNIT/stillhere-worker-selftest.service"; then echo "unrendered field"; exit 1; fi
 systemd-analyze verify "$UNIT/stillhere-worker.service" "$UNIT/stillhere-worker-selftest.service"
