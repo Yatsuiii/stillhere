@@ -105,7 +105,9 @@ def test_numbers_come_from_their_json():
     assert "reversed speech: no word check (0 words heard)" in t
     lc = BP.load("results/demo_live_tribe_conditions.json")["mean_aud_response_strength"]
     assert f"intact story {lc['intact']:.3f}, sentence scramble {lc['sentence_scramble']:.3f} (raw TRIBE units)" in re.sub(r" ([,.])", r"\1", t)
-    assert "it says nothing about language" in t and "understanding" not in t.lower() and PAGE.count("<polyline") == 8
+    ghost = [BP.ghost_svg(g) for g in (BP.load("results/ghostline_lpp_s8.json"), BP.load("results/ghostline_film.json")) if g]
+    assert "it says nothing about language" in t and "understanding" not in t.lower()
+    assert PAGE.count("<polyline") == 8 + sum(g.count("<polyline") for g in ghost)      # the ghost lines appear once their files land
     assert "so the tool lines above describe that clip, not le_petit_prince." in t                     # DEMO2's Baseten card
 
 
