@@ -1,0 +1,579 @@
+{
+ "words": [
+  {
+   "word": "\"'The",
+   "start": 0.0,
+   "end": 0.78
+  },
+  {
+   "word": "trail",
+   "start": 0.78,
+   "end": 1.04
+  },
+  {
+   "word": "cannot",
+   "start": 1.04,
+   "end": 1.26
+  },
+  {
+   "word": "proceed,'",
+   "start": 1.26,
+   "end": 1.78
+  },
+  {
+   "word": "said",
+   "start": 1.78,
+   "end": 2.64
+  },
+  {
+   "word": "the",
+   "start": 2.64,
+   "end": 2.82
+  },
+  {
+   "word": "king,",
+   "start": 2.82,
+   "end": 2.98
+  },
+  {
+   "word": "in",
+   "start": 3.28,
+   "end": 3.36
+  },
+  {
+   "word": "a",
+   "start": 3.36,
+   "end": 3.44
+  },
+  {
+   "word": "very",
+   "start": 3.44,
+   "end": 3.64
+  },
+  {
+   "word": "great",
+   "start": 3.64,
+   "end": 3.92
+  },
+  {
+   "word": "voice,",
+   "start": 3.92,
+   "end": 4.3
+  },
+  {
+   "word": "until",
+   "start": 4.68,
+   "end": 4.9
+  },
+  {
+   "word": "all",
+   "start": 4.9,
+   "end": 5.4
+  },
+  {
+   "word": "of",
+   "start": 5.4,
+   "end": 5.6
+  },
+  {
+   "word": "the",
+   "start": 5.6,
+   "end": 5.74
+  },
+  {
+   "word": "gerrymen",
+   "start": 5.74,
+   "end": 6.12
+  },
+  {
+   "word": "are",
+   "start": 6.12,
+   "end": 6.24
+  },
+  {
+   "word": "back",
+   "start": 6.24,
+   "end": 6.42
+  },
+  {
+   "word": "in",
+   "start": 6.42,
+   "end": 6.58
+  },
+  {
+   "word": "their",
+   "start": 6.58,
+   "end": 6.72
+  },
+  {
+   "word": "proper",
+   "start": 6.72,
+   "end": 6.88
+  },
+  {
+   "word": "places.",
+   "start": 6.88,
+   "end": 7.32
+  },
+  {
+   "word": "All!'",
+   "start": 8.2,
+   "end": 8.76
+  },
+  {
+   "word": "he",
+   "start": 8.76,
+   "end": 9.28
+  },
+  {
+   "word": "repeated",
+   "start": 9.28,
+   "end": 9.6
+  },
+  {
+   "word": "with",
+   "start": 9.6,
+   "end": 9.9
+  },
+  {
+   "word": "great",
+   "start": 9.9,
+   "end": 10.22
+  },
+  {
+   "word": "emphasis,",
+   "start": 10.22,
+   "end": 10.68
+  },
+  {
+   "word": "looking",
+   "start": 11.26,
+   "end": 11.58
+  },
+  {
+   "word": "hard",
+   "start": 11.58,
+   "end": 11.94
+  },
+  {
+   "word": "at",
+   "start": 11.94,
+   "end": 12.18
+  },
+  {
+   "word": "Alice,",
+   "start": 12.18,
+   "end": 12.36
+  },
+  {
+   "word": "as",
+   "start": 13.0,
+   "end": 13.3
+  },
+  {
+   "word": "he",
+   "start": 13.3,
+   "end": 13.46
+  },
+  {
+   "word": "said",
+   "start": 13.46,
+   "end": 13.64
+  },
+  {
+   "word": "so.",
+   "start": 13.64,
+   "end": 14.16
+  },
+  {
+   "word": "Alice",
+   "start": 16.12,
+   "end": 16.68
+  },
+  {
+   "word": "looked",
+   "start": 16.68,
+   "end": 16.9
+  },
+  {
+   "word": "at",
+   "start": 16.9,
+   "end": 17.06
+  },
+  {
+   "word": "the",
+   "start": 17.06,
+   "end": 17.16
+  },
+  {
+   "word": "jury",
+   "start": 17.16,
+   "end": 17.34
+  },
+  {
+   "word": "-box",
+   "start": 17.34,
+   "end": 17.64
+  },
+  {
+   "word": "and",
+   "start": 17.64,
+   "end": 17.88
+  },
+  {
+   "word": "saw",
+   "start": 17.88,
+   "end": 18.1
+  },
+  {
+   "word": "that",
+   "start": 18.1,
+   "end": 18.32
+  },
+  {
+   "word": "in",
+   "start": 18.32,
+   "end": 18.78
+  },
+  {
+   "word": "her",
+   "start": 18.78,
+   "end": 18.98
+  },
+  {
+   "word": "haste",
+   "start": 18.98,
+   "end": 19.28
+  },
+  {
+   "word": "she",
+   "start": 19.28,
+   "end": 19.84
+  },
+  {
+   "word": "put",
+   "start": 19.84,
+   "end": 20.0
+  },
+  {
+   "word": "the",
+   "start": 20.0,
+   "end": 20.18
+  },
+  {
+   "word": "lizard",
+   "start": 20.18,
+   "end": 20.46
+  },
+  {
+   "word": "in",
+   "start": 20.46,
+   "end": 20.78
+  },
+  {
+   "word": "head",
+   "start": 20.78,
+   "end": 21.08
+  },
+  {
+   "word": "downwards,",
+   "start": 21.08,
+   "end": 21.62
+  },
+  {
+   "word": "and",
+   "start": 22.18,
+   "end": 22.36
+  },
+  {
+   "word": "the",
+   "start": 22.36,
+   "end": 22.46
+  },
+  {
+   "word": "poor",
+   "start": 22.46,
+   "end": 22.66
+  },
+  {
+   "word": "little",
+   "start": 22.66,
+   "end": 22.94
+  },
+  {
+   "word": "thing",
+   "start": 22.94,
+   "end": 23.12
+  },
+  {
+   "word": "was",
+   "start": 23.12,
+   "end": 23.24
+  },
+  {
+   "word": "waving",
+   "start": 23.24,
+   "end": 23.56
+  },
+  {
+   "word": "its",
+   "start": 23.56,
+   "end": 23.82
+  },
+  {
+   "word": "tail",
+   "start": 23.82,
+   "end": 24.1
+  },
+  {
+   "word": "about",
+   "start": 24.1,
+   "end": 24.38
+  },
+  {
+   "word": "in",
+   "start": 24.38,
+   "end": 24.54
+  },
+  {
+   "word": "a",
+   "start": 24.54,
+   "end": 24.64
+  },
+  {
+   "word": "melancholy",
+   "start": 24.64,
+   "end": 24.96
+  },
+  {
+   "word": "way,",
+   "start": 24.96,
+   "end": 25.62
+  },
+  {
+   "word": "being",
+   "start": 25.9,
+   "end": 26.02
+  },
+  {
+   "word": "quite",
+   "start": 26.02,
+   "end": 26.34
+  },
+  {
+   "word": "unable",
+   "start": 26.34,
+   "end": 26.6
+  },
+  {
+   "word": "to",
+   "start": 26.6,
+   "end": 26.9
+  },
+  {
+   "word": "move.",
+   "start": 26.9,
+   "end": 27.1
+  },
+  {
+   "word": "She",
+   "start": 28.26,
+   "end": 28.66
+  },
+  {
+   "word": "soon",
+   "start": 28.66,
+   "end": 28.84
+  },
+  {
+   "word": "got",
+   "start": 28.84,
+   "end": 29.1
+  },
+  {
+   "word": "it",
+   "start": 29.1,
+   "end": 29.22
+  },
+  {
+   "word": "out",
+   "start": 29.22,
+   "end": 29.34
+  },
+  {
+   "word": "again",
+   "start": 29.34,
+   "end": 29.56
+  },
+  {
+   "word": "and",
+   "start": 29.56,
+   "end": 29.94
+  },
+  {
+   "word": "put",
+   "start": 29.94,
+   "end": 30.08
+  },
+  {
+   "word": "it",
+   "start": 30.08,
+   "end": 30.18
+  },
+  {
+   "word": "right.",
+   "start": 30.18,
+   "end": 30.44
+  },
+  {
+   "word": "Not",
+   "start": 31.26,
+   "end": 31.64
+  },
+  {
+   "word": "that",
+   "start": 31.64,
+   "end": 31.76
+  },
+  {
+   "word": "it",
+   "start": 31.76,
+   "end": 31.86
+  },
+  {
+   "word": "signifies",
+   "start": 31.86,
+   "end": 32.2
+  },
+  {
+   "word": "much,",
+   "start": 32.2,
+   "end": 32.68
+  },
+  {
+   "word": "she",
+   "start": 33.04,
+   "end": 33.26
+  },
+  {
+   "word": "said",
+   "start": 33.26,
+   "end": 33.44
+  },
+  {
+   "word": "to",
+   "start": 33.44,
+   "end": 33.56
+  },
+  {
+   "word": "herself,",
+   "start": 33.56,
+   "end": 33.76
+  },
+  {
+   "word": "I",
+   "start": 34.38,
+   "end": 34.58
+  },
+  {
+   "word": "should",
+   "start": 34.58,
+   "end": 34.7
+  },
+  {
+   "word": "think",
+   "start": 34.7,
+   "end": 34.9
+  },
+  {
+   "word": "it'd",
+   "start": 34.9,
+   "end": 35.08
+  },
+  {
+   "word": "be",
+   "start": 35.08,
+   "end": 35.14
+  },
+  {
+   "word": "quite",
+   "start": 35.14,
+   "end": 35.44
+  },
+  {
+   "word": "as",
+   "start": 35.44,
+   "end": 35.62
+  },
+  {
+   "word": "much",
+   "start": 35.62,
+   "end": 35.78
+  },
+  {
+   "word": "using",
+   "start": 35.78,
+   "end": 36.02
+  },
+  {
+   "word": "the",
+   "start": 36.02,
+   "end": 36.2
+  },
+  {
+   "word": "trail",
+   "start": 36.2,
+   "end": 36.38
+  },
+  {
+   "word": "one",
+   "start": 36.38,
+   "end": 36.72
+  },
+  {
+   "word": "way",
+   "start": 36.72,
+   "end": 36.96
+  },
+  {
+   "word": "up",
+   "start": 36.96,
+   "end": 37.08
+  },
+  {
+   "word": "as",
+   "start": 37.08,
+   "end": 37.22
+  },
+  {
+   "word": "the",
+   "start": 37.22,
+   "end": 37.36
+  },
+  {
+   "word": "other.",
+   "start": 37.36,
+   "end": 37.58
+  },
+  {
+   "word": "As",
+   "start": 38.98,
+   "end": 39.38
+  },
+  {
+   "word": "soon",
+   "start": 39.38,
+   "end": 39.66
+  },
+  {
+   "word": "as",
+   "start": 39.66,
+   "end": 39.84
+  },
+  {
+   "word": "the",
+   "start": 39.84,
+   "end": 39.98
+  }
+ ]
+}

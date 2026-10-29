@@ -1,0 +1,449 @@
+{
+ "words": [
+  {
+   "word": "get",
+   "start": 0.0,
+   "end": 0.14
+  },
+  {
+   "word": "me",
+   "start": 0.14,
+   "end": 0.36
+  },
+  {
+   "word": "executed",
+   "start": 0.36,
+   "end": 1.02
+  },
+  {
+   "word": "as",
+   "start": 1.02,
+   "end": 1.42
+  },
+  {
+   "word": "sure",
+   "start": 1.42,
+   "end": 1.9
+  },
+  {
+   "word": "as",
+   "start": 1.9,
+   "end": 2.32
+  },
+  {
+   "word": "ferrets",
+   "start": 2.32,
+   "end": 2.88
+  },
+  {
+   "word": "are",
+   "start": 2.88,
+   "end": 3.16
+  },
+  {
+   "word": "ferrets.",
+   "start": 3.16,
+   "end": 3.88
+  },
+  {
+   "word": "Where",
+   "start": 4.3,
+   "end": 4.54
+  },
+  {
+   "word": "can",
+   "start": 4.54,
+   "end": 4.98
+  },
+  {
+   "word": "I",
+   "start": 4.98,
+   "end": 5.26
+  },
+  {
+   "word": "have",
+   "start": 5.26,
+   "end": 5.4
+  },
+  {
+   "word": "dropped",
+   "start": 5.4,
+   "end": 5.6
+  },
+  {
+   "word": "them,",
+   "start": 5.6,
+   "end": 5.92
+  },
+  {
+   "word": "I",
+   "start": 5.92,
+   "end": 6.1
+  },
+  {
+   "word": "wonder?",
+   "start": 6.1,
+   "end": 6.42
+  },
+  {
+   "word": "Alice",
+   "start": 8.38,
+   "end": 8.94
+  },
+  {
+   "word": "guessed",
+   "start": 8.94,
+   "end": 9.28
+  },
+  {
+   "word": "in",
+   "start": 9.28,
+   "end": 9.7
+  },
+  {
+   "word": "a",
+   "start": 9.7,
+   "end": 9.78
+  },
+  {
+   "word": "moment",
+   "start": 9.78,
+   "end": 10.16
+  },
+  {
+   "word": "that",
+   "start": 10.16,
+   "end": 11.38
+  },
+  {
+   "word": "it",
+   "start": 11.38,
+   "end": 11.7
+  },
+  {
+   "word": "was",
+   "start": 11.7,
+   "end": 11.9
+  },
+  {
+   "word": "looking",
+   "start": 11.9,
+   "end": 12.26
+  },
+  {
+   "word": "for",
+   "start": 12.26,
+   "end": 12.56
+  },
+  {
+   "word": "the",
+   "start": 12.56,
+   "end": 12.68
+  },
+  {
+   "word": "fan",
+   "start": 12.68,
+   "end": 12.96
+  },
+  {
+   "word": "and",
+   "start": 12.96,
+   "end": 13.46
+  },
+  {
+   "word": "the",
+   "start": 13.46,
+   "end": 13.6
+  },
+  {
+   "word": "pair",
+   "start": 13.6,
+   "end": 13.82
+  },
+  {
+   "word": "of",
+   "start": 13.82,
+   "end": 14.06
+  },
+  {
+   "word": "white",
+   "start": 14.06,
+   "end": 14.34
+  },
+  {
+   "word": "kid",
+   "start": 14.34,
+   "end": 14.88
+  },
+  {
+   "word": "gloves,",
+   "start": 14.88,
+   "end": 15.24
+  },
+  {
+   "word": "and",
+   "start": 16.1,
+   "end": 16.28
+  },
+  {
+   "word": "she",
+   "start": 16.28,
+   "end": 16.44
+  },
+  {
+   "word": "very",
+   "start": 16.44,
+   "end": 16.78
+  },
+  {
+   "word": "good",
+   "start": 16.78,
+   "end": 17.2
+  },
+  {
+   "word": "naturely",
+   "start": 17.2,
+   "end": 18.0
+  },
+  {
+   "word": "began",
+   "start": 18.0,
+   "end": 18.3
+  },
+  {
+   "word": "hunting",
+   "start": 18.3,
+   "end": 18.7
+  },
+  {
+   "word": "about",
+   "start": 18.7,
+   "end": 19.08
+  },
+  {
+   "word": "for",
+   "start": 19.08,
+   "end": 19.36
+  },
+  {
+   "word": "them.",
+   "start": 19.36,
+   "end": 19.56
+  },
+  {
+   "word": "But",
+   "start": 20.38,
+   "end": 21.04
+  },
+  {
+   "word": "they",
+   "start": 21.04,
+   "end": 21.34
+  },
+  {
+   "word": "were",
+   "start": 21.34,
+   "end": 21.52
+  },
+  {
+   "word": "nowhere",
+   "start": 21.52,
+   "end": 21.84
+  },
+  {
+   "word": "to",
+   "start": 21.84,
+   "end": 22.22
+  },
+  {
+   "word": "be",
+   "start": 22.22,
+   "end": 22.34
+  },
+  {
+   "word": "seen.",
+   "start": 22.34,
+   "end": 22.62
+  },
+  {
+   "word": "Everything",
+   "start": 23.44,
+   "end": 24.06
+  },
+  {
+   "word": "seemed",
+   "start": 24.06,
+   "end": 24.4
+  },
+  {
+   "word": "to",
+   "start": 24.4,
+   "end": 24.78
+  },
+  {
+   "word": "have",
+   "start": 24.78,
+   "end": 24.94
+  },
+  {
+   "word": "changed",
+   "start": 24.94,
+   "end": 25.28
+  },
+  {
+   "word": "since",
+   "start": 25.28,
+   "end": 25.76
+  },
+  {
+   "word": "her",
+   "start": 25.76,
+   "end": 25.94
+  },
+  {
+   "word": "swim",
+   "start": 25.94,
+   "end": 26.16
+  },
+  {
+   "word": "in",
+   "start": 26.16,
+   "end": 26.34
+  },
+  {
+   "word": "the",
+   "start": 26.34,
+   "end": 26.42
+  },
+  {
+   "word": "pool,",
+   "start": 26.42,
+   "end": 26.64
+  },
+  {
+   "word": "and",
+   "start": 27.08,
+   "end": 27.46
+  },
+  {
+   "word": "the",
+   "start": 27.46,
+   "end": 27.58
+  },
+  {
+   "word": "great",
+   "start": 27.58,
+   "end": 27.82
+  },
+  {
+   "word": "hall",
+   "start": 27.82,
+   "end": 28.2
+  },
+  {
+   "word": "with",
+   "start": 28.2,
+   "end": 28.7
+  },
+  {
+   "word": "the",
+   "start": 28.7,
+   "end": 29.03
+  },
+  {
+   "word": "glass",
+   "start": 29.03,
+   "end": 29.25
+  },
+  {
+   "word": "table",
+   "start": 29.25,
+   "end": 29.65
+  },
+  {
+   "word": "and",
+   "start": 29.65,
+   "end": 29.97
+  },
+  {
+   "word": "the",
+   "start": 29.97,
+   "end": 30.11
+  },
+  {
+   "word": "little",
+   "start": 30.11,
+   "end": 30.31
+  },
+  {
+   "word": "door",
+   "start": 30.31,
+   "end": 30.69
+  },
+  {
+   "word": "had",
+   "start": 30.69,
+   "end": 31.53
+  },
+  {
+   "word": "vanished",
+   "start": 31.53,
+   "end": 31.97
+  },
+  {
+   "word": "completely.",
+   "start": 31.97,
+   "end": 32.69
+  },
+  {
+   "word": "Very",
+   "start": 35.31,
+   "end": 35.95
+  },
+  {
+   "word": "soon",
+   "start": 35.95,
+   "end": 36.33
+  },
+  {
+   "word": "the",
+   "start": 36.33,
+   "end": 36.59
+  },
+  {
+   "word": "rabbit",
+   "start": 36.59,
+   "end": 36.83
+  },
+  {
+   "word": "noticed",
+   "start": 36.83,
+   "end": 37.63
+  },
+  {
+   "word": "Alice",
+   "start": 37.63,
+   "end": 37.85
+  },
+  {
+   "word": "as",
+   "start": 37.85,
+   "end": 39.03
+  },
+  {
+   "word": "she",
+   "start": 39.03,
+   "end": 39.27
+  },
+  {
+   "word": "went",
+   "start": 39.27,
+   "end": 39.47
+  },
+  {
+   "word": "hunting...",
+   "start": 39.47,
+   "end": 39.97
+  }
+ ]
+}

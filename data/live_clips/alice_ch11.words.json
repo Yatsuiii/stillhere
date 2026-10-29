@@ -1,0 +1,659 @@
+{
+ "words": [
+  {
+   "word": "into",
+   "start": 0.0,
+   "end": 0.18
+  },
+  {
+   "word": "this,",
+   "start": 0.18,
+   "end": 0.46
+  },
+  {
+   "word": "so",
+   "start": 0.86,
+   "end": 1.1
+  },
+  {
+   "word": "she",
+   "start": 1.1,
+   "end": 1.24
+  },
+  {
+   "word": "began",
+   "start": 1.24,
+   "end": 1.46
+  },
+  {
+   "word": "looking",
+   "start": 1.46,
+   "end": 1.78
+  },
+  {
+   "word": "at",
+   "start": 1.78,
+   "end": 2.1
+  },
+  {
+   "word": "everything",
+   "start": 2.1,
+   "end": 2.36
+  },
+  {
+   "word": "about",
+   "start": 2.36,
+   "end": 2.76
+  },
+  {
+   "word": "her",
+   "start": 2.76,
+   "end": 3.0
+  },
+  {
+   "word": "to",
+   "start": 3.0,
+   "end": 3.14
+  },
+  {
+   "word": "pass",
+   "start": 3.14,
+   "end": 3.32
+  },
+  {
+   "word": "away",
+   "start": 3.32,
+   "end": 3.6
+  },
+  {
+   "word": "the",
+   "start": 3.6,
+   "end": 3.78
+  },
+  {
+   "word": "time.",
+   "start": 3.78,
+   "end": 4.08
+  },
+  {
+   "word": "Alice",
+   "start": 5.5,
+   "end": 5.94
+  },
+  {
+   "word": "had",
+   "start": 5.94,
+   "end": 6.12
+  },
+  {
+   "word": "never",
+   "start": 6.12,
+   "end": 6.34
+  },
+  {
+   "word": "been",
+   "start": 6.34,
+   "end": 6.6
+  },
+  {
+   "word": "in",
+   "start": 6.6,
+   "end": 6.8
+  },
+  {
+   "word": "a",
+   "start": 6.8,
+   "end": 6.9
+  },
+  {
+   "word": "court",
+   "start": 6.9,
+   "end": 7.08
+  },
+  {
+   "word": "of",
+   "start": 7.08,
+   "end": 7.24
+  },
+  {
+   "word": "justice",
+   "start": 7.24,
+   "end": 7.5
+  },
+  {
+   "word": "before,",
+   "start": 7.5,
+   "end": 7.96
+  },
+  {
+   "word": "but",
+   "start": 8.24,
+   "end": 8.36
+  },
+  {
+   "word": "she",
+   "start": 8.36,
+   "end": 8.54
+  },
+  {
+   "word": "had",
+   "start": 8.54,
+   "end": 8.64
+  },
+  {
+   "word": "read",
+   "start": 8.64,
+   "end": 8.78
+  },
+  {
+   "word": "about",
+   "start": 8.78,
+   "end": 9.04
+  },
+  {
+   "word": "them",
+   "start": 9.04,
+   "end": 9.24
+  },
+  {
+   "word": "in",
+   "start": 9.24,
+   "end": 9.32
+  },
+  {
+   "word": "books,",
+   "start": 9.32,
+   "end": 9.56
+  },
+  {
+   "word": "and",
+   "start": 10.08,
+   "end": 10.28
+  },
+  {
+   "word": "she",
+   "start": 10.28,
+   "end": 10.42
+  },
+  {
+   "word": "was",
+   "start": 10.42,
+   "end": 10.54
+  },
+  {
+   "word": "quite",
+   "start": 10.54,
+   "end": 10.76
+  },
+  {
+   "word": "pleased",
+   "start": 10.76,
+   "end": 11.12
+  },
+  {
+   "word": "to",
+   "start": 11.12,
+   "end": 11.28
+  },
+  {
+   "word": "find",
+   "start": 11.28,
+   "end": 11.52
+  },
+  {
+   "word": "that",
+   "start": 11.52,
+   "end": 11.76
+  },
+  {
+   "word": "she",
+   "start": 11.76,
+   "end": 11.88
+  },
+  {
+   "word": "knew",
+   "start": 11.88,
+   "end": 12.02
+  },
+  {
+   "word": "the",
+   "start": 12.02,
+   "end": 12.2
+  },
+  {
+   "word": "name",
+   "start": 12.2,
+   "end": 12.4
+  },
+  {
+   "word": "of",
+   "start": 12.4,
+   "end": 12.56
+  },
+  {
+   "word": "nearly",
+   "start": 12.56,
+   "end": 12.76
+  },
+  {
+   "word": "everything",
+   "start": 12.76,
+   "end": 13.28
+  },
+  {
+   "word": "there.",
+   "start": 13.28,
+   "end": 13.6
+  },
+  {
+   "word": "That's",
+   "start": 14.36,
+   "end": 14.8
+  },
+  {
+   "word": "the",
+   "start": 14.8,
+   "end": 14.92
+  },
+  {
+   "word": "judge,",
+   "start": 14.92,
+   "end": 15.1
+  },
+  {
+   "word": "she",
+   "start": 15.24,
+   "end": 15.46
+  },
+  {
+   "word": "said",
+   "start": 15.46,
+   "end": 15.66
+  },
+  {
+   "word": "to",
+   "start": 15.66,
+   "end": 15.76
+  },
+  {
+   "word": "herself,",
+   "start": 15.76,
+   "end": 16.0
+  },
+  {
+   "word": "because",
+   "start": 16.1,
+   "end": 16.48
+  },
+  {
+   "word": "of",
+   "start": 16.48,
+   "end": 16.7
+  },
+  {
+   "word": "his",
+   "start": 16.7,
+   "end": 16.86
+  },
+  {
+   "word": "great",
+   "start": 16.86,
+   "end": 17.1
+  },
+  {
+   "word": "wig.",
+   "start": 17.1,
+   "end": 17.4
+  },
+  {
+   "word": "The",
+   "start": 19.08,
+   "end": 19.52
+  },
+  {
+   "word": "judge,",
+   "start": 19.52,
+   "end": 19.74
+  },
+  {
+   "word": "by",
+   "start": 19.78,
+   "end": 20.06
+  },
+  {
+   "word": "the",
+   "start": 20.06,
+   "end": 20.18
+  },
+  {
+   "word": "way,",
+   "start": 20.18,
+   "end": 20.34
+  },
+  {
+   "word": "was",
+   "start": 20.42,
+   "end": 20.6
+  },
+  {
+   "word": "the",
+   "start": 20.6,
+   "end": 20.78
+  },
+  {
+   "word": "king,",
+   "start": 20.78,
+   "end": 20.96
+  },
+  {
+   "word": "and",
+   "start": 21.4,
+   "end": 21.5
+  },
+  {
+   "word": "as",
+   "start": 21.5,
+   "end": 21.68
+  },
+  {
+   "word": "he",
+   "start": 21.68,
+   "end": 21.8
+  },
+  {
+   "word": "wore",
+   "start": 21.8,
+   "end": 21.96
+  },
+  {
+   "word": "his",
+   "start": 21.96,
+   "end": 22.22
+  },
+  {
+   "word": "crown",
+   "start": 22.22,
+   "end": 22.46
+  },
+  {
+   "word": "over",
+   "start": 22.46,
+   "end": 22.78
+  },
+  {
+   "word": "the",
+   "start": 22.78,
+   "end": 22.98
+  },
+  {
+   "word": "wig,",
+   "start": 22.98,
+   "end": 23.2
+  },
+  {
+   "word": "he",
+   "start": 23.54,
+   "end": 23.56
+  },
+  {
+   "word": "did",
+   "start": 23.56,
+   "end": 23.66
+  },
+  {
+   "word": "not",
+   "start": 23.66,
+   "end": 23.86
+  },
+  {
+   "word": "look",
+   "start": 23.86,
+   "end": 24.08
+  },
+  {
+   "word": "at",
+   "start": 24.08,
+   "end": 24.28
+  },
+  {
+   "word": "all",
+   "start": 24.28,
+   "end": 24.58
+  },
+  {
+   "word": "comfortable,",
+   "start": 24.58,
+   "end": 24.94
+  },
+  {
+   "word": "and",
+   "start": 25.42,
+   "end": 25.5
+  },
+  {
+   "word": "it",
+   "start": 25.5,
+   "end": 25.58
+  },
+  {
+   "word": "was",
+   "start": 25.58,
+   "end": 25.68
+  },
+  {
+   "word": "certainly",
+   "start": 25.68,
+   "end": 26.0
+  },
+  {
+   "word": "not",
+   "start": 26.0,
+   "end": 26.36
+  },
+  {
+   "word": "becoming.",
+   "start": 26.36,
+   "end": 26.72
+  },
+  {
+   "word": "And",
+   "start": 26.72,
+   "end": 27.0
+  },
+  {
+   "word": "that's",
+   "start": 27.0,
+   "end": 28.08
+  },
+  {
+   "word": "the",
+   "start": 28.08,
+   "end": 28.2
+  },
+  {
+   "word": "jury",
+   "start": 28.2,
+   "end": 28.38
+  },
+  {
+   "word": "box,",
+   "start": 28.38,
+   "end": 28.7
+  },
+  {
+   "word": "thought",
+   "start": 28.84,
+   "end": 29.14
+  },
+  {
+   "word": "Alice,",
+   "start": 29.14,
+   "end": 29.34
+  },
+  {
+   "word": "and",
+   "start": 29.84,
+   "end": 30.1
+  },
+  {
+   "word": "those",
+   "start": 30.1,
+   "end": 30.22
+  },
+  {
+   "word": "twelve",
+   "start": 30.22,
+   "end": 30.5
+  },
+  {
+   "word": "creatures,",
+   "start": 30.5,
+   "end": 30.94
+  },
+  {
+   "word": "she",
+   "start": 31.36,
+   "end": 31.5
+  },
+  {
+   "word": "was",
+   "start": 31.5,
+   "end": 31.62
+  },
+  {
+   "word": "obliged",
+   "start": 31.62,
+   "end": 31.84
+  },
+  {
+   "word": "to",
+   "start": 31.84,
+   "end": 32.18
+  },
+  {
+   "word": "say",
+   "start": 32.18,
+   "end": 32.32
+  },
+  {
+   "word": "creatures,",
+   "start": 32.32,
+   "end": 32.62
+  },
+  {
+   "word": "you",
+   "start": 32.62,
+   "end": 33.02
+  },
+  {
+   "word": "see,",
+   "start": 33.02,
+   "end": 33.24
+  },
+  {
+   "word": "because",
+   "start": 33.82,
+   "end": 33.82
+  },
+  {
+   "word": "some",
+   "start": 33.82,
+   "end": 34.1
+  },
+  {
+   "word": "of",
+   "start": 34.1,
+   "end": 34.24
+  },
+  {
+   "word": "them",
+   "start": 34.24,
+   "end": 34.36
+  },
+  {
+   "word": "were",
+   "start": 34.36,
+   "end": 34.54
+  },
+  {
+   "word": "animals",
+   "start": 34.54,
+   "end": 34.84
+  },
+  {
+   "word": "and",
+   "start": 34.84,
+   "end": 35.24
+  },
+  {
+   "word": "some",
+   "start": 35.24,
+   "end": 35.44
+  },
+  {
+   "word": "were",
+   "start": 35.44,
+   "end": 35.62
+  },
+  {
+   "word": "birds.",
+   "start": 35.62,
+   "end": 35.78
+  },
+  {
+   "word": "I",
+   "start": 36.52,
+   "end": 36.76
+  },
+  {
+   "word": "suppose",
+   "start": 36.76,
+   "end": 37.02
+  },
+  {
+   "word": "they",
+   "start": 37.02,
+   "end": 37.36
+  },
+  {
+   "word": "are",
+   "start": 37.36,
+   "end": 37.54
+  },
+  {
+   "word": "the",
+   "start": 37.54,
+   "end": 37.66
+  },
+  {
+   "word": "jurors.",
+   "start": 37.66,
+   "end": 37.92
+  },
+  {
+   "word": "She",
+   "start": 38.7,
+   "end": 39.06
+  },
+  {
+   "word": "said",
+   "start": 39.06,
+   "end": 39.2
+  },
+  {
+   "word": "this",
+   "start": 39.2,
+   "end": 39.32
+  },
+  {
+   "word": "last",
+   "start": 39.32,
+   "end": 39.56
+  },
+  {
+   "word": "word-",
+   "start": 39.56,
+   "end": 39.98
+  }
+ ]
+}

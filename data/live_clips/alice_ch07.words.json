@@ -1,0 +1,514 @@
+{
+ "words": [
+  {
+   "word": "were",
+   "start": 0.0,
+   "end": 0.1
+  },
+  {
+   "word": "all",
+   "start": 0.1,
+   "end": 0.36
+  },
+  {
+   "word": "crowded",
+   "start": 0.36,
+   "end": 0.74
+  },
+  {
+   "word": "together",
+   "start": 0.74,
+   "end": 1.2
+  },
+  {
+   "word": "at",
+   "start": 1.2,
+   "end": 1.58
+  },
+  {
+   "word": "one",
+   "start": 1.58,
+   "end": 1.78
+  },
+  {
+   "word": "corner",
+   "start": 1.78,
+   "end": 2.08
+  },
+  {
+   "word": "of",
+   "start": 2.08,
+   "end": 2.38
+  },
+  {
+   "word": "it.",
+   "start": 2.38,
+   "end": 2.5
+  },
+  {
+   "word": "\"'No",
+   "start": 3.08,
+   "end": 3.68
+  },
+  {
+   "word": "room,",
+   "start": 3.68,
+   "end": 4.0
+  },
+  {
+   "word": "no",
+   "start": 4.22,
+   "end": 4.46
+  },
+  {
+   "word": "room,'",
+   "start": 4.46,
+   "end": 4.86
+  },
+  {
+   "word": "they",
+   "start": 4.86,
+   "end": 5.36
+  },
+  {
+   "word": "cried",
+   "start": 5.36,
+   "end": 5.56
+  },
+  {
+   "word": "out",
+   "start": 5.56,
+   "end": 5.9
+  },
+  {
+   "word": "when",
+   "start": 5.9,
+   "end": 6.12
+  },
+  {
+   "word": "they",
+   "start": 6.12,
+   "end": 6.26
+  },
+  {
+   "word": "saw",
+   "start": 6.26,
+   "end": 6.46
+  },
+  {
+   "word": "Alice",
+   "start": 6.46,
+   "end": 6.7
+  },
+  {
+   "word": "coming.",
+   "start": 6.7,
+   "end": 7.02
+  },
+  {
+   "word": "\"'There's",
+   "start": 7.92,
+   "end": 8.52
+  },
+  {
+   "word": "plenty",
+   "start": 8.52,
+   "end": 8.74
+  },
+  {
+   "word": "of",
+   "start": 8.74,
+   "end": 9.14
+  },
+  {
+   "word": "room,'",
+   "start": 9.14,
+   "end": 9.52
+  },
+  {
+   "word": "said",
+   "start": 9.52,
+   "end": 9.92
+  },
+  {
+   "word": "Alice",
+   "start": 9.92,
+   "end": 10.26
+  },
+  {
+   "word": "indignantly,",
+   "start": 10.26,
+   "end": 11.06
+  },
+  {
+   "word": "and",
+   "start": 11.46,
+   "end": 11.9
+  },
+  {
+   "word": "she",
+   "start": 11.9,
+   "end": 12.14
+  },
+  {
+   "word": "sat",
+   "start": 12.14,
+   "end": 12.32
+  },
+  {
+   "word": "down",
+   "start": 12.32,
+   "end": 12.7
+  },
+  {
+   "word": "in",
+   "start": 12.7,
+   "end": 12.94
+  },
+  {
+   "word": "a",
+   "start": 12.94,
+   "end": 13.06
+  },
+  {
+   "word": "large",
+   "start": 13.06,
+   "end": 13.26
+  },
+  {
+   "word": "arm",
+   "start": 13.26,
+   "end": 13.6
+  },
+  {
+   "word": "-chair",
+   "start": 13.6,
+   "end": 13.94
+  },
+  {
+   "word": "at",
+   "start": 13.94,
+   "end": 14.4
+  },
+  {
+   "word": "one",
+   "start": 14.4,
+   "end": 14.66
+  },
+  {
+   "word": "end",
+   "start": 14.66,
+   "end": 14.86
+  },
+  {
+   "word": "of",
+   "start": 14.86,
+   "end": 14.98
+  },
+  {
+   "word": "the",
+   "start": 14.98,
+   "end": 15.1
+  },
+  {
+   "word": "table.",
+   "start": 15.1,
+   "end": 15.4
+  },
+  {
+   "word": "\"'Have",
+   "start": 16.24,
+   "end": 16.84
+  },
+  {
+   "word": "some",
+   "start": 16.84,
+   "end": 17.06
+  },
+  {
+   "word": "wine,'",
+   "start": 17.06,
+   "end": 17.94
+  },
+  {
+   "word": "the",
+   "start": 17.94,
+   "end": 18.24
+  },
+  {
+   "word": "March",
+   "start": 18.24,
+   "end": 18.36
+  },
+  {
+   "word": "hair",
+   "start": 18.36,
+   "end": 18.72
+  },
+  {
+   "word": "said,",
+   "start": 18.72,
+   "end": 19.06
+  },
+  {
+   "word": "in",
+   "start": 19.72,
+   "end": 19.82
+  },
+  {
+   "word": "an",
+   "start": 19.82,
+   "end": 19.98
+  },
+  {
+   "word": "encouraging",
+   "start": 19.98,
+   "end": 20.38
+  },
+  {
+   "word": "tone.",
+   "start": 20.38,
+   "end": 20.94
+  },
+  {
+   "word": "Alice",
+   "start": 21.96,
+   "end": 22.56
+  },
+  {
+   "word": "looked",
+   "start": 22.56,
+   "end": 22.76
+  },
+  {
+   "word": "all",
+   "start": 22.76,
+   "end": 23.0
+  },
+  {
+   "word": "round",
+   "start": 23.0,
+   "end": 23.22
+  },
+  {
+   "word": "the",
+   "start": 23.22,
+   "end": 23.42
+  },
+  {
+   "word": "table,",
+   "start": 23.42,
+   "end": 23.76
+  },
+  {
+   "word": "but",
+   "start": 24.06,
+   "end": 24.18
+  },
+  {
+   "word": "there",
+   "start": 24.18,
+   "end": 24.34
+  },
+  {
+   "word": "was",
+   "start": 24.34,
+   "end": 24.46
+  },
+  {
+   "word": "nothing",
+   "start": 24.46,
+   "end": 24.76
+  },
+  {
+   "word": "on",
+   "start": 24.76,
+   "end": 24.96
+  },
+  {
+   "word": "it",
+   "start": 24.96,
+   "end": 25.08
+  },
+  {
+   "word": "but",
+   "start": 25.08,
+   "end": 25.2
+  },
+  {
+   "word": "tea.",
+   "start": 25.2,
+   "end": 25.46
+  },
+  {
+   "word": "\"'I",
+   "start": 26.24,
+   "end": 26.84
+  },
+  {
+   "word": "don't",
+   "start": 26.84,
+   "end": 27.04
+  },
+  {
+   "word": "see",
+   "start": 27.04,
+   "end": 27.22
+  },
+  {
+   "word": "any",
+   "start": 27.22,
+   "end": 27.46
+  },
+  {
+   "word": "wine,'",
+   "start": 27.46,
+   "end": 27.76
+  },
+  {
+   "word": "she",
+   "start": 27.76,
+   "end": 28.5
+  },
+  {
+   "word": "remarked.",
+   "start": 28.5,
+   "end": 28.78
+  },
+  {
+   "word": "\"'There",
+   "start": 29.58,
+   "end": 30.18
+  },
+  {
+   "word": "isn't",
+   "start": 30.18,
+   "end": 30.56
+  },
+  {
+   "word": "any,'",
+   "start": 30.56,
+   "end": 30.74
+  },
+  {
+   "word": "said",
+   "start": 30.74,
+   "end": 31.2
+  },
+  {
+   "word": "the",
+   "start": 31.2,
+   "end": 31.32
+  },
+  {
+   "word": "March",
+   "start": 31.32,
+   "end": 31.48
+  },
+  {
+   "word": "hair.",
+   "start": 31.48,
+   "end": 31.76
+  },
+  {
+   "word": "\"'Then",
+   "start": 32.94,
+   "end": 33.54
+  },
+  {
+   "word": "it",
+   "start": 33.54,
+   "end": 33.7
+  },
+  {
+   "word": "wasn't",
+   "start": 33.7,
+   "end": 34.04
+  },
+  {
+   "word": "very",
+   "start": 34.04,
+   "end": 34.2
+  },
+  {
+   "word": "civil",
+   "start": 34.2,
+   "end": 34.62
+  },
+  {
+   "word": "of",
+   "start": 34.62,
+   "end": 34.9
+  },
+  {
+   "word": "you",
+   "start": 34.9,
+   "end": 35.06
+  },
+  {
+   "word": "to",
+   "start": 35.06,
+   "end": 35.24
+  },
+  {
+   "word": "offer",
+   "start": 35.24,
+   "end": 35.58
+  },
+  {
+   "word": "it,'",
+   "start": 35.58,
+   "end": 36.04
+  },
+  {
+   "word": "said",
+   "start": 36.04,
+   "end": 36.34
+  },
+  {
+   "word": "Alice",
+   "start": 36.34,
+   "end": 36.68
+  },
+  {
+   "word": "angrily.",
+   "start": 36.68,
+   "end": 37.02
+  },
+  {
+   "word": "\"'It",
+   "start": 37.96,
+   "end": 38.4
+  },
+  {
+   "word": "wasn't",
+   "start": 38.4,
+   "end": 38.7
+  },
+  {
+   "word": "very",
+   "start": 38.7,
+   "end": 38.86
+  },
+  {
+   "word": "civil",
+   "start": 38.86,
+   "end": 39.16
+  },
+  {
+   "word": "of",
+   "start": 39.16,
+   "end": 39.46
+  },
+  {
+   "word": "you",
+   "start": 39.46,
+   "end": 39.72
+  },
+  {
+   "word": "to-\"",
+   "start": 39.72,
+   "end": 39.98
+  }
+ ]
+}

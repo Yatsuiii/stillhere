@@ -1,0 +1,734 @@
+{
+ "words": [
+  {
+   "word": "Footman",
+   "start": 0.0,
+   "end": 0.32
+  },
+  {
+   "word": "repeated",
+   "start": 0.32,
+   "end": 0.6
+  },
+  {
+   "word": "in",
+   "start": 0.6,
+   "end": 0.96
+  },
+  {
+   "word": "the",
+   "start": 0.96,
+   "end": 1.04
+  },
+  {
+   "word": "same",
+   "start": 1.04,
+   "end": 1.24
+  },
+  {
+   "word": "solemn",
+   "start": 1.24,
+   "end": 1.5
+  },
+  {
+   "word": "tone,",
+   "start": 1.5,
+   "end": 1.84
+  },
+  {
+   "word": "only",
+   "start": 1.84,
+   "end": 2.26
+  },
+  {
+   "word": "changing",
+   "start": 2.26,
+   "end": 2.56
+  },
+  {
+   "word": "the",
+   "start": 2.56,
+   "end": 2.82
+  },
+  {
+   "word": "order",
+   "start": 2.82,
+   "end": 3.06
+  },
+  {
+   "word": "of",
+   "start": 3.06,
+   "end": 3.2
+  },
+  {
+   "word": "the",
+   "start": 3.2,
+   "end": 3.3
+  },
+  {
+   "word": "words",
+   "start": 3.3,
+   "end": 3.5
+  },
+  {
+   "word": "a",
+   "start": 3.5,
+   "end": 3.74
+  },
+  {
+   "word": "little,",
+   "start": 3.74,
+   "end": 3.88
+  },
+  {
+   "word": "from",
+   "start": 4.24,
+   "end": 4.46
+  },
+  {
+   "word": "the",
+   "start": 4.46,
+   "end": 4.62
+  },
+  {
+   "word": "queen",
+   "start": 4.62,
+   "end": 4.82
+  },
+  {
+   "word": "and",
+   "start": 4.82,
+   "end": 5.06
+  },
+  {
+   "word": "invitation",
+   "start": 5.06,
+   "end": 5.46
+  },
+  {
+   "word": "for",
+   "start": 5.46,
+   "end": 5.78
+  },
+  {
+   "word": "the",
+   "start": 5.78,
+   "end": 5.92
+  },
+  {
+   "word": "Duchess",
+   "start": 5.92,
+   "end": 6.14
+  },
+  {
+   "word": "to",
+   "start": 6.14,
+   "end": 6.42
+  },
+  {
+   "word": "play",
+   "start": 6.42,
+   "end": 6.62
+  },
+  {
+   "word": "croquet.",
+   "start": 6.62,
+   "end": 7.04
+  },
+  {
+   "word": "Then",
+   "start": 7.82,
+   "end": 8.22
+  },
+  {
+   "word": "they",
+   "start": 8.22,
+   "end": 8.36
+  },
+  {
+   "word": "both",
+   "start": 8.36,
+   "end": 8.56
+  },
+  {
+   "word": "bowed,",
+   "start": 8.56,
+   "end": 8.8
+  },
+  {
+   "word": "and",
+   "start": 9.1,
+   "end": 9.16
+  },
+  {
+   "word": "their",
+   "start": 9.16,
+   "end": 9.28
+  },
+  {
+   "word": "curls",
+   "start": 9.28,
+   "end": 9.58
+  },
+  {
+   "word": "got",
+   "start": 9.58,
+   "end": 9.82
+  },
+  {
+   "word": "entangled",
+   "start": 9.82,
+   "end": 10.04
+  },
+  {
+   "word": "together.",
+   "start": 10.04,
+   "end": 10.52
+  },
+  {
+   "word": "Alice",
+   "start": 11.4,
+   "end": 11.72
+  },
+  {
+   "word": "laughed",
+   "start": 11.72,
+   "end": 11.9
+  },
+  {
+   "word": "so",
+   "start": 11.9,
+   "end": 12.16
+  },
+  {
+   "word": "much",
+   "start": 12.16,
+   "end": 12.34
+  },
+  {
+   "word": "it",
+   "start": 12.34,
+   "end": 12.5
+  },
+  {
+   "word": "as",
+   "start": 12.5,
+   "end": 12.58
+  },
+  {
+   "word": "that",
+   "start": 12.58,
+   "end": 12.84
+  },
+  {
+   "word": "she",
+   "start": 12.84,
+   "end": 13.14
+  },
+  {
+   "word": "had",
+   "start": 13.14,
+   "end": 13.26
+  },
+  {
+   "word": "to",
+   "start": 13.26,
+   "end": 13.4
+  },
+  {
+   "word": "run",
+   "start": 13.4,
+   "end": 13.56
+  },
+  {
+   "word": "back",
+   "start": 13.56,
+   "end": 13.82
+  },
+  {
+   "word": "into",
+   "start": 13.82,
+   "end": 13.98
+  },
+  {
+   "word": "the",
+   "start": 13.98,
+   "end": 14.18
+  },
+  {
+   "word": "wood",
+   "start": 14.18,
+   "end": 14.38
+  },
+  {
+   "word": "for",
+   "start": 14.38,
+   "end": 14.56
+  },
+  {
+   "word": "fear",
+   "start": 14.56,
+   "end": 14.84
+  },
+  {
+   "word": "of",
+   "start": 14.84,
+   "end": 14.96
+  },
+  {
+   "word": "their",
+   "start": 14.96,
+   "end": 15.1
+  },
+  {
+   "word": "hearing",
+   "start": 15.1,
+   "end": 15.48
+  },
+  {
+   "word": "her.",
+   "start": 15.48,
+   "end": 15.76
+  },
+  {
+   "word": "And",
+   "start": 16.36,
+   "end": 16.56
+  },
+  {
+   "word": "when",
+   "start": 16.56,
+   "end": 16.68
+  },
+  {
+   "word": "she",
+   "start": 16.68,
+   "end": 16.86
+  },
+  {
+   "word": "next",
+   "start": 16.86,
+   "end": 17.0
+  },
+  {
+   "word": "peeped",
+   "start": 17.0,
+   "end": 17.44
+  },
+  {
+   "word": "out,",
+   "start": 17.44,
+   "end": 17.56
+  },
+  {
+   "word": "the",
+   "start": 17.84,
+   "end": 18.0
+  },
+  {
+   "word": "fish",
+   "start": 18.0,
+   "end": 18.16
+  },
+  {
+   "word": "-footman",
+   "start": 18.16,
+   "end": 18.48
+  },
+  {
+   "word": "was",
+   "start": 18.48,
+   "end": 18.66
+  },
+  {
+   "word": "gone,",
+   "start": 18.66,
+   "end": 18.84
+  },
+  {
+   "word": "and",
+   "start": 19.02,
+   "end": 19.06
+  },
+  {
+   "word": "the",
+   "start": 19.06,
+   "end": 19.18
+  },
+  {
+   "word": "other",
+   "start": 19.18,
+   "end": 19.4
+  },
+  {
+   "word": "was",
+   "start": 19.4,
+   "end": 19.6
+  },
+  {
+   "word": "sitting",
+   "start": 19.6,
+   "end": 19.84
+  },
+  {
+   "word": "on",
+   "start": 19.84,
+   "end": 20.06
+  },
+  {
+   "word": "the",
+   "start": 20.06,
+   "end": 20.16
+  },
+  {
+   "word": "ground",
+   "start": 20.16,
+   "end": 20.38
+  },
+  {
+   "word": "near",
+   "start": 20.38,
+   "end": 20.64
+  },
+  {
+   "word": "the",
+   "start": 20.64,
+   "end": 20.8
+  },
+  {
+   "word": "door,",
+   "start": 20.8,
+   "end": 20.96
+  },
+  {
+   "word": "staring",
+   "start": 21.2,
+   "end": 21.38
+  },
+  {
+   "word": "stupidly",
+   "start": 21.38,
+   "end": 21.96
+  },
+  {
+   "word": "up",
+   "start": 21.96,
+   "end": 22.1
+  },
+  {
+   "word": "into",
+   "start": 22.1,
+   "end": 22.4
+  },
+  {
+   "word": "the",
+   "start": 22.4,
+   "end": 22.52
+  },
+  {
+   "word": "sky.",
+   "start": 22.52,
+   "end": 22.76
+  },
+  {
+   "word": "Alice",
+   "start": 23.8,
+   "end": 24.2
+  },
+  {
+   "word": "went",
+   "start": 24.2,
+   "end": 24.36
+  },
+  {
+   "word": "timidly",
+   "start": 24.36,
+   "end": 24.78
+  },
+  {
+   "word": "up",
+   "start": 24.78,
+   "end": 24.88
+  },
+  {
+   "word": "to",
+   "start": 24.88,
+   "end": 25.0
+  },
+  {
+   "word": "the",
+   "start": 25.0,
+   "end": 25.12
+  },
+  {
+   "word": "door,",
+   "start": 25.12,
+   "end": 25.28
+  },
+  {
+   "word": "and",
+   "start": 25.46,
+   "end": 25.52
+  },
+  {
+   "word": "knocked.",
+   "start": 25.52,
+   "end": 25.7
+  },
+  {
+   "word": "There's",
+   "start": 26.42,
+   "end": 26.82
+  },
+  {
+   "word": "no",
+   "start": 26.82,
+   "end": 26.96
+  },
+  {
+   "word": "sort",
+   "start": 26.96,
+   "end": 27.22
+  },
+  {
+   "word": "of",
+   "start": 27.22,
+   "end": 27.34
+  },
+  {
+   "word": "use",
+   "start": 27.34,
+   "end": 27.5
+  },
+  {
+   "word": "in",
+   "start": 27.5,
+   "end": 27.7
+  },
+  {
+   "word": "knocking,",
+   "start": 27.7,
+   "end": 27.94
+  },
+  {
+   "word": "said",
+   "start": 28.44,
+   "end": 28.7
+  },
+  {
+   "word": "the",
+   "start": 28.7,
+   "end": 28.86
+  },
+  {
+   "word": "Footman,",
+   "start": 28.86,
+   "end": 29.16
+  },
+  {
+   "word": "and",
+   "start": 29.4,
+   "end": 29.52
+  },
+  {
+   "word": "that",
+   "start": 29.52,
+   "end": 29.7
+  },
+  {
+   "word": "for",
+   "start": 29.7,
+   "end": 29.9
+  },
+  {
+   "word": "two",
+   "start": 29.9,
+   "end": 30.06
+  },
+  {
+   "word": "reasons.",
+   "start": 30.06,
+   "end": 30.36
+  },
+  {
+   "word": "First,",
+   "start": 31.06,
+   "end": 31.22
+  },
+  {
+   "word": "because",
+   "start": 31.32,
+   "end": 31.56
+  },
+  {
+   "word": "I",
+   "start": 31.56,
+   "end": 31.72
+  },
+  {
+   "word": "am",
+   "start": 31.72,
+   "end": 31.82
+  },
+  {
+   "word": "on",
+   "start": 31.82,
+   "end": 31.92
+  },
+  {
+   "word": "the",
+   "start": 31.92,
+   "end": 32.02
+  },
+  {
+   "word": "same",
+   "start": 32.02,
+   "end": 32.2
+  },
+  {
+   "word": "side",
+   "start": 32.2,
+   "end": 32.56
+  },
+  {
+   "word": "of",
+   "start": 32.56,
+   "end": 32.66
+  },
+  {
+   "word": "the",
+   "start": 32.66,
+   "end": 32.76
+  },
+  {
+   "word": "door",
+   "start": 32.76,
+   "end": 32.94
+  },
+  {
+   "word": "as",
+   "start": 32.94,
+   "end": 33.2
+  },
+  {
+   "word": "you,",
+   "start": 33.2,
+   "end": 33.36
+  },
+  {
+   "word": "secondly,",
+   "start": 33.52,
+   "end": 33.74
+  },
+  {
+   "word": "because",
+   "start": 34.64,
+   "end": 34.64
+  },
+  {
+   "word": "they",
+   "start": 34.64,
+   "end": 34.8
+  },
+  {
+   "word": "are",
+   "start": 34.8,
+   "end": 34.8
+  },
+  {
+   "word": "making",
+   "start": 34.8,
+   "end": 35.08
+  },
+  {
+   "word": "such",
+   "start": 35.08,
+   "end": 35.26
+  },
+  {
+   "word": "a",
+   "start": 35.26,
+   "end": 35.4
+  },
+  {
+   "word": "noise",
+   "start": 35.4,
+   "end": 35.66
+  },
+  {
+   "word": "inside",
+   "start": 35.66,
+   "end": 36.0
+  },
+  {
+   "word": "that",
+   "start": 36.0,
+   "end": 36.18
+  },
+  {
+   "word": "no",
+   "start": 36.18,
+   "end": 36.38
+  },
+  {
+   "word": "one",
+   "start": 36.38,
+   "end": 36.52
+  },
+  {
+   "word": "could",
+   "start": 36.52,
+   "end": 36.64
+  },
+  {
+   "word": "possibly",
+   "start": 36.64,
+   "end": 36.94
+  },
+  {
+   "word": "hear",
+   "start": 36.94,
+   "end": 37.32
+  },
+  {
+   "word": "you.",
+   "start": 37.32,
+   "end": 37.64
+  },
+  {
+   "word": "And",
+   "start": 38.04,
+   "end": 38.28
+  },
+  {
+   "word": "certainly",
+   "start": 38.28,
+   "end": 38.52
+  },
+  {
+   "word": "there",
+   "start": 38.52,
+   "end": 38.88
+  },
+  {
+   "word": "was",
+   "start": 38.88,
+   "end": 39.02
+  },
+  {
+   "word": "a",
+   "start": 39.02,
+   "end": 39.12
+  },
+  {
+   "word": "most",
+   "start": 39.12,
+   "end": 39.32
+  },
+  {
+   "word": "extraordinary...",
+   "start": 39.32,
+   "end": 39.98
+  }
+ ]
+}

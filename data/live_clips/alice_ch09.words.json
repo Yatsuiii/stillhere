@@ -1,0 +1,524 @@
+{
+ "words": [
+  {
+   "word": "Soup",
+   "start": 0.0,
+   "end": 0.92
+  },
+  {
+   "word": "does",
+   "start": 0.92,
+   "end": 1.18
+  },
+  {
+   "word": "very",
+   "start": 1.18,
+   "end": 1.58
+  },
+  {
+   "word": "well",
+   "start": 1.58,
+   "end": 1.92
+  },
+  {
+   "word": "without-maybe",
+   "start": 1.92,
+   "end": 3.5
+  },
+  {
+   "word": "it's",
+   "start": 3.5,
+   "end": 4.02
+  },
+  {
+   "word": "always",
+   "start": 4.02,
+   "end": 4.42
+  },
+  {
+   "word": "pepper",
+   "start": 4.42,
+   "end": 4.78
+  },
+  {
+   "word": "that",
+   "start": 4.78,
+   "end": 5.14
+  },
+  {
+   "word": "makes",
+   "start": 5.14,
+   "end": 5.38
+  },
+  {
+   "word": "people",
+   "start": 5.38,
+   "end": 5.76
+  },
+  {
+   "word": "hot",
+   "start": 5.76,
+   "end": 6.1
+  },
+  {
+   "word": "-tempered.",
+   "start": 6.1,
+   "end": 6.7
+  },
+  {
+   "word": "She",
+   "start": 7.28,
+   "end": 7.62
+  },
+  {
+   "word": "went",
+   "start": 7.62,
+   "end": 7.82
+  },
+  {
+   "word": "on-very",
+   "start": 7.82,
+   "end": 8.8
+  },
+  {
+   "word": "much",
+   "start": 8.8,
+   "end": 9.14
+  },
+  {
+   "word": "pleased",
+   "start": 9.14,
+   "end": 9.44
+  },
+  {
+   "word": "at",
+   "start": 9.44,
+   "end": 9.78
+  },
+  {
+   "word": "having",
+   "start": 9.78,
+   "end": 10.02
+  },
+  {
+   "word": "found",
+   "start": 10.02,
+   "end": 10.28
+  },
+  {
+   "word": "out",
+   "start": 10.28,
+   "end": 10.54
+  },
+  {
+   "word": "a",
+   "start": 10.54,
+   "end": 10.8
+  },
+  {
+   "word": "new",
+   "start": 10.8,
+   "end": 10.96
+  },
+  {
+   "word": "kind",
+   "start": 10.96,
+   "end": 11.24
+  },
+  {
+   "word": "of",
+   "start": 11.24,
+   "end": 11.38
+  },
+  {
+   "word": "rule.",
+   "start": 11.38,
+   "end": 11.66
+  },
+  {
+   "word": "And",
+   "start": 12.76,
+   "end": 13.1
+  },
+  {
+   "word": "vinegar",
+   "start": 13.1,
+   "end": 13.32
+  },
+  {
+   "word": "that",
+   "start": 13.32,
+   "end": 13.68
+  },
+  {
+   "word": "makes",
+   "start": 13.68,
+   "end": 13.92
+  },
+  {
+   "word": "them",
+   "start": 13.92,
+   "end": 14.16
+  },
+  {
+   "word": "sour,",
+   "start": 14.16,
+   "end": 14.52
+  },
+  {
+   "word": "and",
+   "start": 15.1,
+   "end": 15.32
+  },
+  {
+   "word": "chamomile",
+   "start": 15.32,
+   "end": 15.9
+  },
+  {
+   "word": "that",
+   "start": 15.9,
+   "end": 16.08
+  },
+  {
+   "word": "makes",
+   "start": 16.08,
+   "end": 16.26
+  },
+  {
+   "word": "them",
+   "start": 16.26,
+   "end": 16.5
+  },
+  {
+   "word": "bitter,",
+   "start": 16.5,
+   "end": 16.8
+  },
+  {
+   "word": "and-and",
+   "start": 17.3,
+   "end": 18.1
+  },
+  {
+   "word": "barley",
+   "start": 18.1,
+   "end": 18.34
+  },
+  {
+   "word": "sugar",
+   "start": 18.34,
+   "end": 18.84
+  },
+  {
+   "word": "and",
+   "start": 18.84,
+   "end": 19.04
+  },
+  {
+   "word": "such",
+   "start": 19.04,
+   "end": 19.24
+  },
+  {
+   "word": "things",
+   "start": 19.24,
+   "end": 19.56
+  },
+  {
+   "word": "that",
+   "start": 19.56,
+   "end": 19.78
+  },
+  {
+   "word": "make",
+   "start": 19.78,
+   "end": 19.96
+  },
+  {
+   "word": "children",
+   "start": 19.96,
+   "end": 20.24
+  },
+  {
+   "word": "sweet",
+   "start": 20.24,
+   "end": 20.7
+  },
+  {
+   "word": "-tempered.",
+   "start": 20.7,
+   "end": 21.18
+  },
+  {
+   "word": "I",
+   "start": 21.74,
+   "end": 21.94
+  },
+  {
+   "word": "only",
+   "start": 21.94,
+   "end": 22.14
+  },
+  {
+   "word": "wish",
+   "start": 22.14,
+   "end": 22.42
+  },
+  {
+   "word": "people",
+   "start": 22.42,
+   "end": 22.74
+  },
+  {
+   "word": "knew",
+   "start": 22.74,
+   "end": 23.02
+  },
+  {
+   "word": "that,",
+   "start": 23.02,
+   "end": 23.36
+  },
+  {
+   "word": "then",
+   "start": 23.7,
+   "end": 24.1
+  },
+  {
+   "word": "they",
+   "start": 24.1,
+   "end": 24.26
+  },
+  {
+   "word": "wouldn't",
+   "start": 24.26,
+   "end": 24.5
+  },
+  {
+   "word": "be",
+   "start": 24.5,
+   "end": 24.64
+  },
+  {
+   "word": "so",
+   "start": 24.64,
+   "end": 24.86
+  },
+  {
+   "word": "stingy",
+   "start": 24.86,
+   "end": 25.48
+  },
+  {
+   "word": "about",
+   "start": 25.48,
+   "end": 25.68
+  },
+  {
+   "word": "it,",
+   "start": 25.68,
+   "end": 25.88
+  },
+  {
+   "word": "you",
+   "start": 25.88,
+   "end": 26.0
+  },
+  {
+   "word": "know.",
+   "start": 26.0,
+   "end": 26.22
+  },
+  {
+   "word": "She",
+   "start": 27.0,
+   "end": 27.54
+  },
+  {
+   "word": "had",
+   "start": 27.54,
+   "end": 27.72
+  },
+  {
+   "word": "quite",
+   "start": 27.72,
+   "end": 28.04
+  },
+  {
+   "word": "forgotten",
+   "start": 28.04,
+   "end": 28.42
+  },
+  {
+   "word": "the",
+   "start": 28.42,
+   "end": 28.76
+  },
+  {
+   "word": "duchess",
+   "start": 28.76,
+   "end": 29.12
+  },
+  {
+   "word": "by",
+   "start": 29.12,
+   "end": 29.36
+  },
+  {
+   "word": "this",
+   "start": 29.36,
+   "end": 29.6
+  },
+  {
+   "word": "time,",
+   "start": 29.6,
+   "end": 29.9
+  },
+  {
+   "word": "and",
+   "start": 30.24,
+   "end": 30.32
+  },
+  {
+   "word": "was",
+   "start": 30.32,
+   "end": 30.44
+  },
+  {
+   "word": "a",
+   "start": 30.44,
+   "end": 30.56
+  },
+  {
+   "word": "little",
+   "start": 30.56,
+   "end": 30.76
+  },
+  {
+   "word": "startled",
+   "start": 30.76,
+   "end": 31.12
+  },
+  {
+   "word": "when",
+   "start": 31.12,
+   "end": 31.56
+  },
+  {
+   "word": "she",
+   "start": 31.56,
+   "end": 31.74
+  },
+  {
+   "word": "heard",
+   "start": 31.74,
+   "end": 31.94
+  },
+  {
+   "word": "her",
+   "start": 31.94,
+   "end": 32.18
+  },
+  {
+   "word": "voice,",
+   "start": 32.18,
+   "end": 32.48
+  },
+  {
+   "word": "close",
+   "start": 32.98,
+   "end": 33.3
+  },
+  {
+   "word": "to",
+   "start": 33.3,
+   "end": 33.54
+  },
+  {
+   "word": "her",
+   "start": 33.54,
+   "end": 33.7
+  },
+  {
+   "word": "ear.",
+   "start": 33.7,
+   "end": 33.94
+  },
+  {
+   "word": "You're",
+   "start": 34.84,
+   "end": 35.38
+  },
+  {
+   "word": "thinking",
+   "start": 35.38,
+   "end": 35.64
+  },
+  {
+   "word": "about",
+   "start": 35.64,
+   "end": 35.98
+  },
+  {
+   "word": "something,",
+   "start": 35.98,
+   "end": 36.34
+  },
+  {
+   "word": "my",
+   "start": 36.6,
+   "end": 36.66
+  },
+  {
+   "word": "dear,",
+   "start": 36.66,
+   "end": 36.92
+  },
+  {
+   "word": "and",
+   "start": 37.3,
+   "end": 37.62
+  },
+  {
+   "word": "that",
+   "start": 37.62,
+   "end": 37.76
+  },
+  {
+   "word": "makes",
+   "start": 37.76,
+   "end": 37.92
+  },
+  {
+   "word": "you",
+   "start": 37.92,
+   "end": 38.2
+  },
+  {
+   "word": "forget",
+   "start": 38.2,
+   "end": 38.52
+  },
+  {
+   "word": "to",
+   "start": 38.52,
+   "end": 38.8
+  },
+  {
+   "word": "talk.",
+   "start": 38.8,
+   "end": 39.04
+  },
+  {
+   "word": "I",
+   "start": 39.76,
+   "end": 39.84
+  },
+  {
+   "word": "can't-",
+   "start": 39.84,
+   "end": 39.98
+  }
+ ]
+}

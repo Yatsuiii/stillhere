@@ -1,0 +1,704 @@
+{
+ "words": [
+  {
+   "word": "that",
+   "start": 0.0,
+   "end": 0.08
+  },
+  {
+   "word": "she",
+   "start": 0.08,
+   "end": 0.44
+  },
+  {
+   "word": "ought",
+   "start": 0.44,
+   "end": 0.58
+  },
+  {
+   "word": "to",
+   "start": 0.58,
+   "end": 0.8
+  },
+  {
+   "word": "have",
+   "start": 0.8,
+   "end": 0.94
+  },
+  {
+   "word": "wondered",
+   "start": 0.94,
+   "end": 1.14
+  },
+  {
+   "word": "at",
+   "start": 1.14,
+   "end": 1.4
+  },
+  {
+   "word": "this,",
+   "start": 1.4,
+   "end": 1.62
+  },
+  {
+   "word": "but",
+   "start": 1.8,
+   "end": 1.86
+  },
+  {
+   "word": "at",
+   "start": 1.86,
+   "end": 2.02
+  },
+  {
+   "word": "the",
+   "start": 2.02,
+   "end": 2.12
+  },
+  {
+   "word": "time",
+   "start": 2.12,
+   "end": 2.46
+  },
+  {
+   "word": "it",
+   "start": 2.46,
+   "end": 2.62
+  },
+  {
+   "word": "all",
+   "start": 2.62,
+   "end": 2.74
+  },
+  {
+   "word": "seemed",
+   "start": 2.74,
+   "end": 2.9
+  },
+  {
+   "word": "quite",
+   "start": 2.9,
+   "end": 3.12
+  },
+  {
+   "word": "natural.",
+   "start": 3.12,
+   "end": 3.54
+  },
+  {
+   "word": "But",
+   "start": 4.44,
+   "end": 4.6
+  },
+  {
+   "word": "when",
+   "start": 4.6,
+   "end": 4.74
+  },
+  {
+   "word": "the",
+   "start": 4.74,
+   "end": 4.88
+  },
+  {
+   "word": "rabbit",
+   "start": 4.88,
+   "end": 5.06
+  },
+  {
+   "word": "actually",
+   "start": 5.06,
+   "end": 5.56
+  },
+  {
+   "word": "took",
+   "start": 5.56,
+   "end": 5.9
+  },
+  {
+   "word": "a",
+   "start": 5.9,
+   "end": 6.22
+  },
+  {
+   "word": "watch",
+   "start": 6.22,
+   "end": 6.5
+  },
+  {
+   "word": "out",
+   "start": 6.5,
+   "end": 6.96
+  },
+  {
+   "word": "of",
+   "start": 6.96,
+   "end": 7.1
+  },
+  {
+   "word": "its",
+   "start": 7.1,
+   "end": 7.22
+  },
+  {
+   "word": "waistcoat",
+   "start": 7.22,
+   "end": 7.72
+  },
+  {
+   "word": "pocket,",
+   "start": 7.72,
+   "end": 8.12
+  },
+  {
+   "word": "and",
+   "start": 8.58,
+   "end": 8.9
+  },
+  {
+   "word": "looked",
+   "start": 8.9,
+   "end": 9.06
+  },
+  {
+   "word": "at",
+   "start": 9.06,
+   "end": 9.36
+  },
+  {
+   "word": "it,",
+   "start": 9.36,
+   "end": 9.48
+  },
+  {
+   "word": "and",
+   "start": 9.78,
+   "end": 9.96
+  },
+  {
+   "word": "then",
+   "start": 9.96,
+   "end": 10.06
+  },
+  {
+   "word": "hurried",
+   "start": 10.06,
+   "end": 10.28
+  },
+  {
+   "word": "on,",
+   "start": 10.28,
+   "end": 10.64
+  },
+  {
+   "word": "Alice",
+   "start": 11.14,
+   "end": 11.38
+  },
+  {
+   "word": "started",
+   "start": 11.38,
+   "end": 11.74
+  },
+  {
+   "word": "to",
+   "start": 11.74,
+   "end": 12.04
+  },
+  {
+   "word": "her",
+   "start": 12.04,
+   "end": 12.18
+  },
+  {
+   "word": "feet,",
+   "start": 12.18,
+   "end": 12.42
+  },
+  {
+   "word": "for",
+   "start": 12.6,
+   "end": 12.7
+  },
+  {
+   "word": "it",
+   "start": 12.7,
+   "end": 12.8
+  },
+  {
+   "word": "flashed",
+   "start": 12.8,
+   "end": 12.94
+  },
+  {
+   "word": "across",
+   "start": 12.94,
+   "end": 13.3
+  },
+  {
+   "word": "her",
+   "start": 13.3,
+   "end": 13.62
+  },
+  {
+   "word": "mind",
+   "start": 13.62,
+   "end": 13.88
+  },
+  {
+   "word": "that",
+   "start": 13.88,
+   "end": 14.38
+  },
+  {
+   "word": "she'd",
+   "start": 14.38,
+   "end": 14.6
+  },
+  {
+   "word": "never",
+   "start": 14.6,
+   "end": 14.82
+  },
+  {
+   "word": "before",
+   "start": 14.82,
+   "end": 15.06
+  },
+  {
+   "word": "seen",
+   "start": 15.06,
+   "end": 15.5
+  },
+  {
+   "word": "a",
+   "start": 15.5,
+   "end": 15.62
+  },
+  {
+   "word": "rabbit",
+   "start": 15.62,
+   "end": 15.9
+  },
+  {
+   "word": "with",
+   "start": 15.9,
+   "end": 16.08
+  },
+  {
+   "word": "either",
+   "start": 16.08,
+   "end": 16.28
+  },
+  {
+   "word": "a",
+   "start": 16.28,
+   "end": 16.48
+  },
+  {
+   "word": "waistcoat",
+   "start": 16.48,
+   "end": 16.82
+  },
+  {
+   "word": "pocket",
+   "start": 16.82,
+   "end": 17.12
+  },
+  {
+   "word": "or",
+   "start": 17.12,
+   "end": 17.44
+  },
+  {
+   "word": "a",
+   "start": 17.44,
+   "end": 17.62
+  },
+  {
+   "word": "watch",
+   "start": 17.62,
+   "end": 17.8
+  },
+  {
+   "word": "to",
+   "start": 17.8,
+   "end": 18.04
+  },
+  {
+   "word": "take",
+   "start": 18.04,
+   "end": 18.2
+  },
+  {
+   "word": "out",
+   "start": 18.2,
+   "end": 18.44
+  },
+  {
+   "word": "of",
+   "start": 18.44,
+   "end": 18.54
+  },
+  {
+   "word": "it,",
+   "start": 18.54,
+   "end": 18.7
+  },
+  {
+   "word": "and",
+   "start": 19.04,
+   "end": 19.26
+  },
+  {
+   "word": "burning",
+   "start": 19.26,
+   "end": 19.5
+  },
+  {
+   "word": "with",
+   "start": 19.5,
+   "end": 19.76
+  },
+  {
+   "word": "curiosity,",
+   "start": 19.76,
+   "end": 20.04
+  },
+  {
+   "word": "she",
+   "start": 20.9,
+   "end": 21.0
+  },
+  {
+   "word": "ran",
+   "start": 21.0,
+   "end": 21.18
+  },
+  {
+   "word": "across",
+   "start": 21.18,
+   "end": 21.46
+  },
+  {
+   "word": "the",
+   "start": 21.46,
+   "end": 21.66
+  },
+  {
+   "word": "field",
+   "start": 21.66,
+   "end": 21.92
+  },
+  {
+   "word": "after",
+   "start": 21.92,
+   "end": 22.28
+  },
+  {
+   "word": "it,",
+   "start": 22.28,
+   "end": 22.48
+  },
+  {
+   "word": "and",
+   "start": 22.72,
+   "end": 22.9
+  },
+  {
+   "word": "fortunately",
+   "start": 22.9,
+   "end": 23.22
+  },
+  {
+   "word": "was",
+   "start": 23.68,
+   "end": 23.9
+  },
+  {
+   "word": "just",
+   "start": 23.9,
+   "end": 24.22
+  },
+  {
+   "word": "in",
+   "start": 24.22,
+   "end": 24.42
+  },
+  {
+   "word": "time",
+   "start": 24.42,
+   "end": 24.6
+  },
+  {
+   "word": "to",
+   "start": 24.6,
+   "end": 24.8
+  },
+  {
+   "word": "see",
+   "start": 24.8,
+   "end": 24.94
+  },
+  {
+   "word": "it",
+   "start": 24.94,
+   "end": 25.06
+  },
+  {
+   "word": "pop",
+   "start": 25.06,
+   "end": 25.22
+  },
+  {
+   "word": "down",
+   "start": 25.22,
+   "end": 25.52
+  },
+  {
+   "word": "a",
+   "start": 25.52,
+   "end": 25.64
+  },
+  {
+   "word": "large",
+   "start": 25.64,
+   "end": 25.86
+  },
+  {
+   "word": "rabbit",
+   "start": 25.86,
+   "end": 26.18
+  },
+  {
+   "word": "hole",
+   "start": 26.18,
+   "end": 26.36
+  },
+  {
+   "word": "under",
+   "start": 26.36,
+   "end": 26.66
+  },
+  {
+   "word": "the",
+   "start": 26.66,
+   "end": 26.84
+  },
+  {
+   "word": "hedge.",
+   "start": 26.84,
+   "end": 27.02
+  },
+  {
+   "word": "In",
+   "start": 27.7,
+   "end": 28.14
+  },
+  {
+   "word": "another",
+   "start": 28.14,
+   "end": 28.3
+  },
+  {
+   "word": "moment,",
+   "start": 28.3,
+   "end": 28.84
+  },
+  {
+   "word": "down",
+   "start": 29.06,
+   "end": 29.2
+  },
+  {
+   "word": "went",
+   "start": 29.2,
+   "end": 29.36
+  },
+  {
+   "word": "Alice",
+   "start": 29.36,
+   "end": 29.58
+  },
+  {
+   "word": "after",
+   "start": 29.58,
+   "end": 30.02
+  },
+  {
+   "word": "it,",
+   "start": 30.02,
+   "end": 30.26
+  },
+  {
+   "word": "never",
+   "start": 30.5,
+   "end": 30.68
+  },
+  {
+   "word": "once",
+   "start": 30.68,
+   "end": 30.98
+  },
+  {
+   "word": "considering",
+   "start": 30.98,
+   "end": 31.42
+  },
+  {
+   "word": "how",
+   "start": 31.42,
+   "end": 31.9
+  },
+  {
+   "word": "in",
+   "start": 31.9,
+   "end": 32.1
+  },
+  {
+   "word": "the",
+   "start": 32.1,
+   "end": 32.18
+  },
+  {
+   "word": "world",
+   "start": 32.18,
+   "end": 32.4
+  },
+  {
+   "word": "she",
+   "start": 32.4,
+   "end": 32.64
+  },
+  {
+   "word": "was",
+   "start": 32.64,
+   "end": 32.78
+  },
+  {
+   "word": "to",
+   "start": 32.78,
+   "end": 32.94
+  },
+  {
+   "word": "get",
+   "start": 32.94,
+   "end": 33.06
+  },
+  {
+   "word": "out",
+   "start": 33.06,
+   "end": 33.24
+  },
+  {
+   "word": "again.",
+   "start": 33.24,
+   "end": 33.46
+  },
+  {
+   "word": "The",
+   "start": 34.42,
+   "end": 34.64
+  },
+  {
+   "word": "rabbit",
+   "start": 34.64,
+   "end": 34.8
+  },
+  {
+   "word": "hole",
+   "start": 34.8,
+   "end": 35.06
+  },
+  {
+   "word": "went",
+   "start": 35.06,
+   "end": 35.22
+  },
+  {
+   "word": "straight",
+   "start": 35.22,
+   "end": 35.44
+  },
+  {
+   "word": "on",
+   "start": 35.44,
+   "end": 35.64
+  },
+  {
+   "word": "like",
+   "start": 35.64,
+   "end": 35.8
+  },
+  {
+   "word": "a",
+   "start": 35.8,
+   "end": 35.9
+  },
+  {
+   "word": "tunnel",
+   "start": 35.9,
+   "end": 36.14
+  },
+  {
+   "word": "for",
+   "start": 36.14,
+   "end": 36.38
+  },
+  {
+   "word": "some",
+   "start": 36.38,
+   "end": 36.56
+  },
+  {
+   "word": "way,",
+   "start": 36.56,
+   "end": 36.8
+  },
+  {
+   "word": "and",
+   "start": 37.0,
+   "end": 37.24
+  },
+  {
+   "word": "then",
+   "start": 37.24,
+   "end": 37.4
+  },
+  {
+   "word": "dipped",
+   "start": 37.4,
+   "end": 37.56
+  },
+  {
+   "word": "suddenly",
+   "start": 37.56,
+   "end": 37.96
+  },
+  {
+   "word": "down,",
+   "start": 37.96,
+   "end": 38.42
+  },
+  {
+   "word": "so",
+   "start": 38.76,
+   "end": 38.9
+  },
+  {
+   "word": "suddenly,",
+   "start": 38.9,
+   "end": 39.32
+  },
+  {
+   "word": "that",
+   "start": 39.66,
+   "end": 39.84
+  },
+  {
+   "word": "Alice",
+   "start": 39.84,
+   "end": 39.98
+  }
+ ]
+}

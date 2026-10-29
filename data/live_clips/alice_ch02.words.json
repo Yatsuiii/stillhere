@@ -1,0 +1,589 @@
+{
+ "words": [
+  {
+   "word": "Perhaps",
+   "start": 0.0,
+   "end": 0.26
+  },
+  {
+   "word": "they",
+   "start": 0.26,
+   "end": 0.64
+  },
+  {
+   "word": "won't",
+   "start": 0.64,
+   "end": 0.94
+  },
+  {
+   "word": "walk",
+   "start": 0.94,
+   "end": 1.16
+  },
+  {
+   "word": "the",
+   "start": 1.16,
+   "end": 1.38
+  },
+  {
+   "word": "way",
+   "start": 1.38,
+   "end": 1.52
+  },
+  {
+   "word": "I",
+   "start": 1.52,
+   "end": 1.68
+  },
+  {
+   "word": "want",
+   "start": 1.68,
+   "end": 1.92
+  },
+  {
+   "word": "to",
+   "start": 1.92,
+   "end": 2.08
+  },
+  {
+   "word": "go.",
+   "start": 2.08,
+   "end": 2.3
+  },
+  {
+   "word": "Let",
+   "start": 2.86,
+   "end": 3.0
+  },
+  {
+   "word": "me",
+   "start": 3.0,
+   "end": 3.14
+  },
+  {
+   "word": "see.",
+   "start": 3.14,
+   "end": 3.4
+  },
+  {
+   "word": "I'll",
+   "start": 3.78,
+   "end": 3.86
+  },
+  {
+   "word": "give",
+   "start": 3.86,
+   "end": 3.98
+  },
+  {
+   "word": "them",
+   "start": 3.98,
+   "end": 4.14
+  },
+  {
+   "word": "a",
+   "start": 4.14,
+   "end": 4.22
+  },
+  {
+   "word": "new",
+   "start": 4.22,
+   "end": 4.38
+  },
+  {
+   "word": "pair",
+   "start": 4.38,
+   "end": 4.62
+  },
+  {
+   "word": "of",
+   "start": 4.62,
+   "end": 4.74
+  },
+  {
+   "word": "boots",
+   "start": 4.74,
+   "end": 4.9
+  },
+  {
+   "word": "every",
+   "start": 4.9,
+   "end": 5.22
+  },
+  {
+   "word": "Christmas.\"",
+   "start": 5.22,
+   "end": 6.66
+  },
+  {
+   "word": "And",
+   "start": 6.66,
+   "end": 7.36
+  },
+  {
+   "word": "she",
+   "start": 7.36,
+   "end": 7.54
+  },
+  {
+   "word": "went",
+   "start": 7.54,
+   "end": 7.72
+  },
+  {
+   "word": "on",
+   "start": 7.72,
+   "end": 7.92
+  },
+  {
+   "word": "planning",
+   "start": 7.92,
+   "end": 8.24
+  },
+  {
+   "word": "to",
+   "start": 8.24,
+   "end": 8.48
+  },
+  {
+   "word": "herself",
+   "start": 8.48,
+   "end": 8.66
+  },
+  {
+   "word": "how",
+   "start": 8.66,
+   "end": 9.24
+  },
+  {
+   "word": "she",
+   "start": 9.24,
+   "end": 9.46
+  },
+  {
+   "word": "should",
+   "start": 9.46,
+   "end": 9.64
+  },
+  {
+   "word": "manage",
+   "start": 9.64,
+   "end": 9.86
+  },
+  {
+   "word": "it.",
+   "start": 9.86,
+   "end": 10.18
+  },
+  {
+   "word": "They",
+   "start": 10.64,
+   "end": 10.9
+  },
+  {
+   "word": "must",
+   "start": 10.9,
+   "end": 11.0
+  },
+  {
+   "word": "go",
+   "start": 11.0,
+   "end": 11.28
+  },
+  {
+   "word": "by",
+   "start": 11.28,
+   "end": 11.52
+  },
+  {
+   "word": "carrier,",
+   "start": 11.52,
+   "end": 11.9
+  },
+  {
+   "word": "she",
+   "start": 11.96,
+   "end": 12.28
+  },
+  {
+   "word": "thought,",
+   "start": 12.28,
+   "end": 12.54
+  },
+  {
+   "word": "and",
+   "start": 13.12,
+   "end": 13.2
+  },
+  {
+   "word": "how",
+   "start": 13.2,
+   "end": 13.4
+  },
+  {
+   "word": "funny",
+   "start": 13.4,
+   "end": 13.74
+  },
+  {
+   "word": "I'll",
+   "start": 13.74,
+   "end": 14.06
+  },
+  {
+   "word": "seem,",
+   "start": 14.06,
+   "end": 14.3
+  },
+  {
+   "word": "sending",
+   "start": 14.6,
+   "end": 14.8
+  },
+  {
+   "word": "presents",
+   "start": 14.8,
+   "end": 15.02
+  },
+  {
+   "word": "to",
+   "start": 15.02,
+   "end": 15.36
+  },
+  {
+   "word": "one's",
+   "start": 15.36,
+   "end": 15.62
+  },
+  {
+   "word": "own",
+   "start": 15.62,
+   "end": 15.88
+  },
+  {
+   "word": "feet,",
+   "start": 15.88,
+   "end": 16.22
+  },
+  {
+   "word": "and",
+   "start": 16.64,
+   "end": 16.96
+  },
+  {
+   "word": "how",
+   "start": 16.96,
+   "end": 17.14
+  },
+  {
+   "word": "odd",
+   "start": 17.14,
+   "end": 17.42
+  },
+  {
+   "word": "the",
+   "start": 17.42,
+   "end": 17.58
+  },
+  {
+   "word": "directions",
+   "start": 17.58,
+   "end": 17.9
+  },
+  {
+   "word": "will",
+   "start": 17.9,
+   "end": 18.2
+  },
+  {
+   "word": "look.",
+   "start": 18.2,
+   "end": 18.44
+  },
+  {
+   "word": "Alice's",
+   "start": 19.16,
+   "end": 19.52
+  },
+  {
+   "word": "right",
+   "start": 19.52,
+   "end": 19.74
+  },
+  {
+   "word": "foot,",
+   "start": 19.74,
+   "end": 20.08
+  },
+  {
+   "word": "a",
+   "start": 20.34,
+   "end": 20.4
+  },
+  {
+   "word": "squire.",
+   "start": 20.4,
+   "end": 20.82
+  },
+  {
+   "word": "Hearth",
+   "start": 21.62,
+   "end": 21.94
+  },
+  {
+   "word": "rug,",
+   "start": 21.94,
+   "end": 22.22
+  },
+  {
+   "word": "near",
+   "start": 22.5,
+   "end": 22.72
+  },
+  {
+   "word": "the",
+   "start": 22.72,
+   "end": 22.88
+  },
+  {
+   "word": "fender,",
+   "start": 22.88,
+   "end": 23.18
+  },
+  {
+   "word": "with",
+   "start": 23.72,
+   "end": 23.76
+  },
+  {
+   "word": "Alice's",
+   "start": 23.76,
+   "end": 24.26
+  },
+  {
+   "word": "love.",
+   "start": 24.26,
+   "end": 24.5
+  },
+  {
+   "word": "Oh,",
+   "start": 25.14,
+   "end": 25.46
+  },
+  {
+   "word": "dear,",
+   "start": 25.62,
+   "end": 25.76
+  },
+  {
+   "word": "what",
+   "start": 25.9,
+   "end": 25.98
+  },
+  {
+   "word": "nonsense",
+   "start": 25.98,
+   "end": 26.28
+  },
+  {
+   "word": "I'm",
+   "start": 26.28,
+   "end": 26.78
+  },
+  {
+   "word": "talking!",
+   "start": 26.78,
+   "end": 27.0
+  },
+  {
+   "word": "Just",
+   "start": 27.98,
+   "end": 28.46
+  },
+  {
+   "word": "then,",
+   "start": 28.46,
+   "end": 28.9
+  },
+  {
+   "word": "her",
+   "start": 28.9,
+   "end": 29.44
+  },
+  {
+   "word": "head",
+   "start": 29.44,
+   "end": 29.66
+  },
+  {
+   "word": "struck",
+   "start": 29.66,
+   "end": 29.86
+  },
+  {
+   "word": "against",
+   "start": 29.86,
+   "end": 30.24
+  },
+  {
+   "word": "the",
+   "start": 30.24,
+   "end": 30.46
+  },
+  {
+   "word": "roof",
+   "start": 30.46,
+   "end": 30.7
+  },
+  {
+   "word": "of",
+   "start": 30.7,
+   "end": 30.96
+  },
+  {
+   "word": "the",
+   "start": 30.96,
+   "end": 31.08
+  },
+  {
+   "word": "hall.",
+   "start": 31.08,
+   "end": 31.3
+  },
+  {
+   "word": "In",
+   "start": 31.88,
+   "end": 32.0
+  },
+  {
+   "word": "fact,",
+   "start": 32.0,
+   "end": 32.2
+  },
+  {
+   "word": "she",
+   "start": 32.38,
+   "end": 32.5
+  },
+  {
+   "word": "was",
+   "start": 32.5,
+   "end": 32.6
+  },
+  {
+   "word": "now",
+   "start": 32.6,
+   "end": 32.88
+  },
+  {
+   "word": "more",
+   "start": 32.88,
+   "end": 33.08
+  },
+  {
+   "word": "than",
+   "start": 33.08,
+   "end": 33.2
+  },
+  {
+   "word": "nine",
+   "start": 33.2,
+   "end": 33.54
+  },
+  {
+   "word": "feet",
+   "start": 33.54,
+   "end": 33.88
+  },
+  {
+   "word": "high,",
+   "start": 33.88,
+   "end": 34.3
+  },
+  {
+   "word": "and",
+   "start": 34.9,
+   "end": 34.94
+  },
+  {
+   "word": "she",
+   "start": 34.94,
+   "end": 35.12
+  },
+  {
+   "word": "at",
+   "start": 35.12,
+   "end": 35.24
+  },
+  {
+   "word": "once",
+   "start": 35.24,
+   "end": 35.5
+  },
+  {
+   "word": "took",
+   "start": 35.5,
+   "end": 35.88
+  },
+  {
+   "word": "up",
+   "start": 35.88,
+   "end": 36.04
+  },
+  {
+   "word": "the",
+   "start": 36.04,
+   "end": 36.2
+  },
+  {
+   "word": "little",
+   "start": 36.2,
+   "end": 36.44
+  },
+  {
+   "word": "golden",
+   "start": 36.44,
+   "end": 36.72
+  },
+  {
+   "word": "key",
+   "start": 36.72,
+   "end": 37.12
+  },
+  {
+   "word": "and",
+   "start": 37.12,
+   "end": 37.46
+  },
+  {
+   "word": "hurried",
+   "start": 37.46,
+   "end": 37.68
+  },
+  {
+   "word": "off",
+   "start": 37.68,
+   "end": 38.02
+  },
+  {
+   "word": "to",
+   "start": 38.02,
+   "end": 38.26
+  },
+  {
+   "word": "the",
+   "start": 38.26,
+   "end": 38.36
+  },
+  {
+   "word": "garden",
+   "start": 38.36,
+   "end": 38.6
+  },
+  {
+   "word": "door.",
+   "start": 38.6,
+   "end": 39.0
+  }
+ ]
+}

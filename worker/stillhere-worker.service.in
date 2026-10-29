@@ -1,0 +1,65 @@
+# StillHere live TRIBE worker, sandboxed (ruling of Oct 29, 18:15 IST, item 6). Rendered by worker/install_worker.sh into
+# stillhere-worker.service (ExecStart = serve) and stillhere-worker-selftest.service (ExecStart = self-test, Type=oneshot); both share
+# every sandbox line below. @...@ fields are filled by the install script.
+[Unit]
+Description=StillHere live TRIBE worker (@ROLE@)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=@TYPE@
+ExecStart=/opt/stillhere-worker/python/bin/python3.11 /opt/stillhere-worker/app/worker/tribe_worker.py @COMMAND@
+# A throwaway user per run; it owns nothing on this machine.
+DynamicUser=yes
+NoNewPrivileges=yes
+# The whole file system read-only except the state directory; no home directories at all.
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+# Hides the whole Windows partition (the work folder, every dataset including ds003171); the three read-only binds below are the only
+# things from it the service can see, at new paths under /opt, so nothing under /run/media can be listed.
+TemporaryFileSystem=/run/media
+BindReadOnlyPaths=@MODELS@:/opt/stillhere-worker/models
+BindReadOnlyPaths=@SITE@:/opt/stillhere-worker/site-packages
+BindReadOnlyPaths=@SPACY@:/opt/stillhere-worker/spacy
+StateDirectory=stillhere-worker
+StateDirectoryMode=0700
+# The job token, root-owned 0600 on disk; systemd hands the service a private copy.
+LoadCredential=job_token:/etc/stillhere-worker/job_token
+# Further hardening (the GPU needs /dev/nvidia*, so no PrivateDevices).
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictSUIDSGID=yes
+LockPersonality=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+SystemCallArchitectures=native
+UMask=0077
+MemoryMax=11G
+Environment=HOME=/var/lib/stillhere-worker
+Environment=XDG_CACHE_HOME=/var/lib/stillhere-worker/cache
+Environment=MPLCONFIGDIR=/var/lib/stillhere-worker/cache/mpl
+Environment=HF_HOME=/var/lib/stillhere-worker/hf
+Environment=HF_HUB_CACHE=/opt/stillhere-worker/models/hub
+Environment=HF_HUB_OFFLINE=1
+Environment=TRANSFORMERS_OFFLINE=1
+Environment=HF_HUB_DISABLE_TELEMETRY=1
+Environment=PYTHONNOUSERSITE=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONPATH=/opt/stillhere-worker/app:/opt/stillhere-worker/site-packages:/opt/stillhere-worker/spacy
+Environment=STILLHERE_JOBS_URL=@JOBS_URL@
+Environment=STILLHERE_SELFTEST_HIDDEN=@HIDDEN@
+Environment=STILLHERE_SELFTEST_READONLY=/opt/stillhere-worker/models/hub:/opt/stillhere-worker/site-packages:/opt/stillhere-worker/spacy:/opt/stillhere-worker/app
+Restart=@RESTART@
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

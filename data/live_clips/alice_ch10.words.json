@@ -1,0 +1,324 @@
+{
+ "words": [
+  {
+   "word": "bone",
+   "start": 0.0,
+   "end": 0.38
+  },
+  {
+   "word": "in",
+   "start": 0.38,
+   "end": 0.56
+  },
+  {
+   "word": "his",
+   "start": 0.56,
+   "end": 0.72
+  },
+  {
+   "word": "throat",
+   "start": 0.72,
+   "end": 1.16
+  },
+  {
+   "word": "said",
+   "start": 1.16,
+   "end": 2.3
+  },
+  {
+   "word": "the",
+   "start": 2.3,
+   "end": 2.48
+  },
+  {
+   "word": "griffin,",
+   "start": 2.48,
+   "end": 2.9
+  },
+  {
+   "word": "and",
+   "start": 3.5,
+   "end": 4.42
+  },
+  {
+   "word": "it's",
+   "start": 4.42,
+   "end": 4.68
+  },
+  {
+   "word": "set",
+   "start": 4.68,
+   "end": 4.88
+  },
+  {
+   "word": "to",
+   "start": 4.88,
+   "end": 5.18
+  },
+  {
+   "word": "work",
+   "start": 5.18,
+   "end": 5.38
+  },
+  {
+   "word": "shaking",
+   "start": 5.38,
+   "end": 5.9
+  },
+  {
+   "word": "him",
+   "start": 5.9,
+   "end": 6.38
+  },
+  {
+   "word": "and",
+   "start": 6.38,
+   "end": 7.4
+  },
+  {
+   "word": "punching",
+   "start": 7.4,
+   "end": 7.74
+  },
+  {
+   "word": "him",
+   "start": 7.74,
+   "end": 8.24
+  },
+  {
+   "word": "in",
+   "start": 8.24,
+   "end": 8.38
+  },
+  {
+   "word": "the",
+   "start": 8.38,
+   "end": 8.48
+  },
+  {
+   "word": "back.",
+   "start": 8.48,
+   "end": 8.76
+  },
+  {
+   "word": "At",
+   "start": 9.48,
+   "end": 10.32
+  },
+  {
+   "word": "last",
+   "start": 10.32,
+   "end": 10.62
+  },
+  {
+   "word": "the",
+   "start": 10.62,
+   "end": 11.5
+  },
+  {
+   "word": "mock",
+   "start": 11.5,
+   "end": 11.68
+  },
+  {
+   "word": "turtle",
+   "start": 11.68,
+   "end": 12.1
+  },
+  {
+   "word": "recovered",
+   "start": 12.1,
+   "end": 12.68
+  },
+  {
+   "word": "his",
+   "start": 12.68,
+   "end": 13.0
+  },
+  {
+   "word": "voice,",
+   "start": 13.0,
+   "end": 13.38
+  },
+  {
+   "word": "and",
+   "start": 14.32,
+   "end": 14.62
+  },
+  {
+   "word": "with",
+   "start": 14.62,
+   "end": 15.62
+  },
+  {
+   "word": "tears",
+   "start": 15.62,
+   "end": 16.2
+  },
+  {
+   "word": "running",
+   "start": 16.2,
+   "end": 16.9
+  },
+  {
+   "word": "down",
+   "start": 16.9,
+   "end": 17.36
+  },
+  {
+   "word": "his",
+   "start": 17.36,
+   "end": 17.68
+  },
+  {
+   "word": "cheeks",
+   "start": 17.68,
+   "end": 18.18
+  },
+  {
+   "word": "he",
+   "start": 18.18,
+   "end": 19.62
+  },
+  {
+   "word": "went",
+   "start": 19.62,
+   "end": 19.84
+  },
+  {
+   "word": "on",
+   "start": 19.84,
+   "end": 20.22
+  },
+  {
+   "word": "again.",
+   "start": 20.22,
+   "end": 20.78
+  },
+  {
+   "word": "You",
+   "start": 23.0,
+   "end": 23.88
+  },
+  {
+   "word": "may",
+   "start": 23.88,
+   "end": 24.42
+  },
+  {
+   "word": "not",
+   "start": 24.42,
+   "end": 24.86
+  },
+  {
+   "word": "have",
+   "start": 24.86,
+   "end": 25.16
+  },
+  {
+   "word": "lived",
+   "start": 25.16,
+   "end": 25.5
+  },
+  {
+   "word": "much",
+   "start": 25.5,
+   "end": 25.94
+  },
+  {
+   "word": "under",
+   "start": 25.94,
+   "end": 26.6
+  },
+  {
+   "word": "the",
+   "start": 26.6,
+   "end": 26.94
+  },
+  {
+   "word": "sea,",
+   "start": 26.94,
+   "end": 27.3
+  },
+  {
+   "word": "I",
+   "start": 28.36,
+   "end": 28.36
+  },
+  {
+   "word": "haven't",
+   "start": 28.36,
+   "end": 29.68
+  },
+  {
+   "word": "said",
+   "start": 29.68,
+   "end": 30.0
+  },
+  {
+   "word": "Alice,",
+   "start": 30.0,
+   "end": 30.3
+  },
+  {
+   "word": "and",
+   "start": 31.32,
+   "end": 32.4
+  },
+  {
+   "word": "perhaps",
+   "start": 32.4,
+   "end": 32.82
+  },
+  {
+   "word": "you",
+   "start": 32.82,
+   "end": 33.68
+  },
+  {
+   "word": "were",
+   "start": 33.68,
+   "end": 34.04
+  },
+  {
+   "word": "never",
+   "start": 34.04,
+   "end": 34.44
+  },
+  {
+   "word": "even",
+   "start": 34.44,
+   "end": 34.96
+  },
+  {
+   "word": "introduced",
+   "start": 34.96,
+   "end": 35.64
+  },
+  {
+   "word": "to",
+   "start": 35.64,
+   "end": 36.6
+  },
+  {
+   "word": "a",
+   "start": 36.6,
+   "end": 36.72
+  },
+  {
+   "word": "lobster.",
+   "start": 36.72,
+   "end": 37.0
+  },
+  {
+   "word": "Alice",
+   "start": 38.71,
+   "end": 39.3
+  },
+  {
+   "word": "began",
+   "start": 39.3,
+   "end": 39.62
+  }
+ ]
+}

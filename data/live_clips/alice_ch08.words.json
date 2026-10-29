@@ -1,0 +1,529 @@
+{
+ "words": [
+  {
+   "word": "first.",
+   "start": 0.0,
+   "end": 0.18
+  },
+  {
+   "word": "\"'That's",
+   "start": 0.96,
+   "end": 1.48
+  },
+  {
+   "word": "none",
+   "start": 1.48,
+   "end": 1.6
+  },
+  {
+   "word": "of",
+   "start": 1.6,
+   "end": 1.74
+  },
+  {
+   "word": "your",
+   "start": 1.74,
+   "end": 1.86
+  },
+  {
+   "word": "business,",
+   "start": 1.86,
+   "end": 2.32
+  },
+  {
+   "word": "too,'",
+   "start": 2.32,
+   "end": 3.14
+  },
+  {
+   "word": "said",
+   "start": 3.14,
+   "end": 3.54
+  },
+  {
+   "word": "Seven.",
+   "start": 3.54,
+   "end": 3.78
+  },
+  {
+   "word": "\"'Yes,",
+   "start": 4.44,
+   "end": 4.96
+  },
+  {
+   "word": "it",
+   "start": 5.06,
+   "end": 5.22
+  },
+  {
+   "word": "is",
+   "start": 5.22,
+   "end": 5.6
+  },
+  {
+   "word": "his",
+   "start": 5.6,
+   "end": 5.78
+  },
+  {
+   "word": "business,'",
+   "start": 5.78,
+   "end": 6.22
+  },
+  {
+   "word": "said",
+   "start": 6.22,
+   "end": 6.86
+  },
+  {
+   "word": "Five,",
+   "start": 6.86,
+   "end": 7.06
+  },
+  {
+   "word": "and",
+   "start": 7.26,
+   "end": 7.3
+  },
+  {
+   "word": "I'll",
+   "start": 7.3,
+   "end": 7.5
+  },
+  {
+   "word": "tell",
+   "start": 7.5,
+   "end": 7.7
+  },
+  {
+   "word": "him,",
+   "start": 7.7,
+   "end": 7.92
+  },
+  {
+   "word": "it",
+   "start": 8.16,
+   "end": 8.4
+  },
+  {
+   "word": "was",
+   "start": 8.4,
+   "end": 8.6
+  },
+  {
+   "word": "for",
+   "start": 8.6,
+   "end": 8.84
+  },
+  {
+   "word": "bringing",
+   "start": 8.84,
+   "end": 9.16
+  },
+  {
+   "word": "the",
+   "start": 9.16,
+   "end": 9.44
+  },
+  {
+   "word": "cook",
+   "start": 9.44,
+   "end": 9.64
+  },
+  {
+   "word": "tulip",
+   "start": 9.64,
+   "end": 10.5
+  },
+  {
+   "word": "-roots",
+   "start": 10.5,
+   "end": 10.68
+  },
+  {
+   "word": "instead",
+   "start": 10.68,
+   "end": 11.06
+  },
+  {
+   "word": "of",
+   "start": 11.06,
+   "end": 11.24
+  },
+  {
+   "word": "onions.",
+   "start": 11.24,
+   "end": 11.6
+  },
+  {
+   "word": "Seven",
+   "start": 12.54,
+   "end": 13.06
+  },
+  {
+   "word": "flung",
+   "start": 13.06,
+   "end": 13.36
+  },
+  {
+   "word": "down",
+   "start": 13.36,
+   "end": 13.68
+  },
+  {
+   "word": "his",
+   "start": 13.68,
+   "end": 13.86
+  },
+  {
+   "word": "brush,",
+   "start": 13.86,
+   "end": 14.18
+  },
+  {
+   "word": "and",
+   "start": 14.5,
+   "end": 14.7
+  },
+  {
+   "word": "had",
+   "start": 14.7,
+   "end": 14.8
+  },
+  {
+   "word": "just",
+   "start": 14.8,
+   "end": 15.1
+  },
+  {
+   "word": "begun,",
+   "start": 15.1,
+   "end": 15.4
+  },
+  {
+   "word": "well,",
+   "start": 15.78,
+   "end": 16.26
+  },
+  {
+   "word": "of",
+   "start": 16.6,
+   "end": 16.7
+  },
+  {
+   "word": "all",
+   "start": 16.7,
+   "end": 17.08
+  },
+  {
+   "word": "the",
+   "start": 17.08,
+   "end": 17.24
+  },
+  {
+   "word": "unjust",
+   "start": 17.24,
+   "end": 17.66
+  },
+  {
+   "word": "things,",
+   "start": 17.66,
+   "end": 18.36
+  },
+  {
+   "word": "when",
+   "start": 18.98,
+   "end": 19.2
+  },
+  {
+   "word": "his",
+   "start": 19.2,
+   "end": 19.36
+  },
+  {
+   "word": "eye",
+   "start": 19.36,
+   "end": 19.56
+  },
+  {
+   "word": "chanced",
+   "start": 19.56,
+   "end": 19.92
+  },
+  {
+   "word": "to",
+   "start": 19.92,
+   "end": 20.14
+  },
+  {
+   "word": "fall",
+   "start": 20.14,
+   "end": 20.3
+  },
+  {
+   "word": "upon",
+   "start": 20.3,
+   "end": 20.56
+  },
+  {
+   "word": "Alice,",
+   "start": 20.56,
+   "end": 20.92
+  },
+  {
+   "word": "as",
+   "start": 21.38,
+   "end": 21.4
+  },
+  {
+   "word": "she",
+   "start": 21.4,
+   "end": 21.56
+  },
+  {
+   "word": "stood",
+   "start": 21.56,
+   "end": 21.78
+  },
+  {
+   "word": "watching",
+   "start": 21.78,
+   "end": 22.08
+  },
+  {
+   "word": "them,",
+   "start": 22.08,
+   "end": 22.44
+  },
+  {
+   "word": "and",
+   "start": 22.74,
+   "end": 22.96
+  },
+  {
+   "word": "he",
+   "start": 22.96,
+   "end": 23.08
+  },
+  {
+   "word": "checked",
+   "start": 23.08,
+   "end": 23.24
+  },
+  {
+   "word": "himself",
+   "start": 23.24,
+   "end": 23.54
+  },
+  {
+   "word": "suddenly.",
+   "start": 23.54,
+   "end": 24.06
+  },
+  {
+   "word": "The",
+   "start": 24.62,
+   "end": 25.0
+  },
+  {
+   "word": "others",
+   "start": 25.0,
+   "end": 25.26
+  },
+  {
+   "word": "looked",
+   "start": 25.26,
+   "end": 25.52
+  },
+  {
+   "word": "round",
+   "start": 25.52,
+   "end": 25.74
+  },
+  {
+   "word": "also,",
+   "start": 25.74,
+   "end": 26.18
+  },
+  {
+   "word": "and",
+   "start": 26.42,
+   "end": 26.6
+  },
+  {
+   "word": "all",
+   "start": 26.6,
+   "end": 26.78
+  },
+  {
+   "word": "of",
+   "start": 26.78,
+   "end": 26.88
+  },
+  {
+   "word": "them",
+   "start": 26.88,
+   "end": 27.06
+  },
+  {
+   "word": "bowed",
+   "start": 27.06,
+   "end": 27.22
+  },
+  {
+   "word": "low.",
+   "start": 27.22,
+   "end": 27.54
+  },
+  {
+   "word": "\"'Would",
+   "start": 28.52,
+   "end": 29.04
+  },
+  {
+   "word": "you",
+   "start": 29.04,
+   "end": 29.18
+  },
+  {
+   "word": "tell",
+   "start": 29.18,
+   "end": 29.42
+  },
+  {
+   "word": "me,'",
+   "start": 29.42,
+   "end": 29.7
+  },
+  {
+   "word": "said",
+   "start": 29.7,
+   "end": 30.4
+  },
+  {
+   "word": "Alice,",
+   "start": 30.4,
+   "end": 30.66
+  },
+  {
+   "word": "a",
+   "start": 30.66,
+   "end": 30.92
+  },
+  {
+   "word": "little",
+   "start": 30.92,
+   "end": 31.16
+  },
+  {
+   "word": "timidly,",
+   "start": 31.16,
+   "end": 31.68
+  },
+  {
+   "word": "\"'Why",
+   "start": 32.18,
+   "end": 32.56
+  },
+  {
+   "word": "are",
+   "start": 32.56,
+   "end": 32.68
+  },
+  {
+   "word": "you",
+   "start": 32.68,
+   "end": 32.88
+  },
+  {
+   "word": "painting",
+   "start": 32.88,
+   "end": 33.12
+  },
+  {
+   "word": "those",
+   "start": 33.12,
+   "end": 33.46
+  },
+  {
+   "word": "roses?'",
+   "start": 33.46,
+   "end": 34.52
+  },
+  {
+   "word": "Five",
+   "start": 35.28,
+   "end": 35.8
+  },
+  {
+   "word": "and",
+   "start": 35.8,
+   "end": 35.94
+  },
+  {
+   "word": "Seven",
+   "start": 35.94,
+   "end": 36.18
+  },
+  {
+   "word": "said",
+   "start": 36.18,
+   "end": 36.48
+  },
+  {
+   "word": "nothing,",
+   "start": 36.48,
+   "end": 36.86
+  },
+  {
+   "word": "but",
+   "start": 37.12,
+   "end": 37.2
+  },
+  {
+   "word": "looked",
+   "start": 37.2,
+   "end": 37.36
+  },
+  {
+   "word": "at",
+   "start": 37.36,
+   "end": 37.56
+  },
+  {
+   "word": "two.",
+   "start": 37.56,
+   "end": 37.76
+  },
+  {
+   "word": "Two",
+   "start": 38.64,
+   "end": 38.78
+  },
+  {
+   "word": "began",
+   "start": 38.78,
+   "end": 39.14
+  },
+  {
+   "word": "in",
+   "start": 39.14,
+   "end": 39.42
+  },
+  {
+   "word": "a",
+   "start": 39.42,
+   "end": 39.52
+  },
+  {
+   "word": "low",
+   "start": 39.52,
+   "end": 39.68
+  },
+  {
+   "word": "voice.'",
+   "start": 39.68,
+   "end": 39.98
+  }
+ ]
+}
