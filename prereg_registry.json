@@ -447,13 +447,19 @@
   },
   {
    "path": "d22/picker_pred/saturday_chain.sh",
-   "sha256": "a55061bbb2ef3fe58f9a01cf640cb4ac32998579e0c57d738485be9a9bfea900",
+   "sha256": "b9539f58eb13c4619623297447414f9ff6c724bd5ab9f61130613cbbcb4e75bc",
    "role": "runner",
    "implements": [
     "§9",
     "D26"
    ],
-   "what": "Saturday chain: rerun, D26 fallback if needed, film, scoring call with the wall, wall baselines, Glimmer"
+   "what": "Saturday chain: rerun, D26 fallback if needed, film, scoring call with the wall, wall baselines, Glimmer",
+   "history": [
+    {
+     "old_sha256": "a55061bbb2ef3fe58f9a01cf640cb4ac32998579e0c57d738485be9a9bfea900",
+     "why": "appended the film-versions forecast as the last GPU job (after Glimmer); nothing before it changed"
+    }
+   ]
   },
   {
    "path": "d22/picker/score_job.sh",
