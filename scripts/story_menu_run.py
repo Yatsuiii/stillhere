@@ -33,10 +33,11 @@ RESULTS = REPO / "results/story_menu"
 VT_RESERVE_USD = 0.10                      # Voice Transcribe publishes no price; the web ledger's worst-case reservation per call
 AUDIO_ALLOWLIST = REPO / "stillhere/public_audio_allowlist.txt"
 TEXT_ALLOWLIST = REPO / "stillhere/public_text_allowlist.txt"
-NOTES_SYSTEM = ("You read the transcript of a short public-domain story read aloud on LibriVox. Return content notes: for each tag from the "
-                "list that clearly applies, one note with that tag and a short quote copied word for word from the transcript where it "
-                "applies (at most 12 words). Use only tags from the list; return no note for a tag that does not apply. Also return a "
-                "description of exactly two sentences.")
+NOTES_SYSTEM = ("You read the transcript of a short public-domain story read aloud on LibriVox. Go through the tag list one tag at a "
+                "time and decide for each tag whether it applies to the story. Return one entry for every tag in the list: the tag, "
+                "applies true or false, and, when it applies, up to 3 quotes copied word for word from the transcript, each at most 12 "
+                "words, showing where it applies. Also return a description of the story in exactly two sentences.")
+NOTES_CALLS, NOTES_TEMPERATURE, QUOTE_MAX_WORDS = 3, 0.6, 12           # rule section 4, amended Oct 29 (cloud ruling of 20:30 UTC)
 
 
 UA = {"User-Agent": "StillHere-pilot/1.0 (research; public LibriVox audio)"}     # the LibriVox API refuses urllib's default agent
@@ -224,11 +225,22 @@ def screen(work: Path, transcribe, ledger: Ledger, only=None, cap=SM.SCREEN_CAP_
 # ---- content notes (Spark Open) --------------------------------------------------------------------------------------------------
 def notes_schema() -> dict:
     from stillhere.story_tags import TAGS
-    return {"type": "object", "additionalProperties": False, "required": ["notes", "description"],
-            "properties": {"notes": {"type": "array", "items": {"type": "object", "additionalProperties": False, "required": ["tag", "quote"],
-                                                                "properties": {"tag": {"type": "string", "enum": list(TAGS)},
-                                                                               "quote": {"type": "string"}}}},
-                           "description": {"type": "string"}}}
+    entry = {"type": "object", "additionalProperties": False, "required": ["tag", "applies", "quotes"],
+             "properties": {"tag": {"type": "string", "enum": list(TAGS)}, "applies": {"type": "boolean"},
+                            "quotes": {"type": "array", "items": {"type": "string"}}}}
+    return {"type": "object", "additionalProperties": False, "required": ["tags", "description"],
+            "properties": {"tags": {"type": "array", "items": entry}, "description": {"type": "string"}}}
+
+
+def valid_answer(content) -> bool:
+    """Every tag of the fixed list exactly once, applies a boolean, at most 3 quotes (strings)."""
+    from stillhere.story_tags import TAGS
+    if not isinstance(content, dict) or not isinstance(content.get("tags"), list) or not isinstance(content.get("description"), str):
+        return False
+    seen = [e.get("tag") for e in content["tags"] if isinstance(e, dict)]
+    return (sorted(seen) == sorted(TAGS) and all(isinstance(e.get("applies"), bool) and isinstance(e.get("quotes"), list)
+                                                  and len(e["quotes"]) <= 3 and all(isinstance(q, str) for q in e["quotes"])
+                                                  for e in content["tags"]))
 
 
 def guard_blocks(quote: str) -> bool:
@@ -239,7 +251,39 @@ def guard_blocks(quote: str) -> bool:
     return bool(blockterms.hits(quote, *egress.blocklist())) or guard.clean(quote) != quote
 
 
+def verified(answer: dict, words: list) -> tuple:
+    """(notes, dropped): each applying tag's quotes of at most 12 words found word for word in the story, timed at the run's start;
+    dropped counts tags marked applies with no verified quote."""
+    toks, owner = SM.tokens(words); out, dropped = [], 0
+    for e in answer["tags"]:
+        if not e["applies"]:
+            continue
+        hits = [(SM.match_note(q, toks, owner, words), q) for q in e["quotes"] if len(q.split()) <= QUOTE_MAX_WORDS]
+        hits = [(t, q) for t, q in hits if t is not None]
+        if hits:
+            out += [{"tag": e["tag"], "t": round(float(t), 2), "quote": q} for t, q in hits]
+        else:
+            dropped += 1
+    return out, dropped
+
+
+def union(answers: list, words: list) -> dict:
+    """The card's notes: the union across the calls of tags with at least one verified quote, each tag once, at its earliest
+    verified time (quote withheld if the guard blocks it; tag and time stay)."""
+    per_call, dropped, best = [], 0, {}
+    for a in answers:
+        notes, d = verified(a, words); dropped += d; per_call.append(sorted({n["tag"] for n in notes}))
+        for n in notes:
+            if n["tag"] not in best or n["t"] < best[n["tag"]]["t"]:
+                best[n["tag"]] = n
+    kept = [{"tag": n["tag"], "t": n["t"], "quote": None if guard_blocks(n["quote"]) else n["quote"]}
+            for n in sorted(best.values(), key=lambda n: n["t"])]
+    return {"notes": kept, "dropped_applies_without_verified_quote": dropped, "tags_per_call": per_call,
+            "tags_from_one_call": sum(1 for t in best if sum(t in c for c in per_call) == 1)}
+
+
 def keep_notes(raw: list, words: list) -> list:
+    """First-commit form (a free list of notes), kept for the record of the first answers only."""
     from stillhere.story_tags import TAGS
     toks, owner = SM.tokens(words); out = []
     for n in raw:
@@ -253,7 +297,8 @@ def keep_notes(raw: list, words: list) -> list:
 
 
 def notes(work: Path, call, ledger: Ledger, only=None):
-    """call(model, text) -> (content, usage). Fireworks first; Baseten only if Fireworks fails twice; one host per story."""
+    """call(model, text, temperature) -> (content, usage). Exactly NOTES_CALLS calls per passing story on one host: Fireworks; Baseten
+    for all of them only if a Fireworks call fails (an error or no valid output after 2 attempts). All answers are kept."""
     from stillhere import planner_eval as PE
     ids = pool_ids()
     for p in sorted(work.glob("story_*/screen.json")):
@@ -264,37 +309,52 @@ def notes(work: Path, call, ledger: Ledger, only=None):
         words = json.loads((d / "words.json").read_text())["words"][info["trim"]["first_word"]:info["trim"]["last_word"] + 1]
         text = " ".join(w["word"] for w in words)
         allowlist(TEXT_ALLOWLIST, [f"{hashlib.sha256(text.encode()).hexdigest()}  story menu transcript {sid} (faster-whisper, LibriVox)",
-                                   f"{hashlib.sha256(NOTES_SYSTEM.encode()).hexdigest()}  story menu notes system prompt"], f"story menu notes: {sid}")
-        got = None
+                                   f"{hashlib.sha256(NOTES_SYSTEM.encode()).hexdigest()}  story menu notes system prompt (amended)"],
+                  f"story menu notes: {sid}")
+        record, used = [], None
         for model in ("fireworks/muse-spark-open", "baseten/muse-spark-open-1026"):
-            for attempt in (1, 2):
-                try:
-                    content, usage = call(model, text)
-                    usd = PE.cost(usage.get("prompt_tokens"), usage.get("completion_tokens"))
-                    ledger.add(kind="spark_open", story=sid, host=model.split("/")[0], attempt=attempt, usd=round(usd, 6),
-                               prompt_tokens=usage.get("prompt_tokens"), completion_tokens=usage.get("completion_tokens"))
-                    if isinstance(content, dict) and isinstance(content.get("notes"), list):
-                        got = (model.split("/")[0], content); break
-                except Exception as e:
-                    ledger.add(kind="spark_open", story=sid, host=model.split("/")[0], attempt=attempt, usd=0.0, error=type(e).__name__)
-            if got:
-                break
-        if not got:
-            log(f"{sid}: no valid notes from either host"); continue
-        host, content = got
-        kept = keep_notes(content["notes"], words)
-        (d / "notes.json").write_text(json.dumps({"id": sid, "host": host, "raw_notes": len(content["notes"]), "notes": kept,
-                                                  "description": content.get("description", "")}, indent=1) + "\n")
-        log(f"{sid}: {host}; {len(content['notes'])} notes returned, {len(kept)} kept, {sum(n['quote'] is None for n in kept)} quotes withheld")
+            host = model.split("/")[0]; answers = []
+            for k in range(1, NOTES_CALLS + 1):
+                ok = None
+                for attempt in (1, 2):
+                    try:
+                        content, usage = call(model, text, NOTES_TEMPERATURE)
+                        usd = PE.cost(usage.get("prompt_tokens"), usage.get("completion_tokens")); good = valid_answer(content)
+                        ledger.add(kind="spark_open", story=sid, host=host, call=k, attempt=attempt, temperature=NOTES_TEMPERATURE,
+                                   usd=round(usd, 6), prompt_tokens=usage.get("prompt_tokens"), completion_tokens=usage.get("completion_tokens"),
+                                   valid=good)
+                        record.append({"host": host, "call": k, "attempt": attempt, "temperature": NOTES_TEMPERATURE, "valid": good,
+                                       "usage": usage, "answer": content})
+                        if good:
+                            ok = content; break
+                    except Exception as e:
+                        ledger.add(kind="spark_open", story=sid, host=host, call=k, attempt=attempt, temperature=NOTES_TEMPERATURE,
+                                   usd=0.0, error=type(e).__name__)
+                        record.append({"host": host, "call": k, "attempt": attempt, "temperature": NOTES_TEMPERATURE, "error": type(e).__name__})
+                if ok is None:
+                    break
+                answers.append(ok)
+            if len(answers) == NOTES_CALLS:
+                used = (host, answers); break
+        if not used:
+            (d / "notes_failed.json").write_text(json.dumps({"id": sid, "record": record}, indent=1) + "\n")
+            log(f"{sid}: no host gave {NOTES_CALLS} valid answers"); continue
+        host, answers = used; u = union(answers, words)
+        (d / "notes.json").write_text(json.dumps({"id": sid, "host": host, "temperature": NOTES_TEMPERATURE, "calls": NOTES_CALLS, **u,
+                                                  "descriptions": [a["description"] for a in answers], "record": record,
+                                                  "rule": "docs/rules/story_menu_rule.md section 4 (amended Oct 29, 20:30 UTC ruling)"},
+                                                 indent=1) + "\n")
+        log(f"{sid}: {host}; {len(u['notes'])} tags on the card, {u['tags_from_one_call']} from only 1 of 3 calls, "
+            f"{u['dropped_applies_without_verified_quote']} applies-without-verified-quote dropped, {sum(n['quote'] is None for n in u['notes'])} quotes withheld")
 
 
-def live_call(model: str, text: str):
+def live_call(model: str, text: str, temperature: float = None):
     """One real Spark Open json_schema call through the typed egress (keys from env vars only)."""
     from stillhere import egress, meta_client
     req = egress.Request(model=model, system=[egress.PublicText(text=NOTES_SYSTEM)], user=[egress.PublicText(text=text)],
                          schema_name="content_notes", json_schema=notes_schema())
     rows_before = meta_client.USAGE_LOG.read_text().count("\n") if meta_client.USAGE_LOG.exists() else 0
-    out = meta_client.call(req, timeout=120)
+    out = meta_client.call(req, timeout=180, temperature=temperature)
     rows = [json.loads(r) for r in meta_client.USAGE_LOG.read_text().splitlines()[rows_before:]]
     row = next(r for r in reversed(rows) if r.get("schema") == "content_notes" and r.get("model") == model)
     return out["content"], {"prompt_tokens": row.get("prompt_tokens"), "completion_tokens": row.get("completion_tokens")}

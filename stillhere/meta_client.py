@@ -90,9 +90,9 @@ def _args(a) -> dict:
     return json.loads(a) if isinstance(a, str) else (a or {})
 
 
-def call(req: egress.Request, timeout: float = 60.0, effort: str | None = None) -> dict:
+def call(req: egress.Request, timeout: float = 60.0, effort: str | None = None, temperature: float | None = None) -> dict:
     """One API call. A request with tools returns {"tool_calls": [{"name", "arguments"}]}; a json_schema request returns
-    {"content": <parsed answer>}."""
+    {"content": <parsed answer>}. temperature is sent only when given (otherwise the provider's default applies)."""
     egress.check(req)
     provider, base, model_id, key = route(req.model)
     body = {"model": model_id,
@@ -104,6 +104,8 @@ def call(req: egress.Request, timeout: float = 60.0, effort: str | None = None) 
             body["parallel_tool_calls"] = False
     else:
         body["response_format"] = {"type": "json_schema", "json_schema": {"name": req.schema_name, "schema": req.json_schema, "strict": True}}
+    if temperature is not None:
+        body["temperature"] = float(temperature)
     if effort:
         body["reasoning_effort"] = effort          # only when asked; the parameter name is not confirmed in the docs yet
     t0 = time.time()
@@ -115,7 +117,7 @@ def call(req: egress.Request, timeout: float = 60.0, effort: str | None = None) 
     USAGE_LOG.parent.mkdir(parents=True, exist_ok=True)
     with USAGE_LOG.open("a") as f:
         f.write(json.dumps({"t": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "provider": provider, "model": req.model,
-                            "schema": req.schema_name or "tools",
+                            "schema": req.schema_name or "tools", "temperature": temperature,
                             "tool_calls": len(out.get("tool_calls", [])), "prompt_tokens": u.get("prompt_tokens"),
                             "completion_tokens": u.get("completion_tokens"), "seconds": round(time.time() - t0, 2)}) + "\n")
     return out

@@ -130,39 +130,62 @@ def test_egress_refuses_audio_that_is_not_listed(tmp_path, run):
         egress.PublicText(text="any transcript that is not on the text allowlist")
 
 
-def test_notes_on_stubs(tmp_path, run, monkeypatch):
+def _answer(applies: dict, desc="One. Two."):
+    from stillhere.story_tags import TAGS
+    return {"tags": [{"tag": t, "applies": t in applies, "quotes": applies.get(t, [])} for t in TAGS], "description": desc}
+
+
+def test_notes_schema_and_validity():
+    pytest.importorskip("stillhere.story_tags")
+    import scripts.story_menu_run as RUN
+    from stillhere.story_tags import TAGS
+    sch = RUN.notes_schema()["properties"]["tags"]["items"]["properties"]
+    assert sch["tag"]["enum"] == list(TAGS) and sch["applies"]["type"] == "boolean" and sch["quotes"]["type"] == "array"
+    assert RUN.valid_answer(_answer({"violence": ["a b"]}))
+    bad = _answer({}); bad["tags"] = bad["tags"][1:]
+    assert not RUN.valid_answer(bad)                                     # every tag must be present
+    four = _answer({"violence": ["a", "b", "c", "d"]})
+    assert not RUN.valid_answer(four)                                    # at most 3 quotes
+
+
+def test_union_earliest_time_drops_and_single_call_tags(run, monkeypatch):
+    pytest.importorskip("stillhere.story_tags")
+    monkeypatch.setattr(run, "guard_blocks", lambda q: "tale5" in q)       # stands in for a blocklisted or banned word
+    words = W("Read by X. " + " ".join(f"tale{i} goes on." for i in range(30)))
+    long_q = " ".join(["tale1 goes on."] * 5)                                  # over 12 words: not kept
+    a1 = _answer({"violence": ["tale9 goes on"], "drowning": ["no such words here"], "grief or loss": [long_q]})
+    a2 = _answer({"violence": ["tale2 goes on", "tale20 goes on"]})
+    a3 = _answer({"medical care": ["tale5 goes"], "frightening scenes": ["tale7 goes on conscious"]})
+    u = run.union([a1, a2, a3], words)
+    t = {w["word"]: w["start"] for w in words}
+    assert [(n["tag"], n["t"]) for n in u["notes"]] == [("violence", round(t["tale2"], 2)), ("medical care", round(t["tale5"], 2))]
+    assert u["dropped_applies_without_verified_quote"] == 3 and u["tags_from_one_call"] == 1      # drowning, grief (long), frightening
+    assert u["tags_per_call"] == [["violence"], ["violence"], ["medical care"]]
+    assert u["notes"][1]["quote"] is None and u["notes"][0]["quote"] == "tale2 goes on"   # withheld; tag and time stay
+
+
+def test_notes_on_stubs_three_calls_one_host(tmp_path, run, monkeypatch):
     pytest.importorskip("stillhere.story_tags")
     words = _story(tmp_path)
     (tmp_path / "story_test/screen.json").write_text(json.dumps({"id": "story_test", "pass": True}))
-    monkeypatch.setattr(run, "guard_blocks", lambda q: "conscious" in q)
+    monkeypatch.setattr(run, "guard_blocks", lambda q: False)
     seen = []
 
-    def stub(model, text):
-        seen.append(model)
-        if model.startswith("fireworks"):
-            raise RuntimeError("fireworks down")
-        return ({"notes": [{"tag": "violence", "quote": "tale3 goes on"}, {"tag": "violence", "quote": "not in the story at all"},
-                           {"tag": "made up tag", "quote": "tale4 goes on"}, {"tag": "grief or loss", "quote": "tale9 goes on conscious"},
-                           {"tag": "drowning", "quote": "tale7 goes"}],
-                 "description": "One. Two."}, {"prompt_tokens": 1000, "completion_tokens": 100})
+    def stub(model, text, temperature):
+        seen.append((model.split("/")[0], temperature))
+        if model.startswith("fireworks") and len(seen) >= 2:
+            raise RuntimeError("fireworks down")                          # the 2nd Fireworks call fails twice: the story moves host
+        return _answer({"violence": ["tale3 goes on"]}), {"prompt_tokens": 1000, "completion_tokens": 100}
     ledger = run.Ledger(tmp_path / "ledger.jsonl")
     run.notes(tmp_path, stub, ledger)
     doc = json.loads((tmp_path / "story_test/notes.json").read_text())
-    assert seen == ["fireworks/muse-spark-open"] * 2 + ["baseten/muse-spark-open-1026"] and doc["host"] == "baseten"
-    tags = [(n["tag"], n["quote"]) for n in doc["notes"]]
-    assert tags == [("violence", "tale3 goes on"), ("drowning", "tale7 goes")]
+    assert seen == [("fireworks", 0.6)] * 3 + [("baseten", 0.6)] * 3 and doc["host"] == "baseten" and doc["temperature"] == 0.6
+    assert [r["host"] for r in doc["record"]] == ["fireworks"] * 3 + ["baseten"] * 3 and len(doc["descriptions"]) == 3
     t3 = next(w["start"] for w in words if w["word"] == "tale3")
-    assert doc["notes"][0]["t"] == round(t3, 2)
+    assert doc["notes"] == [{"tag": "violence", "t": round(t3, 2), "quote": "tale3 goes on"}]
+    assert all(r.get("temperature") == 0.6 for r in ledger.rows() if r["kind"] == "spark_open")
     listed = run.TEXT_ALLOWLIST.read_text()
-    assert listed.count("story menu transcript story_test") == 1 and ledger.total("spark_open") > 0
-
-
-def test_guard_withholds_but_keeps_tag_and_time(tmp_path, run, monkeypatch):
-    pytest.importorskip("stillhere.story_tags")
-    words = W("Read by X. He was conscious of the cold. It went on.")
-    monkeypatch.setattr(run, "guard_blocks", lambda q: "conscious" in q)
-    kept = run.keep_notes([{"tag": "frightening scenes", "quote": "He was conscious of the cold."}], words)
-    assert kept == [{"tag": "frightening scenes", "t": words[3]["start"], "quote": None}]
+    assert listed.count("story menu transcript story_test") == 1
 
 
 def test_live_stages_refuse_without_the_flag(tmp_path):
