@@ -381,6 +381,9 @@ def test_numbers_match_their_results():
     rates = [float(x) for x in re.findall(r"false_accept_rate ([0-9.]+)", summ)]
     assert [f"{100 * x:.1f}%" for x in rates] == ["2.3%", "7.6%", "6.8%"]
     assert "2.3% vs 7.6% / 6.8% (5% bar)" in all_text(SC["plan_score"])
+    badge = re.search(r'^BADGE = "([^"]+)"', (ROOT / "stillhere/planner_v21.py").read_text(), re.M).group(1)
+    items = [i["text"] for i in SC["plan_score"]["items"] if i["kind"] in ("big", "small")]
+    assert badge in items and items[0].startswith("Planner v2 · ")                     # the 2.3% stays v2's; v2.1 is not re-measured
 
 
 def test_voice_over_script_is_generated():
