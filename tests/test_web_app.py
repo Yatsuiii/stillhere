@@ -202,19 +202,92 @@ def test_spark_open_falls_back_to_baseten_on_stubs(web, monkeypatch):
     assert d["mode"] == "recorded" and calls == []                                    # Fireworks capped, Baseten off: recorded run
 
 
-def test_meta_credit_end_switches_meta_stations_to_recorded_runs(web, monkeypatch):
+def test_after_the_meta_credit_end_meta_stays_live_under_a_20_dollar_cap(web, monkeypatch):
+    """Ruling of Oct 29, 19:40 UTC, item 3, on stubs: Meta stations stay live after the credit end; Meta spend after it has one more
+    total cap of $20, then labelled recorded runs; a failed call falls back with its own label."""
     app, jobs, ledger, stations, store = web
-    monkeypatch.setattr(stations.P, "plan", lambda *a: pytest.fail("no live call after the credit ends"))
+    calls = []
+    monkeypatch.setattr(stations.P, "plan", lambda q, b, c: calls.append(b) or _Card(True))
+    monkeypatch.setattr(stations, "chat_cost", lambda usage: 4.0)                     # each stub plan "costs" $4
+    monkeypatch.setitem(ledger.DAILY_CAP, "meta", 1000.0)                               # only the after-credit cap is under test
     monkeypatch.setenv("META_CREDIT_END_UTC", "2026-10-01T00:00:00Z")
-    assert stations.meta_credit_ended() and not stations.live_ok("meta")
-    d = stations.plan("Plan a story test on chapter 2.", "spark-1.3", "g" * 32)
-    assert d["mode"] == "recorded" and d["why"] == "The event's Meta API credit has ended, so this station shows its recorded run."
-    monkeypatch.setenv("META_CREDIT_END_UTC", "2099-01-01T00:00:00Z")
-    assert not stations.meta_credit_ended()
-    monkeypatch.delenv("META_CREDIT_END_UTC")                                         # default: the end of the event's ten days
-    assert stations.META_CREDIT_END_UTC == "2026-11-05T02:00:00Z"
-    assert stations.meta_credit_ended(datetime.datetime(2026, 11, 5, 2, 0, tzinfo=datetime.timezone.utc))
-    assert not stations.meta_credit_ended(datetime.datetime(2026, 11, 5, 1, 59, tzinfo=datetime.timezone.utc))
+    assert ledger.meta_credit_ended() and stations.live_ok("meta")
+    modes = [stations.plan("Plan a story test on chapter 2.", "spark-1.3", f"{i:032x}")["mode"] for i in range(7)]
+    assert modes == ["live"] * 5 + ["recorded"] * 2 and len(calls) == 5                  # 5 x $4 = $20, then the cap holds
+    d = stations.plan("Plan a story test on chapter 2.", "spark-1.3", "9" * 32)
+    assert d["why"] == ("The event's Meta API credit has ended and the $20 set aside after it is spent, so this station shows its "
+                        "recorded run.") and d["label"] == "recorded run"
+    assert float(store.get_store().get("spend:meta:after_credit")) == pytest.approx(20.0)
+    monkeypatch.setenv("META_CREDIT_END_UTC", "2099-01-01T00:00:00Z")                 # before the end: no after-credit cap
+    assert stations.plan("Plan a story test on chapter 2.", "spark-1.3", "8" * 32)["mode"] == "live"
+    monkeypatch.setattr(stations.P, "plan", lambda q, b, c: _Card(False))              # a failed call: recorded, with its own line
+    d = stations.plan("Plan a story test on chapter 2.", "spark-1.3", "7" * 32)
+    assert d["mode"] == "recorded" and d["why"] == "The live call failed, so this station shows its recorded run."
+    monkeypatch.delenv("META_CREDIT_END_UTC")
+    assert ledger.META_CREDIT_END_UTC == "2026-11-05T02:00:00Z"
+    assert ledger.meta_credit_ended(datetime.datetime(2026, 11, 5, 2, 0, tzinfo=datetime.timezone.utc))
+    assert not ledger.meta_credit_ended(datetime.datetime(2026, 11, 5, 1, 59, tzinfo=datetime.timezone.utc))
+
+
+# ---- the story card (story_menu_rule.md section 6) -------------------------------------------------------------------------------
+def stub_menu():
+    m = json.loads((REPO / "stillhere/live_menu.json").read_text())
+    story = {"id": "story_gift_of_the_magi", "title": "The Gift of the Magi", "reader": "A Reader", "author": "O. Henry",
+             "source": "LibriVox (public domain)", "start_s": 61.2, "dur_s": 38.4, "intact_wav_sha256": "0" * 64, "public_scan": None,
+             "screen": {"archive_url": "https://archive.org/download/item_x/magi_64kb.mp3", "sentences": 7, "notes_host": "fireworks",
+                        "notes": [{"tag": "death or dying", "t": 750.9, "quote": None},
+                                  {"tag": "grief or loss", "t": 65.4, "quote": "she cried"},
+                                  {"tag": "not a listed tag", "t": 5.0, "quote": "x"}]}}
+    plain = {**story, "id": "story_plain", "title": "A Plain Story", "screen": {**story["screen"], "notes": []}}
+    m["clips"] = m["clips"] + [story, plain]
+    m["screen_summary"] = {"n_on_menu": 10, "failed": [{"title": "A Two-Voice Story", "bar": "1"}, {"title": "Too Quiet", "bar": "trim"}],
+                           "rule": "docs/rules/story_menu_rule.md"}
+    return m
+
+
+@pytest.fixture
+def menu_stub(web, monkeypatch):
+    app, jobs, ledger, stations, store = web
+    real, m = stations._load, stub_menu()
+    monkeypatch.setattr(stations, "_load", lambda rel: m if rel == "stillhere/live_menu.json" else real(rel))
+    return stations
+
+
+def test_story_card_is_the_rules_line_word_for_word(menu_stub):
+    c = menu_stub.story_card("story_gift_of_the_magi")
+    assert c["text"] == ("The Gift of the Magi, read by A Reader: one of 10 screened public stories · 1 voice heard · 7 sentences · notes: "
+                         "grief or loss (1:05), death or dying (12:30). Content notes come from Muse Spark Open reading the transcript. "
+                         "Not a full review; listen before you use a story.")
+    assert [n["href"] for n in c["notes"]] == ["https://archive.org/download/item_x/magi_64kb.mp3#t=65",
+                                                "https://archive.org/download/item_x/magi_64kb.mp3#t=750"]
+    assert c["text"] == c["lead"] + ", ".join(n["label"] for n in c["notes"]) + c["tail"]
+    p = menu_stub.story_card("story_plain")
+    assert "notes: none of the listed tags found. Content notes" in p["text"] and p["notes"] == []
+    for cid in ("alice_ch01", "alice_ch02", "alice_ch03"):                          # no screen data: no card, the views are unchanged
+        assert menu_stub.story_card(cid) is None
+
+
+def test_story_card_reaches_plan_and_build_and_failures_are_title_and_bar_only(menu_stub, monkeypatch):
+    stations = menu_stub
+
+    class C:
+        spec = {"population": "healthy_adults", "decline_reason": "none", "stimulus": "librivox_audiobook"}
+        text = "Plan (v2.1): healthy adults."
+        route = {"kind": "live", "clip_id": "story_gift_of_the_magi", "condition": "sentence_scramble", "seed": 20261028, "defaults": []}
+    assert stations.card_view(C())["story"]["text"].startswith("The Gift of the Magi, read by A Reader")
+    C.route = {**C.route, "clip_id": "alice_ch02"}
+    assert stations.card_view(C())["story"] is None
+    monkeypatch.setenv("STILLHERE_LIVE", "0")
+    b = stations.build(None, "a" * 32, "alice_ch02", "sentence_scramble", 20261028)
+    assert b["story"] is None
+    assert stations.menu()["failed"] == [{"title": "A Two-Voice Story", "bar": "1"}, {"title": "Too Quiet", "bar": "trim"}]
+
+
+def test_safe_never_appears(menu_stub):
+    texts = [menu_stub.story_card(c)["text"] for c in ("story_gift_of_the_magi", "story_plain")]
+    texts += [f.read_text() for f in (REPO / "web/public").iterdir()] + [menu_stub.STORY_LEAD, menu_stub.STORY_TAIL, menu_stub.STORY_NONE]
+    for t in texts:
+        assert not re.search(r"\bsafe(ly|ty)?\b", t, re.I)
 
 
 # ---- jobs API with a fake worker --------------------------------------------------------------------------------------------------

@@ -16,6 +16,10 @@ TOTAL_CAP = {"meta": float(os.environ.get("CAP_META_USD", 80)), "fireworks": flo
              "baseten": float(os.environ.get("CAP_BASETEN_USD", 50))}                   # cloud plan of Oct 29, 19:20 UTC, 1c
 DAILY_CAP = {"meta": float(os.environ.get("DAILY_CAP_META_USD", 20)), "fireworks": float(os.environ.get("DAILY_CAP_FIREWORKS_USD", 12)),
              "baseten": float(os.environ.get("DAILY_CAP_BASETEN_USD", 12))}
+# The event's Meta credit (web/README.md, Money): Meta stations stay live through Nov 9; after META_CREDIT_END_UTC, Meta spend gets one
+# more total cap of $20, then recorded runs (cloud ruling of Oct 29, 19:40 UTC, item 3). Override the end with the env var.
+META_CREDIT_END_UTC = "2026-11-05T02:00:00Z"
+POST_CREDIT_CAP_META = float(os.environ.get("POST_CREDIT_CAP_META_USD", 20))
 RUNS_PER_HOUR = 5
 RUN_TTL_S = 2 * 3600
 STATIONS = ("plan", "build", "audit", "forecast", "film")
@@ -32,16 +36,26 @@ def _day() -> str:
     return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
 
 
+def meta_credit_ended(now: datetime.datetime = None) -> bool:
+    end = os.environ.get("META_CREDIT_END_UTC", META_CREDIT_END_UTC)
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    return bool(end) and now >= datetime.datetime.fromisoformat(end.replace("Z", "+00:00"))
+
+
 def reserve(provider: str, usd: float) -> dict:
     if provider not in TOTAL_CAP:
         raise Refused("provider_not_offered")
     s, day = get_store(), _day()
-    tot = s.incrbyfloat(f"spend:{provider}:total", usd)
-    d = s.incrbyfloat(f"spend:{provider}:{day}", usd, ttl=3 * 86400)
-    if tot > TOTAL_CAP[provider] or d > DAILY_CAP[provider]:
-        s.incrbyfloat(f"spend:{provider}:total", -usd); s.incrbyfloat(f"spend:{provider}:{day}", -usd)
-        raise Refused("spend_cap")
-    return {"provider": provider, "reserved": usd, "day": day}
+    after = provider == "meta" and meta_credit_ended()
+    keys = [f"spend:{provider}:total", f"spend:{provider}:{day}"] + (["spend:meta:after_credit"] if after else [])
+    tot = s.incrbyfloat(keys[0], usd)
+    d = s.incrbyfloat(keys[1], usd, ttl=3 * 86400)
+    post = s.incrbyfloat(keys[2], usd) if after else 0.0
+    if tot > TOTAL_CAP[provider] or d > DAILY_CAP[provider] or post > POST_CREDIT_CAP_META:
+        for k in keys:
+            s.incrbyfloat(k, -usd)
+        raise Refused("post_credit_cap" if post > POST_CREDIT_CAP_META else "spend_cap")
+    return {"provider": provider, "reserved": usd, "day": day, "keys": keys}
 
 
 def settle(r: dict, actual_usd: float) -> None:
@@ -49,7 +63,8 @@ def settle(r: dict, actual_usd: float) -> None:
     if actual_usd is None:
         return
     delta = max(actual_usd, 0.0) - r["reserved"]; s = get_store()
-    s.incrbyfloat(f"spend:{r['provider']}:total", delta); s.incrbyfloat(f"spend:{r['provider']}:{r['day']}", delta)
+    for k in r.get("keys") or (f"spend:{r['provider']}:total", f"spend:{r['provider']}:{r['day']}"):
+        s.incrbyfloat(k, delta)
 
 
 def remaining() -> dict:

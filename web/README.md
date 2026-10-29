@@ -52,10 +52,11 @@ the confidential clip and never leaves the laptop, and the server holds nothing 
   Oct 26: "$150 in Meta Model API credits ... a credit card must be applied to your account"; a "Spend Limit" notification on the
   Billing page), the event's Oct 26 emails, and the claim form ("credits to build with during the hackathon"; claim by Nov 4, 9:00 PM
   ET). Fireworks's grant says the opposite for its own credit: "Once added to your account, the credits don't expire" (Oct 27 email).
-  Because the card is charged once Meta credit is gone, the page treats the Meta credit as ending with the event's ten days of
-  building, Nov 5 02:00 UTC (`META_CREDIT_END_UTC`); after that every Meta station (PLAN on Spark 1.3, BUILD, FILM) shows its recorded
-  run with "The event's Meta API credit has ended, so this station shows its recorded run." If the Billing page shows a later end,
-  set `META_CREDIT_END_UTC` to it.
+  Ruling of Oct 29, 19:40 UTC, item 3: the Meta stations (PLAN on Spark 1.3, BUILD, FILM) stay live through Nov 9 and fall back only
+  when a call fails ("The live call failed, so this station shows its recorded run."). After `META_CREDIT_END_UTC` (default Nov 5
+  02:00 UTC, the end of the event's ten days of building; set it to the date on the Billing page if one shows), Meta spend gets one
+  more total cap of $20 (`POST_CREDIT_CAP_META_USD`), then each Meta station shows its recorded run with "The event's Meta API credit
+  has ended and the $20 set aside after it is spent, so this station shows its recorded run."
 - Provider alerts Yatsu should set: Meta Model API "Spend Limit" notification on the Billing page (the event page names it); Fireworks
   spend limit or alert at $50; Baseten usage alert at $50; Upstash max monthly budget (free tier). Vercel Hobby has no paid overage.
 

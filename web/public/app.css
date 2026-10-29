@@ -29,3 +29,5 @@ button[disabled]{opacity:.45;cursor:default}
 .recorded{border-left:3px solid #7a5200;padding-left:10px}
 .frames3 img{border:1px solid #e3e0d8}
 #status-line b{font-weight:600}
+.story{background:#f4f6f8;border-radius:8px;padding:8px 10px;margin:8px 0}
+.failed{color:#9aa3ad;font-size:.85rem}

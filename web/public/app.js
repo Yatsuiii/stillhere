@@ -29,6 +29,26 @@ function recordedNote(d) {
   p.append(badge("wait", d.label || "recorded run"), document.createTextNode(d.why || ""));
   return p;
 }
+function storyCard(st) {                                       // story_menu_rule.md section 6, as the server filled it
+  const p = el("p", "story");
+  p.append(document.createTextNode(st.lead));
+  if (st.notes.length) {
+    st.notes.forEach((n, i) => {
+      if (i) p.append(document.createTextNode(", "));
+      const a = el("a", "", n.label); a.href = n.href; a.target = "_blank"; a.rel = "noopener noreferrer"; p.append(a);
+    });
+  } else {
+    p.append(document.createTextNode(st.none));
+  }
+  p.append(document.createTextNode(st.tail));
+  return p;
+}
+function setRoute(route, story, label) {
+  S.route = route; S.seed = route.seed; S.story = story || null;
+  const box = $("build-recipe"); box.textContent = label + "clip " + route.clip_id + ", intact against " + route.condition.replace("_", " ") + ", seed " + route.seed + ".";
+  if (S.story) box.append(storyCard(S.story));
+  $("build-go").disabled = false; $("audit-go").disabled = false;
+}
 function done(station) { document.querySelector('.rail a[href="#' + station + '"]').classList.add("done"); }
 
 // ---- status and menu ---------------------------------------------------------------------------------------------------------
@@ -43,6 +63,13 @@ async function loadStatus() {
     chips.append(b);
   }
   $("scoreboard").textContent = (S.menu.scoreboard || "") + (S.menu.badge ? ". " + S.menu.badge + "." : "");
+  const failed = $("failed"); failed.textContent = "";
+  if ((S.menu.failed || []).length) {
+    failed.append(el("p", "small", "Screened, not on the menu (title and the bar it failed, docs/rules/story_menu_rule.md):"));
+    const ul = el("ul", "failed");
+    for (const f of S.menu.failed) ul.append(el("li", "", f.title + " · " + f.bar));
+    failed.append(ul);
+  }
   const live = data.live || {};
   $("status-line").textContent = "Worker: " + (data.worker_online ? "online" : "offline (cached forecasts)") + ". Live models: " +
     (live.meta ? "on" : "off (recorded runs)") + ". Up to " + data.runs_per_hour + " live runs per hour per visitor.";
@@ -73,24 +100,23 @@ async function doPlan() {
     out.append(recordedNote(data));
     for (const r of data.runs || []) {
       out.append(el("p", "small", "Recorded request: " + r.request));
-      out.append(planCard(r, " " + (r.backend_label || "")));
+      const card = planCard(r, " " + (r.backend_label || ""));
+      if (r.card.story) card.append(storyCard(r.card.story));
+      out.append(card);
     }
     const live = (data.runs || []).find((r) => r.card.route && r.card.route.kind === "live" && r.card.route.clip_id);
     if (live) {                                               // carry on down the rail with the first recorded plan
-      S.run = null; S.route = live.card.route; S.seed = S.route.seed;
-      $("build-recipe").textContent = "Recorded plan: clip " + S.route.clip_id + ", intact against " + S.route.condition.replace("_", " ") + ", seed " + S.route.seed + ".";
-      $("build-go").disabled = false; $("audit-go").disabled = false;
+      S.run = null; setRoute(live.card.route, live.card.story, "Recorded plan: ");
     }
     return;
   }
   S.run = data.run_id; S.route = data.card.route; S.receipts.push(data.receipt_id);
   const box = planCard(data, " live");
+  if (data.card.story) box.append(storyCard(data.card.story));
   box.append(el("p", "small", data.badge || ""), receiptLink(data.receipt_id), nd());
   out.append(box); done("plan");
   if (S.route.kind === "live") {
-    S.seed = S.route.seed;
-    $("build-recipe").textContent = "Clip " + S.route.clip_id + ", intact against " + S.route.condition.replace("_", " ") + ", seed " + S.route.seed + ".";
-    $("build-go").disabled = false; $("audit-go").disabled = false;
+    setRoute(S.route, data.card.story, "");
   } else if (S.route.kind === "evidence") {
     const p = el("p", "big", S.route.line || "This plan ends on its evidence panel.");
     out.append(p); location.hash = "#evidence";

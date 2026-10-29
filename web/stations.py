@@ -19,6 +19,7 @@ from pathlib import Path
 import httpx
 
 from stillhere import egress, manipulation_check as MC, meta_client, planner, planner_eval as PE, planner_v21 as P
+from stillhere.story_tags import TAGS
 from web import guard, jobs, ledger
 from web.store import get_store
 
@@ -28,11 +29,6 @@ PROVIDER = {"spark-1.3": "meta", "spark-open": "fireworks"}
 HOSTS = {"spark-1.3": (("meta", "spark-1.3"),),                            # (provider, planner backend) in the order tried: Baseten is
          "spark-open": (("fireworks", "spark-open"), ("baseten", "spark-open-baseten"))}   # Spark Open's fallback host (plan of 19:20 UTC, 1c)
 KEY_ENV = {"fireworks": "FIREWORKS_API_KEY", "baseten": "BASETEN_API_KEY"}
-# The event's $150 Meta Model API credit: no source we can reach states when it ends (event details page saved Oct 26, the event's
-# Oct 26 emails, the claim form; checked Oct 29), and the account's card is charged once credit runs out. So until Yatsu reads an end
-# date on the Model API Billing page, the page treats the credit as ending with the event's ten days of building (Wed Nov 4, 9:00 PM ET); after
-# it, no live Meta call: recorded runs, labelled. Override with META_CREDIT_END_UTC (empty: no end).
-META_CREDIT_END_UTC = "2026-11-05T02:00:00Z"
 RESERVE = {"plan": 0.05, "audit": 0.03, "transcribe": 0.10, "sam": 0.50}   # worst case $ per call; Voice Transcribe and SAM publish no
 RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # price here, so they keep their reservation (never settled);
                                                                            # 7 is the third example chip's seed
@@ -81,14 +77,12 @@ def chat_cost(usage: list) -> float:
     return sum(PE.cost(u.get("prompt_tokens") or 0, u.get("completion_tokens") or 0) for u in usage)
 
 
-def meta_credit_ended(now: datetime.datetime = None) -> bool:
-    end = os.environ.get("META_CREDIT_END_UTC", META_CREDIT_END_UTC)
-    now = now or datetime.datetime.now(datetime.timezone.utc)
-    return bool(end) and now >= datetime.datetime.fromisoformat(end.replace("Z", "+00:00"))
+meta_credit_ended = ledger.meta_credit_ended
+META_CREDIT_END_UTC = ledger.META_CREDIT_END_UTC
 
 
 def live_ok(provider: str) -> bool:
-    if os.environ.get("STILLHERE_LIVE", "1") == "0" or (provider == "meta" and meta_credit_ended()):
+    if os.environ.get("STILLHERE_LIVE", "1") == "0":
         return False
     try:
         return bool(meta_client._key()) if provider == "meta" else bool(os.environ.get(KEY_ENV.get(provider, "")))
@@ -97,11 +91,11 @@ def live_ok(provider: str) -> bool:
 
 
 def first_live(backend: str):
-    """The first host for this backend whose key is set, or Refused (no_key or credit_ended)."""
+    """The first host for this backend whose key is set, or Refused("no_key")."""
     for prov, b in HOSTS[backend]:
         if live_ok(prov):
             return prov, b
-    raise ledger.Refused("credit_ended" if backend == "spark-1.3" and meta_credit_ended() else "no_key")
+    raise ledger.Refused("no_key")
 
 
 def _now() -> str:
@@ -126,10 +120,11 @@ def _load(rel: str):
 
 def why_line(code: str) -> str:
     return {"session_limit": "This session has used its 5 live runs for this hour.", "spend_cap": "Today's live budget is used up.",
-            "no_key": "Live calls are off on this server.", "api_error": "The live call failed.", "no_run": "Start with a plan first.",
+            "no_key": "Live calls are off on this server.", "api_error": "The live call failed, so this station shows its recorded run.", "no_run": "Start with a plan first.",
             "station_used": "This run already used this station.", "provider_not_offered": "That model is not offered live.",
             "recorded_plan": "This plan is a recorded run, so this station shows its recording.",
-            "credit_ended": "The event's Meta API credit has ended, so this station shows its recorded run."}.get(
+            "post_credit_cap": ("The event's Meta API credit has ended and the $20 set aside after it is spent, so this station shows "
+                                "its recorded run.")}.get(
         code, "Live calls are off right now.")
 
 
@@ -138,11 +133,40 @@ SCOREBOARD = "Planner v2 · 62 unseen requests · 2.3% vs 7.6% / 6.8% (5% bar)"
 
 
 def menu() -> dict:
-    """The live-menu line above the input box, the 3 example chips Fork P ran on both backends, and the scoreboard with its badge."""
+    """The live-menu line above the input box, the 3 example chips Fork P ran on both backends, the scoreboard with its badge, and the
+    stories the screen kept off the menu (title and failed bar only, story_menu_rule.md section 6)."""
     m, ex = _load("stillhere/live_menu.json") or {}, _load("results/planner_v21_examples.json") or {}
+    summ = m.get("screen_summary") or {}
     return {"text": P.menu_text(), "chips": [e["text"] for e in ex.get("examples", [])], "badge": P.BADGE, "scoreboard": SCOREBOARD,
             "clips": [{"id": c["id"], "title": c["title"], "seconds": c.get("dur_s")} for c in m.get("clips", [])],
-            "default_seed": m.get("default_seed"), "reshuffle_seeds": list(RESHUFFLE_SEEDS)}
+            "default_seed": m.get("default_seed"), "reshuffle_seeds": list(RESHUFFLE_SEEDS),
+            "failed": [{"title": f["title"], "bar": str(f["bar"])} for f in summ.get("failed", [])]}
+
+
+# ---- the story card (docs/rules/story_menu_rule.md section 6, word for word; data in docs/story_menu_data.md) ---------------------
+STORY_LEAD = "{title}, read by {reader}: one of {n} screened public stories · 1 voice heard · {k} sentences · notes: "
+STORY_NONE = "none of the listed tags found"
+STORY_TAIL = ". Content notes come from Muse Spark Open reading the transcript. Not a full review; listen before you use a story."
+
+
+def _mss(t: float) -> str:
+    s = int(t); return f"{s // 60}:{s % 60:02d}"
+
+
+def story_card(clip_id: str):
+    """The PLAN and BUILD card for a screened story on the live menu, or None for a clip with no screen data (alice_ch01-03): the
+    rule's line with {title}, {reader}, {n}, {k} and the kept notes as "{tag} ({m:ss})" in time order, each linking to the archive.org
+    file at #t={seconds}."""
+    m = _load("stillhere/live_menu.json") or {}
+    clip = next((c for c in m.get("clips", []) if c["id"] == clip_id), None)
+    sc = (clip or {}).get("screen")
+    if not sc:
+        return None
+    notes = sorted((x for x in sc.get("notes", []) if x.get("tag") in TAGS), key=lambda x: x["t"])
+    items = [{"label": f"{x['tag']} ({_mss(x['t'])})", "href": f"{sc['archive_url']}#t={int(x['t'])}"} for x in notes]
+    lead = STORY_LEAD.format(title=clip["title"], reader=clip["reader"], n=m["screen_summary"]["n_on_menu"], k=sc["sentences"])
+    return {"lead": lead, "notes": items, "none": None if items else STORY_NONE, "tail": STORY_TAIL,
+            "text": lead + (", ".join(i["label"] for i in items) if items else STORY_NONE) + STORY_TAIL}
 
 
 def card_view(card) -> dict:
@@ -153,6 +177,7 @@ def card_view(card) -> dict:
             "lines": [guard.clean(l) for l in card.text.split("\n") if l.strip()], "route": {"kind": rt["kind"]}}
     if rt["kind"] == "live":
         view["route"].update({k: rt[k] for k in ("clip_id", "condition", "seed", "defaults")})
+        view["story"] = story_card(rt["clip_id"])
     elif rt["kind"] == "evidence":                                                   # ruling (2): off the live list -> its evidence panel
         view["route"].update(panel=rt.get("panel"), line=guard.clean(rt.get("line") or ""))
     return view
@@ -160,7 +185,9 @@ def card_view(card) -> dict:
 
 def recorded_plan(why: str) -> dict:
     rp = _load("web/replay/plan.json") or {}
-    return {"mode": "recorded", "label": RECORDED, "why": why_line(why), "runs": rp.get("runs", [])}
+    runs = [{**r, "card": {**r["card"], "story": story_card(r["card"]["route"].get("clip_id"))}} if (r["card"].get("route") or {}).get(
+        "kind") == "live" else r for r in rp.get("runs", [])]
+    return {"mode": "recorded", "label": RECORDED, "why": why_line(why), "runs": runs}
 
 
 def plan(text: str, backend: str, sid: str) -> dict:
@@ -303,8 +330,9 @@ def build(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> dic
     def recorded(why):                                       # only a recording of this clip and condition, never another one's
         got = rec.get(f"{clip_id}:{condition}")
         if not got:
-            return {"mode": "recorded", "label": RECORDED, "why": why_line(why), "checklist": [], "line": NO_RECORDED_CHECK}
-        return {**got, "mode": "recorded", "label": f"{RECORDED}, seed {got.get('seed')}", "why": why_line(why)}
+            return {"mode": "recorded", "label": RECORDED, "why": why_line(why), "checklist": [], "line": NO_RECORDED_CHECK,
+                    "story": story_card(clip_id)}
+        return {**got, "mode": "recorded", "label": f"{RECORDED}, seed {got.get('seed')}", "why": why_line(why), "story": story_card(clip_id)}
     try:
         if not live_ok("meta"):
             raise ledger.Refused("no_key")
@@ -333,7 +361,7 @@ def build(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> dic
     items = checklist(condition, chk)
     rid = receipt({"station": "build", "model": meta_client.ASR_MODEL, "input_sha256": hashlib.sha256(wav).hexdigest(),
                    "recipe": r, "seconds": round(time.time() - t0, 2), "usd": None, "usd_reserved": RESERVE["transcribe"]})
-    return {"mode": "live", "condition": condition, "seed": r["seed"], "pass": chk["pass"], "checklist": items,
+    return {"mode": "live", "condition": condition, "seed": r["seed"], "pass": chk["pass"], "checklist": items, "story": story_card(clip_id),
             "audio_b64": base64.b64encode(wav).decode(), "receipt_id": rid}
 
 
