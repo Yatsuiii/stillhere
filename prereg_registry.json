@@ -492,6 +492,14 @@
   {
    "path": "d22/d20/score/kernel_score/stillhere_d20_score.py",
    "reason": "one-call stub rendered at push time with the posted picker manifest hash; all D20 scoring code is in the hashed stillhere-d20-score-code dataset (MANIFEST 92efa035b62a63d9badb5871716f86d7395cf0fecf544ba14ed3aadc3b8eab14)"
+  },
+  {
+   "path": "d22/d20/score/push/stillhere_d20_score.py",
+   "reason": "d20_go.sh's filled copy of the not-entry-point stub d22/d20/score/kernel_score/stillhere_d20_score.py: the same one call with the posted picker manifest hash 65d321c2a5209ce77075b3aeb47c1ae7d509b35dc2dcbbc3562241a1af79194c (pushed Oct 29 16:24 UTC); all scoring code is in stillhere-d20-score-code (MANIFEST 92efa035b62a63d9badb5871716f86d7395cf0fecf544ba14ed3aadc3b8eab14)"
+  },
+  {
+   "path": "d22/d20/baselines/kernel/stillhere_d20_baselines.py",
+   "reason": "one-call stub rendered by scripts/make_d20_baselines.py; exploratory baselines under docs/rules/cheap_baselines_rule.md, all code in stillhere-d20-baselines-code (MANIFEST.sha256 sha256 48ed99b0645907eaa9134708ed6cfb3cc179d7c0a99ad60d3fa3c173f760334d), run after the frozen D20 score was COMPLETE"
   }
  ]
 }
