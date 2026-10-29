@@ -135,7 +135,8 @@ SCOREBOARD = "Planner v2 · 62 unseen requests · 2.3% vs 7.6% / 6.8% (5% bar)"
 def menu() -> dict:
     """The live-menu line above the input box, the 3 example chips Fork P ran on both backends, the scoreboard with its badge, and the
     stories the screen kept off the menu (title and failed bar only, story_menu_rule.md section 6)."""
-    m, ex = _load("stillhere/live_menu.json") or {}, _load("results/planner_v21_examples.json") or {}
+    m = _load("stillhere/live_menu.json") or {}
+    ex = _load("results/planner_v21_story_chips.json") or _load("results/planner_v21_examples.json") or {}   # stories, else Alice
     summ = m.get("screen_summary") or {}
     return {"text": P.menu_text(), "chips": [e["text"] for e in ex.get("examples", [])], "badge": P.BADGE, "scoreboard": SCOREBOARD,
             "clips": [{"id": c["id"], "title": c["title"], "seconds": c.get("dur_s")} for c in m.get("clips", [])],

@@ -290,6 +290,57 @@ def test_safe_never_appears(menu_stub):
         assert not re.search(r"\bsafe(ly|ty)?\b", t, re.I)
 
 
+def test_story_cards_on_the_real_menu(web):
+    """3a on the worker fork's screened stories: the rule's line exactly, {n} = the stories on the menu, notes in time order with
+    m:ss and an archive.org #t= link, failures title and bar only, no card for the Alice clips, and "safe" nowhere."""
+    app, jobs, ledger, stations, store = web
+    from stillhere.story_tags import TAGS
+    menu = json.loads((REPO / "stillhere/live_menu.json").read_text())
+    screened = [c for c in menu["clips"] if c.get("screen")]
+    if not screened:
+        pytest.skip("no screened story on the live menu yet")
+    n = menu["screen_summary"]["n_on_menu"]
+    assert n == len(screened)
+    for c in menu["clips"]:
+        card = stations.story_card(c["id"])
+        if not c.get("screen"):
+            assert card is None; continue
+        sc, notes = c["screen"], sorted(c["screen"]["notes"], key=lambda x: x["t"])
+        assert all(x["tag"] in TAGS for x in notes)
+        exp = (f"{c['title']}, read by {c['reader']}: one of {n} screened public stories · 1 voice heard · {sc['sentences']} sentences · "
+               "notes: " + (", ".join(f"{x['tag']} ({int(x['t']) // 60}:{int(x['t']) % 60:02d})" for x in notes) or "none of the listed tags found")
+               + ". Content notes come from Muse Spark Open reading the transcript. Not a full review; listen before you use a story.")
+        assert card["text"] == exp
+        assert [x["href"] for x in card["notes"]] == [f"{sc['archive_url']}#t={int(x['t'])}" for x in notes]
+        assert sc["archive_url"].startswith("https://archive.org/download/") and sc["archive_url"].endswith(".mp3")
+        assert not re.search(r"\bsafe\b", card["text"], re.I)
+    assert all(set(f) == {"title", "bar"} and f["bar"] in ("1", "2", "3", "trim") for f in menu["screen_summary"]["failed"])
+    assert stations.menu()["failed"] == menu["screen_summary"]["failed"]
+
+
+def test_example_chips_are_on_screened_stories_with_saved_runs(web):
+    """2f: the chips come from results/planner_v21_story_chips.json; both backends routed each to the recipe it names, whose
+    forecast is cached and whose BUILD replay passed. alice_ch02 stays as the backup on the menu."""
+    app, jobs, ledger, stations, store = web
+    monkeypatch_cache = jobs.CACHE
+    jobs.CACHE = REPO / "data/forecast_cache.json"
+    try:
+        doc = json.loads((REPO / "results/planner_v21_story_chips.json").read_text())
+        assert stations.menu()["chips"] == [e["text"] for e in doc["examples"]] and len(doc["examples"]) == 3
+        builds = json.loads((REPO / "web/replay/build.json").read_text())
+        clips = set()
+        for e in doc["examples"]:
+            routes = {(r["route"]["clip_id"], r["route"]["condition"]) for r in e["runs"]}
+            assert len(routes) == 1 and {r["backend"] for r in e["runs"]} == {"spark-1.3", "spark-open"}
+            r = e["runs"][0]["route"]; rec = jobs.recipe(r["clip_id"], r["condition"], r["seed"])
+            assert r["clip_id"].startswith("story_") and jobs.cached(jobs.cache_key(rec)) is not None
+            assert builds[f"{r['clip_id']}:{r['condition']}"]["pass"] is not False
+            clips.add(r["clip_id"])
+        assert len(clips) == 3 and "alice_ch02" in [c["id"] for c in json.loads((REPO / "stillhere/live_menu.json").read_text())["clips"]]
+    finally:
+        jobs.CACHE = monkeypatch_cache
+
+
 # ---- jobs API with a fake worker --------------------------------------------------------------------------------------------------
 W = "Bearer " + SECRETS["STILLHERE_WORKER_TOKEN"]
 

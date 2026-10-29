@@ -1,0 +1,745 @@
+{
+ "label": "demo, not scored",
+ "badge": "v2.1 adds clip, condition, seed; not re-measured",
+ "version": "v2.1",
+ "what": "the 3 example chips above the live page's input box, moved to the screened stories: each run once on planner v2.1, kept only if both backends route it to the cached recipe it names; every try is listed",
+ "started_utc": "2026-10-29T21:11:46+00:00",
+ "finished_utc": "2026-10-29T21:12:34+00:00",
+ "spend_usd": {
+  "spark-1.3": 0.01394,
+  "spark-open": 0.01437
+ },
+ "examples": [
+  {
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: The Black Cat, intact versus sentences shuffled, in the language network.",
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_black_cat",
+      "condition": "sentence_scramble",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "language_network"
+      ],
+      "clip_id": "story_black_cat",
+      "condition": "sentence_scramble",
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": null,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: The Black Cat, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 3.48,
+       "prompt_tokens": 735,
+       "completion_tokens": 637,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00363
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_black_cat",
+      "condition": "sentence_scramble",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "language_network"
+      ],
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "stimulus": "librivox_audiobook",
+      "analysis": "forecast_tribe_stock",
+      "clip_id": "story_black_cat",
+      "condition": "sentence_scramble",
+      "seed": null,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: The Black Cat, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 8.88,
+       "prompt_tokens": 556,
+       "completion_tokens": 541,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00299
+    }
+   ]
+  },
+  {
+   "text": "Plan an exploratory stock TRIBE forecast of the hearing areas for healthy English-speaking adults: The Tell-tale Heart, intact versus played backwards.",
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_telltale_heart",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "auditory"
+      ],
+      "clip_id": "story_telltale_heart",
+      "condition": "reversed",
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": null,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: The Tell-tale Heart, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 2.97,
+       "prompt_tokens": 736,
+       "completion_tokens": 534,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00319
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_telltale_heart",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "auditory"
+      ],
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "stimulus": "librivox_audiobook",
+      "analysis": "forecast_tribe_stock",
+      "clip_id": "story_telltale_heart",
+      "condition": "reversed",
+      "seed": null,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: The Tell-tale Heart, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 10.43,
+       "prompt_tokens": 557,
+       "completion_tokens": 864,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00437
+    }
+   ]
+  },
+  {
+   "text": "Plan an exploratory stock TRIBE forecast of the hearing areas for healthy English-speaking adults: The Diamond Necklace, intact versus played backwards.",
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_diamond_necklace",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "auditory"
+      ],
+      "clip_id": "story_diamond_necklace",
+      "condition": "reversed",
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": null,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: The Diamond Necklace, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 2.66,
+       "prompt_tokens": 736,
+       "completion_tokens": 634,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00361
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_diamond_necklace",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "auditory"
+      ],
+      "stimulus": "librivox_audiobook",
+      "clip_id": "story_diamond_necklace",
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "condition": "reversed",
+      "seed": null,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: The Diamond Necklace, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 10.54,
+       "prompt_tokens": 557,
+       "completion_tokens": 925,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00463
+    }
+   ]
+  }
+ ],
+ "tries": [
+  {
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: The Black Cat, intact versus sentences shuffled, in the language network.",
+   "wants": {
+    "clip_id": "story_black_cat",
+    "condition": "sentence_scramble",
+    "seed": 20261028
+   },
+   "kept": true,
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_black_cat",
+      "condition": "sentence_scramble",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "language_network"
+      ],
+      "clip_id": "story_black_cat",
+      "condition": "sentence_scramble",
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": null,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: The Black Cat, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 3.48,
+       "prompt_tokens": 735,
+       "completion_tokens": 637,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00363
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_black_cat",
+      "condition": "sentence_scramble",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "language_network"
+      ],
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "stimulus": "librivox_audiobook",
+      "analysis": "forecast_tribe_stock",
+      "clip_id": "story_black_cat",
+      "condition": "sentence_scramble",
+      "seed": null,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: The Black Cat, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 8.88,
+       "prompt_tokens": 556,
+       "completion_tokens": 541,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00299
+    }
+   ]
+  },
+  {
+   "text": "Plan an exploratory stock TRIBE forecast of the hearing areas for healthy English-speaking adults: The Tell-tale Heart, intact versus played backwards.",
+   "wants": {
+    "clip_id": "story_telltale_heart",
+    "condition": "reversed",
+    "seed": 0
+   },
+   "kept": true,
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_telltale_heart",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "auditory"
+      ],
+      "clip_id": "story_telltale_heart",
+      "condition": "reversed",
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": null,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: The Tell-tale Heart, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 2.97,
+       "prompt_tokens": 736,
+       "completion_tokens": 534,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00319
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_telltale_heart",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "auditory"
+      ],
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "stimulus": "librivox_audiobook",
+      "analysis": "forecast_tribe_stock",
+      "clip_id": "story_telltale_heart",
+      "condition": "reversed",
+      "seed": null,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: The Tell-tale Heart, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 10.43,
+       "prompt_tokens": 557,
+       "completion_tokens": 864,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00437
+    }
+   ]
+  },
+  {
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: The Diamond Necklace, intact versus sentences shuffled with seed 20261028, in the language network and hearing areas.",
+   "wants": {
+    "clip_id": "story_diamond_necklace",
+    "condition": "sentence_scramble",
+    "seed": 20261028
+   },
+   "kept": false,
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_diamond_necklace",
+      "condition": "sentence_scramble",
+      "seed": 20261028,
+      "defaults": [],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "language_network",
+       "auditory"
+      ],
+      "clip_id": "story_diamond_necklace",
+      "condition": "sentence_scramble",
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": 20261028,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network, hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: The Diamond Necklace, intact against sentences shuffled, seed 20261028.\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 3.25,
+       "prompt_tokens": 746,
+       "completion_tokens": 607,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00351
+    },
+    {
+     "backend": "spark-open",
+     "decision": "decline",
+     "route": {
+      "kind": "decline",
+      "reason": "analysis_not_offered"
+     },
+     "spec": {
+      "population": null,
+      "language": null,
+      "stimulus": null,
+      "analysis": null,
+      "brain_areas": [],
+      "conditions": [],
+      "decline_reason": "analysis_not_offered",
+      "clip_id": null,
+      "condition": null,
+      "seed": null
+     },
+     "card": "Declined: that analysis is not offered. Nearest tested option: analysis: stock TRIBE v2 forecast. StillHere Pilot plans exploratory studies only from its table of tested options.",
+     "trace": [
+      "plan:ok:normalised",
+      "route:decline"
+     ],
+     "calls": [
+      {
+       "s": 5.21,
+       "prompt_tokens": 567,
+       "completion_tokens": 394,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00238
+    }
+   ]
+  },
+  {
+   "text": "Plan an exploratory stock TRIBE forecast of the hearing areas for healthy English-speaking adults: The Diamond Necklace, intact versus played backwards.",
+   "wants": {
+    "clip_id": "story_diamond_necklace",
+    "condition": "reversed",
+    "seed": 0
+   },
+   "kept": true,
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_diamond_necklace",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "auditory"
+      ],
+      "clip_id": "story_diamond_necklace",
+      "condition": "reversed",
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": null,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: The Diamond Necklace, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 2.66,
+       "prompt_tokens": 736,
+       "completion_tokens": 634,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00361
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "story_diamond_necklace",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "auditory"
+      ],
+      "stimulus": "librivox_audiobook",
+      "clip_id": "story_diamond_necklace",
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "condition": "reversed",
+      "seed": null,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: The Diamond Necklace, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 10.54,
+       "prompt_tokens": 557,
+       "completion_tokens": 925,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00463
+    }
+   ]
+  }
+ ]
+}

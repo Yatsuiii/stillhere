@@ -2,7 +2,7 @@
 build check, audit and film masks, a declined plan, and Fork P's three example plans on both backends (results/planner_v21_examples.json,
 already recorded live). Needs MODEL_API_KEY (or the laptop's Muse config) and FIREWORKS_API_KEY in the environment for the run only;
 the film step needs opencv and meta-sam-parser. Prints counts, decisions and costs only.
-usage: python web/record_replays.py"""
+usage: python web/record_replays.py [--plan-only]   (--plan-only: rebuild plan.json from the example files, no model call)"""
 import base64
 import json
 import sys
@@ -26,16 +26,35 @@ def jpeg_data_url(data_url: str) -> str:
     return "data:image/jpeg;base64," + base64.b64encode(buf.tobytes()).decode()
 
 
+EXAMPLES = ("results/planner_v21_story_chips.json", "results/planner_v21_examples.json")   # the story chips first, Alice as the backup
+
+
+def example_runs() -> list:
+    """The example chips' recorded live runs (both backends), as the page's recorded PLAN runs."""
+    runs = []
+    for rel in EXAMPLES:
+        p = REPO / rel
+        for e in (json.loads(p.read_text())["examples"] if p.is_file() else []):
+            for r in e["runs"]:
+                runs.append({"request": e["text"], "backend": r["backend"], "backend_label": LABEL.get(r["backend"], r["backend"]),
+                             "source": rel, "card": {"decision": r["decision"],
+                                                     "route": {k: r["route"][k] for k in ("kind", "clip_id", "condition", "seed", "defaults")
+                                                               if k in r["route"]},
+                                                     "lines": [guard.clean(l) for l in r["card"].split("\n") if l.strip()]}})
+    return runs
+
+
+def plan_only():
+    """Rebuilds web/replay/plan.json from the example files, keeping the recorded decline runs; no model call."""
+    old = json.loads((OUT / "plan.json").read_text())
+    kept = [r for r in old["runs"] if r.get("source") == "web/record_replays.py"]
+    json.dump({**{k: v for k, v in old.items() if k != "runs"}, "runs": example_runs() + kept}, open(OUT / "plan.json", "w"), indent=1)
+
+
 def main():
     set_store(MemoryStore()); sid = "0" * 32
     ex = json.loads((REPO / "results/planner_v21_examples.json").read_text())
-    runs = []
-    for e in ex["examples"]:
-        for r in e["runs"]:
-            runs.append({"request": e["text"], "backend": r["backend"], "backend_label": LABEL.get(r["backend"], r["backend"]),
-                         "source": "results/planner_v21_examples.json", "card": {"decision": r["decision"], "route": {k: r["route"][k] for k in ("kind", "clip_id", "condition", "seed", "defaults")
-                                                                                           if k in r["route"]},
-                                                                               "lines": [guard.clean(l) for l in r["card"].split("\n") if l.strip()]}})
+    runs = example_runs()
     p = stations.plan(ex["examples"][0]["text"], "spark-1.3", sid); assert p["mode"] == "live", p
     d = stations.plan(DECLINE, "spark-1.3", sid); assert d["mode"] == "live", d
     runs.append({"request": DECLINE, "backend": "spark-1.3", "backend_label": LABEL["spark-1.3"], "source": "web/record_replays.py",
@@ -63,4 +82,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    plan_only() if "--plan-only" in sys.argv else main()
