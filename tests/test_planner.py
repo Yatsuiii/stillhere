@@ -26,14 +26,14 @@ class Fake:
 
 
 def accept(**kw):
-    spec = {"population": "healthy_adults", "language": "english", "stimulus": "librivox_audiobook",
+    spec = {"population": "healthy_adults", "language": "english", "stimulus": "librivox_audiobook", "analysis": "forecast_tribe_stock",
             "brain_areas": ["auditory"], "conditions": ["intact", "reversed"], "decline_reason": "none"}
     spec.update(kw)
     return {"content": spec}
 
 
 def decline(reason):
-    return {"content": {"population": None, "language": None, "stimulus": None,
+    return {"content": {"population": None, "language": None, "stimulus": None, "analysis": None,
                         "brain_areas": [], "conditions": [], "decline_reason": reason}}
 
 
@@ -75,7 +75,7 @@ def test_schema_is_one_flat_strict_object():
     schema = planner.study_schema(planner.load_enums())
     assert schema["type"] == "object" and schema["additionalProperties"] is False
     assert set(schema["required"]) == set(schema["properties"])
-    for k in ("population", "language", "stimulus"):
+    for k in ("population", "language", "stimulus", "analysis"):
         assert schema["properties"][k]["type"] == ["string", "null"]
         assert None in schema["properties"][k]["enum"]
     assert set(schema["properties"]["decline_reason"]["enum"]) == set(planner.DECLINE_REASONS)
@@ -189,3 +189,34 @@ def test_no_planner_request_carries_tier_d_and_fireworks_refuses_it():
 def test_unknown_backend_is_refused():
     with pytest.raises(ValueError):
         planner.plan(Q_LAG, "spark-9.9", Fake())
+
+
+# ---- v2: decline normalisation and the analysis field -------------------------------------------------
+def test_v2_decline_with_filled_fields_is_normalised_not_rejected():
+    ans = accept(decline_reason="population_not_validated")              # the model declines but leaves the valid fields filled
+    c = Fake(ans)
+    card = planner.plan(Q_6YO, "spark-1.3", c)
+    assert len(c.reqs) == 1 and card.declined and card.spec == planner.decline_spec("population_not_validated")
+    assert card.trace[0] == "plan:ok:normalised" and "not from the model" not in card.text
+    assert planner.validate_answer(ans["content"], planner.load_enums()) == []
+
+
+def test_v2_analysis_field_comes_from_the_table_and_an_accept_needs_it(tmp_path, monkeypatch):
+    schema = planner.study_schema(planner.load_enums())
+    assert schema["properties"]["analysis"]["enum"] == ["forecast_tribe_stock", None] and "analysis" in schema["required"]
+    no_analysis = accept(analysis=None)
+    assert planner.validate_answer(no_analysis["content"], planner.load_enums()) == ["decline_inconsistent"]
+    c = Fake(no_analysis, decline("analysis_not_offered"))
+    card = planner.plan(Q_LAG, "spark-open", c)
+    assert len(c.reqs) == 2 and card.spec["decline_reason"] == "analysis_not_offered"
+    p = table_copy(tmp_path); use_table(monkeypatch, p)
+    t = json.loads(p.read_text()); t["analysis"].append({"id": "new_analysis_x", "evidence": "test", "status": "validated"}); p.write_text(json.dumps(t))
+    c = Fake(decline("analysis_not_offered")); planner.plan(Q_LAG, "spark-1.3", c)
+    assert "new_analysis_x" in c.reqs[0].json_schema["properties"]["analysis"]["enum"]
+
+
+def test_v2_baseten_backend_is_a_planner_backend():
+    c = Fake(decline("population_not_validated"))
+    card = planner.plan(Q_6YO, "spark-open-baseten", c)
+    assert c.reqs[0].model == "baseten/muse-spark-open-1026" and card.declined
+    assert not any(isinstance(p, egress.TierD) for p in c.reqs[0].user)
