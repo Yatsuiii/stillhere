@@ -19,7 +19,7 @@ sys.path[:0] = [str(REPO / "scripts"), str(REPO)]
 import render_video as RV  # noqa: E402
 
 SCENES = REPO / "video/scenes_v3.json"
-DEFAULT_FRAMES = REPO.parent / "stillhere/pilot/probes/k1e_edit/glimmer_edit_frames"
+DEFAULT_FRAMES = REPO.parent / "stillhere/pilot/probes/k1e_editcheck/edit_check_frames"   # final v2 edit-check frames
 E = html.escape
 CSS = """
 html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#fbfaf7;color:#1d1f23;font-family:Inter,Helvetica,Arial,sans-serif}
@@ -78,7 +78,7 @@ def resolve(sc, endings):
 def scene_html(sc, items, values, spec, frames):
     body = "".join(item(i, values, frames) for i in items)
     foot = []
-    if any(i["kind"] in ("frames", "maps") for i in items):
+    if sc.get("film") or any(i["kind"] in ("frames", "maps") for i in items):    # film results slides always carry the credit
         foot.append(spec["credit"])
     if sc.get("results"):
         foot.append(spec["nd"])

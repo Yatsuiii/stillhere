@@ -1,57 +1,329 @@
 {
  "format": "storyline of the ruling of Oct 29, 06:30 UTC, about 3 minutes; captions and voice-over word for word from docs/captions.md; {placeholders} filled on Sunday",
- "crossfade_s": 0.5, "fps": 30, "size": [1920, 1080],
+ "crossfade_s": 0.5,
+ "fps": 30,
+ "size": [
+  1920,
+  1080
+ ],
  "credit": "Tears of Steel (CC) Blender Foundation | mango.blender.org, CC BY 3.0. Edited for this study.",
  "nd": "Not a diagnosis or medical advice.",
  "scenes": [
-  {"id": "opener", "seconds": 26, "title": "Every new story needs healthy volunteers first",
+  {
+   "id": "opener",
+   "seconds": 26,
+   "title": "Every new story needs healthy volunteers first",
    "vo": "Labs study people who can't respond after brain injury by playing them stories in the scanner. But every new story needs its own 12-15 healthy volunteers scanned first, in that language. For a new story, StillHere gives labs a first reading with zero volunteer scans, measured against each listener's own brain. It has been tested only in healthy volunteers.",
-   "items": [{"kind": "text", "text": "1 in 4 brain-injured patients who could not follow commands at the bedside showed command-following brain activity on fMRI or EEG (Bodien et al., NEJM 2024)."},
-             {"kind": "text", "text": "At university scanner rates ($450-700 an hour), 12-15 volunteers is roughly $5,000-15,000 of scanner time per new story, before recruitment."}]},
-  {"id": "why", "seconds": 9, "title": "Passive tests",
-   "items": [{"kind": "text", "text": "Passive tests play a story or a film, and every new one needs healthy volunteers scanned first (Naci et al., PNAS 2014, used a film)."}]},
-  {"id": "a_ask", "seconds": 9, "title": "A researcher asks",
-   "items": [{"kind": "question", "text": "Build a test from this new story, with a scrambled control."}]},
-  {"id": "a_plan", "seconds": 12, "title": "Muse Spark 1.3 plans it",
-   "items": [{"kind": "text", "text": "Muse Spark 1.3 plans it: the intact story and a sentence-scrambled control, the only kinds it has evidence for."},
-             {"kind": "card", "rows": [["stimulus", "a new audiobook chapter (LibriVox)"], ["versions", "intact | sentence scramble"], ["forecast", "TRIBE v2 (stock), healthy adults"]]}]},
-  {"id": "a_check", "seconds": 15, "title": "Muse Voice Transcribe checks every version", "results": true,
-   "items": [{"kind": "text", "text": "Muse Voice Transcribe checks every version before anyone is scanned: the intact story kept 99% of its words; the sentence scramble kept 98% of its words in a new order."},
-             {"kind": "catch", "text": "The word scramble kept only 16% of its words, so it was caught as broken before scanning and is not used."}]},
-  {"id": "a_proof", "seconds": 16, "title": "How much is the forecast worth?", "results": true,
-   "items": [{"kind": "big", "text": "On a held-out audiobook, the forecast was worth about 5 real volunteers, and at least 2."},
-             {"kind": "text", "text": "TRIBE v2 forecasts the healthy-adult response. It agreed with the classic sound test."},
-             {"kind": "beat", "text": "What it had to beat: word rate and the sound envelope."},
-             {"kind": "small", "text": "Le Petit Prince, section 8, held out: recomputed with code built during the event; first measured Oct 22-23."}]},
-  {"id": "a_d20", "seconds": 12, "title": "Real listeners: intact versus scrambled", "slot": "d20", "results": true,
+   "items": [
+    {
+     "kind": "text",
+     "text": "1 in 4 brain-injured patients who could not follow commands at the bedside showed command-following brain activity on fMRI or EEG (Bodien et al., NEJM 2024)."
+    },
+    {
+     "kind": "text",
+     "text": "At university scanner rates ($450-700 an hour), 12-15 volunteers is roughly $5,000-15,000 of scanner time per new story, before recruitment."
+    }
+   ]
+  },
+  {
+   "id": "why",
+   "seconds": 9,
+   "title": "Passive tests",
+   "items": [
+    {
+     "kind": "text",
+     "text": "Passive tests play a story or a film, and every new one needs healthy volunteers scanned first (Naci et al., PNAS 2014, used a film)."
+    }
+   ]
+  },
+  {
+   "id": "a_ask",
+   "seconds": 9,
+   "title": "A researcher asks",
+   "items": [
+    {
+     "kind": "question",
+     "text": "Build a test from this new story, with a scrambled control."
+    }
+   ]
+  },
+  {
+   "id": "a_plan",
+   "seconds": 12,
+   "title": "Muse Spark 1.3 plans it",
+   "items": [
+    {
+     "kind": "text",
+     "text": "Muse Spark 1.3 plans it: the intact story and a sentence-scrambled control, the only kinds it has evidence for."
+    },
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "stimulus",
+       "a new audiobook chapter (LibriVox)"
+      ],
+      [
+       "versions",
+       "intact | sentence scramble"
+      ],
+      [
+       "forecast",
+       "TRIBE v2 (stock), healthy adults"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a_check",
+   "seconds": 15,
+   "title": "Muse Voice Transcribe checks every version",
+   "results": true,
+   "items": [
+    {
+     "kind": "text",
+     "text": "Muse Voice Transcribe checks every version before anyone is scanned: the intact story kept 99% of its words; the sentence scramble kept 98% of its words in a new order."
+    },
+    {
+     "kind": "catch",
+     "text": "The word scramble kept only 16% of its words, so it was caught as broken before scanning and is not used."
+    }
+   ]
+  },
+  {
+   "id": "a_proof",
+   "seconds": 16,
+   "title": "How much is the forecast worth?",
+   "results": true,
+   "items": [
+    {
+     "kind": "big",
+     "text": "On a held-out audiobook, the forecast was worth about 5 real volunteers, and at least 2."
+    },
+    {
+     "kind": "text",
+     "text": "TRIBE v2 forecasts the healthy-adult response. It agreed with the classic sound test."
+    },
+    {
+     "kind": "beat",
+     "text": "What it had to beat: word rate and the sound envelope."
+    },
+    {
+     "kind": "small",
+     "text": "Le Petit Prince, section 8, held out: recomputed with code built during the event; first measured Oct 22-23."
+    }
+   ]
+  },
+  {
+   "id": "a_d20",
+   "seconds": 12,
+   "title": "Real listeners: intact versus scrambled",
+   "slot": "d20",
+   "results": true,
    "variants": {
-     "pass": [{"kind": "text", "text": "Real listeners' brains followed the intact story more than the scrambled one where TRIBE said they would ({k} of {N}, p = {p})."}, {"kind": "beat", "text": "What it had to beat: word rate and the sound envelope of each version."}],
-     "omit": null}},
-  {"id": "a_planner", "seconds": 13, "title": "It says no when it should", "results": true,
-   "items": [{"kind": "text", "text": "Ask for something it cannot support and it says so, with the reason and the nearest thing it can do."},
-             {"kind": "card", "rows": [["default planner, Muse Spark 1.3", "2.3% wrong accepts on requests it had never seen (upper bound 6.5%)"], ["private mode, Muse Spark Open", "7.6% (Fireworks), 6.8% (Baseten); can run on your own servers"]]}]},
-  {"id": "b_ask", "seconds": 8, "title": "The same loop on video",
-   "items": [{"kind": "question", "text": "If the faces in this film scene are filled in, what changes in the brain?"}]},
-  {"id": "b_edit", "seconds": 14, "title": "SAM 3.1 makes the edit and its control",
-   "items": [{"kind": "text", "text": "SAM filled the faces it masked with the surrounding colour. The control fills the same area somewhere else, with exactly the same fill."},
-             {"kind": "frames", "labels": ["intact", "faces filled", "control"], "frame": "t032.5.jpg"}]},
-  {"id": "b_check", "seconds": 10, "title": "Edit check: Spark Open and Glimmer", "slot": "editcheck", "results": true,
+    "pass": [
+     {
+      "kind": "text",
+      "text": "Real listeners' brains followed the intact story more than the scrambled one where TRIBE said they would ({k} of {N}, p = {p})."
+     },
+     {
+      "kind": "beat",
+      "text": "What it had to beat: word rate and the sound envelope of each version."
+     }
+    ],
+    "omit": null
+   }
+  },
+  {
+   "id": "a_planner",
+   "seconds": 13,
+   "title": "It says no when it should",
+   "results": true,
+   "items": [
+    {
+     "kind": "text",
+     "text": "Ask for something it cannot support and it says so, with the reason and the nearest thing it can do."
+    },
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "default planner, Muse Spark 1.3",
+       "2.3% wrong accepts on requests it had never seen (upper bound 6.5%)"
+      ],
+      [
+       "private mode, Muse Spark Open",
+       "7.6% (Fireworks), 6.8% (Baseten); can run on your own servers"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b_ask",
+   "seconds": 8,
+   "title": "The same loop on video",
+   "items": [
+    {
+     "kind": "question",
+     "text": "If the faces in this film scene are filled in, what changes in the brain?"
+    }
+   ]
+  },
+  {
+   "id": "b_edit",
+   "seconds": 14,
+   "title": "SAM 3.1 makes the edit and its control",
+   "items": [
+    {
+     "kind": "text",
+     "text": "SAM filled the faces it masked with the surrounding colour. The control fills the same area somewhere else, with exactly the same fill."
+    },
+    {
+     "kind": "frames",
+     "labels": [
+      "intact",
+      "faces filled",
+      "control"
+     ],
+     "frame": "bridge_t032.5.jpg"
+    }
+   ]
+  },
+  {
+   "id": "b_check",
+   "seconds": 10,
+   "title": "Edit check: Spark Open and Glimmer",
+   "slot": "editcheck",
+   "results": true,
    "variants": {
-     "pass": [{"kind": "text", "text": "Edit check: Spark Open and Glimmer saw a face in {k_int} of {N} intact frames, in {k_rem} of {N} filled ones, and in {k_am} of {N} control frames."}],
-     "fail": [{"kind": "text", "text": "The edit check failed ({detail}), so the film test did not run."}]}},
-  {"id": "b_maps", "seconds": 14, "title": "TRIBE's forecast against 28 real viewers", "slot": "film", "results": true,
-   "common": [{"kind": "maps", "left": "TRIBE: where filling the faces changes the forecast", "right": "{N} real viewers: where the brain tracked faces"},
-              {"kind": "small", "text": "The one check on data TRIBE's authors never used."}],
+    "pass": [
+     {
+      "kind": "text",
+      "text": "Edit check: Spark Open and Glimmer saw a face in {k_int} of {N} intact frames, in {k_rem} of {N} filled ones, and in {k_am} of {N} control frames."
+     }
+    ],
+    "fail": [
+     {
+      "kind": "text",
+      "text": "The edit check failed ({detail}), so the film test did not run."
+     }
+    ]
+   }
+  },
+  {
+   "id": "b_maps",
+   "seconds": 14,
+   "title": "TRIBE's forecast against 28 real viewers",
+   "slot": "film",
+   "results": true,
+   "common": [
+    {
+     "kind": "small",
+     "text": "The one check on data TRIBE's authors never used: {N} real viewers of the intact film."
+    }
+   ],
    "variants": {
-     "PASS": {"seconds": 26, "items": [{"kind": "text", "text": "SAM filled the faces it masked; TRIBE forecast the change; that forecast lined up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the control."}]},
-     "PASS_visual": {"seconds": 26, "items": [{"kind": "text", "text": "SAM filled the faces it masked; TRIBE forecast the change; that forecast lined up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the control. Most of the match comes from visual-network areas."}]},
-     "FAIL_not_face_specific": [{"kind": "text", "text": "TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}), but no better than its forecast for the control: not specific to faces."}],
-     "FAIL": [{"kind": "text", "text": "TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces ({k} of {N} viewers, p = {p}). We show it because we said we would."}],
-     "UNINFORMATIVE": [{"kind": "text", "text": "The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."}],
-     "NOT_RUN": [{"kind": "text", "text": "The film test did not run: {reason}. It was set to run once, by rules written before any brain data was read."}]}},
-  {"id": "close", "seconds": 16, "title": "StillHere",
-   "items": [{"kind": "big", "text": "A first healthy reference for a new test, with zero scans, and evidence for how far to trust it."},
-             {"kind": "small", "text": "TRIBE v2 (Meta FAIR, CC BY-NC 4.0) was trained on Courtois NeuroMod, BoldMoments, Lebel2023 and Wen2017 and evaluated by its authors on NNDb, LPP, Narratives and HCP (d'Ascoli et al. 2026, arXiv 2605.04326, Table 1); the film is the one check on data TRIBE's authors never used. SAM 3.1 via Meta's Model API, decoded with meta-sam-parser under Meta's SAM License; we acknowledge the use of SAM in this work. Models: Muse Spark 1.3, Muse Spark Open, Muse Voice Transcribe, SAM 3.1, Glimmer, TRIBE v2. Data: Emo-FilM (CC0), Le Petit Prince, Narratives, LibriVox, Tears of Steel (CC BY 3.0)."},
-             {"kind": "small", "text": "Research tool for labs. Tested only in healthy volunteers. Not a diagnosis or medical advice."}]}
+    "PASS": {
+     "seconds": 26,
+     "items": [
+      {
+       "kind": "maps",
+       "left": "TRIBE: where filling the faces changes the forecast",
+       "right": "{N} real viewers: where the brain tracked faces"
+      },
+      {
+       "kind": "text",
+       "text": "SAM filled the faces it masked; TRIBE forecast the change; that forecast lined up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the control."
+      }
+     ]
+    },
+    "PASS_visual": {
+     "seconds": 26,
+     "items": [
+      {
+       "kind": "maps",
+       "left": "TRIBE: where filling the faces changes the forecast",
+       "right": "{N} real viewers: where the brain tracked faces"
+      },
+      {
+       "kind": "text",
+       "text": "SAM filled the faces it masked; TRIBE forecast the change; that forecast lined up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the control. Most of the match comes from visual-network areas."
+      }
+     ]
+    },
+    "FAIL_not_face_specific": [
+     {
+      "kind": "maps",
+      "left": "TRIBE: where filling the faces changes the forecast",
+      "right": "{N} real viewers: where the brain tracked faces"
+     },
+     {
+      "kind": "text",
+      "text": "TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}), but no better than its forecast for the control: not specific to faces."
+     }
+    ],
+    "FAIL": [
+     {
+      "kind": "maps",
+      "left": "TRIBE: where filling the faces changes the forecast",
+      "right": "{N} real viewers: where the brain tracked faces"
+     },
+     {
+      "kind": "text",
+      "text": "TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces ({k} of {N} viewers, p = {p}). We show it because we said we would."
+     }
+    ],
+    "UNINFORMATIVE": [
+     {
+      "kind": "maps",
+      "left": "TRIBE: where filling the faces changes the forecast",
+      "right": "{N} real viewers: where the brain tracked faces"
+     },
+     {
+      "kind": "text",
+      "text": "The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."
+     }
+    ],
+    "NOT_RUN": {
+     "seconds": 18,
+     "items": [
+      {
+       "kind": "big",
+       "text": "On the intact film, the forecast was worth about {veq_film} real viewers, and at least {veq_film_lo}."
+      },
+      {
+       "kind": "small",
+       "text": "What it had to beat: brightness, motion, sound envelope and word rate ({film_beat})."
+      },
+      {
+       "kind": "text",
+       "text": "The face test did not run: {reason}. It was set to run once, by rules written before any brain data was read."
+      }
+     ]
+    }
+   },
+   "film": true
+  },
+  {
+   "id": "close",
+   "seconds": 16,
+   "title": "StillHere",
+   "items": [
+    {
+     "kind": "big",
+     "text": "A first healthy reference for a new test, with zero scans, and evidence for how far to trust it."
+    },
+    {
+     "kind": "small",
+     "text": "TRIBE v2 (Meta FAIR, CC BY-NC 4.0) was trained on Courtois NeuroMod, BoldMoments, Lebel2023 and Wen2017 and evaluated by its authors on NNDb, LPP, Narratives and HCP (d'Ascoli et al. 2026, arXiv 2605.04326, Table 1); the film is the one check on data TRIBE's authors never used. SAM 3.1 via Meta's Model API, decoded with meta-sam-parser under Meta's SAM License; we acknowledge the use of SAM in this work. Models: Muse Spark 1.3, Muse Spark Open, Muse Voice Transcribe, SAM 3.1, Glimmer, TRIBE v2. Data: Emo-FilM (CC0), Le Petit Prince, Narratives, LibriVox, Tears of Steel (CC BY 3.0)."
+    },
+    {
+     "kind": "small",
+     "text": "Research tool for labs. Tested only in healthy volunteers. Not a diagnosis or medical advice."
+    }
+   ]
+  }
  ]
 }

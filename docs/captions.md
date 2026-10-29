@@ -74,9 +74,12 @@ On-screen captions:
    - FAIL (short panel): "TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces ({k} of
      {N} viewers, p = {p}). We show it because we said we would."
    - UNINFORMATIVE (short panel): "The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."
-   - NOT RUN (short panel): "The film test did not run: {reason}. It was set to run once, by rules written before any brain data was
-     read."
-   Small print on every film results slide: "The one check on data TRIBE's authors never used."
+   - NOT RUN (18 s; the edit and its check have already been shown, and the story beat leads the video): the intact film result,
+     "On the intact film, the forecast was worth about {veq_film} real viewers, and at least {veq_film_lo}."; its row "What it had to
+     beat: brightness, motion, sound envelope and word rate ({film_beat})."; then "The face test did not run: {reason}. It was set to
+     run once, by rules written before any brain data was read." Reasons as logged, e.g. "edit not confirmed by Glimmer", "gate 0:
+     VIF > 5", "GPU time ran out".
+   Small print on every film results slide: "The one check on data TRIBE's authors never used: {N} real viewers of the intact film."
 
 ## e. Close
 
