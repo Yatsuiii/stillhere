@@ -1,0 +1,1049 @@
+{
+ "label": "demo, not scored",
+ "badge": "v2.1 adds clip, condition, seed; not re-measured",
+ "version": "v2.1",
+ "prompt_sha256": "0167ae7f282d9f58b02a6b6be5271287604293f2afe009c496bab5a53c8ed96f",
+ "what": "the 3 example chips above the live page's input box: each run once on planner v2.1, kept only if both backends accept it; every try is listed, kept or not",
+ "started_utc": "2026-10-29T14:05:57+00:00",
+ "finished_utc": "2026-10-29T14:06:27+00:00",
+ "spend_usd": {
+  "spark-1.3": 0.01087,
+  "spark-open": 0.01007
+ },
+ "examples": [
+  {
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: LibriVox Alice chapter 1, intact versus sentences shuffled, in the language network.",
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch01",
+      "condition": "sentence_scramble",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "language_network"
+      ],
+      "clip_id": "alice_ch01",
+      "condition": "sentence_scramble",
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": null,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 1, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 3.12,
+       "prompt_tokens": 691,
+       "completion_tokens": 733,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00398
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch01",
+      "condition": "sentence_scramble",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "language_network"
+      ],
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "stimulus": "librivox_audiobook",
+      "analysis": "forecast_tribe_stock",
+      "clip_id": "alice_ch01",
+      "condition": "sentence_scramble",
+      "seed": null,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 1, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 9.78,
+       "prompt_tokens": 534,
+       "completion_tokens": 926,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.0046
+    }
+   ]
+  },
+  {
+   "text": "Plan an exploratory stock TRIBE forecast of the hearing areas for healthy English-speaking adults: LibriVox Alice chapter 2, intact versus played backwards.",
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch02",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "auditory"
+      ],
+      "clip_id": "alice_ch02",
+      "condition": "reversed",
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": null,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 2, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 3.23,
+       "prompt_tokens": 690,
+       "completion_tokens": 532,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00312
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch02",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "auditory"
+      ],
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "stimulus": "librivox_audiobook",
+      "analysis": "forecast_tribe_stock",
+      "clip_id": "alice_ch02",
+      "condition": "reversed",
+      "seed": null,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 2, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 5.01,
+       "prompt_tokens": 533,
+       "completion_tokens": 484,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00272
+    }
+   ]
+  },
+  {
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: LibriVox Alice chapter 3, intact versus sentences shuffled with seed 7, in the language network and hearing areas.",
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch03",
+      "condition": "sentence_scramble",
+      "seed": 7,
+      "defaults": [],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "language_network",
+       "auditory"
+      ],
+      "clip_id": "alice_ch03",
+      "condition": "sentence_scramble",
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": 7,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network, hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 3, intact against sentences shuffled, seed 7.\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 3.5,
+       "prompt_tokens": 698,
+       "completion_tokens": 682,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00377
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch03",
+      "condition": "sentence_scramble",
+      "seed": 7,
+      "defaults": [],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "language_network",
+       "auditory"
+      ],
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "stimulus": "librivox_audiobook",
+      "analysis": "forecast_tribe_stock",
+      "clip_id": "alice_ch03",
+      "condition": "sentence_scramble",
+      "seed": 7,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network, hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 3, intact against sentences shuffled, seed 7.\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 5.6,
+       "prompt_tokens": 541,
+       "completion_tokens": 489,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00275
+    }
+   ]
+  }
+ ],
+ "tries": [
+  {
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: LibriVox Alice chapter 1, intact versus sentences shuffled, in the language network.",
+   "kept": true,
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch01",
+      "condition": "sentence_scramble",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "language_network"
+      ],
+      "clip_id": "alice_ch01",
+      "condition": "sentence_scramble",
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": null,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 1, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 3.12,
+       "prompt_tokens": 691,
+       "completion_tokens": 733,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00398
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch01",
+      "condition": "sentence_scramble",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "language_network"
+      ],
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "stimulus": "librivox_audiobook",
+      "analysis": "forecast_tribe_stock",
+      "clip_id": "alice_ch01",
+      "condition": "sentence_scramble",
+      "seed": null,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 1, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 9.78,
+       "prompt_tokens": 534,
+       "completion_tokens": 926,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.0046
+    }
+   ]
+  },
+  {
+   "text": "Plan an exploratory stock TRIBE forecast of the hearing areas for healthy English-speaking adults: LibriVox Alice chapter 2, intact versus played backwards.",
+   "kept": true,
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch02",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "auditory"
+      ],
+      "clip_id": "alice_ch02",
+      "condition": "reversed",
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": null,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 2, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 3.23,
+       "prompt_tokens": 690,
+       "completion_tokens": 532,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00312
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch02",
+      "condition": "reversed",
+      "seed": 20261028,
+      "defaults": [
+       "seed"
+      ],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "auditory"
+      ],
+      "conditions": [
+       "intact",
+       "reversed"
+      ],
+      "stimulus": "librivox_audiobook",
+      "analysis": "forecast_tribe_stock",
+      "clip_id": "alice_ch02",
+      "condition": "reversed",
+      "seed": null,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 2, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 5.01,
+       "prompt_tokens": 533,
+       "completion_tokens": 484,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00272
+    }
+   ]
+  },
+  {
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: LibriVox Alice chapter 3, intact versus sentences shuffled with seed 7, in the language network and hearing areas.",
+   "kept": true,
+   "runs": [
+    {
+     "backend": "spark-1.3",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch03",
+      "condition": "sentence_scramble",
+      "seed": 7,
+      "defaults": [],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "analysis": "forecast_tribe_stock",
+      "brain_areas": [
+       "language_network",
+       "auditory"
+      ],
+      "clip_id": "alice_ch03",
+      "condition": "sentence_scramble",
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "decline_reason": "none",
+      "language": "english",
+      "population": "healthy_adults",
+      "seed": 7,
+      "stimulus": "librivox_audiobook"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network, hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 3, intact against sentences shuffled, seed 7.\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 3.5,
+       "prompt_tokens": 698,
+       "completion_tokens": 682,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00377
+    },
+    {
+     "backend": "spark-open",
+     "decision": "accept",
+     "route": {
+      "kind": "live",
+      "clip_id": "alice_ch03",
+      "condition": "sentence_scramble",
+      "seed": 7,
+      "defaults": [],
+      "stations": [
+       "build",
+       "check",
+       "forecast"
+      ]
+     },
+     "spec": {
+      "population": "healthy_adults",
+      "language": "english",
+      "brain_areas": [
+       "language_network",
+       "auditory"
+      ],
+      "conditions": [
+       "intact",
+       "sentence_scramble"
+      ],
+      "stimulus": "librivox_audiobook",
+      "analysis": "forecast_tribe_stock",
+      "clip_id": "alice_ch03",
+      "condition": "sentence_scramble",
+      "seed": 7,
+      "decline_reason": "none"
+     },
+     "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network, hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 3, intact against sentences shuffled, seed 7.\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+     "trace": [
+      "plan:ok",
+      "route:live"
+     ],
+     "calls": [
+      {
+       "s": 5.6,
+       "prompt_tokens": 541,
+       "completion_tokens": 489,
+       "tools_offered": false
+      }
+     ],
+     "cost_usd": 0.00275
+    }
+   ]
+  }
+ ],
+ "superseded": [
+  {
+   "prompt_sha256": "576a9fbd16dc4763130379015f8c97af885fa0ffde03c820cfeca9c2b259e3ed",
+   "started_utc": "2026-10-29T14:04:02+00:00",
+   "spend_usd": {
+    "spark-1.3": 0.02072,
+    "spark-open": 0.01575
+   },
+   "tries": [
+    {
+     "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: LibriVox Alice chapter 1, intact versus sentences shuffled, in the language network.",
+     "kept": false,
+     "runs": [
+      {
+       "backend": "spark-1.3",
+       "decision": "accept",
+       "route": {
+        "kind": "live",
+        "clip_id": "alice_ch01",
+        "condition": "sentence_scramble",
+        "seed": 20261028,
+        "defaults": [
+         "condition",
+         "seed"
+        ],
+        "stations": [
+         "build",
+         "check",
+         "forecast"
+        ]
+       },
+       "spec": {
+        "analysis": "forecast_tribe_stock",
+        "brain_areas": [
+         "language_network"
+        ],
+        "clip_id": "alice_ch01",
+        "condition": null,
+        "conditions": [
+         "intact",
+         "sentence_scramble"
+        ],
+        "decline_reason": "none",
+        "language": "english",
+        "population": "healthy_adults",
+        "seed": null,
+        "stimulus": "librivox_audiobook"
+       },
+       "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 1, sentences shuffled, seed 20261028 (no condition named, so the first non-intact one is used; no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+       "trace": [
+        "plan:ok",
+        "route:live"
+       ],
+       "calls": [
+        {
+         "s": 5.29,
+         "prompt_tokens": 675,
+         "completion_tokens": 960,
+         "tools_offered": false
+        }
+       ],
+       "cost_usd": 0.00492
+      },
+      {
+       "backend": "spark-open",
+       "decision": "decline",
+       "route": {
+        "kind": "decline",
+        "reason": "analysis_not_offered"
+       },
+       "spec": {
+        "population": null,
+        "language": null,
+        "stimulus": null,
+        "analysis": null,
+        "brain_areas": [],
+        "conditions": [],
+        "decline_reason": "analysis_not_offered",
+        "clip_id": null,
+        "condition": null,
+        "seed": null
+       },
+       "card": "Declined: that analysis is not offered. Nearest tested option: analysis: stock TRIBE v2 forecast. StillHere Pilot plans exploratory studies only from its table of tested options.",
+       "trace": [
+        "plan:ok:normalised",
+        "route:decline"
+       ],
+       "calls": [
+        {
+         "s": 4.46,
+         "prompt_tokens": 515,
+         "completion_tokens": 381,
+         "tools_offered": false
+        }
+       ],
+       "cost_usd": 0.00226
+      }
+     ]
+    },
+    {
+     "text": "Plan an exploratory stock TRIBE forecast of the hearing areas for healthy English-speaking adults: LibriVox Alice chapter 2, intact versus played backwards.",
+     "kept": true,
+     "runs": [
+      {
+       "backend": "spark-1.3",
+       "decision": "accept",
+       "route": {
+        "kind": "live",
+        "clip_id": "alice_ch02",
+        "condition": "reversed",
+        "seed": 20261028,
+        "defaults": [
+         "condition",
+         "seed"
+        ],
+        "stations": [
+         "build",
+         "check",
+         "forecast"
+        ]
+       },
+       "spec": {
+        "analysis": "forecast_tribe_stock",
+        "brain_areas": [
+         "auditory"
+        ],
+        "clip_id": "alice_ch02",
+        "condition": null,
+        "conditions": [
+         "intact",
+         "reversed"
+        ],
+        "decline_reason": "none",
+        "language": "english",
+        "population": "healthy_adults",
+        "seed": null,
+        "stimulus": "librivox_audiobook"
+       },
+       "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 2, played backwards, seed 20261028 (no condition named, so the first non-intact one is used; no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+       "trace": [
+        "plan:ok",
+        "route:live"
+       ],
+       "calls": [
+        {
+         "s": 4.36,
+         "prompt_tokens": 674,
+         "completion_tokens": 1037,
+         "tools_offered": false
+        }
+       ],
+       "cost_usd": 0.00525
+      },
+      {
+       "backend": "spark-open",
+       "decision": "accept",
+       "route": {
+        "kind": "live",
+        "clip_id": "alice_ch02",
+        "condition": "intact",
+        "seed": 20261028,
+        "defaults": [
+         "seed"
+        ],
+        "stations": [
+         "build",
+         "check",
+         "forecast"
+        ]
+       },
+       "spec": {
+        "population": "healthy_adults",
+        "language": "english",
+        "brain_areas": [
+         "auditory"
+        ],
+        "conditions": [
+         "intact",
+         "reversed"
+        ],
+        "stimulus": "librivox_audiobook",
+        "analysis": "forecast_tribe_stock",
+        "clip_id": "alice_ch02",
+        "condition": "intact",
+        "seed": null,
+        "decline_reason": "none"
+       },
+       "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 2, intact, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+       "trace": [
+        "plan:ok",
+        "route:live"
+       ],
+       "calls": [
+        {
+         "s": 7.88,
+         "prompt_tokens": 514,
+         "completion_tokens": 761,
+         "tools_offered": false
+        }
+       ],
+       "cost_usd": 0.00388
+      }
+     ]
+    },
+    {
+     "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: LibriVox Alice chapter 3, intact versus sentences shuffled with seed 7, in the language network and hearing areas.",
+     "kept": true,
+     "runs": [
+      {
+       "backend": "spark-1.3",
+       "decision": "accept",
+       "route": {
+        "kind": "live",
+        "clip_id": "alice_ch03",
+        "condition": "sentence_scramble",
+        "seed": 7,
+        "defaults": [
+         "condition"
+        ],
+        "stations": [
+         "build",
+         "check",
+         "forecast"
+        ]
+       },
+       "spec": {
+        "analysis": "forecast_tribe_stock",
+        "brain_areas": [
+         "language_network",
+         "auditory"
+        ],
+        "clip_id": "alice_ch03",
+        "condition": null,
+        "conditions": [
+         "intact",
+         "sentence_scramble"
+        ],
+        "decline_reason": "none",
+        "language": "english",
+        "population": "healthy_adults",
+        "seed": 7,
+        "stimulus": "librivox_audiobook"
+       },
+       "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network, hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 3, sentences shuffled, seed 7 (no condition named, so the first non-intact one is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+       "trace": [
+        "plan:ok",
+        "route:live"
+       ],
+       "calls": [
+        {
+         "s": 5.69,
+         "prompt_tokens": 682,
+         "completion_tokens": 1376,
+         "tools_offered": false
+        }
+       ],
+       "cost_usd": 0.0067
+      },
+      {
+       "backend": "spark-open",
+       "decision": "accept",
+       "route": {
+        "kind": "live",
+        "clip_id": "alice_ch03",
+        "condition": "intact",
+        "seed": 7,
+        "defaults": [],
+        "stations": [
+         "build",
+         "check",
+         "forecast"
+        ]
+       },
+       "spec": {
+        "population": "healthy_adults",
+        "language": "english",
+        "brain_areas": [
+         "language_network",
+         "auditory"
+        ],
+        "conditions": [
+         "intact",
+         "sentence_scramble"
+        ],
+        "stimulus": "librivox_audiobook",
+        "analysis": "forecast_tribe_stock",
+        "clip_id": "alice_ch03",
+        "condition": "intact",
+        "seed": 7,
+        "decline_reason": "none"
+       },
+       "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network, hearing areas; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 3, intact, seed 7.\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+       "trace": [
+        "plan:ok",
+        "route:live"
+       ],
+       "calls": [
+        {
+         "s": 10.53,
+         "prompt_tokens": 522,
+         "completion_tokens": 828,
+         "tools_offered": false
+        }
+       ],
+       "cost_usd": 0.00417
+      }
+     ]
+    },
+    {
+     "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults listening to LibriVox Alice chapter 2 with its sentences shuffled, compared with the intact chapter, in the language network.",
+     "kept": true,
+     "runs": [
+      {
+       "backend": "spark-1.3",
+       "decision": "accept",
+       "route": {
+        "kind": "live",
+        "clip_id": "alice_ch02",
+        "condition": "sentence_scramble",
+        "seed": 20261028,
+        "defaults": [
+         "seed"
+        ],
+        "stations": [
+         "build",
+         "check",
+         "forecast"
+        ]
+       },
+       "spec": {
+        "analysis": "forecast_tribe_stock",
+        "brain_areas": [
+         "language_network"
+        ],
+        "clip_id": "alice_ch02",
+        "condition": "sentence_scramble",
+        "conditions": [
+         "intact",
+         "sentence_scramble"
+        ],
+        "decline_reason": "none",
+        "language": "english",
+        "population": "healthy_adults",
+        "seed": null,
+        "stimulus": "librivox_audiobook"
+       },
+       "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 2, sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+       "trace": [
+        "plan:ok",
+        "route:live"
+       ],
+       "calls": [
+        {
+         "s": 2.9,
+         "prompt_tokens": 681,
+         "completion_tokens": 706,
+         "tools_offered": false
+        }
+       ],
+       "cost_usd": 0.00385
+      },
+      {
+       "backend": "spark-open",
+       "decision": "accept",
+       "route": {
+        "kind": "live",
+        "clip_id": "alice_ch02",
+        "condition": "sentence_scramble",
+        "seed": 20261028,
+        "defaults": [
+         "seed"
+        ],
+        "stations": [
+         "build",
+         "check",
+         "forecast"
+        ]
+       },
+       "spec": {
+        "population": "healthy_adults",
+        "language": "english",
+        "brain_areas": [
+         "language_network"
+        ],
+        "conditions": [
+         "intact",
+         "sentence_scramble"
+        ],
+        "stimulus": "librivox_audiobook",
+        "analysis": "forecast_tribe_stock",
+        "clip_id": "alice_ch02",
+        "condition": "sentence_scramble",
+        "seed": null,
+        "decline_reason": "none"
+       },
+       "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: Alice's Adventures in Wonderland, chapter 2, sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+       "trace": [
+        "plan:ok",
+        "route:live"
+       ],
+       "calls": [
+        {
+         "s": 12.0,
+         "prompt_tokens": 521,
+         "completion_tokens": 1127,
+         "tools_offered": false
+        }
+       ],
+       "cost_usd": 0.00544
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

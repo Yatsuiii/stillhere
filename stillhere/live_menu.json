@@ -1,0 +1,43 @@
+{
+ "about": "The live menu for planner v2.1: the public LibriVox clips a live run may use. The planner rebuilds its clip_id enum from this file on every request, so adding a clip needs no code change. Each excerpt's intact 16 kHz mono wav is on stillhere/public_audio_allowlist.txt. A plan for a stimulus that is not on this menu ends on its evidence panel, never on a live clip's output.",
+ "default_seed": 20261028,
+ "clips": [
+  {
+   "id": "alice_ch01",
+   "title": "Alice's Adventures in Wonderland, chapter 1",
+   "reader": "Kristen McQuillin",
+   "source": "LibriVox (public domain), wonderland_ch_01_64kb.mp3",
+   "start_s": 60.0,
+   "dur_s": 40.0,
+   "intact_wav_sha256": "35fd795aa583a4cb09a0add5f64e1bbf7eb634eda59045bab98f5b0d4369539e",
+   "short": "Alice chapter 1"
+  },
+  {
+   "id": "alice_ch02",
+   "title": "Alice's Adventures in Wonderland, chapter 2",
+   "reader": "Brad Bush",
+   "source": "LibriVox (public domain), wonderland_ch_02_64kb.mp3",
+   "start_s": 60.0,
+   "dur_s": 40.0,
+   "intact_wav_sha256": "5d0a79f4643f1ab055258db4c9e1bdc7292775e27ca0729b957589ceee648907",
+   "short": "Alice chapter 2"
+  },
+  {
+   "id": "alice_ch03",
+   "title": "Alice's Adventures in Wonderland, chapter 3",
+   "reader": null,
+   "source": "LibriVox (public domain), wonderland_ch_03_64kb.mp3",
+   "start_s": 60.0,
+   "dur_s": 40.0,
+   "intact_wav_sha256": "4c41e4e0e7c15da5c3692ac03a51eaae6fd5d6b792d6806bfd965685b5efd391",
+   "short": "Alice chapter 3"
+  }
+ ],
+ "evidence_panels": {
+  "le_petit_prince": {
+   "panel": "lpp_section8",
+   "results": "results/section8.json",
+   "line": "Le Petit Prince is not on the live menu, so this plan ends on its evidence panel: the held-out section 8 result."
+  }
+ }
+}

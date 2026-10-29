@@ -28,6 +28,7 @@ AUDIO_ALLOWLIST = Path(__file__).with_name("public_audio_allowlist.txt")
 FRAME_ALLOWLIST = Path(__file__).with_name("public_frame_allowlist.txt")
 HOSTED_MODELS = frozenset(m for m in ALLOWED_MODELS if m.startswith(("fireworks/", "baseten/")))   # served by a host other than Meta
 VALIDATION_TABLE = Path(__file__).with_name("validation_table.json")
+LIVE_MENU = Path(__file__).with_name("live_menu.json")
 PLANNER_CODES = frozenset({"none", "population_not_validated", "language_not_validated", "brain_area_not_validated", "condition_not_validated",
                            "stimulus_not_validated", "analysis_not_offered", "clinical_out_of_scope", "schema_invalid", "decline_inconsistent",
                            "list_stimuli", "make_conditions", "check_conditions", "forecast"})
@@ -116,10 +117,12 @@ class PublicFrame(_Strict):
 
 
 def table_vocabulary() -> frozenset:
-    """Every id in the public validation table, plus the planner's fixed decline and validator codes and tool names."""
+    """Every id in the public validation table, plus the planner's fixed decline and validator codes and tool names, plus the
+    public clip ids on the live menu (planner v2.1's clip_id enum)."""
     import json as _json
     t = _json.loads(VALIDATION_TABLE.read_text())
-    return frozenset(e["id"] for k, v in t.items() if isinstance(v, list) for e in v) | PLANNER_CODES
+    menu = _json.loads(LIVE_MENU.read_text()).get("clips", []) if LIVE_MENU.exists() else []
+    return frozenset(e["id"] for k, v in t.items() if isinstance(v, list) for e in v) | PLANNER_CODES | frozenset(c["id"] for c in menu)
 
 
 class TableEnums(_Strict):
