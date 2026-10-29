@@ -1,6 +1,7 @@
 """Planner v2.1 with a stub client (no network): v2 left as published; plain words for every code and id; the v2.1 schema (clip_id,
 condition, seed); one plan call and no tool call; routing by stimulus, including the LibriVox-under-Le-Petit-Prince bug v2's tool loop
-had; outputs for another clip refused; stated defaults; the live-menu line and the examples file in plain, allowed words."""
+had; outputs for another clip refused; stated defaults; the live-menu line and the examples file in plain, allowed words; avoid_tags
+(code filters the menu by the story cards, one re-prompt, then the rule-made decline with the nearest clip from code)."""
 import hashlib
 import json
 import re
@@ -29,7 +30,7 @@ class Fake:
 def spec(**kw):
     s = {"population": "healthy_adults", "language": "english", "stimulus": "librivox_audiobook", "analysis": "forecast_tribe_stock",
          "brain_areas": ["language_network"], "conditions": ["intact", "sentence_scramble"], "decline_reason": "none",
-         "clip_id": "alice_ch02", "condition": "sentence_scramble", "seed": 7}
+         "clip_id": "alice_ch02", "condition": "sentence_scramble", "seed": 7, "avoid_tags": []}
     s.update(kw)
     return s
 
@@ -49,7 +50,7 @@ def test_v2_is_left_as_published():
 
 def test_every_code_and_id_reads_in_plain_words():
     enums = P.load_enums()
-    for code in planner.DECLINE_REASONS[1:]:
+    for code in planner.DECLINE_REASONS[1:] + P.AVOID_REASONS:
         text = P.card_text(P.decline_spec(code), P.route(P.decline_spec(code), enums), [], enums)
         assert "Nearest tested option" in text and code not in text and "_" not in text and not BANNED.search(text), text
     table = json.loads(planner.TABLE.read_text())
@@ -146,8 +147,107 @@ def test_menu_line_and_examples_file_use_allowed_words():
     if not ex.exists():
         pytest.skip("examples not run yet")
     d = json.loads(ex.read_text())
-    assert d["label"] == "demo, not scored" and d["badge"] == P.BADGE and len(d["examples"]) == 3
+    assert d["label"] == "demo, not scored" and d["badge"] in (P.BADGE, P.BADGE_BEFORE_TAGS) and len(d["examples"]) == 3
     for e in d["examples"]:
         assert not BANNED.search(e["text"])
         for r in e["runs"]:
             assert r["decision"] == "accept" and not BANNED.search(r["card"]), r
+
+
+# ---- avoid_tags (cloud plan of Oct 29, 19:20 UTC, 3b) ------------------------------------------------------------------------
+NOT_FREE = re.compile(r"\bsafe\b|free of|contains no|has no (?!screened)", re.I)      # the page never says a story is free of a note
+
+
+def test_menu_line_gives_the_real_clip_lengths():
+    secs = sorted(round(c["dur_s"]) for c in P.live_menu()["clips"])
+    assert f"{secs[0]}-{secs[-1]} s each" in P.menu_text() or f"{secs[0]} s each" in P.menu_text()
+    assert not re.search(r"; 40 s each\)", P.menu_text()) or secs[0] == 40              # no longer "40 s each" for every clip
+
+
+def test_clip_tags_are_the_story_card_tags_and_unknown_without_screen_data():
+    tags = P.clip_tags()
+    for c in P.live_menu()["clips"]:
+        sc = c.get("screen")
+        if isinstance(sc, dict):
+            assert tags[c["id"]] == sorted({P.TAG_IDS[n["tag"]] for n in sc["notes"]})
+        else:
+            assert tags[c["id"]] is None and not P.passes(c["id"], ["violence"], tags) and P.passes(c["id"], [], tags)
+
+
+def test_schema_and_validator_for_avoid_tags():
+    enums = P.load_enums()
+    s = P.study_schema(enums)
+    assert s["properties"]["avoid_tags"] == {"type": "array", "items": {"type": "string", "enum": list(P.TAG_IDS.values())}}
+    assert "avoid_tags" in s["required"]
+    assert P.validate_answer(spec(avoid_tags=["not a tag"]), enums) == ["schema_invalid"]
+    assert P.validate_answer(spec(avoid_tags="violence"), enums) == ["schema_invalid"]
+    tags = enums["clip_tags"]
+    carrying = next(c for c in enums["clip_id"] if tags[c] and "violence" in tags[c])
+    unscreened = next(c for c in enums["clip_id"] if tags[c] is None)
+    assert P.validate_answer(spec(clip_id=carrying, avoid_tags=["violence"]), enums) == ["clip_has_avoided_tag"]
+    assert P.validate_answer(spec(clip_id=unscreened, avoid_tags=["violence"]), enums) == ["clip_has_avoided_tag"]
+    assert P.validate_answer(spec(clip_id=carrying, avoid_tags=[]), enums) == []          # nothing avoided: every clip passes
+    assert P.validate_answer(lpp(avoid_tags=["violence"]), enums) == []                   # no live clip: the filter does not apply
+
+
+def test_the_model_sees_tag_ids_only_through_table_enums():
+    fake = Fake({"content": spec(clip_id=None, avoid_tags=["violence"])})
+    P.plan(Q, "spark-open", fake)
+    sent = {k: v for u in fake.reqs[0].user if isinstance(u, egress.TableEnums) for k, v in u.enums.items()}
+    assert sent["avoid_tag"] == list(P.TAG_IDS.values())
+    screened = {c for c, t in P.clip_tags().items() if t is not None}
+    assert {k.split(".", 1)[1] for k in sent if k.startswith("clip_tags.")} == screened
+    assert all(" " not in v for k, vals in sent.items() for v in vals)                     # identifiers, no free text
+
+
+def test_default_clip_is_the_first_that_passes_and_the_card_never_says_free_of():
+    enums = P.load_enums()
+    want = P.passing_clips(enums, ["violence"])
+    assert want and want[0] != enums["clip_id"][0] or "violence" not in (enums["clip_tags"][enums["clip_id"][0]] or ["violence"])
+    card = P.plan(Q, "spark-1.3", Fake({"content": spec(clip_id=None, avoid_tags=["violence"])}))
+    assert card.route["kind"] == "live" and card.route["clip_id"] == want[0] and card.route["avoid_tags"] == ["violence"]
+    assert "violence" not in (enums["clip_tags"][want[0]] or [])
+    assert "Notes to avoid: violence." in card.text and "not a full review" in card.text and not NOT_FREE.search(card.text)
+
+
+def test_a_clip_with_an_avoided_tag_gets_one_reprompt_then_the_rule_made_decline():
+    enums = P.load_enums(); tags = enums["clip_tags"]
+    carrying = next(c for c in enums["clip_id"] if tags[c] and "violence" in tags[c])
+    bad = {"content": spec(clip_id=carrying, avoid_tags=["violence"])}
+    fake = Fake(bad, bad)
+    card = P.plan(Q, "spark-1.3", fake)
+    assert len(fake.reqs) == 2 and card.declined and card.trace[:2] == ["plan:rejected:clip_has_avoided_tag"] * 2
+    sent = {k: v for u in fake.reqs[1].user if isinstance(u, egress.TableEnums) for k, v in u.enums.items()}
+    assert sent["rejected"] == ["clip_has_avoided_tag"]
+    near = P.passing_clips(enums, ["violence"])[0]
+    assert card.text.startswith("Declined: the story chosen carries a note you asked to avoid. Nearest tested option: story: "
+                                + P.plain_id(near)) and "fixed rules" in card.text and not NOT_FREE.search(card.text)
+    ok = Fake(bad, {"content": spec(clip_id=near, avoid_tags=["violence"])})                # the re-prompt fixes it
+    card = P.plan(Q, "spark-1.3", ok)
+    assert card.route["kind"] == "live" and card.route["clip_id"] == near and not card.declined
+
+
+def test_no_passing_clip_is_a_code_made_decline_with_no_option():
+    enums = P.load_enums()
+    every = sorted(set().union(*[set(t) for t in enums["clip_tags"].values() if t is not None]))
+    if any(t == [] for t in enums["clip_tags"].values()):
+        pytest.skip("a screened clip has no notes, so some clip always passes")
+    card = P.plan(Q, "spark-1.3", Fake({"content": spec(clip_id=None, avoid_tags=every)}))
+    assert card.declined and card.spec["decline_reason"] == "no_story_without_avoided_notes" and card.results == []
+    assert "Nearest tested option: story: none offered" in card.text and not NOT_FREE.search(card.text)
+
+
+def test_badge_names_story_tags_and_keeps_the_measured_number_as_v2s():
+    assert P.BADGE == "v2.1 adds clip, condition, seed and story tags; not re-measured"
+    assert "%" not in P.BADGE
+
+
+def test_recorded_avoid_tags_run():
+    f = ROOT / "results/planner_v21_avoid_tags_run.json"
+    if not f.exists():
+        pytest.skip("avoid_tags run not recorded yet")
+    d = json.loads(f.read_text()); r = d["run"]
+    assert d["label"] == "demo, not scored" and d["badge"] == P.BADGE and r["backend"] == "spark-1.3"
+    assert r["spec"]["avoid_tags"] and r["route"]["kind"] == "live" and len(r["calls"]) == 1
+    assert P.passes(r["route"]["clip_id"], r["route"]["avoid_tags"], P.clip_tags())        # still true on today's menu
+    assert not BANNED.search(r["card"]) and not NOT_FREE.search(r["card"]) and "not a full review" in r["card"]

@@ -31,7 +31,8 @@ VALIDATION_TABLE = Path(__file__).with_name("validation_table.json")
 LIVE_MENU = Path(__file__).with_name("live_menu.json")
 PLANNER_CODES = frozenset({"none", "population_not_validated", "language_not_validated", "brain_area_not_validated", "condition_not_validated",
                            "stimulus_not_validated", "analysis_not_offered", "clinical_out_of_scope", "schema_invalid", "decline_inconsistent",
-                           "list_stimuli", "make_conditions", "check_conditions", "forecast"})
+                           "list_stimuli", "make_conditions", "check_conditions", "forecast",
+                           "clip_has_avoided_tag", "no_story_without_avoided_notes"})                     # planner v2.1 avoid_tags
 BLOCKLIST = Path(os.environ.get("STILLHERE_QUESTION_BLOCKLIST", Path.home() / ".config/stillhere/question_blocklist.txt"))
 _ENUM = re.compile(r"^[A-Za-z0-9_.:|+\-]{1,64}$")          # identifiers, not sentences: no spaces
 
@@ -118,11 +119,13 @@ class PublicFrame(_Strict):
 
 def table_vocabulary() -> frozenset:
     """Every id in the public validation table, plus the planner's fixed decline and validator codes and tool names, plus the
-    public clip ids on the live menu (planner v2.1's clip_id enum)."""
+    public clip ids on the live menu (planner v2.1's clip_id enum), plus the story-note tag ids (planner v2.1's avoid_tags)."""
     import json as _json
+    from .story_tags import TAG_IDS
     t = _json.loads(VALIDATION_TABLE.read_text())
     menu = _json.loads(LIVE_MENU.read_text()).get("clips", []) if LIVE_MENU.exists() else []
-    return frozenset(e["id"] for k, v in t.items() if isinstance(v, list) for e in v) | PLANNER_CODES | frozenset(c["id"] for c in menu)
+    return (frozenset(e["id"] for k, v in t.items() if isinstance(v, list) for e in v) | PLANNER_CODES | frozenset(c["id"] for c in menu)
+            | frozenset(TAG_IDS.values()))
 
 
 class TableEnums(_Strict):
