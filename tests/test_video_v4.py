@@ -212,8 +212,8 @@ def test_live_beat_draws_from_the_saved_runs():
     assert f"{lc['entry']['n_words_text_lane']} words" in V.lanes_html(lc["entry"])
     assert "0 words reach the text lane (model input, not a brain result)." in all_text(SC["live_reversed"])
     for e in (lc["entry"], lc["reversed"]):
-        svg = V.livetc_svg(e)
-        assert "Saved run. Forecast, not a scan." in svg and "#1f6fb4" not in svg                        # gray only
+        for svg in (V.livetc_svg(e), V.livetc_svg(e, 1060, 350)):                               # full width, and the end screen's panel
+            assert "Saved run. Forecast, not a scan.</text>" in svg and "#1f6fb4" not in svg     # whole label, gray only
     for sid in ("live_reversed", "live_run"):                       # ruling 6: the 76-82 s reversed scene is a saved run, labelled so
         items = [i for _, its in V.resolve(SC[sid], {"live": "inset"}) for i in its]
         assert {"kind": "tag", "text": "saved run"} in items, sid

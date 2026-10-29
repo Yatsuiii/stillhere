@@ -221,15 +221,19 @@ def livetc_svg(e: dict, W: int = 1712, H: int = 330) -> str:
     out = [f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">']
     pw = W / 2; n = e["seconds"]
     for k, (reg, name) in enumerate((("language", "Language areas"), ("hearing", "Hearing areas"))):
-        x0, y0, w, h = k * pw + 20, 44, pw - 60, H - 110
+        x0, y0, w, h = k * pw + 20, 44, pw - 60, H - (110 if W >= 1400 else 130)
         vals = e["regions"][reg]; yr = (min(vals) - 0.05, max(vals) + 0.05)
         out.append(f'<text x="{x0}" y="28" font-size="26" fill="#1d1f23" font-weight="600">{name}</text>'
                    f'<path d="{_path(np.arange(len(vals)) * e["tr_s"], vals, x0, y0, w, h, (0, n), yr)}" {STYLE["forecast"]}/>'
                    f'<text x="{x0}" y="{y0 + h + 30}" font-size="20" fill="#5d6470">0 to {n} s of the clip</text>')
     r = e["recipe"]; ch = clip_title(r["clip_id"])
     seed = f", seed {r['seed']}" if r["seed"] else ""
-    out.append(f'<text x="20" y="{H - 12}" font-size="22" fill="#1d1f23">TRIBE v2 forecast, {COND[r["condition"]]}{seed}. LibriVox, {E(ch)}, '
-               f'{n} s. Saved run. Forecast, not a scan.</text>')
+    first, second = f"TRIBE v2 forecast, {COND[r['condition']]}{seed}.", f"LibriVox, {ch}, {n} s. Saved run. Forecast, not a scan."
+    if W >= 1400:
+        out.append(f'<text x="20" y="{H - 12}" font-size="22" fill="#1d1f23">{E(first)} {E(second)}</text>')
+    else:                                                                   # a narrow panel: two lines, so nothing is clipped
+        out.append(f'<text x="20" y="{H - 36}" font-size="22" fill="#1d1f23">{E(first)}</text>'
+                   f'<text x="20" y="{H - 10}" font-size="22" fill="#1d1f23">{E(second)}</text>')
     return "".join(out) + "</svg>"
 
 
@@ -312,7 +316,7 @@ def filmghost_svg(doc: dict, show: list, title_html: str, values: dict) -> str:
 def endscreen_html(pair: str, values: dict, ctx: dict) -> str:
     """The LIVE beat's last screen: the laptop forecast alone in gray, and beside it, as a separate tile, real listeners on another story:
     notthefall on a D20 pass ("Real listeners, different story."), the LPP ghost line on a fail ("Real listeners, held-out story")."""
-    left = ('<div class="chip">Forecast only · audio-only, laptop</div>' + livetc_svg(ctx["live"]["live"], 1060, 330)
+    left = ('<div class="chip">Forecast only · audio-only, laptop</div>' + livetc_svg(ctx["live"]["live"], 1060, 350)
             + '<div class="small">No public scan of this clip. Forecast, not a scan.</div>')
     if pair == "d20":
         right = ('<div class="chip">notthefall: rule 340b74b</div><div class="tiletitle">Real listeners, different story.</div>'
