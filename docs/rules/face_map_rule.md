@@ -51,6 +51,11 @@ score`, which needs the face path; otherwise they refuse.
 Once `results/face_map.json` is on origin/main the face test is closed for good: NOT RUN is never revived, and a scored outcome is
 scored once. `maps`, `not-run` and `score` then refuse.
 
+Sunday's call (project thread ruling of Oct 29, 07:30 UTC), made by Yatsu: if R and C are not on GitHub by Sun Nov 1 17:00 UTC and no
+running forecast can finish and push by 17:45 UTC, push NOT RUN with the logged reason (GPU time ran out, or the failing step), then
+score the intact film alone. NOT RUN is pushed automatically only when gate 0 fails; every other failure waits for this call. The
+project thread checks the repository on Sat Oct 31 12:00 UTC and Sun Nov 1 15:30 UTC and pings Yatsu if anything is missing.
+
 ## Face regressor F(t) and the real face maps
 - Face-area fraction per release frame: the sum of that frame's face-region pixels divided by 1280 x 534. Source: the final film
   stimuli (`docs/rules/film_stimulus_rule.md`; stillhere-film-stimuli, MANIFEST SHA-256 d4e27d55...): `edits_v2.json`, field `px` of
