@@ -115,7 +115,7 @@ def push_rc(repo: Path, date=None):
     git(repo, "add", "results/face_map_RC.json"); git(repo, "commit", "-q", "-m", "R and C", env=env); git(repo, "push", "-q", "origin", "HEAD:main")
 
 
-def build(tmp: Path, n_view=8, n_vols=260, tr=1.3):
+def build(tmp: Path, monkeypatch, n_view=8, n_vols=260, tr=1.3):
     """Synthetic edits, regressors, the intact forecast in Saturday's bridge/ layout, the two edit forecasts, run table and prepare
     cache with planted face tracking; then maps (into a git clone, pushed) and gate 0."""
     rng = np.random.default_rng(9); (tmp / "atlas").mkdir(); atlas = write_annots(tmp / "atlas")
@@ -125,8 +125,12 @@ def build(tmp: Path, n_view=8, n_vols=260, tr=1.3):
         p.mkdir()
     (d["fc"] / "bridge").mkdir(); (d["am"] / "nested").mkdir()
     faces = np.repeat(np.clip(np.convolve(rng.random(190), np.ones(5) / 5, "same") - 0.4, 0, None), 24)    # per frame, 190 s
-    json.dump({"window_release_s": [0.0, 190.0], "source_sha256": RN.ER.TOS_SHA, "fps": 24,
-               "per_frame": [{"masked_px": [int(f * 1280 * 534)]} for f in faces]}, open(tmp / "edits.json", "w"))
+    stim = tmp / "stim"; stim.mkdir()                                                   # the final film stimuli's edits_v2.json format
+    pf = [{"frame": i, "faces": [{"px": int(f * 1280 * 534), "px_in_view": int(f * 470 * 470), "control_px": int(f * 470 * 470), "pieces": 1}] if f > 0 else []}
+          for i, f in enumerate(faces)]
+    json.dump({"seg": "seg_intact.mp4", "seg_sha256": "0" * 64, "view": [404, 32, 873, 501], "per_frame": pf[::-1]}, open(stim / "edits_v2.json", "w"))
+    (stim / "MANIFEST.sha256").write_text(f"{RN.sha(stim / 'edits_v2.json')}  edits_v2.json\n")
+    monkeypatch.setattr(RN, "FILM_STIM_MANIFEST", RN.sha(stim / "MANIFEST.sha256"))
     np.savez(d["rg"] / "film_regressors.npz", envelope=rng.random(190), brightness=rng.random(190), motion=rng.random(190))
     t = np.arange(190.0); base = rng.standard_normal((190, 20484)).astype(np.float32); fb = d["fc"] / "bridge"
     with open(fb / "words.csv", "w") as f:
@@ -138,7 +142,7 @@ def build(tmp: Path, n_view=8, n_vols=260, tr=1.3):
         off[v] = w[p]
     np.savez(d["rem"] / "pred_full.npz", P=base - off, starts=t)
     np.savez(d["am"] / "nested" / "pred_full.npz", P=base - rng.standard_normal(20484).astype(np.float32), starts=t)
-    face_s = FM.face_per_s([[int(f * 1280 * 534)] for f in faces]); runs, man = [], {"runs": {}}
+    face_s = FM.face_per_s([[x["px"] for x in f["faces"]] for f in pf]); runs, man = [], {"runs": {}}
     for i in range(n_view):
         sub = f"sub-T{i:02d}"; onset = 94.0 + 0.1 * i; ft = np.arange(n_vols) * tr + 0.6 - onset
         F = H.hrf_regressor(face_s, ft); F = (F - F.mean()) / (F.std() + 1e-9)
@@ -151,14 +155,14 @@ def build(tmp: Path, n_view=8, n_vols=260, tr=1.3):
     rc = RN.cmd_maps(argparse.Namespace(intact=str(d["fc"]), removed=str(d["rem"]), matched=str(d["am"]), runs=str(rt), atlas=str(atlas),
                                         out=str(repo / "results/face_map_RC.json")))
     gate = tmp / "gate.json"
-    RN.cmd_gate(argparse.Namespace(edits=str(tmp / "edits.json"), regressors=str(d["rg"]), words=str(d["fc"]), runs=str(rt), out=str(gate)))
-    a = argparse.Namespace(forecast=str(d["fc"]), edits=str(tmp / "edits.json"), regressors=str(d["rg"]), runs=str(rt), atlas=str(atlas),
+    RN.cmd_gate(argparse.Namespace(edits=str(stim / "edits_v2.json"), regressors=str(d["rg"]), words=str(d["fc"]), runs=str(rt), out=str(gate)))
+    a = argparse.Namespace(forecast=str(d["fc"]), edits=str(stim / "edits_v2.json"), regressors=str(d["rg"]), runs=str(rt), atlas=str(atlas),
                            cache=str(d["cache"]), gate=str(gate), rc_repo=str(repo), results=str(tmp / "res.json"))
     return a, rc, w
 
 
-def test_maps_recover_the_planted_edit_and_record_hashes(tmp_path):
-    a, rc, w = build(tmp_path)
+def test_maps_recover_the_planted_edit_and_record_hashes(tmp_path, monkeypatch):
+    a, rc, w = build(tmp_path, monkeypatch)
     R = np.asarray(rc["R"]); assert R.shape == (400,) and np.allclose(R, w, atol=1e-4)      # intact - (intact - w) = w per parcel
     assert rc["R_sha256"] == RN.map_sha(R) and set(rc["inputs_sha256"]) == {"intact", "removed", "matched"} and rc["forecasts_only"]
     assert json.load(open(a.gate))["pass"]                                                 # gate 0 read words.csv from bridge/
@@ -166,7 +170,7 @@ def test_maps_recover_the_planted_edit_and_record_hashes(tmp_path):
 
 def test_score_guard_cutoff_and_refusals(tmp_path, monkeypatch):
     monkeypatch.setattr(FM.spin_perms, "__defaults__", (100, FM.SPIN_SEED))
-    a, rc, w = build(tmp_path); repo = Path(a.rc_repo)
+    a, rc, w = build(tmp_path, monkeypatch); repo = Path(a.rc_repo)
     assert RN.cmd_score(a)["outcome"] == "NOT RUN"                                           # the maps are not on origin/main yet
     push_rc(repo, date="2026-11-01T17:59:00+00:00")
     res = RN.cmd_score(a)
@@ -183,15 +187,27 @@ def test_score_guard_cutoff_and_refusals(tmp_path, monkeypatch):
 
 
 def test_maps_pushed_after_the_cutoff_is_not_run(tmp_path, monkeypatch):
-    a, rc, w = build(tmp_path)
+    a, rc, w = build(tmp_path, monkeypatch)
     push_rc(Path(a.rc_repo), date="2026-11-01T18:00:01+00:00")
     assert RN.cmd_score(a)["outcome"] == "NOT RUN"
 
 
-def test_prepare_refuses_before_opening_any_file(tmp_path):
-    a, rc, w = build(tmp_path)
+def test_prepare_refuses_before_opening_any_file(tmp_path, monkeypatch):
+    a, rc, w = build(tmp_path, monkeypatch)
     p = argparse.Namespace(data=str(tmp_path / "no_such_data"), meta=str(tmp_path / "no_such_meta"), runs=a.runs, atlas=a.atlas,
                            cache=str(tmp_path / "pc"), gate=a.gate, rc_repo=a.rc_repo)
     with pytest.raises(SystemExit, match="no BOLD file is opened"):
         RN.ER.cmd_prepare(p)                                                                 # maps not on origin/main: refused first
     assert not (tmp_path / "pc").exists()
+
+
+def test_gate_refuses_edits_not_matching_the_stimuli_manifest(tmp_path, monkeypatch):
+    a, rc, w = build(tmp_path, monkeypatch)
+    g = argparse.Namespace(edits=a.edits, regressors=a.regressors, words=a.forecast, runs=a.runs, out=str(tmp_path / "g2.json"))
+    monkeypatch.setattr(RN, "FILM_STIM_MANIFEST", "0" * 64)
+    with pytest.raises(SystemExit, match="MANIFEST"):
+        RN.cmd_gate(g)                                                                       # not the committed stimuli MANIFEST
+    monkeypatch.setattr(RN, "FILM_STIM_MANIFEST", RN.sha(Path(a.edits).parent / "MANIFEST.sha256"))
+    d = json.load(open(a.edits)); d["per_frame"][0]["faces"] = []; json.dump(d, open(a.edits, "w"))
+    with pytest.raises(SystemExit, match="differs"):
+        RN.cmd_gate(g)                                                                       # edits_v2.json changed after the MANIFEST

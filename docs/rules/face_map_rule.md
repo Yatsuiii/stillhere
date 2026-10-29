@@ -5,12 +5,12 @@ tests, before any Emo-FilM brain data is read and before any film-versions forec
 before any BOLD read. The commit time is the record. Every number it produces is labelled exploratory. Scored once, at the logged
 onsets; never re-scored at another onset, window, parcel set or HRF.
 
-Additions of the project-thread ruling of Thu Oct 29, 06:30 UTC, committed before any Emo-FilM BOLD was read: the forecast maps come
-from the committed intact film kernel and two edit kernels and are computed, committed and pushed before any BOLD is read
-(`face_map_runner.py maps`, `results/face_map_RC.json`); a read guard; the gate's timing; the cutoffs (sections below). Disclosure:
-the Emo-FilM download (`pilot/emofilm/download_tos_runs.py`) started Oct 29 05:45 UTC; it only downloads; nothing reads it before
-the read guard allows. Before the 06:00 UTC ruling, one session motion file (sub-S01 ses-4) was opened for its shape only (946 rows
-x 6 values; no value printed or used).
+Additions of the project-thread rulings of Thu Oct 29, 06:30 UTC and after (the final film stimuli v2 for F), committed before any
+Emo-FilM BOLD was read: the forecast maps come from the committed intact film kernel and two edit kernels and are computed, committed
+and pushed before any BOLD is read (`face_map_runner.py maps`, `results/face_map_RC.json`); a read guard; the gate's timing; the cutoffs
+(sections below). Disclosure: the Emo-FilM download (`pilot/emofilm/download_tos_runs.py`) started Oct 29 05:45 UTC; it only downloads;
+nothing reads it before the read guard allows. Before the 06:00 UTC ruling, one session motion file (sub-S01 ses-4) was opened for its
+shape only (946 rows x 6 values; no value printed or used).
 
 ## Question
 SAM 3.1 removes the faces from the opening of Tears of Steel, with an equal-area control edit. TRIBE v2 forecasts the brain response to
@@ -42,9 +42,14 @@ private GitHub repo with the same blob hash as the local copy (`git fetch`, then
 `emofilm_score_runner.py prepare` (before any image or motion file is opened) and in `face_map_runner.py score`; otherwise they refuse.
 
 ## Face regressor F(t) and the real face maps
-- Face-area fraction per release frame: the sum of that frame's SAM 3.1 face-mask pixels (`edits.json`, `masked_px`, release
-  resolution: the masks the edit removed) divided by 1280 x 534. It goes through the brightness code path: mean per second
+- Face-area fraction per release frame: the sum of that frame's face-region pixels divided by 1280 x 534. Source: the final film
+  stimuli (`docs/rules/film_stimulus_rule.md`; stillhere-film-stimuli, MANIFEST SHA-256 d4e27d55...): `edits_v2.json`, field `px` of
+  each face, the block-snapped SAM 3.1 region the v2 edit removed, over the whole frame. `edits_v2.json` must match its hash in that
+  MANIFEST and cover frames 0 to 4559 (release 0 to 190 s at 24 fps). It goes through the brightness code path: mean per second
   (`emofilm_score.per_second`), then the SPM HRF regressor read at film time (`heldout.hrf_regressor`, no lag).
+- Why the whole frame and not TRIBE's view (`px_in_view`, release x 404 to 873, y 32 to 501): M_i measures what the viewers' brains
+  follow, and the viewers saw the whole frame in the scanner. TRIBE's view enters through R and C, which are TRIBE's own forecasts of
+  the edited segments. (Of the 3,504 face instances, 45.5% lie wholly inside TRIBE's view.)
 - M_i, per viewer i and parcel: the Fisher z of the partial correlation between the cleaned BOLD row and F, controlling brightness,
   motion, envelope and word rate (the intact rule's baseline regressors at film time); F and the controls are cleaned on the viewer's
   kept scored frames exactly as the intact baselines.

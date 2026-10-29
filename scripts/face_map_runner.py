@@ -4,7 +4,8 @@
          committed intact film kernel's forecast and the two edit kernels' forecasts (each pred_full.npz, the intact kernel's format),
          averaged over the intact rule's scored film-time grid (prediction read at film time - 5 s, linear). Writes face_map_RC.json with
          both maps, each map's SHA-256 and the input forecasts' SHA-256. It must be committed and pushed before any BOLD is read.
-  gate   Gate 0, stimulus only: the face-area fraction F from the SAM 3.1 edit masks (edits.json) through the brightness code path, and
+  gate   Gate 0, stimulus only: the face-area fraction F from the final film stimuli's edits_v2.json (block-snapped SAM 3.1 face regions,
+         whole frame; hash-checked against the stimuli MANIFEST d4e27d55) through the brightness code path, and
          the VIF of F against brightness, motion, envelope and word rate on the common grid; at most 5, else NOT RUN. --words takes the
          intact kernel's words.csv or the folder its output was downloaded to (Saturday's layout, words.csv under bridge/).
   score  Reads R and C from face_map_RC.json only (never recomputes them). The read guard first (scripts/emofilm_score_runner.py
@@ -16,8 +17,8 @@
 The Emo-FilM download (pilot/emofilm/download_tos_runs.py) started Oct 29 05:45 UTC; it only downloads; nothing reads it before the
 read guard allows. Prints counts, outcomes, p values, hashes and timings only (never BOLD values or per-viewer maps).
 usage: python scripts/face_map_runner.py maps --intact DIR --removed DIR --matched DIR --runs RUN_TABLE --atlas DIR [--out JSON]
-       python scripts/face_map_runner.py gate --edits edits.json --regressors DIR --words FILE_OR_DIR --runs RUN_TABLE --out GATE_JSON
-       python scripts/face_map_runner.py score --forecast DIR --edits edits.json --regressors DIR --runs RUN_TABLE --atlas DIR
+       python scripts/face_map_runner.py gate --edits edits_v2.json --regressors DIR --words FILE_OR_DIR --runs RUN_TABLE --out GATE_JSON
+       python scripts/face_map_runner.py score --forecast DIR --edits edits_v2.json --regressors DIR --runs RUN_TABLE --atlas DIR
               --cache DIR --gate GATE_JSON --rc_repo REPO [--results JSON]"""
 import argparse
 import csv
@@ -39,6 +40,8 @@ from stillhere import face_map as FM  # noqa: E402
 
 NO_GPU_CUTOFF = datetime.datetime(2026, 10, 30, 20, 0, tzinfo=datetime.timezone.utc)   # the no-GPU items (code, rules, gate code)
 RC_CUTOFF = datetime.datetime(2026, 11, 1, 18, 0, tzinfo=datetime.timezone.utc)        # R and C on origin/main, else NOT RUN
+FILM_STIM_MANIFEST = "d4e27d55e2c462f8edd9d2373407692d03534893a3fac284a6819897f52a6f44"   # the final film stimuli (v2)
+N_FRAMES = 4560                                                                   # release 0 to 190 s at 24 fps
 _spec = importlib.util.spec_from_file_location("efr", os.path.join(REPO, "scripts/emofilm_score_runner.py"))
 ER = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(ER)
 sha = ER.sha
@@ -85,10 +88,25 @@ def cmd_maps(a):
 
 
 # ---- gate ---------------------------------------------------------------------------------------------------------------------
+def face_px_per_frame(edits_json) -> list:
+    """Per frame of release 0 to 190 s, the block-snapped SAM 3.1 face-region pixel counts (`px`, the whole frame: what viewers saw) from
+    the final film stimuli's edits_v2.json, which must be listed with its hash in the MANIFEST.sha256 beside it, and that MANIFEST must
+    be the stimuli's committed one (docs/rules/film_stimulus_rule.md)."""
+    d = os.path.dirname(os.path.abspath(edits_json)); man = os.path.join(d, "MANIFEST.sha256")
+    if not os.path.isfile(man) or sha(man) != FILM_STIM_MANIFEST:
+        raise SystemExit("refused: the film stimuli MANIFEST is missing or not the committed one")
+    listed = {l.split()[1]: l.split()[0] for l in open(man) if l.strip()}
+    if listed.get(os.path.basename(edits_json)) != sha(edits_json):
+        raise SystemExit("refused: edits_v2.json differs from the film stimuli MANIFEST")
+    pf = sorted(json.load(open(edits_json))["per_frame"], key=lambda f: f["frame"])
+    if [f["frame"] for f in pf] != list(range(N_FRAMES)):
+        raise SystemExit(f"refused: edits_v2.json does not cover frames 0..{N_FRAMES - 1}")
+    return [[x["px"] for x in f["faces"]] for f in pf]
+
+
 def per_second_series(edits_json, regressors_dir, words) -> dict:
-    """Per-second face, brightness, motion, envelope and word rate over the release window the edits cover."""
-    ed = json.load(open(edits_json)); assert ed["window_release_s"] == [0.0, 190.0] and ed["source_sha256"] == ER.TOS_SHA
-    face = FM.face_per_s([f["masked_px"] for f in ed["per_frame"]], ed["fps"])
+    """Per-second face, brightness, motion, envelope and word rate over release 0 to 190 s (the segment the edits and forecasts cover)."""
+    face = FM.face_per_s(face_px_per_frame(edits_json), 24.0)
     rz = np.load(f"{regressors_dir}/film_regressors.npz"); n = len(rz["envelope"])
     with open(find_one(words, "words.csv")) as f:
         onsets = [float(r["start"]) for r in csv.DictReader(f)]
