@@ -4,8 +4,8 @@ The fields the page reads to show docs/rules/story_menu_rule.md section 6's card
 fork writes them into `stillhere/live_menu.json` (the planner rebuilds its clip enum from the same file) when a story passes the screen.
 
 Per screened clip, beside the clip's existing fields (`id` = `story_<short title>`, `title` = the section's title as the LibriVox
-catalogue lists it, `reader` = the section reader's display name, `author`, `source`, `start_s`, `dur_s`, `intact_wav_sha256`,
-`public_scan`):
+catalogue lists it, `reader` = the section reader's display name, `source`, `start_s`, `dur_s`, `intact_wav_sha256`, `public_scan`;
+the LibriVox API gives sections no author, so there is no author field):
 
 ```json
 "screen": {"archive_url": "https://archive.org/download/<item>/<file>.mp3",
@@ -32,3 +32,7 @@ At the top of `live_menu.json`:
 How the page shows it (`web/stations.py` `story_card`): the rule's line word for word, {tags with times} as "{tag} ({m:ss})" in time
 order joined by ", ", each linking to `archive_url#t={whole seconds}`, or "none of the listed tags found". A clip with no `screen`
 (alice_ch01 to ch03) shows no card: the PLAN and BUILD views are as before.
+
+BUILD replays for the screened windows are added by the worker fork's `scripts/story_menu_run.py checks` to
+`web/replay/build.json`, keyed `<clip_id>:<condition>`, in the BUILD station's own fields plus `recorded_by`; the page shows a
+recorded check only for its own clip and condition.

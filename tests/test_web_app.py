@@ -232,7 +232,7 @@ def test_after_the_meta_credit_end_meta_stays_live_under_a_20_dollar_cap(web, mo
 # ---- the story card (story_menu_rule.md section 6) -------------------------------------------------------------------------------
 def stub_menu():
     m = json.loads((REPO / "stillhere/live_menu.json").read_text())
-    story = {"id": "story_gift_of_the_magi", "title": "The Gift of the Magi", "reader": "A Reader", "author": "O. Henry",
+    story = {"id": "story_gift_of_the_magi", "title": "The Gift of the Magi", "reader": "A Reader",
              "source": "LibriVox (public domain)", "start_s": 61.2, "dur_s": 38.4, "intact_wav_sha256": "0" * 64, "public_scan": None,
              "screen": {"archive_url": "https://archive.org/download/item_x/magi_64kb.mp3", "sentences": 7, "notes_host": "fireworks",
                         "notes": [{"tag": "death or dying", "t": 750.9, "quote": None},
