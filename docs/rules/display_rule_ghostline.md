@@ -61,6 +61,7 @@ Short chip on the line; long chip as its expansion or footnote.
 | notthefall (D20) | notthefall: rule 340b74b | scoring rule committed before these scans were read · 340b74b |
 | Film (Emo-FilM) | Film: rule {film_commit} | rule committed before any viewer's scan was read · {film_commit} |
 | Live or cached laptop forecast | Forecast only · audio-only, laptop | No public scan of this clip. Forecast, not a scan. |
+| Live or cached laptop forecast, alice_ch01 (public_scan: the Alice Datasets) | Forecast only · audio-only, laptop | A public scan of this chapter exists (Alice Datasets, OpenNeuro ds002322); not compared here. Forecast, not a scan. |
 
 How each chip was checked (dates in UTC; commits are in the public repository):
 
@@ -86,7 +87,10 @@ How each chip was checked (dates in UTC; commits are in the public repository):
   (`tierD_picker_wall.json`, `tierD_d20_score.json`). No new laptop-forecast-versus-scan comparison is computed for them, and no ghost
   line is drawn for them unless the frozen output itself holds the series.
 - Live or cached laptop forecasts (the judge's own clip, condition and seed): the gray dashed line alone, with the chip "Forecast only ·
-  audio-only, laptop" and the line "No public scan of this clip. Forecast, not a scan." No coloured line and no volunteer number. The
+  audio-only, laptop" and the line "No public scan of this clip. Forecast, not a scan." when the clip's public_scan field in
+  stillhere/live_menu.json is null; for alice_ch01, a public fMRI stimulus (public_scan: the Alice Datasets), the line is "A public scan
+  of this chapter exists (Alice Datasets, OpenNeuro ds002322); not compared here. Forecast, not a scan." (amended under the cloud plan
+  of Oct 29, 19:20 UTC, item 1a; a display line only, no statistic). No coloured line and no volunteer number. The
   notthefall pair may sit beside it as a separate tile with "Real listeners, different story."
 
 ## Film ghost line (Emo-FilM, Tears of Steel; added Oct 29 before any Emo-FilM brain data was read)
