@@ -64,9 +64,10 @@ def cached(key: str):
     s = get_store(); v = s.get(f"result:{key}")
     if v:
         return {**json.loads(v), "source": "worker"}
-    pre = (_load(CACHE) or {}).get("results", _load(CACHE) or {})
-    if isinstance(pre, dict) and key in pre:
-        return {**pre[key], "source": "cache"}
+    d = _load(CACHE) or {}                                  # the worker fork's precompute: entries by cache key, at the top level or under
+    for pre in (d.get("entries"), d.get("results"), d):    # "entries" / "results", beside its "models" and "default_seed"
+        if isinstance(pre, dict) and isinstance(pre.get(key), dict):
+            return {**pre[key], "source": "cache"}
     return None
 
 

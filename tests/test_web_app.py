@@ -30,6 +30,7 @@ def web(monkeypatch, tmp_path):
     from worker import recipe as R
     real = R.load_index                                     # the worker fork's model manifest may not be committed yet
     monkeypatch.setattr(R, "load_index", lambda path=R.INDEX: {"models": {"tribe": "facebook/tribev2 (test stand-in)"}, **real(path)})
+    monkeypatch.setattr(jobs, "CACHE", tmp_path / "no_cache.json")                   # tests own the precomputed cache
     store.set_store(store.MemoryStore())
     return app, jobs, ledger, stations, store
 
@@ -210,6 +211,20 @@ def test_jobs_expire_and_fall_back(web, monkeypatch):
     monkeypatch.setattr(jobs, "JOB_EXPIRY_S", -1)
     assert call(app, "POST", f"/api/worker/jobs/{j['id']}/result", result_for(j["cache_key"]), auth=W)[0] == 409
     _, _, out = call(app, "GET", f"/api/forecast/{jid}"); assert json.loads(out)["status"] == "expired" and "fallback" in json.loads(out)
+
+
+@pytest.mark.parametrize("shape", ["flat", "entries"])
+def test_worker_offline_serves_the_precomputed_cache(web, monkeypatch, tmp_path, shape):
+    app, jobs, ledger, stations, store = web
+    r = jobs.recipe("alice_ch03", "sentence_scramble", 20261028); key = jobs.cache_key(r)
+    entries = {key: {**result_for(key), "recipe": r}}
+    doc = {"models": {}, "default_seed": 20261028, **({"entries": entries} if shape == "entries" else entries)}
+    (tmp_path / "c.json").write_text(json.dumps(doc)); monkeypatch.setattr(jobs, "CACHE", tmp_path / "c.json")
+    _, _, out = call(app, "POST", "/api/forecast", {"clip_id": "alice_ch03", "condition": "sentence_scramble", "seed": 3})
+    d = json.loads(out); assert d["state"] == "offline" and d["fallback"]["source"] == "cache"
+    assert d["fallback"]["computed_utc"] and d["fallback"]["recipe"]["seed"] == 20261028
+    _, _, out = call(app, "POST", "/api/forecast", {"clip_id": "alice_ch03", "condition": "sentence_scramble", "seed": 20261028})
+    assert json.loads(out)["state"] == "offline"                                    # no run: cache only, still labelled by the page
 
 
 def test_recipes_only_from_the_live_menu(web):
