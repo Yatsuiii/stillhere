@@ -15,9 +15,11 @@ the committed functions in stillhere/emofilm_score.py (and, through them, stillh
            with viewer bootstrap CIs, TRIBE minus each baseline, ISC(k) and the volunteer-equivalent rule. Group results go to
            results/emofilm_film_score.json; per-viewer values only to CACHE/score_per_viewer.json.
 
-Read guard (ruling of Oct 29, 06:30 UTC): prepare opens no image or motion file unless gate 0 has passed and results/face_map_RC.json
-is on origin/main of RC_REPO with the same blob hash as the local copy. The Emo-FilM download (pilot/emofilm/download_tos_runs.py)
-started Oct 29 05:45 UTC; it only downloads; nothing reads it before this guard allows.
+Read guard (rulings of Oct 29, 06:30 and 06:50 UTC): prepare opens no image or motion file unless, on origin/main of RC_REPO, EITHER
+the face test's NOT RUN with its reason is committed (results/face_map.json; GATE_JSON is then not needed) OR gate 0 has passed and
+results/face_map_RC.json is there with the local copy's blob hash. The intact film score does not otherwise depend on the face test.
+The Emo-FilM download (pilot/emofilm/download_tos_runs.py) started Oct 29 05:45 UTC; it only downloads; nothing reads it before this
+guard allows.
 Prints counts, shapes, pass/fail and timings only (never BOLD values or per-viewer scores).
 usage: python scripts/emofilm_score_runner.py prepare --data DIR --meta DIR --runs RUN_TABLE --atlas DIR --cache DIR --gate GATE_JSON
               --rc_repo REPO
@@ -47,29 +49,62 @@ sha = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
 RC_REL = "results/face_map_RC.json"
 
 
-# ---- read guard (project-thread ruling of Oct 29, 06:30 UTC) ------------------------------------------------------------------
+# ---- read guard (project-thread rulings of Oct 29, 06:30 and 06:50 UTC) -------------------------------------------------------
+FACE_REL = "results/face_map.json"
+CRED = ("-c", "credential.helper=", "-c", "credential.helper=!gh auth git-credential")
+
+
+def _git(rc_repo, *x):
+    return subprocess.run(["git", "-C", rc_repo, *x], capture_output=True, text=True)
+
+
+def fetch_origin(rc_repo):
+    """None after a good fetch of origin main; "absent" when origin has no main branch; "fetch" when the fetch failed."""
+    if _git(rc_repo, *CRED, "fetch", "-q", "origin", "main").returncode == 0:
+        return None
+    heads = _git(rc_repo, *CRED, "ls-remote", "--heads", "origin", "main")
+    return "absent" if heads.returncode == 0 and not heads.stdout.strip() else "fetch"
+
+
+def origin_json(rc_repo, rel):
+    """The JSON file REL as committed on origin/main (after fetch_origin), or None when it is not there."""
+    r = _git(rc_repo, "show", f"origin/main:{rel}")
+    return json.loads(r.stdout) if r.returncode == 0 else None
+
+
+def face_test_state(rc_repo) -> dict:
+    """Whether the face test is closed on origin/main: results/face_map.json there with outcome NOT RUN and a reason (never revived), or
+    with a scored outcome (scored once). Fetches first."""
+    f = fetch_origin(rc_repo)
+    if f == "fetch":
+        raise SystemExit("refused: git fetch of origin main failed")
+    fm = origin_json(rc_repo, FACE_REL) if f is None else None
+    if not fm:
+        return {"closed": False, "outcome": None, "why": None}
+    return {"closed": True, "outcome": fm.get("outcome"), "why": fm.get("why") or fm.get("outcome")}
+
+
 def read_guard(gate_json, rc_repo) -> dict:
-    """Whether a BOLD file may be opened: gate 0 (docs/rules/face_map_rule.md) has passed AND results/face_map_RC.json is on origin/main
-    of RC_REPO (git fetch, then the local file's blob hash must equal origin/main's). Returns {ok, why, kind, rc_blob, rc_commit_utc};
-    kind is "gate", "absent", "fetch" or "differs" when not ok."""
+    """Whether a BOLD file may be opened, on origin/main of RC_REPO (the private GitHub repo, after a fetch): EITHER the face test's
+    NOT RUN with its reason (results/face_map.json) is there, OR gate 0 has passed and results/face_map_RC.json is there with the local
+    copy's blob hash. Returns {ok, mode ("not_run" or "face"), kind (when not ok: "gate", "absent", "fetch", "differs"), why, ...}."""
+    f = fetch_origin(rc_repo)
+    if f == "fetch":
+        return {"ok": False, "kind": "fetch", "why": "git fetch of origin main failed"}
+    fm = origin_json(rc_repo, FACE_REL) if f is None else None
+    if fm and fm.get("outcome") == "NOT RUN" and str(fm.get("why") or "").strip():
+        return {"ok": True, "mode": "not_run", "kind": None, "why": f"face test NOT RUN on origin/main: {fm['why']}"}
     if not os.path.isfile(gate_json) or json.load(open(gate_json)).get("pass") is not True:
-        return {"ok": False, "kind": "gate", "why": "gate 0 (collinearity) has not passed"}
+        return {"ok": False, "kind": "gate", "why": "gate 0 (collinearity) has not passed and no NOT RUN is on origin/main"}
     if not os.path.isfile(os.path.join(rc_repo, RC_REL)):
         return {"ok": False, "kind": "absent", "why": f"{RC_REL} is not present"}
-    g = lambda *x: subprocess.run(["git", "-C", rc_repo, *x], capture_output=True, text=True)
-    cred = ("-c", "credential.helper=", "-c", "credential.helper=!gh auth git-credential")
-    if g(*cred, "fetch", "-q", "origin", "main").returncode:
-        heads = g(*cred, "ls-remote", "--heads", "origin", "main")
-        if heads.returncode == 0 and not heads.stdout.strip():
-            return {"ok": False, "kind": "absent", "why": f"origin has no main branch, so {RC_REL} is not on origin/main"}
-        return {"ok": False, "kind": "fetch", "why": "git fetch of origin main failed"}
-    remote = g("rev-parse", f"origin/main:{RC_REL}")
-    if remote.returncode:
+    remote = _git(rc_repo, "rev-parse", f"origin/main:{RC_REL}") if f is None else None
+    if remote is None or remote.returncode:
         return {"ok": False, "kind": "absent", "why": f"{RC_REL} is not on origin/main"}
-    if g("hash-object", RC_REL).stdout.strip() != remote.stdout.strip():
+    if _git(rc_repo, "hash-object", RC_REL).stdout.strip() != remote.stdout.strip():
         return {"ok": False, "kind": "differs", "why": f"the local {RC_REL} differs from origin/main's"}
-    when = g("log", "-1", "--format=%cI", "origin/main", "--", RC_REL).stdout.strip()
-    return {"ok": True, "kind": None, "why": None, "rc_blob": remote.stdout.strip(), "rc_commit_utc": when}
+    when = _git(rc_repo, "log", "-1", "--format=%cI", "origin/main", "--", RC_REL).stdout.strip()
+    return {"ok": True, "mode": "face", "kind": None, "why": None, "rc_blob": remote.stdout.strip(), "rc_commit_utc": when}
 
 
 # ---- inputs -------------------------------------------------------------------------------------------------------------------

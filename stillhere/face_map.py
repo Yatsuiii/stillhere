@@ -49,11 +49,29 @@ def face_regressor(per_s, ft) -> np.ndarray:
     return H.hrf_regressor(per_s, ft)
 
 
-def forecast_map(P_a, P_b, starts, parcels: dict, tr: float) -> np.ndarray:
-    """Per parcel, the mean over the intact rule's common grid of (forecast a - forecast b), each read at film time - TRIBE_OFFSET."""
+def forecast_map(P_a, P_b, starts, parcels: dict, tr: float, keep=None) -> np.ndarray:
+    """Per parcel, the mean over the intact rule's common grid (or the grid points in `keep`) of (forecast a - forecast b), each read
+    at film time - TRIBE_OFFSET."""
     grid = E.common_grid(tr); t = grid - E.TRIBE_OFFSET
+    if keep is not None:
+        t = t[np.asarray(keep, bool)]
     D = E.tribe_at(P_a, starts, t) - E.tribe_at(P_b, starts, t)                         # (V, G)
     return np.array([D[v].mean(0).mean() for v in parcels["vertices"]])
+
+
+def frames_fully_controlled(faces_per_frame) -> np.ndarray:
+    """Per frame, True when every face with pixels in TRIBE's view has a placed control (edits_v2.json: px_in_view, control_px)."""
+    return np.array([all(f["control_px"] > 0 for f in faces if f["px_in_view"] > 0) for faces in faces_per_frame])
+
+
+def controlled_grid(frame_ok, tr: float, fps: float = 24.0, clip_s: float = 4.0) -> np.ndarray:
+    """The descriptive's grid points: the prediction is read at film time - TRIBE_OFFSET, and TRIBE's video stage encodes the clip_s
+    seconds ending there (docs/rules/film_stimulus_rule.md), so a point is kept when every frame in (s - clip_s, s] is fully controlled."""
+    ok = np.asarray(frame_ok, bool); keep = []
+    for s in E.common_grid(tr) - E.TRIBE_OFFSET:
+        i = np.arange(int(np.floor((s - clip_s) * fps)) + 1, int(np.floor(s * fps)) + 1); i = i[(i >= 0) & (i < len(ok))]
+        keep.append(bool(len(i)) and bool(ok[i].all()))
+    return np.array(keep)
 
 
 def partial_fz(B, x, controls) -> np.ndarray:

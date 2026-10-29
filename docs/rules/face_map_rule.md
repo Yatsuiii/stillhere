@@ -5,7 +5,8 @@ tests, before any Emo-FilM brain data is read and before any film-versions forec
 before any BOLD read. The commit time is the record. Every number it produces is labelled exploratory. Scored once, at the logged
 onsets; never re-scored at another onset, window, parcel set or HRF.
 
-Additions of the project-thread rulings of Thu Oct 29, 06:30 UTC and after (the final film stimuli v2 for F), committed before any
+Additions of the project-thread rulings of Thu Oct 29, 06:30 UTC and after (the final film stimuli v2 for F; 06:50 UTC: the Saturday
+chain, the either-or read guard and `not-run`, the stimulus checks reported beside the result, the descriptive), committed before any
 Emo-FilM BOLD was read: the forecast maps come from the committed intact film kernel and two edit kernels and are computed, committed
 and pushed before any BOLD is read (`face_map_runner.py maps`, `results/face_map_RC.json`); a read guard; the gate's timing; the cutoffs
 (sections below). Disclosure: the Emo-FilM download (`pilot/emofilm/download_tos_runs.py`) started Oct 29 05:45 UTC; it only downloads;
@@ -29,17 +30,26 @@ located). The intact scorer runs byte-identical; the face map then runs on the s
   each face's exact shape moved to a non-face spot of the same frame, 100% of face pixels matched; `scripts/make_bridge_edit_cuts.py
   --start-frame 0 --frames 4560`). The three must share sample times and shape.
 - Per parcel (the mean of its vertices), the forecast read at film time - 5 s (linear between the 1 Hz samples, as the intact rule) on
-  the intact rule's scored film-time grid (`emofilm_score.common_grid`: film time 10 to 185 s in steps of one TR, so the prediction is
-  read at 5 to 180 s of the film), averaged over the grid.
+  the intact rule's scored film-time grid, averaged over the grid. The grid is exactly the intact rule's (`emofilm_score.common_grid`):
+  film time 10 to 185 s in steps of one TR (135 points at TR 1.3 s), so the prediction is read at 5 to 180 s of the film. "10-180" in
+  the thread was shorthand for this grid.
 - R = intact - faces removed. C = intact - area matched.
 - `face_map_runner.py maps` writes `results/face_map_RC.json`: both maps, each map's SHA-256, the three input forecasts' SHA-256 and the
   parcel order's SHA-256. It is committed and pushed to origin/main before any BOLD is read. `score` reads R and C from that file only
   (never recomputes them), checks both SHA-256 values, and requires the local file's git blob hash to equal origin/main's.
 
 ## Read guard
-No process opens an Emo-FilM BOLD file (or motion file) unless gate 0 has passed AND `results/face_map_RC.json` is on origin/main of the
-private GitHub repo with the same blob hash as the local copy (`git fetch`, then compare). The check runs first in
-`emofilm_score_runner.py prepare` (before any image or motion file is opened) and in `face_map_runner.py score`; otherwise they refuse.
+The repo the guard checks is origin/main of the private GitHub repo `Yatsuiii/stillhere` (`https://github.com/Yatsuiii/stillhere.git`),
+through the clone given as `--rc_repo` (`git fetch`, then `git show origin/main:<path>` and blob hashes). No process opens an Emo-FilM
+BOLD file (or motion file) unless EITHER
+- gate 0 has passed AND `results/face_map_RC.json` is on origin/main with the same blob hash as the local copy (the face path), OR
+- `results/face_map.json` with outcome NOT RUN and a non-empty reason is committed and on origin/main (the NOT RUN path).
+
+The check runs first in `emofilm_score_runner.py prepare` (before any image or motion file is opened) and in `face_map_runner.py
+score`, which needs the face path; otherwise they refuse.
+
+Once `results/face_map.json` is on origin/main the face test is closed for good: NOT RUN is never revived, and a scored outcome is
+scored once. `maps`, `not-run` and `score` then refuse.
 
 ## Face regressor F(t) and the real face maps
 - Face-area fraction per release frame: the sum of that frame's face-region pixels divided by 1280 x 534. Source: the final film
@@ -60,8 +70,26 @@ DefaultB_Temp, DefaultB_PFCv, DefaultB_PFCl: 19).
 
 ## Gate 0: collinearity (stimulus only, before any BOLD is read)
 The variance inflation factor of F against brightness, motion, envelope and word rate (the five HRF regressors on the common grid) must
-be at most 5; otherwise the face map is NOT RUN. It runs when the intact forecast kernel's `words.csv` exists (after Saturday's intact
-forecast); `--words` takes that file or the folder the kernel's output was downloaded to.
+be at most 5; otherwise the face map is NOT RUN. `face_map_runner.py gate` writes `--out` with key `"pass"` and exits with code 3 on a
+fail.
+
+Timing, and why: word rate comes from the intact forecast kernel's `words.csv` (the transcript TRIBE's own pipeline makes of the
+film), which exists only after Saturday's intact forecast. So the gate runs on Saturday, right after that forecast, on its `words.csv`
+(`--words` takes that file or the folder the kernel's output was downloaded to). It needs no GPU and runs locally.
+
+## The Saturday chain, in order
+1. picker-pred.
+2. The intact film forecast.
+3. Gate 0 (CPU, local), on the intact forecast's `words.csv`.
+4. Only if gate 0 passes: the film-rem and film-am forecasts, then `face_map_runner.py maps`; commit and push
+   `results/face_map_RC.json`. If gate 0 fails: `face_map_runner.py not-run --reason "gate 0: ..."`; commit and push
+   `results/face_map.json`; no edit forecast is made for the face test.
+5. The Glimmer edit check.
+6. The picker fallback parts, only if triggered.
+7. Scoring: `emofilm_score_runner.py prepare` (opens the BOLD only through the read guard), the intact film `score`, then, on the face
+   path, `face_map_runner.py score`; commit and push its `results/face_map.json`.
+
+Everything that is not in this chain keeps the Fri Oct 30, 20:00 UTC cutoff.
 
 ## Gate 1: reliability
 Leave one out: per viewer, Spearman rho across the 374 parcels between M_i and the mean of the other viewers' maps. One-sided exact
@@ -83,7 +111,26 @@ NOT RUN (gate 0 fails, an input is missing, or R and C were not on origin/main b
 them there), UNINFORMATIVE (gate 1 fails), FAIL (B1 fails), FAIL not face-specific (B1 passes, B2 fails), PASS.
 
 Cutoffs: everything that needs no GPU (this rule, the code, the gate code) by Fri Oct 30, 20:00 UTC; R and C on origin/main by Sun
-Nov 1, 18:00 UTC. The score itself has no Friday cutoff.
+Nov 1, 18:00 UTC. The score itself has no Friday cutoff. If R and C are not on origin/main by Sun 18:00 UTC: run `not-run` with that
+reason, commit and push `results/face_map.json`, then score the intact film alone. `score` refuses R and C committed after the cutoff
+and says so. The intact film score does not otherwise depend on the face test: its scorer and outputs are unchanged, and the face
+test only decides which path of the read guard opens the BOLD.
+
+## Reported beside the result (stimulus facts; they decide nothing)
+From `results/film_stimulus_checks.json` (`docs/rules/film_stimulus_rule.md`), copied into `results/face_map.json`:
+- Coverage: the area-matched control covers 0.889 of the in-view face pixels.
+- 51 face instances have no control: the largest close-ups, whose in-view part fits nowhere else in TRIBE's view. Their frames stay
+  in the forecast maps and in every test; this is disclosed beside the result.
+- Eccentricity: median eccentricity of the changed pixels in TRIBE's view, 77.7 px for the control vs 95.1 px for face removal
+  (the controls sit nearer the centre).
+- Change energy: control over face removal, 0.894.
+
+## Descriptive (pre-committed; never decides)
+R and C recomputed on only the grid points where every in-view face has a control: a point is kept when every frame of the 4 s clip
+TRIBE encodes for it (the 4 s ending at film time - 5 s) has `control_px` > 0 for each face with `px_in_view` > 0. On the real
+stimuli 51 frames fail this and 129 of the 135 grid points are kept. `maps` writes these maps (with their SHA-256 and the kept count)
+in `results/face_map_RC.json`; `score` reports rho(R, Mbar), rho(C, Mbar) and the median d_i with them. Labelled descriptive; it is
+not an outcome and never changes one.
 
 On a PASS the film leads the video only if the median of d_i computed on the tested parcels outside the visual network (VisCent and
 VisPeri, both hemispheres) is also above 0; otherwise the PASS is captioned "carried by visual-network parcels".

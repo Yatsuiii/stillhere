@@ -11,6 +11,7 @@ import pytest
 
 pytest.importorskip("nilearn")
 nib = pytest.importorskip("nibabel")
+from stillhere import emofilm_score as E  # noqa: E402
 from stillhere import face_map as FM  # noqa: E402
 from stillhere import heldout as H  # noqa: E402
 
@@ -110,14 +111,9 @@ def rc_repo(tmp: Path) -> Path:
     return tmp / "rc"
 
 
-def push_rc(repo: Path, date=None):
-    env = {"GIT_COMMITTER_DATE": date, "GIT_AUTHOR_DATE": date} if date else None
-    git(repo, "add", "results/face_map_RC.json"); git(repo, "commit", "-q", "-m", "R and C", env=env); git(repo, "push", "-q", "origin", "HEAD:main")
-
-
 def build(tmp: Path, monkeypatch, n_view=8, n_vols=260, tr=1.3):
-    """Synthetic edits, regressors, the intact forecast in Saturday's bridge/ layout, the two edit forecasts, run table and prepare
-    cache with planted face tracking; then maps (into a git clone, pushed) and gate 0."""
+    """Synthetic edits_v2 (some in-view faces without a control), regressors, the intact forecast in Saturday's bridge/ layout, the two
+    edit forecasts, run table and prepare cache with planted face tracking; then gate 0 and maps (into a git clone, not yet pushed)."""
     rng = np.random.default_rng(9); (tmp / "atlas").mkdir(); atlas = write_annots(tmp / "atlas")
     parcels = FM.all_parcels(*(atlas / f"{h}.Schaefer2018_400Parcels_17Networks_order.annot" for h in ("lh", "rh")))
     d = {k: tmp / k for k in ("fc", "rem", "am", "rg", "cache")}
@@ -126,8 +122,9 @@ def build(tmp: Path, monkeypatch, n_view=8, n_vols=260, tr=1.3):
     (d["fc"] / "bridge").mkdir(); (d["am"] / "nested").mkdir()
     faces = np.repeat(np.clip(np.convolve(rng.random(190), np.ones(5) / 5, "same") - 0.4, 0, None), 24)    # per frame, 190 s
     stim = tmp / "stim"; stim.mkdir()                                                   # the final film stimuli's edits_v2.json format
-    pf = [{"frame": i, "faces": [{"px": int(f * 1280 * 534), "px_in_view": int(f * 470 * 470), "control_px": int(f * 470 * 470), "pieces": 1}] if f > 0 else []}
-          for i, f in enumerate(faces)]
+    uncontrolled = (np.arange(len(faces)) // 24) % 7 == 3                               # every 7th second: a close-up with no control
+    pf = [{"frame": i, "faces": [{"px": int(f * 1280 * 534), "px_in_view": int(f * 470 * 470), "control_px": 0 if uncontrolled[i] else int(f * 470 * 470),
+                                  "pieces": 1}] if f > 0 else []} for i, f in enumerate(faces)]
     json.dump({"seg": "seg_intact.mp4", "seg_sha256": "0" * 64, "view": [404, 32, 873, 501], "per_frame": pf[::-1]}, open(stim / "edits_v2.json", "w"))
     (stim / "MANIFEST.sha256").write_text(f"{RN.sha(stim / 'edits_v2.json')}  edits_v2.json\n")
     monkeypatch.setattr(RN, "FILM_STIM_MANIFEST", RN.sha(stim / "MANIFEST.sha256"))
@@ -151,45 +148,87 @@ def build(tmp: Path, monkeypatch, n_view=8, n_vols=260, tr=1.3):
         man["runs"][f"{sub}_ses-1"] = {"status": "prepared", "cache": f"{sub}_ses-1.npz", "cache_sha256": RN.sha(d["cache"] / f"{sub}_ses-1.npz"), "mriqc_fd_mean": 0.1}
     rt = tmp / "runs.json"; json.dump({"runs": runs}, open(rt, "w")); man["runs_table_sha256"] = RN.sha(rt)
     json.dump(man, open(d["cache"] / "prepare_manifest.json", "w"))
-    repo = rc_repo(tmp)
-    rc = RN.cmd_maps(argparse.Namespace(intact=str(d["fc"]), removed=str(d["rem"]), matched=str(d["am"]), runs=str(rt), atlas=str(atlas),
-                                        out=str(repo / "results/face_map_RC.json")))
+    repo = rc_repo(tmp); (repo / "results").mkdir()
+    json.dump({"checks": {"control_area_within_1pct": {"in_view_face_px_with_control": 0.8894, "faces_in_view": 2717, "no_control": 51}},
+               "reported": {"median_eccentricity_view_px": {"faces_removed": 95.1, "area_matched": 77.7}, "change_energy_ratio_control_over_face": 0.8943}},
+              open(repo / "results/film_stimulus_checks.json", "w"))
     gate = tmp / "gate.json"
     RN.cmd_gate(argparse.Namespace(edits=str(stim / "edits_v2.json"), regressors=str(d["rg"]), words=str(d["fc"]), runs=str(rt), out=str(gate)))
+    rc = RN.cmd_maps(argparse.Namespace(intact=str(d["fc"]), removed=str(d["rem"]), matched=str(d["am"]), edits=str(stim / "edits_v2.json"),
+                                        runs=str(rt), atlas=str(atlas), rc_repo=str(repo)))
     a = argparse.Namespace(forecast=str(d["fc"]), edits=str(stim / "edits_v2.json"), regressors=str(d["rg"]), runs=str(rt), atlas=str(atlas),
-                           cache=str(d["cache"]), gate=str(gate), rc_repo=str(repo), results=str(tmp / "res.json"))
+                           cache=str(d["cache"]), gate=str(gate), rc_repo=str(repo))
     return a, rc, w
 
 
-def test_maps_recover_the_planted_edit_and_record_hashes(tmp_path, monkeypatch):
+def push(repo: Path, rel: str, date=None):
+    env = {"GIT_COMMITTER_DATE": date, "GIT_AUTHOR_DATE": date} if date else None
+    git(repo, "add", rel); git(repo, "commit", "-q", "-m", rel, env=env); git(repo, "push", "-q", "origin", "HEAD:main")
+
+
+def test_maps_recover_the_planted_edit_record_hashes_and_the_descriptive(tmp_path, monkeypatch):
     a, rc, w = build(tmp_path, monkeypatch)
     R = np.asarray(rc["R"]); assert R.shape == (400,) and np.allclose(R, w, atol=1e-4)      # intact - (intact - w) = w per parcel
-    assert rc["R_sha256"] == RN.map_sha(R) and set(rc["inputs_sha256"]) == {"intact", "removed", "matched"} and rc["forecasts_only"]
-    assert json.load(open(a.gate))["pass"]                                                 # gate 0 read words.csv from bridge/
+    assert rc["R_sha256"] == RN.map_sha(R) and set(rc["inputs_sha256"]) == {"intact", "removed", "matched", "edits_v2"} and rc["forecasts_only"]
+    dsc = rc["descriptive"]; assert 0 < dsc["grid_points_kept"] < rc["grid"]["points"] and np.allclose(dsc["R"], w, atol=1e-4)
+    assert json.load(open(a.gate))["pass"] and (Path(a.rc_repo) / "results/face_map_RC.json").is_file()
 
 
-def test_score_guard_cutoff_and_refusals(tmp_path, monkeypatch):
+def test_controlled_grid_needs_the_whole_4s_clip():
+    ok = np.ones(4560, bool); ok[24 * 50] = False                                         # one uncontrolled frame at 50.0 s
+    keep = FM.controlled_grid(ok, 1.3); s = E.common_grid(1.3) - E.TRIBE_OFFSET
+    assert not keep[(s >= 50.0) & (s < 54.0)].any() and keep[(s < 49.9) | (s >= 54.1)].all()
+    assert list(FM.frames_fully_controlled([[{"px_in_view": 5, "control_px": 0}], [{"px_in_view": 0, "control_px": 0}], []])) == [False, True, True]
+
+
+def test_score_face_path_scored_once_and_refusals(tmp_path, monkeypatch):
     monkeypatch.setattr(FM.spin_perms, "__defaults__", (100, FM.SPIN_SEED))
     a, rc, w = build(tmp_path, monkeypatch); repo = Path(a.rc_repo)
-    assert RN.cmd_score(a)["outcome"] == "NOT RUN"                                           # the maps are not on origin/main yet
-    push_rc(repo, date="2026-11-01T17:59:00+00:00")
+    with pytest.raises(SystemExit, match="not on origin/main"):
+        RN.cmd_score(a)                                                                      # R and C are not pushed yet
+    push(repo, "results/face_map_RC.json", date="2026-11-01T17:59:00+00:00")
+    rcp = repo / "results/face_map_RC.json"; orig = rcp.read_text(); dd = json.loads(orig); dd["R"][0] += 1.0; rcp.write_text(json.dumps(dd))
+    with pytest.raises(SystemExit, match="differs"):
+        RN.cmd_score(a)
+    rcp.write_text(orig)
     res = RN.cmd_score(a)
     assert res["outcome"] == "PASS" and res["viewers"] == 8 and res["rc"]["R_sha256"] == rc["R_sha256"] and '"M"' not in json.dumps(res)
-    g = json.load(open(a.gate)); g["pass"] = False; json.dump(g, open(a.gate, "w"))
-    assert RN.cmd_score(a)["outcome"] == "NOT RUN"; g["pass"] = True; json.dump(g, open(a.gate, "w"))
-    rcp = repo / "results/face_map_RC.json"; orig = rcp.read_text(); d = json.loads(orig); d["R"][0] += 1.0; rcp.write_text(json.dumps(d))
-    with pytest.raises(SystemExit):
-        RN.cmd_score(a)                                                                      # the local maps differ from origin/main's
-    rcp.write_text(orig)
+    assert res["descriptive"]["label"].startswith("descriptive") and "rho_R_Mbar" in res["descriptive"]
+    assert res["stimulus_checks"]["no_control"] == 51 and res["stimulus_checks"]["change_energy_ratio_control_over_face"] == 0.8943
+    push(repo, "results/face_map.json")                                                       # the scored result on origin/main
+    for f in (RN.cmd_score, lambda x: RN.cmd_not_run(argparse.Namespace(reason="late", rc_repo=x.rc_repo))):
+        with pytest.raises(SystemExit, match="closed"):
+            f(a)                                                                             # scored once: no second score, no NOT RUN after it
+
+
+def test_cache_change_refused(tmp_path, monkeypatch):
+    a, rc, w = build(tmp_path, monkeypatch); push(Path(a.rc_repo), "results/face_map_RC.json", date="2026-10-31T10:00:00+00:00")
     f = Path(a.cache) / "sub-T01_ses-1.npz"; z = dict(np.load(f)); z["keep"][0] = False; np.savez(f, **z)
-    with pytest.raises(SystemExit):
-        RN.cmd_score(a)                                                                      # a cache file changed after prepare
+    with pytest.raises(SystemExit, match="cache"):
+        RN.cmd_score(a)
 
 
-def test_maps_pushed_after_the_cutoff_is_not_run(tmp_path, monkeypatch):
+def test_maps_after_the_cutoff_score_refuses_and_points_to_not_run(tmp_path, monkeypatch):
     a, rc, w = build(tmp_path, monkeypatch)
-    push_rc(Path(a.rc_repo), date="2026-11-01T18:00:01+00:00")
-    assert RN.cmd_score(a)["outcome"] == "NOT RUN"
+    push(Path(a.rc_repo), "results/face_map_RC.json", date="2026-11-01T18:00:01+00:00")
+    with pytest.raises(SystemExit, match="not-run"):
+        RN.cmd_score(a)
+
+
+def test_not_run_closes_the_face_test_and_opens_the_read_guard(tmp_path, monkeypatch):
+    a, rc, w = build(tmp_path, monkeypatch); repo = Path(a.rc_repo)
+    (repo / "results/face_map_RC.json").unlink()                                            # e.g. gate 0 failed: no edit forecasts, no maps
+    assert not RN.ER.read_guard(str(tmp_path / "no_gate.json"), a.rc_repo)["ok"]
+    with pytest.raises(SystemExit, match="reason"):
+        RN.cmd_not_run(argparse.Namespace(reason="  ", rc_repo=a.rc_repo))
+    RN.cmd_not_run(argparse.Namespace(reason="gate 0: VIF(face) above 5", rc_repo=a.rc_repo))
+    assert not RN.ER.read_guard(str(tmp_path / "no_gate.json"), a.rc_repo)["ok"]            # written but not yet on origin/main
+    push(repo, "results/face_map.json")
+    g = RN.ER.read_guard(str(tmp_path / "no_gate.json"), a.rc_repo); assert g["ok"] and g["mode"] == "not_run"
+    m = argparse.Namespace(intact=a.forecast, removed=a.forecast, matched=a.forecast, edits=a.edits, runs=a.runs, atlas=a.atlas, rc_repo=a.rc_repo)
+    for f in (RN.cmd_maps, RN.cmd_score, RN.cmd_not_run):
+        with pytest.raises(SystemExit, match="closed"):
+            f(m if f is RN.cmd_maps else a if f is RN.cmd_score else argparse.Namespace(reason="again", rc_repo=a.rc_repo))
 
 
 def test_prepare_refuses_before_opening_any_file(tmp_path, monkeypatch):
@@ -197,7 +236,7 @@ def test_prepare_refuses_before_opening_any_file(tmp_path, monkeypatch):
     p = argparse.Namespace(data=str(tmp_path / "no_such_data"), meta=str(tmp_path / "no_such_meta"), runs=a.runs, atlas=a.atlas,
                            cache=str(tmp_path / "pc"), gate=a.gate, rc_repo=a.rc_repo)
     with pytest.raises(SystemExit, match="no BOLD file is opened"):
-        RN.ER.cmd_prepare(p)                                                                 # maps not on origin/main: refused first
+        RN.ER.cmd_prepare(p)                                                                 # neither the maps nor a NOT RUN on origin/main
     assert not (tmp_path / "pc").exists()
 
 
