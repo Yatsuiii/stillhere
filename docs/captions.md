@@ -79,7 +79,7 @@ On-screen captions:
      beat: brightness, motion, sound envelope and word rate ({film_beat})."; then "The face test did not run: {reason}. It was set to
      run once, by rules written before any brain data was read." Reasons as logged, e.g. "edit not confirmed by Glimmer", "gate 0:
      VIF > 5", "GPU time ran out".
-   Small print on every film results slide: "The one check on data TRIBE's authors never used: {N} real viewers of the intact film."
+   Small print on every film results slide: "Data TRIBE's authors never used: {N} real viewers of the intact film."
 
 ## e. Close
 
@@ -89,8 +89,8 @@ On-screen captions:
 
 - TRIBE v2 (Meta FAIR, CC BY-NC 4.0, not included in this repository) was trained on Courtois NeuroMod, BoldMoments, Lebel2023 and
   Wen2017 (25 participants) and evaluated by its authors on NNDb, LPP, Narratives and HCP (d'Ascoli et al. 2026, arXiv 2605.04326,
-  Table 1). LPP and Narratives are therefore among TRIBE v2's own evaluation sets. Emo-FilM and the Blender films are in neither list:
-  the film is the one check on data TRIBE's authors never used.
+  Table 1). LPP and Narratives are therefore among TRIBE v2's own evaluation sets. Emo-FilM, the Blender films and the sedation data
+  (ds003171) are in neither list.
 - SAM 3.1 through Meta's Model API, decoded with meta-sam-parser under Meta's SAM License; we acknowledge the use of SAM in this work.
 - Data: Emo-FilM (Morgenroth et al. 2025; OpenNeuro ds004892 and ds004872, CC0), Le Petit Prince (ds003643), Narratives (ds002345),
   LibriVox (public domain), Tears of Steel (Blender Foundation, CC BY 3.0).
