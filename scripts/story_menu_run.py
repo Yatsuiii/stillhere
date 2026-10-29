@@ -495,37 +495,85 @@ def ready(work: Path) -> list:
     return out
 
 
-def menu(work: Path):
-    """Section 7: the live menu changes only once at least 3 windows are ready. Adds them to stillhere/live_menu.json with their card
-    data and the screen summary (failed stories: title and bar only)."""
-    ok = ready(work)
+def menu(work: Path, skip=()):
+    """Section 7: the live menu changes only once at least 3 windows are ready. The fresh stories go first in catalogue order, then
+    alice_ch02, alice_ch01, alice_ch03 (their fields kept; ch02 is the backup), then any other listed clip; failed stories are listed
+    by title and bar only. Every menu story's title, reader and quotes pass the blocklist gate before the file is written."""
+    ok = [i for i in ready(work) if i not in skip]
     if len(ok) < 3:
         raise SystemExit(f"menu unchanged: {len(ok)} window(s) ready, the rule needs at least 3")
-    m = json.loads(LIVE_MENU.read_text()); idx = json.loads(LIVE_CLIPS.read_text()); failed = []
+    m = json.loads(LIVE_MENU.read_text()); idx = json.loads(LIVE_CLIPS.read_text()); failed = []; fresh = []
+    clips = {c["id"]: c for c in idx["clips"]}
     for info, scr in screened(work):
         if info.get("failed") == "trim":
             failed.append({"title": info["title"], "bar": "trim"})
         elif scr and not scr["pass"]:
             failed.append({"title": info["title"], "bar": scr["failed_bar"] if scr["failed_bar"] in ("1", "2", "3") else "3"})
-    for c in [c for c in idx["clips"] if c["id"] in ok]:
-        d = work / c["id"]
-        nt = json.loads((d / "notes.json").read_text()) if (d / "notes.json").exists() else {"notes": [], "host": None}
-        entry = {"id": c["id"], "title": c["title"], "reader": c["reader"], "source": c["source"],
-                 "start_s": c["start_s"], "dur_s": c["dur_s"], "intact_wav_sha256": c["wav_sha256"], "public_scan": SM.public_scan(c["title"]),
-                 "screen": {"archive_url": c["source"], "sentences": c["sentences"], "notes": nt["notes"], "notes_host": nt["host"]}}
-        require_public(entry)
-        for n in entry["screen"]["notes"]:
-            if n.get("quote") is not None and not public_ok(n["quote"]):
-                n["quote"] = None                                     # withheld, tag and time kept (rule 2c)
-        m["clips"] = [x for x in m["clips"] if x["id"] != c["id"]] + [entry]
-    m["screen_summary"] = {"n_on_menu": len(ok), "failed": failed, "rule": "docs/rules/story_menu_rule.md"}
+        elif info["id"] in ok:
+            c = clips[info["id"]]; d = work / c["id"]
+            nt = json.loads((d / "notes.json").read_text()) if (d / "notes.json").exists() else {"notes": [], "host": None}
+            entry = {"id": c["id"], "title": c["title"], "short": c["title"], "reader": c["reader"], "source": c["source"], "start_s": c["start_s"],
+                     "dur_s": c["dur_s"], "intact_wav_sha256": c["wav_sha256"], "public_scan": SM.public_scan(c["title"]),
+                     "screen": {"archive_url": c["source"], "sentences": c["sentences"],
+                                "notes": [dict(n) for n in nt["notes"]], "notes_host": nt["host"]}}
+            require_public(entry)
+            for n in entry["screen"]["notes"]:
+                if n.get("quote") is not None and not public_ok(n["quote"]):
+                    n["quote"] = None                                 # withheld, tag and time kept (rule 2c)
+            fresh.append(entry)
+    for f in failed:
+        if not public_ok(f["title"]):
+            raise PublicTextHit("STOP: a failed story's title hits the laptop blocklist; nothing was written")
+    old = {c["id"]: c for c in m["clips"]}
+    alice = [old[i] for i in ("alice_ch02", "alice_ch01", "alice_ch03") if i in old]
+    rest = [c for c in m["clips"] if c["id"] not in {e["id"] for e in fresh} | {a["id"] for a in alice} and not c["id"].startswith("story_")]
+    m["clips"] = fresh + alice + rest
+    m["screen_summary"] = {"n_on_menu": len(fresh), "failed": failed, "rule": "docs/rules/story_menu_rule.md"}
     LIVE_MENU.write_text(json.dumps(m, indent=1) + "\n")
-    log(f"live menu: {len(ok)} screened stories added; {len(failed)} failed stories listed")
+    on = {e["id"] for e in fresh}                                        # reader names only for stories on the menu
+    for c in idx["clips"]:
+        if c.get("rule") == "docs/rules/story_menu_rule.md" and c["id"] not in on:
+            c.pop("reader", None)
+    LIVE_CLIPS.write_text(json.dumps(idx, indent=1) + "\n")
+    log(f"live menu: {[e['id'] for e in fresh]} then {[a['id'] for a in alice]}; {len(failed)} failed stories listed")
+
+
+def summary(work: Path, ledger: Ledger) -> dict:
+    """results/story_menu/screen_summary.json: per pool story its title, trim, bars and windows (no reader names, no transcripts), and
+    every Part 2 call's count, audio seconds and tokens from the ledger. Voice Transcribe publishes no price and its answers carry no
+    cost, so its dollars are the $0.10 reservation per call, not a charge; Spark Open dollars use stillhere/planner_eval.py's rate."""
+    from stillhere import planner_eval as PE
+    stories = []
+    for info, scr in screened(work):
+        d = work / info["id"]; win = json.loads((d / "window.json").read_text()) if (d / "window.json").exists() else None
+        nt = json.loads((d / "notes.json").read_text()) if (d / "notes.json").exists() else None
+        stories.append({"id": info["id"], "title": info["title"], "playtime_s": info["playtime_s"],
+                        "trim": "ok" if info.get("trim") else "failed",
+                        "screen": None if not scr else {"chunks": scr["chunks"], "bar1_min_share": round(scr["bar1"]["min_share"], 4),
+                                                        "bar2_longest_gap_s": scr["bar2"]["longest_gap_s"], "bar3_agreement": scr["bar3"]["agreement"],
+                                                        "pass": scr["pass"], "failed_bar": scr["failed_bar"]},
+                        "window": win, "notes_tags": None if not nt else [n["tag"] for n in nt["notes"]]})
+    rows = ledger.rows(); kinds = sorted({r["kind"] for r in rows}); cost = {}
+    for k in kinds:
+        rs = [r for r in rows if r["kind"] == k]
+        cost[k] = {"rows": len(rs), "audio_s": round(sum(r.get("audio_s", 0) for r in rs), 1),
+                   "prompt_tokens": sum(r.get("prompt_tokens") or 0 for r in rs), "completion_tokens": sum(r.get("completion_tokens") or 0 for r in rs),
+                   "usd": round(sum(r.get("usd", 0) for r in rs), 4), "errors": sum(1 for r in rs if r.get("error"))}
+    doc = {"rule": "docs/rules/story_menu_rule.md", "label": "exploratory", "stories": stories, "spend": cost,
+           "price_notes": {"voice_transcribe": "no published price and no cost in its answers: usd is the $0.10-per-call reservation; the "
+                                               "charge needs the billing page",
+                           "spark_open": f"tokens x ${PE.PRICE_IN * 1e6:.2f} per million input, ${PE.PRICE_OUT * 1e6:.2f} per million output "
+                                         "(stillhere/planner_eval.py rate)"}}
+    for s in stories:
+        if not public_ok(s["title"]):
+            raise PublicTextHit(f"STOP: a story title hits the laptop blocklist (story {s['id']}); summary not written")
+    (RESULTS / "screen_summary.json").write_text(json.dumps(doc, indent=1) + "\n")
+    return doc
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument("stage"); ap.add_argument("work"); ap.add_argument("--live", action="store_true")
-    ap.add_argument("--only"); a = ap.parse_args(argv); work = Path(a.work); work.mkdir(parents=True, exist_ok=True)
+    ap.add_argument("--only"); ap.add_argument("--skip", action="append", default=[]); a = ap.parse_args(argv); work = Path(a.work); work.mkdir(parents=True, exist_ok=True)
     ledger = Ledger(work / "part2_ledger.jsonl")
     if a.stage == "catalogue":
         catalogue(work)
@@ -544,7 +592,9 @@ def main(argv=None):
             raise SystemExit("checks makes real Voice Transcribe calls: pass --live (tests use the stub)")
         checks(work, live_transcribe, ledger, a.only)
     elif a.stage == "menu":
-        menu(work)
+        menu(work, a.skip)
+    elif a.stage == "summary":
+        print(json.dumps(summary(work, ledger)["spend"], indent=1))
     elif a.stage == "notes":
         if not a.live:
             raise SystemExit("notes makes real Spark Open calls: pass --live (tests use the stub)")

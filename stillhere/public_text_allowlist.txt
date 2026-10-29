@@ -22,3 +22,16 @@ b1aff641246044c83dd7ab345b5d9f2e4094be2badf58044bbae9c937ab80560  frame_check_re
 36fef9fa36da171e5fd54981ac9f890ba5d1d24ad2935091867c8ad9ead607a3  frame_image_test.txt
 0167ae7f282d9f58b02a6b6be5271287604293f2afe009c496bab5a53c8ed96f  planner_v21_system.txt
 9694fe81dcffba84ebc8aa1cad40faa0b7ed86ede1377ed9a3f1d090118086b2  audit_system.txt (hosted page AUDIT station: Spark Open advisory check, not measured)
+# story menu notes: story_black_cat
+45b692ec452dc31c56d799d4f5f2cae20efdbee2d8ab3f405c9a05bf02d4c12d  story menu transcript story_black_cat (faster-whisper, LibriVox)
+69ca381e503cbc68ab2a4dd1a21db666dc2cbe57dedb0a3a312db3a0d99011fd  story menu notes system prompt
+# story menu notes: story_nice_people
+7fd7aa3b3d76d3e589564b53ea45d4c08298248ab0aed49ce6c3a447d5c37324  story menu transcript story_nice_people (faster-whisper, LibriVox)
+# story menu notes: story_black_cat
+615bd3bf61ab2eed1f8961da459a380db1975ced9f0e3a35ded541bd8086f08a  story menu notes system prompt (amended)
+# story menu notes: story_telltale_heart
+132faa9e7f5b337f0486789b0f592447839094be2457edb4f75d94e3eecdfeb0  story menu transcript story_telltale_heart (faster-whisper, LibriVox)
+# story menu notes: story_last_leaf
+1090c35b86c9563ba7c4309648fc987312907fa3f2a64d7914367a5c05717bca  story menu transcript story_last_leaf (faster-whisper, LibriVox)
+# story menu notes: story_diamond_necklace
+fc5e318b6dc1a1f5fe3bc665070ce76a95ea0f2426b6653b580e131cd59b36be  story menu transcript story_diamond_necklace (faster-whisper, LibriVox)

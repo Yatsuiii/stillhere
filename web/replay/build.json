@@ -26,5 +26,425 @@
     "rule": "new order beats the old by at least 10%"
    }
   ]
+ },
+ "story_black_cat:intact": {
+  "mode": "live",
+  "condition": "intact",
+  "seed": 0,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "94%",
+    "ok": true,
+    "rule": "at least 85%"
+   },
+   {
+    "item": "Order kept",
+    "value": "94%",
+    "ok": true,
+    "rule": "at least 80%"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_black_cat:sentence_scramble": {
+  "mode": "live",
+  "condition": "sentence_scramble",
+  "seed": 20261028,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "94%",
+    "ok": true,
+    "rule": "at least 80%"
+   },
+   {
+    "item": "Sentences heard in the new order",
+    "value": "94%",
+    "ok": true,
+    "rule": "at least 70%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "39%",
+    "ok": true,
+    "rule": "new order beats the old by at least 10%"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_black_cat:word_scramble": {
+  "mode": "live",
+  "condition": "word_scramble",
+  "seed": 20261028,
+  "pass": false,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "52%",
+    "ok": false,
+    "rule": "at least 60%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "17%",
+    "ok": true,
+    "rule": "at most 50% in the old order"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_black_cat:reversed": {
+  "mode": "live",
+  "condition": "reversed",
+  "seed": 0,
+  "pass": null,
+  "checklist": [
+   {
+    "item": "Words heard on reversed speech",
+    "value": "1",
+    "ok": null,
+    "rule": "no word check"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_nice_people:intact": {
+  "mode": "live",
+  "condition": "intact",
+  "seed": 0,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "100%",
+    "ok": true,
+    "rule": "at least 85%"
+   },
+   {
+    "item": "Order kept",
+    "value": "100%",
+    "ok": true,
+    "rule": "at least 80%"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_nice_people:sentence_scramble": {
+  "mode": "live",
+  "condition": "sentence_scramble",
+  "seed": 20261028,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "97%",
+    "ok": true,
+    "rule": "at least 80%"
+   },
+   {
+    "item": "Sentences heard in the new order",
+    "value": "97%",
+    "ok": true,
+    "rule": "at least 70%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "54%",
+    "ok": true,
+    "rule": "new order beats the old by at least 10%"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_nice_people:word_scramble": {
+  "mode": "live",
+  "condition": "word_scramble",
+  "seed": 20261028,
+  "pass": false,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "44%",
+    "ok": false,
+    "rule": "at least 60%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "15%",
+    "ok": true,
+    "rule": "at most 50% in the old order"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_nice_people:reversed": {
+  "mode": "live",
+  "condition": "reversed",
+  "seed": 0,
+  "pass": null,
+  "checklist": [
+   {
+    "item": "Words heard on reversed speech",
+    "value": "2",
+    "ok": null,
+    "rule": "no word check"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_telltale_heart:intact": {
+  "mode": "live",
+  "condition": "intact",
+  "seed": 0,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "98%",
+    "ok": true,
+    "rule": "at least 85%"
+   },
+   {
+    "item": "Order kept",
+    "value": "98%",
+    "ok": true,
+    "rule": "at least 80%"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_telltale_heart:sentence_scramble": {
+  "mode": "live",
+  "condition": "sentence_scramble",
+  "seed": 20261028,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "98%",
+    "ok": true,
+    "rule": "at least 80%"
+   },
+   {
+    "item": "Sentences heard in the new order",
+    "value": "98%",
+    "ok": true,
+    "rule": "at least 70%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "45%",
+    "ok": true,
+    "rule": "new order beats the old by at least 10%"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_telltale_heart:word_scramble": {
+  "mode": "live",
+  "condition": "word_scramble",
+  "seed": 20261028,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "73%",
+    "ok": true,
+    "rule": "at least 60%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "21%",
+    "ok": true,
+    "rule": "at most 50% in the old order"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_telltale_heart:reversed": {
+  "mode": "live",
+  "condition": "reversed",
+  "seed": 0,
+  "pass": null,
+  "checklist": [
+   {
+    "item": "Words heard on reversed speech",
+    "value": "4",
+    "ok": null,
+    "rule": "no word check"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_last_leaf:intact": {
+  "mode": "live",
+  "condition": "intact",
+  "seed": 0,
+  "pass": false,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "83%",
+    "ok": false,
+    "rule": "at least 85%"
+   },
+   {
+    "item": "Order kept",
+    "value": "83%",
+    "ok": true,
+    "rule": "at least 80%"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_last_leaf:sentence_scramble": {
+  "mode": "live",
+  "condition": "sentence_scramble",
+  "seed": 20261028,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "83%",
+    "ok": true,
+    "rule": "at least 80%"
+   },
+   {
+    "item": "Sentences heard in the new order",
+    "value": "83%",
+    "ok": true,
+    "rule": "at least 70%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "47%",
+    "ok": true,
+    "rule": "new order beats the old by at least 10%"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_last_leaf:word_scramble": {
+  "mode": "live",
+  "condition": "word_scramble",
+  "seed": 20261028,
+  "pass": false,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "31%",
+    "ok": false,
+    "rule": "at least 60%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "15%",
+    "ok": true,
+    "rule": "at most 50% in the old order"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_last_leaf:reversed": {
+  "mode": "live",
+  "condition": "reversed",
+  "seed": 0,
+  "pass": null,
+  "checklist": [
+   {
+    "item": "Words heard on reversed speech",
+    "value": "8",
+    "ok": null,
+    "rule": "no word check"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_diamond_necklace:intact": {
+  "mode": "live",
+  "condition": "intact",
+  "seed": 0,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "99%",
+    "ok": true,
+    "rule": "at least 85%"
+   },
+   {
+    "item": "Order kept",
+    "value": "99%",
+    "ok": true,
+    "rule": "at least 80%"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_diamond_necklace:sentence_scramble": {
+  "mode": "live",
+  "condition": "sentence_scramble",
+  "seed": 20261028,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "99%",
+    "ok": true,
+    "rule": "at least 80%"
+   },
+   {
+    "item": "Sentences heard in the new order",
+    "value": "99%",
+    "ok": true,
+    "rule": "at least 70%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "20%",
+    "ok": true,
+    "rule": "new order beats the old by at least 10%"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_diamond_necklace:word_scramble": {
+  "mode": "live",
+  "condition": "word_scramble",
+  "seed": 20261028,
+  "pass": false,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "45%",
+    "ok": false,
+    "rule": "at least 60%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "15%",
+    "ok": true,
+    "rule": "at most 50% in the old order"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
+ },
+ "story_diamond_necklace:reversed": {
+  "mode": "live",
+  "condition": "reversed",
+  "seed": 0,
+  "pass": null,
+  "checklist": [
+   {
+    "item": "Words heard on reversed speech",
+    "value": "1",
+    "ok": null,
+    "rule": "no word check"
+   }
+  ],
+  "recorded_by": "scripts/story_menu_run.py checks"
  }
 }

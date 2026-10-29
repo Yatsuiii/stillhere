@@ -1,0 +1,449 @@
+{
+ "words": [
+  {
+   "word": "Then",
+   "start": 0.3,
+   "end": 0.92
+  },
+  {
+   "word": "they",
+   "start": 0.92,
+   "end": 1.14
+  },
+  {
+   "word": "imported",
+   "start": 1.14,
+   "end": 1.52
+  },
+  {
+   "word": "some",
+   "start": 1.52,
+   "end": 1.88
+  },
+  {
+   "word": "pewter",
+   "start": 1.88,
+   "end": 2.26
+  },
+  {
+   "word": "mugs",
+   "start": 2.26,
+   "end": 2.6
+  },
+  {
+   "word": "and",
+   "start": 2.6,
+   "end": 2.98
+  },
+  {
+   "word": "a",
+   "start": 2.98,
+   "end": 3.06
+  },
+  {
+   "word": "chafing",
+   "start": 3.06,
+   "end": 3.48
+  },
+  {
+   "word": "dish",
+   "start": 3.48,
+   "end": 3.68
+  },
+  {
+   "word": "or",
+   "start": 3.68,
+   "end": 3.9
+  },
+  {
+   "word": "two",
+   "start": 3.9,
+   "end": 4.12
+  },
+  {
+   "word": "from",
+   "start": 4.12,
+   "end": 4.44
+  },
+  {
+   "word": "Sixth",
+   "start": 4.44,
+   "end": 4.6
+  },
+  {
+   "word": "Avenue,",
+   "start": 4.6,
+   "end": 5.1
+  },
+  {
+   "word": "and",
+   "start": 5.5,
+   "end": 5.76
+  },
+  {
+   "word": "became",
+   "start": 5.76,
+   "end": 6.06
+  },
+  {
+   "word": "a",
+   "start": 6.06,
+   "end": 6.82
+  },
+  {
+   "word": "colony.",
+   "start": 6.82,
+   "end": 7.14
+  },
+  {
+   "word": "At",
+   "start": 9.28,
+   "end": 9.74
+  },
+  {
+   "word": "the",
+   "start": 9.74,
+   "end": 9.86
+  },
+  {
+   "word": "top",
+   "start": 9.86,
+   "end": 10.12
+  },
+  {
+   "word": "of",
+   "start": 10.12,
+   "end": 10.32
+  },
+  {
+   "word": "a",
+   "start": 10.32,
+   "end": 10.44
+  },
+  {
+   "word": "squatty,",
+   "start": 10.44,
+   "end": 11.04
+  },
+  {
+   "word": "three",
+   "start": 11.08,
+   "end": 11.34
+  },
+  {
+   "word": "-story",
+   "start": 11.34,
+   "end": 11.82
+  },
+  {
+   "word": "brick,",
+   "start": 11.82,
+   "end": 12.22
+  },
+  {
+   "word": "Sue",
+   "start": 12.64,
+   "end": 12.94
+  },
+  {
+   "word": "and",
+   "start": 12.94,
+   "end": 13.28
+  },
+  {
+   "word": "John",
+   "start": 13.28,
+   "end": 13.5
+  },
+  {
+   "word": "Zee",
+   "start": 13.5,
+   "end": 13.88
+  },
+  {
+   "word": "had",
+   "start": 13.88,
+   "end": 14.0
+  },
+  {
+   "word": "their",
+   "start": 14.0,
+   "end": 14.2
+  },
+  {
+   "word": "studio.",
+   "start": 14.2,
+   "end": 14.5
+  },
+  {
+   "word": "John",
+   "start": 15.5,
+   "end": 15.84
+  },
+  {
+   "word": "Zee",
+   "start": 15.84,
+   "end": 16.24
+  },
+  {
+   "word": "was",
+   "start": 16.24,
+   "end": 16.46
+  },
+  {
+   "word": "familiar",
+   "start": 16.46,
+   "end": 16.86
+  },
+  {
+   "word": "for",
+   "start": 16.86,
+   "end": 17.2
+  },
+  {
+   "word": "Joanna.",
+   "start": 17.2,
+   "end": 17.64
+  },
+  {
+   "word": "One",
+   "start": 18.5,
+   "end": 18.82
+  },
+  {
+   "word": "was",
+   "start": 18.82,
+   "end": 19.04
+  },
+  {
+   "word": "from",
+   "start": 19.04,
+   "end": 19.3
+  },
+  {
+   "word": "Maine,",
+   "start": 19.3,
+   "end": 19.54
+  },
+  {
+   "word": "the",
+   "start": 19.96,
+   "end": 20.1
+  },
+  {
+   "word": "other",
+   "start": 20.1,
+   "end": 20.34
+  },
+  {
+   "word": "from",
+   "start": 20.34,
+   "end": 20.7
+  },
+  {
+   "word": "California.",
+   "start": 20.7,
+   "end": 21.06
+  },
+  {
+   "word": "They",
+   "start": 21.98,
+   "end": 22.4
+  },
+  {
+   "word": "had",
+   "start": 22.4,
+   "end": 22.56
+  },
+  {
+   "word": "met",
+   "start": 22.56,
+   "end": 22.76
+  },
+  {
+   "word": "at",
+   "start": 22.76,
+   "end": 23.02
+  },
+  {
+   "word": "the",
+   "start": 23.02,
+   "end": 23.16
+  },
+  {
+   "word": "table",
+   "start": 23.16,
+   "end": 23.42
+  },
+  {
+   "word": "to",
+   "start": 23.42,
+   "end": 23.62
+  },
+  {
+   "word": "a",
+   "start": 23.62,
+   "end": 23.72
+  },
+  {
+   "word": "hote",
+   "start": 23.72,
+   "end": 23.9
+  },
+  {
+   "word": "of",
+   "start": 23.9,
+   "end": 24.28
+  },
+  {
+   "word": "an",
+   "start": 24.28,
+   "end": 24.42
+  },
+  {
+   "word": "eighth",
+   "start": 24.42,
+   "end": 24.62
+  },
+  {
+   "word": "street",
+   "start": 24.62,
+   "end": 25.04
+  },
+  {
+   "word": "del",
+   "start": 25.04,
+   "end": 25.26
+  },
+  {
+   "word": "monocos,",
+   "start": 25.26,
+   "end": 25.9
+  },
+  {
+   "word": "and",
+   "start": 26.32,
+   "end": 26.48
+  },
+  {
+   "word": "found",
+   "start": 26.48,
+   "end": 26.74
+  },
+  {
+   "word": "their",
+   "start": 26.74,
+   "end": 27.0
+  },
+  {
+   "word": "tastes",
+   "start": 27.0,
+   "end": 27.42
+  },
+  {
+   "word": "in",
+   "start": 27.42,
+   "end": 27.9
+  },
+  {
+   "word": "art,",
+   "start": 27.9,
+   "end": 28.32
+  },
+  {
+   "word": "chicories.",
+   "start": 28.6,
+   "end": 29.12
+  },
+  {
+   "word": "They",
+   "start": 29.12,
+   "end": 29.56
+  },
+  {
+   "word": "were",
+   "start": 29.56,
+   "end": 29.56
+  },
+  {
+   "word": "very",
+   "start": 29.56,
+   "end": 29.56
+  },
+  {
+   "word": "solid,",
+   "start": 29.56,
+   "end": 29.56
+  },
+  {
+   "word": "and",
+   "start": 29.8,
+   "end": 29.88
+  },
+  {
+   "word": "Bishop's",
+   "start": 29.88,
+   "end": 30.36
+  },
+  {
+   "word": "leaves",
+   "start": 30.36,
+   "end": 30.5
+  },
+  {
+   "word": "so",
+   "start": 30.5,
+   "end": 31.24
+  },
+  {
+   "word": "congenial",
+   "start": 31.24,
+   "end": 31.94
+  },
+  {
+   "word": "that",
+   "start": 31.94,
+   "end": 32.32
+  },
+  {
+   "word": "the",
+   "start": 32.32,
+   "end": 32.5
+  },
+  {
+   "word": "joint",
+   "start": 32.5,
+   "end": 32.7
+  },
+  {
+   "word": "studio",
+   "start": 32.7,
+   "end": 33.16
+  },
+  {
+   "word": "resulted.",
+   "start": 33.16,
+   "end": 33.68
+  },
+  {
+   "word": "That",
+   "start": 34.8,
+   "end": 35.48
+  },
+  {
+   "word": "was",
+   "start": 35.48,
+   "end": 35.68
+  },
+  {
+   "word": "in",
+   "start": 35.68,
+   "end": 35.84
+  },
+  {
+   "word": "May.",
+   "start": 35.84,
+   "end": 36.08
+  }
+ ]
+}

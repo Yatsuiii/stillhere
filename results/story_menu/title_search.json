@@ -102,11 +102,24 @@
    ],
    "hit_naming_a_scanned_stimulus": false,
    "reading": "no result names this story as an fMRI stimulus or an OpenNeuro dataset; results were literary pages or general fMRI/OpenNeuro pages"
+  },
+  "story_diamond_necklace": {
+   "queries": [
+    "\"The Diamond Necklace\" Maupassant fMRI",
+    "\"The Diamond Necklace\" Maupassant OpenNeuro"
+   ],
+   "examples_of_results": [
+    "https://en.wikipedia.org/wiki/The_Necklace",
+    "https://www.excellence-in-literature.com/?p=359"
+   ],
+   "hit_naming_a_scanned_stimulus": false,
+   "reading": "no result names this story as an fMRI stimulus or an OpenNeuro dataset; results were literary pages and adaptations",
+   "searched_utc": "2026-10-29T21:07:17Z",
+   "note": "searched after the story was written to the menu (it failed the first trim, so the first search round skipped it); no hit, so the menu stands"
   }
  },
  "not_searched": {
   "story_baby_tramp": "failed the trim",
-  "story_taming_the_bicycle": "failed the trim",
-  "story_diamond_necklace": "failed the trim"
+  "story_taming_the_bicycle": "held off the menu pending a ruling"
  }
 }

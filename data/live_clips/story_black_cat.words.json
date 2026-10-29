@@ -1,0 +1,359 @@
+{
+ "words": [
+  {
+   "word": "Yet",
+   "start": 0.3,
+   "end": 0.86
+  },
+  {
+   "word": "mad",
+   "start": 0.86,
+   "end": 1.6
+  },
+  {
+   "word": "am",
+   "start": 1.6,
+   "end": 1.9
+  },
+  {
+   "word": "I",
+   "start": 1.9,
+   "end": 2.02
+  },
+  {
+   "word": "not,",
+   "start": 2.02,
+   "end": 2.28
+  },
+  {
+   "word": "and",
+   "start": 2.8,
+   "end": 3.22
+  },
+  {
+   "word": "very",
+   "start": 3.22,
+   "end": 3.52
+  },
+  {
+   "word": "surely",
+   "start": 3.52,
+   "end": 3.84
+  },
+  {
+   "word": "do",
+   "start": 3.84,
+   "end": 4.48
+  },
+  {
+   "word": "I",
+   "start": 4.48,
+   "end": 4.62
+  },
+  {
+   "word": "not",
+   "start": 4.62,
+   "end": 4.84
+  },
+  {
+   "word": "dream.",
+   "start": 4.84,
+   "end": 5.12
+  },
+  {
+   "word": "But",
+   "start": 5.92,
+   "end": 6.64
+  },
+  {
+   "word": "tomorrow",
+   "start": 6.64,
+   "end": 6.94
+  },
+  {
+   "word": "I",
+   "start": 6.94,
+   "end": 7.34
+  },
+  {
+   "word": "die,",
+   "start": 7.34,
+   "end": 7.58
+  },
+  {
+   "word": "and",
+   "start": 8.2,
+   "end": 8.82
+  },
+  {
+   "word": "today",
+   "start": 8.82,
+   "end": 9.12
+  },
+  {
+   "word": "I",
+   "start": 9.12,
+   "end": 9.56
+  },
+  {
+   "word": "would",
+   "start": 9.56,
+   "end": 9.72
+  },
+  {
+   "word": "unbearthen",
+   "start": 9.72,
+   "end": 10.4
+  },
+  {
+   "word": "my",
+   "start": 10.4,
+   "end": 10.58
+  },
+  {
+   "word": "soul.",
+   "start": 10.58,
+   "end": 10.94
+  },
+  {
+   "word": "My",
+   "start": 11.86,
+   "end": 12.5
+  },
+  {
+   "word": "immediate",
+   "start": 12.5,
+   "end": 12.9
+  },
+  {
+   "word": "purpose",
+   "start": 12.9,
+   "end": 13.46
+  },
+  {
+   "word": "is",
+   "start": 13.46,
+   "end": 13.96
+  },
+  {
+   "word": "to",
+   "start": 13.96,
+   "end": 14.14
+  },
+  {
+   "word": "place",
+   "start": 14.14,
+   "end": 14.36
+  },
+  {
+   "word": "before",
+   "start": 14.36,
+   "end": 14.66
+  },
+  {
+   "word": "the",
+   "start": 14.66,
+   "end": 15.02
+  },
+  {
+   "word": "world",
+   "start": 15.02,
+   "end": 15.42
+  },
+  {
+   "word": "plainly,",
+   "start": 15.42,
+   "end": 16.5
+  },
+  {
+   "word": "succinctly,",
+   "start": 16.88,
+   "end": 17.72
+  },
+  {
+   "word": "and",
+   "start": 18.04,
+   "end": 18.4
+  },
+  {
+   "word": "without",
+   "start": 18.4,
+   "end": 18.54
+  },
+  {
+   "word": "comment",
+   "start": 18.54,
+   "end": 19.12
+  },
+  {
+   "word": "a",
+   "start": 19.12,
+   "end": 20.02
+  },
+  {
+   "word": "series",
+   "start": 20.02,
+   "end": 20.46
+  },
+  {
+   "word": "of",
+   "start": 20.46,
+   "end": 20.78
+  },
+  {
+   "word": "mere",
+   "start": 20.78,
+   "end": 21.02
+  },
+  {
+   "word": "household",
+   "start": 21.02,
+   "end": 21.66
+  },
+  {
+   "word": "events.",
+   "start": 21.66,
+   "end": 22.04
+  },
+  {
+   "word": "In",
+   "start": 23.3,
+   "end": 24.06
+  },
+  {
+   "word": "their",
+   "start": 24.06,
+   "end": 24.2
+  },
+  {
+   "word": "consequences",
+   "start": 24.2,
+   "end": 24.66
+  },
+  {
+   "word": "these",
+   "start": 24.66,
+   "end": 25.72
+  },
+  {
+   "word": "events",
+   "start": 25.72,
+   "end": 26.1
+  },
+  {
+   "word": "have",
+   "start": 26.1,
+   "end": 26.4
+  },
+  {
+   "word": "terrified,",
+   "start": 26.4,
+   "end": 26.92
+  },
+  {
+   "word": "have",
+   "start": 27.9,
+   "end": 27.98
+  },
+  {
+   "word": "tortured,",
+   "start": 27.98,
+   "end": 28.36
+  },
+  {
+   "word": "have",
+   "start": 29.48,
+   "end": 29.7
+  },
+  {
+   "word": "destroyed",
+   "start": 29.7,
+   "end": 30.1
+  },
+  {
+   "word": "me.",
+   "start": 30.1,
+   "end": 30.56
+  },
+  {
+   "word": "Yet",
+   "start": 31.7,
+   "end": 32.1
+  },
+  {
+   "word": "I",
+   "start": 32.1,
+   "end": 32.38
+  },
+  {
+   "word": "will",
+   "start": 32.38,
+   "end": 32.54
+  },
+  {
+   "word": "not",
+   "start": 32.54,
+   "end": 32.76
+  },
+  {
+   "word": "attempt",
+   "start": 32.76,
+   "end": 33.06
+  },
+  {
+   "word": "to",
+   "start": 33.06,
+   "end": 33.48
+  },
+  {
+   "word": "expound",
+   "start": 33.48,
+   "end": 33.98
+  },
+  {
+   "word": "them.",
+   "start": 33.98,
+   "end": 34.2
+  },
+  {
+   "word": "To",
+   "start": 34.84,
+   "end": 35.3
+  },
+  {
+   "word": "me",
+   "start": 35.3,
+   "end": 35.48
+  },
+  {
+   "word": "they",
+   "start": 35.48,
+   "end": 35.86
+  },
+  {
+   "word": "have",
+   "start": 35.86,
+   "end": 35.98
+  },
+  {
+   "word": "presented",
+   "start": 35.98,
+   "end": 36.36
+  },
+  {
+   "word": "little",
+   "start": 36.36,
+   "end": 36.76
+  },
+  {
+   "word": "bit",
+   "start": 36.76,
+   "end": 37.12
+  },
+  {
+   "word": "horror.",
+   "start": 37.12,
+   "end": 37.36
+  }
+ ]
+}

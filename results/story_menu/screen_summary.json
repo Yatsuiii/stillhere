@@ -1,0 +1,289 @@
+{
+ "rule": "docs/rules/story_menu_rule.md",
+ "label": "exploratory",
+ "stories": [
+  {
+   "id": "story_black_cat",
+   "title": "The Black Cat",
+   "playtime_s": 1618,
+   "trim": "ok",
+   "screen": {
+    "chunks": 27,
+    "bar1_min_share": 1.0,
+    "bar2_longest_gap_s": 4.04,
+    "bar3_agreement": 0.9763,
+    "pass": true,
+    "failed_bar": null
+   },
+   "window": {
+    "first_word": 80,
+    "last_word": 150,
+    "start_s": 37.9,
+    "end_s": 75.56,
+    "sentences": 6
+   },
+   "notes_tags": [
+    "death or dying",
+    "alcohol or drugs",
+    "injury or illness",
+    "violence",
+    "cruelty to animals",
+    "grief or loss",
+    "frightening scenes",
+    "being trapped or unable to move or speak",
+    "falls or head injury"
+   ]
+  },
+  {
+   "id": "story_nice_people",
+   "title": "The Nice People",
+   "playtime_s": 1187,
+   "trim": "ok",
+   "screen": {
+    "chunks": 20,
+    "bar1_min_share": 0.9958,
+    "bar2_longest_gap_s": 2.56,
+    "bar3_agreement": 0.9699,
+    "pass": true,
+    "failed_bar": null
+   },
+   "window": {
+    "first_word": 32,
+    "last_word": 110,
+    "start_s": 21.0,
+    "end_s": 59.62,
+    "sentences": 10
+   },
+   "notes_tags": [
+    "slurs or demeaning language",
+    "alcohol or drugs"
+   ]
+  },
+  {
+   "id": "story_pigs_is_pigs",
+   "title": "Pigs is Pigs",
+   "playtime_s": 1393,
+   "trim": "ok",
+   "screen": {
+    "chunks": 23,
+    "bar1_min_share": 0.9986,
+    "bar2_longest_gap_s": 2.38,
+    "bar3_agreement": 0.9454,
+    "pass": false,
+    "failed_bar": "3"
+   },
+   "window": null,
+   "notes_tags": null
+  },
+  {
+   "id": "story_taming_the_bicycle",
+   "title": "Taming the Bicycle",
+   "playtime_s": 1691,
+   "trim": "ok",
+   "screen": {
+    "chunks": 28,
+    "bar1_min_share": 0.997,
+    "bar2_longest_gap_s": 3.84,
+    "bar3_agreement": 0.9776,
+    "pass": true,
+    "failed_bar": null
+   },
+   "window": {
+    "first_word": 23,
+    "last_word": 79,
+    "start_s": 24.02,
+    "end_s": 62.64,
+    "sentences": 6
+   },
+   "notes_tags": [
+    "medical care",
+    "drowning",
+    "injury or illness",
+    "falls or head injury",
+    "death or dying",
+    "violence",
+    "slurs or demeaning language"
+   ]
+  },
+  {
+   "id": "story_telltale_heart",
+   "title": "The Tell-tale Heart",
+   "playtime_s": 1088,
+   "trim": "ok",
+   "screen": {
+    "chunks": 18,
+    "bar1_min_share": 1.0,
+    "bar2_longest_gap_s": 4.14,
+    "bar3_agreement": 0.9819,
+    "pass": true,
+    "failed_bar": null
+   },
+   "window": {
+    "first_word": 37,
+    "last_word": 98,
+    "start_s": 24.04,
+    "end_s": 61.0,
+    "sentences": 6
+   },
+   "notes_tags": [
+    "injury or illness",
+    "medical care",
+    "frightening scenes",
+    "violence",
+    "being trapped or unable to move or speak",
+    "death or dying"
+   ]
+  },
+  {
+   "id": "story_baby_tramp",
+   "title": "A Baby Tramp",
+   "playtime_s": 794,
+   "trim": "failed",
+   "screen": null,
+   "window": null,
+   "notes_tags": null
+  },
+  {
+   "id": "story_cask_of_amontillado",
+   "title": "The Cask of Amontillado",
+   "playtime_s": 945,
+   "trim": "ok",
+   "screen": {
+    "chunks": 16,
+    "bar1_min_share": 0.5557,
+    "bar2_longest_gap_s": 8.2,
+    "bar3_agreement": 0.9365,
+    "pass": false,
+    "failed_bar": "1"
+   },
+   "window": null,
+   "notes_tags": null
+  },
+  {
+   "id": "story_diamond_necklace",
+   "title": "The Diamond Necklace",
+   "playtime_s": 1165,
+   "trim": "ok",
+   "screen": {
+    "chunks": 20,
+    "bar1_min_share": 1.0,
+    "bar2_longest_gap_s": 1.8,
+    "bar3_agreement": 0.9657,
+    "pass": true,
+    "failed_bar": null
+   },
+   "window": {
+    "first_word": 363,
+    "last_word": 455,
+    "start_s": 149.96,
+    "end_s": 184.84,
+    "sentences": 6
+   },
+   "notes_tags": [
+    "grief or loss"
+   ]
+  },
+  {
+   "id": "story_esme",
+   "title": "Esme",
+   "playtime_s": 779,
+   "trim": "ok",
+   "screen": {
+    "chunks": 13,
+    "bar1_min_share": 0.9972,
+    "bar2_longest_gap_s": 2.66,
+    "bar3_agreement": 0.9182,
+    "pass": false,
+    "failed_bar": "3"
+   },
+   "window": null,
+   "notes_tags": null
+  },
+  {
+   "id": "story_last_leaf",
+   "title": "The Last Leaf",
+   "playtime_s": 996,
+   "trim": "ok",
+   "screen": {
+    "chunks": 17,
+    "bar1_min_share": 0.9986,
+    "bar2_longest_gap_s": 3.58,
+    "bar3_agreement": 0.954,
+    "pass": true,
+    "failed_bar": null
+   },
+   "window": {
+    "first_word": 146,
+    "last_word": 234,
+    "start_s": 69.42,
+    "end_s": 105.8,
+    "sentences": 7
+   },
+   "notes_tags": [
+    "injury or illness",
+    "medical care",
+    "slurs or demeaning language",
+    "being trapped or unable to move or speak",
+    "suicide or self-harm",
+    "grief or loss",
+    "falls or head injury",
+    "death or dying",
+    "alcohol or drugs"
+   ]
+  },
+  {
+   "id": "story_toys_of_peace",
+   "title": "The Toys of Peace",
+   "playtime_s": 691,
+   "trim": "ok",
+   "screen": {
+    "chunks": 12,
+    "bar1_min_share": 1.0,
+    "bar2_longest_gap_s": 2.4,
+    "bar3_agreement": 0.8984,
+    "pass": false,
+    "failed_bar": "3"
+   },
+   "window": null,
+   "notes_tags": null
+  }
+ ],
+ "spend": {
+  "spark_open": {
+   "rows": 32,
+   "audio_s": 0,
+   "prompt_tokens": 123657,
+   "completion_tokens": 42097,
+   "usd": 0.3335,
+   "errors": 1
+  },
+  "spark_open_diagnostic": {
+   "rows": 1,
+   "audio_s": 0,
+   "prompt_tokens": 4983,
+   "completion_tokens": 1501,
+   "usd": 0.0126,
+   "errors": 0
+  },
+  "vt_check": {
+   "rows": 20,
+   "audio_s": 738.0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "usd": 2.0,
+   "errors": 0
+  },
+  "vt_screen": {
+   "rows": 195,
+   "audio_s": 11371.2,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "usd": 19.5,
+   "errors": 0
+  }
+ },
+ "price_notes": {
+  "voice_transcribe": "no published price and no cost in its answers: usd is the $0.10-per-call reservation; the charge needs the billing page",
+  "spark_open": "tokens x $1.25 per million input, $4.25 per million output (stillhere/planner_eval.py rate)"
+ }
+}

@@ -1,0 +1,314 @@
+{
+ "words": [
+  {
+   "word": "Edgar",
+   "start": 0.3,
+   "end": 0.3
+  },
+  {
+   "word": "Allan",
+   "start": 0.3,
+   "end": 0.68
+  },
+  {
+   "word": "Poe's",
+   "start": 0.68,
+   "end": 1.36
+  },
+  {
+   "word": "The",
+   "start": 1.36,
+   "end": 2.3
+  },
+  {
+   "word": "Telltale",
+   "start": 2.3,
+   "end": 3.14
+  },
+  {
+   "word": "Heart",
+   "start": 3.14,
+   "end": 3.62
+  },
+  {
+   "word": "True,",
+   "start": 7.14,
+   "end": 7.98
+  },
+  {
+   "word": "nervous,",
+   "start": 7.98,
+   "end": 8.82
+  },
+  {
+   "word": "very",
+   "start": 9.78,
+   "end": 10.1
+  },
+  {
+   "word": "nervous,",
+   "start": 10.1,
+   "end": 10.7
+  },
+  {
+   "word": "dreadfully",
+   "start": 11.6,
+   "end": 12.3
+  },
+  {
+   "word": "nervous,",
+   "start": 12.3,
+   "end": 12.8
+  },
+  {
+   "word": "I",
+   "start": 13.16,
+   "end": 13.28
+  },
+  {
+   "word": "have",
+   "start": 13.28,
+   "end": 13.52
+  },
+  {
+   "word": "been",
+   "start": 13.52,
+   "end": 13.8
+  },
+  {
+   "word": "and",
+   "start": 13.8,
+   "end": 14.18
+  },
+  {
+   "word": "am.",
+   "start": 14.18,
+   "end": 14.6
+  },
+  {
+   "word": "But",
+   "start": 15.4,
+   "end": 15.94
+  },
+  {
+   "word": "why",
+   "start": 15.94,
+   "end": 16.28
+  },
+  {
+   "word": "will",
+   "start": 16.28,
+   "end": 16.84
+  },
+  {
+   "word": "you",
+   "start": 16.84,
+   "end": 17.04
+  },
+  {
+   "word": "say",
+   "start": 17.04,
+   "end": 17.34
+  },
+  {
+   "word": "that",
+   "start": 17.34,
+   "end": 17.58
+  },
+  {
+   "word": "I",
+   "start": 17.58,
+   "end": 17.76
+  },
+  {
+   "word": "am",
+   "start": 17.76,
+   "end": 17.92
+  },
+  {
+   "word": "mad?",
+   "start": 17.92,
+   "end": 18.28
+  },
+  {
+   "word": "The",
+   "start": 19.3,
+   "end": 19.58
+  },
+  {
+   "word": "disease",
+   "start": 19.58,
+   "end": 19.94
+  },
+  {
+   "word": "has",
+   "start": 19.94,
+   "end": 20.44
+  },
+  {
+   "word": "sharpened",
+   "start": 20.44,
+   "end": 21.08
+  },
+  {
+   "word": "my",
+   "start": 21.08,
+   "end": 21.32
+  },
+  {
+   "word": "senses,",
+   "start": 21.32,
+   "end": 21.78
+  },
+  {
+   "word": "not",
+   "start": 22.5,
+   "end": 22.74
+  },
+  {
+   "word": "destroyed,",
+   "start": 22.74,
+   "end": 23.28
+  },
+  {
+   "word": "not",
+   "start": 23.86,
+   "end": 23.98
+  },
+  {
+   "word": "dulled",
+   "start": 23.98,
+   "end": 24.56
+  },
+  {
+   "word": "them.",
+   "start": 24.56,
+   "end": 24.7
+  },
+  {
+   "word": "Above",
+   "start": 25.58,
+   "end": 25.72
+  },
+  {
+   "word": "all",
+   "start": 25.72,
+   "end": 26.42
+  },
+  {
+   "word": "was",
+   "start": 26.42,
+   "end": 26.98
+  },
+  {
+   "word": "the",
+   "start": 26.98,
+   "end": 27.14
+  },
+  {
+   "word": "sense",
+   "start": 27.14,
+   "end": 27.36
+  },
+  {
+   "word": "of",
+   "start": 27.36,
+   "end": 27.6
+  },
+  {
+   "word": "hearing",
+   "start": 27.6,
+   "end": 28.06
+  },
+  {
+   "word": "acute.",
+   "start": 28.06,
+   "end": 28.48
+  },
+  {
+   "word": "I",
+   "start": 29.64,
+   "end": 30.06
+  },
+  {
+   "word": "heard",
+   "start": 30.06,
+   "end": 30.48
+  },
+  {
+   "word": "all",
+   "start": 30.48,
+   "end": 31.0
+  },
+  {
+   "word": "things",
+   "start": 31.0,
+   "end": 31.48
+  },
+  {
+   "word": "in",
+   "start": 31.48,
+   "end": 31.86
+  },
+  {
+   "word": "the",
+   "start": 31.86,
+   "end": 32.0
+  },
+  {
+   "word": "heaven",
+   "start": 32.0,
+   "end": 32.32
+  },
+  {
+   "word": "and",
+   "start": 32.32,
+   "end": 32.78
+  },
+  {
+   "word": "in",
+   "start": 32.78,
+   "end": 33.02
+  },
+  {
+   "word": "the",
+   "start": 33.02,
+   "end": 33.28
+  },
+  {
+   "word": "earth.",
+   "start": 33.28,
+   "end": 33.6
+  },
+  {
+   "word": "I",
+   "start": 34.04,
+   "end": 34.44
+  },
+  {
+   "word": "heard",
+   "start": 34.44,
+   "end": 34.76
+  },
+  {
+   "word": "many",
+   "start": 34.76,
+   "end": 35.12
+  },
+  {
+   "word": "things",
+   "start": 35.12,
+   "end": 35.86
+  },
+  {
+   "word": "in",
+   "start": 35.86,
+   "end": 36.16
+  },
+  {
+   "word": "hell.",
+   "start": 36.16,
+   "end": 36.66
+  }
+ ]
+}

@@ -377,7 +377,10 @@ def test_queued_jobs_expire_when_no_worker_is_online(web, monkeypatch):
 def test_every_menu_clip_was_checked_for_a_public_scan_and_the_end_line_follows_it(web):
     app, jobs, ledger, stations, store = web
     menu = json.loads((REPO / "stillhere/live_menu.json").read_text())
-    assert menu["clips"][0]["id"] == "alice_ch02"                                     # the one clip with whole sentences at both ends
+    ids = [c["id"] for c in menu["clips"]]                         # fresh screened stories first (story menu rule), then the Alice clips
+    alice = [i for i in ids if i.startswith("alice_")]
+    assert alice == ["alice_ch02", "alice_ch01", "alice_ch03"] and ids[len(ids) - 3:] == alice      # ch02 stays the backup
+    assert all(i.startswith("story_") for i in ids[:len(ids) - 3])
     for c in menu["clips"]:
         assert "public_scan" in c, c["id"]
         line = stations.end_line(c["id"])

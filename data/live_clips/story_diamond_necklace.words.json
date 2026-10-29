@@ -1,0 +1,469 @@
+{
+ "words": [
+  {
+   "word": "I",
+   "start": 0.3,
+   "end": 0.5
+  },
+  {
+   "word": "don't",
+   "start": 0.5,
+   "end": 0.78
+  },
+  {
+   "word": "know",
+   "start": 0.78,
+   "end": 0.96
+  },
+  {
+   "word": "anything",
+   "start": 0.96,
+   "end": 1.32
+  },
+  {
+   "word": "better",
+   "start": 1.32,
+   "end": 1.76
+  },
+  {
+   "word": "than",
+   "start": 1.76,
+   "end": 2.04
+  },
+  {
+   "word": "that!",
+   "start": 2.04,
+   "end": 2.32
+  },
+  {
+   "word": "She",
+   "start": 2.92,
+   "end": 3.42
+  },
+  {
+   "word": "thought",
+   "start": 3.42,
+   "end": 3.6
+  },
+  {
+   "word": "of",
+   "start": 3.6,
+   "end": 3.78
+  },
+  {
+   "word": "dainty",
+   "start": 3.78,
+   "end": 4.18
+  },
+  {
+   "word": "dinners,",
+   "start": 4.18,
+   "end": 4.4
+  },
+  {
+   "word": "of",
+   "start": 4.96,
+   "end": 5.14
+  },
+  {
+   "word": "shining",
+   "start": 5.14,
+   "end": 5.4
+  },
+  {
+   "word": "silverware,",
+   "start": 5.4,
+   "end": 6.2
+  },
+  {
+   "word": "of",
+   "start": 6.68,
+   "end": 6.88
+  },
+  {
+   "word": "tapestry",
+   "start": 6.88,
+   "end": 7.56
+  },
+  {
+   "word": "peopled",
+   "start": 7.56,
+   "end": 7.98
+  },
+  {
+   "word": "the",
+   "start": 7.98,
+   "end": 8.2
+  },
+  {
+   "word": "walls",
+   "start": 8.2,
+   "end": 8.42
+  },
+  {
+   "word": "with",
+   "start": 8.42,
+   "end": 8.76
+  },
+  {
+   "word": "ancient",
+   "start": 8.76,
+   "end": 9.02
+  },
+  {
+   "word": "personages,",
+   "start": 9.02,
+   "end": 9.9
+  },
+  {
+   "word": "and",
+   "start": 10.3,
+   "end": 10.42
+  },
+  {
+   "word": "with",
+   "start": 10.42,
+   "end": 10.54
+  },
+  {
+   "word": "strange",
+   "start": 10.54,
+   "end": 10.82
+  },
+  {
+   "word": "birds",
+   "start": 10.82,
+   "end": 11.28
+  },
+  {
+   "word": "flying",
+   "start": 11.28,
+   "end": 11.72
+  },
+  {
+   "word": "in",
+   "start": 11.72,
+   "end": 12.06
+  },
+  {
+   "word": "the",
+   "start": 12.06,
+   "end": 12.14
+  },
+  {
+   "word": "midst",
+   "start": 12.14,
+   "end": 12.42
+  },
+  {
+   "word": "of",
+   "start": 12.42,
+   "end": 12.68
+  },
+  {
+   "word": "a",
+   "start": 12.68,
+   "end": 12.76
+  },
+  {
+   "word": "fairy",
+   "start": 12.76,
+   "end": 13.04
+  },
+  {
+   "word": "forest.",
+   "start": 13.04,
+   "end": 13.4
+  },
+  {
+   "word": "And",
+   "start": 14.18,
+   "end": 14.58
+  },
+  {
+   "word": "she",
+   "start": 14.58,
+   "end": 14.72
+  },
+  {
+   "word": "thought",
+   "start": 14.72,
+   "end": 14.88
+  },
+  {
+   "word": "of",
+   "start": 14.88,
+   "end": 15.08
+  },
+  {
+   "word": "delicious",
+   "start": 15.08,
+   "end": 15.38
+  },
+  {
+   "word": "dishes,",
+   "start": 15.38,
+   "end": 15.82
+  },
+  {
+   "word": "served",
+   "start": 16.34,
+   "end": 16.68
+  },
+  {
+   "word": "on",
+   "start": 16.68,
+   "end": 16.94
+  },
+  {
+   "word": "marvelous",
+   "start": 16.94,
+   "end": 17.32
+  },
+  {
+   "word": "plates,",
+   "start": 17.32,
+   "end": 17.72
+  },
+  {
+   "word": "and",
+   "start": 18.24,
+   "end": 18.44
+  },
+  {
+   "word": "of",
+   "start": 18.44,
+   "end": 18.58
+  },
+  {
+   "word": "the",
+   "start": 18.58,
+   "end": 18.68
+  },
+  {
+   "word": "whispered",
+   "start": 18.68,
+   "end": 18.98
+  },
+  {
+   "word": "gallantries",
+   "start": 18.98,
+   "end": 19.7
+  },
+  {
+   "word": "to",
+   "start": 19.7,
+   "end": 19.96
+  },
+  {
+   "word": "which",
+   "start": 19.96,
+   "end": 20.12
+  },
+  {
+   "word": "you",
+   "start": 20.12,
+   "end": 20.3
+  },
+  {
+   "word": "listen",
+   "start": 20.3,
+   "end": 20.7
+  },
+  {
+   "word": "with",
+   "start": 20.7,
+   "end": 21.0
+  },
+  {
+   "word": "a",
+   "start": 21.0,
+   "end": 21.1
+  },
+  {
+   "word": "sphinx",
+   "start": 21.1,
+   "end": 21.56
+  },
+  {
+   "word": "-like",
+   "start": 21.56,
+   "end": 21.74
+  },
+  {
+   "word": "smile,",
+   "start": 21.74,
+   "end": 22.1
+  },
+  {
+   "word": "while",
+   "start": 22.54,
+   "end": 22.7
+  },
+  {
+   "word": "you",
+   "start": 22.7,
+   "end": 22.9
+  },
+  {
+   "word": "are",
+   "start": 22.9,
+   "end": 23.02
+  },
+  {
+   "word": "eating",
+   "start": 23.02,
+   "end": 23.26
+  },
+  {
+   "word": "the",
+   "start": 23.26,
+   "end": 23.52
+  },
+  {
+   "word": "pink",
+   "start": 23.52,
+   "end": 23.76
+  },
+  {
+   "word": "meat",
+   "start": 23.76,
+   "end": 24.08
+  },
+  {
+   "word": "of",
+   "start": 24.08,
+   "end": 24.3
+  },
+  {
+   "word": "a",
+   "start": 24.3,
+   "end": 24.38
+  },
+  {
+   "word": "trout,",
+   "start": 24.38,
+   "end": 24.56
+  },
+  {
+   "word": "or",
+   "start": 24.96,
+   "end": 25.12
+  },
+  {
+   "word": "the",
+   "start": 25.12,
+   "end": 25.26
+  },
+  {
+   "word": "wings",
+   "start": 25.26,
+   "end": 25.42
+  },
+  {
+   "word": "of",
+   "start": 25.42,
+   "end": 25.7
+  },
+  {
+   "word": "a",
+   "start": 25.7,
+   "end": 25.76
+  },
+  {
+   "word": "quail.",
+   "start": 25.76,
+   "end": 26.06
+  },
+  {
+   "word": "She",
+   "start": 26.72,
+   "end": 27.16
+  },
+  {
+   "word": "had",
+   "start": 27.16,
+   "end": 27.3
+  },
+  {
+   "word": "no",
+   "start": 27.3,
+   "end": 27.58
+  },
+  {
+   "word": "gowns,",
+   "start": 27.58,
+   "end": 28.2
+  },
+  {
+   "word": "no",
+   "start": 28.48,
+   "end": 28.76
+  },
+  {
+   "word": "jewels,",
+   "start": 28.76,
+   "end": 29.0
+  },
+  {
+   "word": "nothing.",
+   "start": 29.66,
+   "end": 30.1
+  },
+  {
+   "word": "And",
+   "start": 30.68,
+   "end": 31.06
+  },
+  {
+   "word": "she",
+   "start": 31.06,
+   "end": 31.22
+  },
+  {
+   "word": "loved",
+   "start": 31.22,
+   "end": 31.42
+  },
+  {
+   "word": "nothing",
+   "start": 31.42,
+   "end": 31.94
+  },
+  {
+   "word": "but",
+   "start": 31.94,
+   "end": 32.18
+  },
+  {
+   "word": "that.",
+   "start": 32.18,
+   "end": 32.44
+  },
+  {
+   "word": "She",
+   "start": 33.04,
+   "end": 33.58
+  },
+  {
+   "word": "felt",
+   "start": 33.58,
+   "end": 33.8
+  },
+  {
+   "word": "made",
+   "start": 33.8,
+   "end": 34.04
+  },
+  {
+   "word": "for",
+   "start": 34.04,
+   "end": 34.32
+  },
+  {
+   "word": "that.",
+   "start": 34.32,
+   "end": 34.58
+  }
+ ]
+}

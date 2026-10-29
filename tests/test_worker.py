@@ -52,14 +52,20 @@ def test_cache_key_is_the_documented_formula():
 def test_clips_match_index_and_live_menu():
     menu = json.loads((REPO / "stillhere/live_menu.json").read_text())
     ids = [c["id"] for c in IDX["clips"]]
-    assert ids == [f"alice_ch{i:02d}" for i in range(1, 13)]
+    assert ids[:12] == [f"alice_ch{i:02d}" for i in range(1, 13)]
+    stories = [c for c in IDX["clips"] if c.get("rule") == "docs/rules/story_menu_rule.md"]
+    assert ids[12:] == [c["id"] for c in stories] and all(i.startswith("story_") for i in ids[12:])
     for m in menu["clips"]:
         assert R.clip_entry(m["id"], IDX)["wav_sha256"] == m["intact_wav_sha256"]
+    on_menu = {m["id"] for m in menu["clips"]}
     for c in IDX["clips"]:
         x, sr, words = R.load_clip(c["id"], IDX)
-        assert sr == 16000 and abs(len(x) / sr - 40.0) < 1e-6 and len(words) == c["n_words"]
-        assert all(w["end"] > w["start"] or 0.01 < w["start"] < 39.95 for w in words)
+        secs = len(x) / sr
+        assert sr == 16000 and len(words) == c["n_words"]
+        assert abs(secs - 40.0) < 1e-6 if c["id"].startswith("alice_") else 30.0 <= secs <= 40.0
+        assert all(w["end"] > w["start"] or 0.01 < w["start"] < secs - 0.05 for w in words)
         assert not any("\u2014" in w["word"] for w in words)
+        assert c["id"].startswith("alice_") or c["id"] in on_menu or "reader" not in c     # reader names only for menu stories
     for k in ("tribe", "w2v_bert", "llama", "precision", "v_jepa_2", "audio_lane_device", "brain_device", "word_source"):
         assert IDX["models"][k]
 
@@ -260,7 +266,8 @@ def test_forecast_cache():
         pytest.skip("cache not computed yet")
     doc = json.loads(p.read_text())
     extras = doc.get("extra_recipes", [])
-    assert doc["models"] == IDX["models"] and len(doc["entries"]) == 48 + len(extras)
+    n_default = 4 * len(IDX["clips"])                                  # every listed clip x 4 conditions at the default seed
+    assert doc["models"] == IDX["models"] and len(doc["entries"]) == n_default + len(extras)
     assert {"clip_id": "alice_ch03", "condition": "sentence_scramble", "seed": 7} in extras    # the page's example chip 3
     seen = set()
     for key, e in doc["entries"].items():
@@ -276,7 +283,7 @@ def test_forecast_cache():
         assert n - 1 <= e["n_words_text_lane"] <= n          # TRIBE's own word steps may drop one (alice_ch06 word scramble: 145 of 146)
         assert e["input_sha256"] == R.build_condition(e["recipe"], IDX).wav_sha256
         assert not any(k in e for k in ("P", "vertices", "transcript", "audio"))
-    assert len(seen) == 48 + len(extras)
+    assert len(seen) == n_default + len(extras)
 
 
 def test_serve_exits_for_a_fresh_restart_when_the_feature_cache_is_full(monkeypatch, tmp_path):

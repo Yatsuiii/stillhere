@@ -3,6 +3,203 @@
  "default_seed": 20261028,
  "clips": [
   {
+   "id": "story_black_cat",
+   "title": "The Black Cat",
+   "short": "The Black Cat",
+   "reader": "Tom Yates",
+   "source": "https://archive.org/download/stories_001_librivox/black_cat_poe_ty_64kb.mp3",
+   "start_s": 37.9,
+   "dur_s": 37.66,
+   "intact_wav_sha256": "a2879d91d828626f0a03300af278d5ae9d9a78788a0dbc7952cc7eeb8709cce4",
+   "public_scan": null,
+   "screen": {
+    "archive_url": "https://archive.org/download/stories_001_librivox/black_cat_poe_ty_64kb.mp3",
+    "sentences": 6,
+    "notes": [
+     {
+      "tag": "death or dying",
+      "t": 43.82,
+      "quote": "But tomorrow I die"
+     },
+     {
+      "tag": "alcohol or drugs",
+      "t": 308.76,
+      "quote": "what disease is like alcohol"
+     },
+     {
+      "tag": "injury or illness",
+      "t": 337.4,
+      "quote": "inflicted a slight wound upon my hand"
+     },
+     {
+      "tag": "violence",
+      "t": 364.78,
+      "quote": "deliberately cut one of its eyes from the socket"
+     },
+     {
+      "tag": "cruelty to animals",
+      "t": 364.78,
+      "quote": "deliberately cut one of its eyes from the socket"
+     },
+     {
+      "tag": "grief or loss",
+      "t": 382.7,
+      "quote": "I experienced a sentiment half of horror"
+     },
+     {
+      "tag": "frightening scenes",
+      "t": 648.91,
+      "quote": "the figure of a gigantic cat"
+     },
+     {
+      "tag": "being trapped or unable to move or speak",
+      "t": 698.69,
+      "quote": "compressed the victim of my cruelty into the substance"
+     },
+     {
+      "tag": "falls or head injury",
+      "t": 1164.31,
+      "quote": "nearly throwing me headlong"
+     }
+    ],
+    "notes_host": "fireworks"
+   }
+  },
+  {
+   "id": "story_telltale_heart",
+   "title": "The Tell-tale Heart",
+   "short": "The Tell-tale Heart",
+   "reader": "Don Morgan",
+   "source": "https://archive.org/download/stories_001_librivox/telltale_heart_poe_dm_64kb.mp3",
+   "start_s": 24.04,
+   "dur_s": 36.96,
+   "intact_wav_sha256": "317429490f2da9ddefb442a0d9ef86e3fba139b31bce6f6eff99a806388f77f9",
+   "public_scan": null,
+   "screen": {
+    "archive_url": "https://archive.org/download/stories_001_librivox/telltale_heart_poe_dm_64kb.mp3",
+    "sentences": 6,
+    "notes": [
+     {
+      "tag": "injury or illness",
+      "t": 43.34,
+      "quote": "The disease has sharpened my senses"
+     },
+     {
+      "tag": "medical care",
+      "t": 43.34,
+      "quote": "the disease has sharpened my senses"
+     },
+     {
+      "tag": "frightening scenes",
+      "t": 109.54,
+      "quote": "He had the eye of a vulture"
+     },
+     {
+      "tag": "violence",
+      "t": 126.18,
+      "quote": "I made up my mind to take the life"
+     },
+     {
+      "tag": "being trapped or unable to move or speak",
+      "t": 385.08,
+      "quote": "I kept quite still and said nothing"
+     },
+     {
+      "tag": "death or dying",
+      "t": 731.84,
+      "quote": "The old man was dead"
+     }
+    ],
+    "notes_host": "fireworks"
+   }
+  },
+  {
+   "id": "story_diamond_necklace",
+   "title": "The Diamond Necklace",
+   "short": "The Diamond Necklace",
+   "reader": "Alys AtteWater",
+   "source": "https://archive.org/download/stories_002_librivox/diamond_necklace_maupassant_aa_64kb.mp3",
+   "start_s": 149.96,
+   "dur_s": 34.88,
+   "intact_wav_sha256": "bc37a3340b8a85e14563ec2f82e45a964dafdb33f7f2dca0208331146cf96175",
+   "public_scan": null,
+   "screen": {
+    "archive_url": "https://archive.org/download/stories_002_librivox/diamond_necklace_maupassant_aa_64kb.mp3",
+    "sentences": 6,
+    "notes": [
+     {
+      "tag": "grief or loss",
+      "t": 658.7,
+      "quote": "I have lost Madame Force Je's necklace!"
+     }
+    ],
+    "notes_host": "fireworks"
+   }
+  },
+  {
+   "id": "story_last_leaf",
+   "title": "The Last Leaf",
+   "short": "The Last Leaf",
+   "reader": "Ted McElroy",
+   "source": "https://archive.org/download/stories_002_librivox/last_leaf_henry_jtm_64kb.mp3",
+   "start_s": 69.42,
+   "dur_s": 36.38,
+   "intact_wav_sha256": "6af28a311c3e932737ad3219b044acea0a2fc05c5ba08742cfaa94e38310cd0d",
+   "public_scan": null,
+   "screen": {
+    "archive_url": "https://archive.org/download/stories_002_librivox/last_leaf_henry_jtm_64kb.mp3",
+    "sentences": 7,
+    "notes": [
+     {
+      "tag": "injury or illness",
+      "t": 110.28,
+      "quote": "whom the doctors called pneumonia stalked about the colony"
+     },
+     {
+      "tag": "medical care",
+      "t": 110.5,
+      "quote": "doctors called pneumonia stalked about the colony"
+     },
+     {
+      "tag": "slurs or demeaning language",
+      "t": 142.84,
+      "quote": "red fisted short breathed old duffer But John"
+     },
+     {
+      "tag": "being trapped or unable to move or speak",
+      "t": 148.56,
+      "quote": "she lay scarcely moving on her painted iron bedstead"
+     },
+     {
+      "tag": "suicide or self-harm",
+      "t": 167.9,
+      "quote": "She has one chance in, let"
+     },
+     {
+      "tag": "grief or loss",
+      "t": 251.28,
+      "quote": "Sue went into the workroom and cried a Japanese napkin"
+     },
+     {
+      "tag": "falls or head injury",
+      "t": 374.66,
+      "quote": "There goes another one. There are"
+     },
+     {
+      "tag": "death or dying",
+      "t": 385.84,
+      "quote": "When the last one falls I must go"
+     },
+     {
+      "tag": "alcohol or drugs",
+      "t": 432.16,
+      "quote": "and buy port wine for her sick child"
+     }
+    ],
+    "notes_host": "fireworks"
+   }
+  },
+  {
    "id": "alice_ch02",
    "title": "Alice's Adventures in Wonderland, chapter 2",
    "reader": "Brad Bush",
@@ -46,5 +243,31 @@
    "results": "results/section8.json",
    "line": "Le Petit Prince is not on the live menu, so this plan ends on its evidence panel: the held-out section 8 result."
   }
+ },
+ "screen_summary": {
+  "n_on_menu": 4,
+  "failed": [
+   {
+    "title": "Pigs is Pigs",
+    "bar": "3"
+   },
+   {
+    "title": "A Baby Tramp",
+    "bar": "trim"
+   },
+   {
+    "title": "The Cask of Amontillado",
+    "bar": "1"
+   },
+   {
+    "title": "Esme",
+    "bar": "3"
+   },
+   {
+    "title": "The Toys of Peace",
+    "bar": "3"
+   }
+  ],
+  "rule": "docs/rules/story_menu_rule.md"
  }
 }
