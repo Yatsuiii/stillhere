@@ -8,7 +8,7 @@ from stillhere import manipulation_check as MC
 
 LENGTH_S = (240, 1800)                    # section 1: listed length 4:00 to 30:00 inclusive (amended Oct 29, 19:55 UTC)
 POOL_SIZE = 25
-START_PHRASES = ("librivox org", "librivox dot org", "read by", "recorded by", "reading by")
+START_PHRASES = ("librivox org", "librivox dot org", "libravox org", "libravox", "read by", "recorded by", "reading by")   # amended 20:13 UTC
 END_PHRASES = ("end of", "this recording is in the public domain", "the end")
 START_WITHIN_S, END_WITHIN_S = 90.0, 60.0
 CHUNK_S = 60.0

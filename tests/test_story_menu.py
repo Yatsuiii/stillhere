@@ -46,6 +46,7 @@ def test_committed_pool():
     assert len(doc["pool"]) == 11 and all(240 <= p["playtime_s"] <= 1800 for p in doc["pool"])
     assert [p["book_id"] for p in doc["pool"]] == ["296"] * 5 + ["297"] * 6
     assert "The Little Match Girl" not in [p["title"] for p in doc["pool"]] and "Duplicity of Hargraves" not in [p["title"] for p in doc["pool"]]
+    assert not any("reader" in p for p in doc["pool"])                # reader names only for menu stories, never in the public pool
 
 
 def test_trim():
@@ -208,3 +209,11 @@ def test_menu_refuses_until_three_windows_are_ready(tmp_path, run, monkeypatch):
     monkeypatch.setattr(run, "BUILD_REPLAY", tmp_path / "build.json")
     with pytest.raises(SystemExit):
         run.menu(tmp_path)
+
+
+def test_public_write_stops_on_a_blocklisted_title_or_reader(run, monkeypatch):
+    monkeypatch.setattr(run, "public_ok", lambda t: t != "Hidden Name")
+    run.require_public({"id": "story_x", "title": "A Title", "reader": "Some Reader"})
+    with pytest.raises(run.PublicTextHit) as e:
+        run.require_public({"id": "story_x", "title": "A Title", "reader": "Hidden Name"})
+    assert "Hidden Name" not in str(e.value) and "reader" in str(e.value)

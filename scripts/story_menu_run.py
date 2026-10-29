@@ -99,6 +99,10 @@ def catalogue(work: Path, fetch_json=None) -> dict:
                               "public_scan": SM.public_scan(s["title"])} for b in books for s in b["sections"]],
            "pool": P}
     (work / "catalogue.json").write_text(json.dumps(books, indent=1)); RESULTS.mkdir(parents=True, exist_ok=True)
+    (work / "pool_private.json").write_text(json.dumps(P, indent=1) + "\n")       # with reader names: laptop only
+    # Public: a reader name appears only for a story that reaches the menu (and passes the blocklist check there), so the public pool
+    # carries no reader names at all, and no marker of any kind.
+    doc["pool"] = [{k: v for k, v in p.items() if k != "reader"} for p in P]
     (RESULTS / "pool.json").write_text(json.dumps(doc, indent=1) + "\n")
     log(f"projects {[p['id'] for p in doc['projects']]}; sections {len(doc['sections_seen'])}; pool {len(P)}")
     return doc
@@ -106,7 +110,7 @@ def catalogue(work: Path, fetch_json=None) -> dict:
 
 # ---- fetch, words, trim ----------------------------------------------------------------------------------------------------------
 def fetch(work: Path, only=None):
-    pool = json.loads((RESULTS / "pool.json").read_text())["pool"]; om = _om()
+    pool = json.loads((work / "pool_private.json").read_text()); om = _om()
     for s in pool:
         sid = short_id(s["title"])
         if only and sid != only:
@@ -132,6 +136,23 @@ def fetch(work: Path, only=None):
             info.update(trim=None, failed="trim", trim_reason=str(e))
         (d / "story.json").write_text(json.dumps(info, indent=1) + "\n")
         log(f"{sid}: {len(words)} words in {info['whisper_s']} s; trim {'ok' if info['trim'] else info['trim_reason']}")
+
+
+def retrim(work: Path):
+    """Recomputes each pool story's trim from its saved word table (after a rule change to the trim); prints which trims changed."""
+    for p in sorted(work.glob("story_*/story.json")):
+        info = json.loads(p.read_text())
+        if pool_ids() is not None and info["id"] not in pool_ids():
+            continue
+        words = json.loads((p.parent / "words.json").read_text())["words"]; old = info.get("trim")
+        try:
+            first, last = SM.trim(words)
+            info.update(trim={"first_word": first, "last_word": last, "start_s": words[first]["start"], "end_s": words[last]["end"]})
+            info.pop("failed", None); info.pop("trim_reason", None)
+        except SM.TrimFail as e:
+            info.update(trim=None, failed="trim", trim_reason=str(e))
+        p.write_text(json.dumps(info, indent=1) + "\n")
+        log(f"{info['id']}: trim {'unchanged' if info['trim'] == old else 'CHANGED'} ({'ok' if info['trim'] else info['trim_reason']})")
 
 
 # ---- screen (Voice Transcribe) ---------------------------------------------------------------------------------------------------
@@ -173,12 +194,19 @@ def screen(work: Path, transcribe, ledger: Ledger, only=None, cap=SM.SCREEN_CAP_
                                     f"{info['archive_url'].rsplit('/', 1)[1]}; LibriVox, public domain)" for c in ch], f"story menu screen: {sid}")
         res, complete = [], True
         for c in ch:
-            if ledger.total("vt_screen") + VT_RESERVE_USD > cap + 1e-9:
-                complete = False; log(f"{sid}: batch cap ${cap} reached before chunk {c['k']}"); break
-            audio = egress.PublicAudio(path=c["path"])
-            ledger.add(kind="vt_screen", story=sid, chunk=c["k"], usd=VT_RESERVE_USD, audio_s=round(c["end_s"] - c["start_s"], 3))
-            out = transcribe(audio)
-            res.append({"k": c["k"], "turns": [{k: t[k] for k in ("speaker", "startMs", "endMs")} for t in out.get("turns") or []],
+            raw = d / f"chunk{c['k']:02d}.vt.json"                  # each paid answer is saved at once and reused on a rerun
+            got = json.loads(raw.read_text()) if raw.exists() else None
+            if not got or got.get("sha256") != c["sha256"]:
+                if ledger.total("vt_screen") + VT_RESERVE_USD > cap + 1e-9:
+                    complete = False; log(f"{sid}: batch cap ${cap} reached before chunk {c['k']}"); break
+                audio = egress.PublicAudio(path=c["path"])
+                ledger.add(kind="vt_screen", story=sid, chunk=c["k"], usd=VT_RESERVE_USD, audio_s=round(c["end_s"] - c["start_s"], 3))
+                got = {"sha256": c["sha256"], "answer": transcribe(audio)}; raw.write_text(json.dumps(got))
+            out = got["answer"]
+            # a turn without a speaker label still counts as speech time, under the label None (against bar 1)
+            res.append({"k": c["k"], "turns": [{"speaker": t.get("speaker"), "startMs": t.get("startMs", 0), "endMs": t.get("endMs", 0)}
+                                               for t in out.get("turns") or []],
+                        "unlabelled_turns": sum(1 for t in out.get("turns") or [] if t.get("speaker") is None),
                         "transcript": out.get("transcript") or "", "audio_ms": out.get("audioDurationMs")})
         words = json.loads((d / "words.json").read_text())["words"][info["trim"]["first_word"]:info["trim"]["last_word"] + 1]
         b1 = SM.bar1([r["turns"] for r in res]); b2 = SM.bar2(words); b3 = SM.bar3(" ".join(r["transcript"] for r in res), words)
@@ -267,7 +295,8 @@ def live_call(model: str, text: str):
                          schema_name="content_notes", json_schema=notes_schema())
     rows_before = meta_client.USAGE_LOG.read_text().count("\n") if meta_client.USAGE_LOG.exists() else 0
     out = meta_client.call(req, timeout=120)
-    row = json.loads(meta_client.USAGE_LOG.read_text().splitlines()[rows_before])
+    rows = [json.loads(r) for r in meta_client.USAGE_LOG.read_text().splitlines()[rows_before:]]
+    row = next(r for r in reversed(rows) if r.get("schema") == "content_notes" and r.get("model") == model)
     return out["content"], {"prompt_tokens": row.get("prompt_tokens"), "completion_tokens": row.get("completion_tokens")}
 
 
@@ -281,6 +310,23 @@ LIVE_CLIPS = REPO / "data/live_clips.json"
 LIVE_MENU = REPO / "stillhere/live_menu.json"
 BUILD_REPLAY = REPO / "web/replay/build.json"
 RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                   # web/stations.py RESHUFFLE_SEEDS (Reshuffle is offered only these)
+
+
+class PublicTextHit(SystemExit):
+    pass
+
+
+def public_ok(text: str) -> bool:
+    """True if the text holds no word or phrase of the laptop-only blocklist (stillhere.blockterms; fails closed if it is missing)."""
+    from stillhere import blockterms, egress
+    return not blockterms.hits(str(text or ""), *egress.blocklist())
+
+
+def require_public(entry: dict, fields=("title", "reader")):
+    """Stops before a public-facing write if a menu story's title or reader hits the blocklist; the message carries no text."""
+    for f in fields:
+        if not public_ok(entry.get(f, "")):
+            raise PublicTextHit(f"STOP: a menu story's {f} hits the laptop blocklist (story {entry.get('id')}); nothing was written for it")
 
 
 def screened(work: Path) -> list:
@@ -318,6 +364,7 @@ def windows(work: Path, only=None) -> list:
                  "seconds": round((b - a) / sr, 3), "sr": sr, "wav": f"data/live_clips/{sid}.wav", "wav_sha256": wav_sha,
                  "words": f"data/live_clips/{sid}.words.json", "words_sha256": hashlib.sha256(wtxt.encode()).hexdigest(),
                  "n_words": len(cw), "sentences": win["sentences"], "rule": "docs/rules/story_menu_rule.md"}
+        require_public(entry)
         idx["clips"] = [c for c in idx["clips"] if c["id"] != sid] + [entry]
         LIVE_CLIPS.write_text(json.dumps(idx, indent=1) + "\n"); kept.append(entry)
         lines = [f"{wav_sha}  story menu window {sid} ({win['start_s']}-{win['end_s']} s of {info['archive_url'].rsplit('/', 1)[1]}; LibriVox)"]
@@ -391,6 +438,10 @@ def menu(work: Path):
         entry = {"id": c["id"], "title": c["title"], "reader": c["reader"], "source": c["source"],
                  "start_s": c["start_s"], "dur_s": c["dur_s"], "intact_wav_sha256": c["wav_sha256"], "public_scan": SM.public_scan(c["title"]),
                  "screen": {"archive_url": c["source"], "sentences": c["sentences"], "notes": nt["notes"], "notes_host": nt["host"]}}
+        require_public(entry)
+        for n in entry["screen"]["notes"]:
+            if n.get("quote") is not None and not public_ok(n["quote"]):
+                n["quote"] = None                                     # withheld, tag and time kept (rule 2c)
         m["clips"] = [x for x in m["clips"] if x["id"] != c["id"]] + [entry]
     m["screen_summary"] = {"n_on_menu": len(ok), "failed": failed, "rule": "docs/rules/story_menu_rule.md"}
     LIVE_MENU.write_text(json.dumps(m, indent=1) + "\n")
@@ -405,6 +456,8 @@ def main(argv=None):
         catalogue(work)
     elif a.stage == "fetch":
         fetch(work, a.only)
+    elif a.stage == "retrim":
+        retrim(work)
     elif a.stage == "screen":
         if not a.live:
             raise SystemExit("screen makes real Voice Transcribe calls: pass --live (tests use the stub)")
