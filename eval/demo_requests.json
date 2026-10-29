@@ -1,0 +1,59 @@
+{
+ "about": "Demo study requests for the video and the Pilot page. demo, not scored: written for the demo on Oct 29, not drawn from the 106 seen or the 62 held-out planner requests (checked by text), never used to score any planner version. Round 1 is the five requests as first written, run once live on every backend. Round 2 rewords the two requests the default planner (Spark 1.3) declined in round 1 with analysis_not_offered, written after seeing round 1 and run once on every backend; both rounds are kept and shown. Run live by scripts/run_demo_requests.py; results in results/demo_runs.json.",
+ "label": "demo, not scored",
+ "requests": [
+  {
+   "id": "DEMO1",
+   "label": "demo, not scored",
+   "shows": "a plan on the tested menu (story, scrambled control, language network)",
+   "text": "I want to run a new story test next month with healthy adults who speak English: a LibriVox chapter as recorded, and the same chapter with its sentences shuffled as the control. What would the language network do?",
+   "round": 1
+  },
+  {
+   "id": "DEMO2",
+   "label": "demo, not scored",
+   "shows": "a second plan on the tested menu (another story, reversed speech, hearing areas)",
+   "text": "For English-speaking healthy adults, how would the hearing areas respond to Le Petit Prince read normally compared with the same recording played backwards?",
+   "round": 1
+  },
+  {
+   "id": "DEMO3",
+   "label": "demo, not scored",
+   "shows": "a control that failed its own check is off the menu",
+   "text": "Can we use a word-shuffled version of the LibriVox chapter as the control, against the intact chapter, in healthy English-speaking adults?",
+   "round": 1
+  },
+  {
+   "id": "DEMO4",
+   "label": "demo, not scored",
+   "shows": "what a lab would really type about a film (films are not on the tested menu yet)",
+   "text": "What changes in the brain if I remove the faces from this film?",
+   "round": 1
+  },
+  {
+   "id": "DEMO5",
+   "label": "demo, not scored",
+   "shows": "a question about one person's scan, which the planner must decline",
+   "text": "We scanned one patient on Tuesday while playing a short story. Can you look at that scan and tell us whether this person followed the story?",
+   "round": 1
+  },
+  {
+   "id": "DEMO1b",
+   "label": "demo, not scored",
+   "round": 2,
+   "reworded_from": "DEMO1",
+   "why": "round 1: Spark 1.3 declined DEMO1 with analysis_not_offered; this wording names the one offered analysis",
+   "shows": "a plan on the tested menu (story, scrambled control, language network)",
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: a LibriVox chapter as recorded versus the same chapter with its sentences shuffled, in the language network."
+  },
+  {
+   "id": "DEMO2b",
+   "label": "demo, not scored",
+   "round": 2,
+   "reworded_from": "DEMO2",
+   "why": "round 1: Spark 1.3 declined DEMO2 with analysis_not_offered; this wording names the one offered analysis",
+   "shows": "a second plan on the tested menu (another story, reversed speech, hearing areas)",
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults hearing Le Petit Prince read normally versus the same recording played backwards, in the hearing areas."
+  }
+ ]
+}

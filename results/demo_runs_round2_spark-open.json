@@ -1,0 +1,132 @@
+{
+ "label": "demo, not scored",
+ "what": "round 2 of the demo requests (eval/demo_requests.json) through Planner v2 (frozen), one backend, live",
+ "round": 2,
+ "backend": "spark-open",
+ "model": "fireworks/muse-spark-open",
+ "effort": "low",
+ "started_utc": "2026-10-29T09:09:36+00:00",
+ "finished_utc": "2026-10-29T09:09:57+00:00",
+ "spend_usd": 0.01091,
+ "price_note": "cost at the planner rule's prices (stillhere/planner_eval.py)",
+ "runs": [
+  {
+   "id": "DEMO1b",
+   "round": 2,
+   "label": "demo, not scored",
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: a LibriVox chapter as recorded versus the same chapter with its sentences shuffled, in the language network.",
+   "backend": "spark-open",
+   "model": "fireworks/muse-spark-open",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.99,
+     "prompt_tokens": 377,
+     "completion_tokens": 300
+    },
+    {
+     "kind": "tools",
+     "tool_calls": [
+      {
+       "name": "list_stimuli",
+       "arguments": {
+        "stimulus": "librivox_audiobook"
+       }
+      }
+     ],
+     "s": 4.15,
+     "prompt_tokens": 1099,
+     "completion_tokens": 456
+    }
+   ],
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "population": "healthy_adults",
+    "language": "english",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "stimulus": "librivox_audiobook",
+    "analysis": "forecast_tribe_stock",
+    "decline_reason": "none"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ],
+   "tools": [
+    "list_stimuli"
+   ],
+   "card": "StudySpec: population=healthy_adults, language=english, brain_areas=['language_network'], conditions=['intact', 'sentence_scramble'], stimulus=librivox_audiobook, analysis=forecast_tribe_stock.\nStimuli (exploratory): librivox_audiobook, le_petit_prince.",
+   "total_s": 7.14,
+   "prompt_tokens": 1476,
+   "completion_tokens": 756,
+   "cost_usd": 0.00506
+  },
+  {
+   "id": "DEMO2b",
+   "round": 2,
+   "label": "demo, not scored",
+   "text": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults hearing Le Petit Prince read normally versus the same recording played backwards, in the hearing areas.",
+   "backend": "spark-open",
+   "model": "fireworks/muse-spark-open",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.25,
+     "prompt_tokens": 373,
+     "completion_tokens": 572
+    },
+    {
+     "kind": "tools",
+     "tool_calls": [
+      {
+       "name": "list_stimuli",
+       "arguments": {
+        "stimulus": "le_petit_prince"
+       }
+      }
+     ],
+     "s": 4.42,
+     "prompt_tokens": 1096,
+     "completion_tokens": 373
+    }
+   ],
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "population": "healthy_adults",
+    "language": "english",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "stimulus": "le_petit_prince",
+    "analysis": "forecast_tribe_stock",
+    "decline_reason": "none"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ],
+   "tools": [
+    "list_stimuli"
+   ],
+   "card": "StudySpec: population=healthy_adults, language=english, brain_areas=['auditory'], conditions=['intact', 'reversed'], stimulus=le_petit_prince, analysis=forecast_tribe_stock.\nStimuli (exploratory): librivox_audiobook, le_petit_prince.",
+   "total_s": 9.67,
+   "prompt_tokens": 1469,
+   "completion_tokens": 945,
+   "cost_usd": 0.00585
+  }
+ ]
+}

@@ -1,0 +1,305 @@
+{
+ "label": "demo, not scored",
+ "what": "round 1 of the demo requests (eval/demo_requests.json) through Planner v2 (frozen), one backend, live",
+ "backend": "spark-open-baseten",
+ "model": "baseten/muse-spark-open-1026",
+ "effort": "low",
+ "started_utc": "2026-10-29T09:07:38+00:00",
+ "finished_utc": "2026-10-29T09:08:14+00:00",
+ "spend_usd": 0.03032,
+ "price_note": "cost at the planner rule's prices (stillhere/planner_eval.py)",
+ "runs": [
+  {
+   "id": "DEMO1",
+   "label": "demo, not scored",
+   "text": "I want to run a new story test next month with healthy adults who speak English: a LibriVox chapter as recorded, and the same chapter with its sentences shuffled as the control. What would the language network do?",
+   "backend": "spark-open-baseten",
+   "model": "baseten/muse-spark-open-1026",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.08,
+     "prompt_tokens": 388,
+     "completion_tokens": 542
+    },
+    {
+     "kind": "tools",
+     "tool_calls": [
+      {
+       "name": "list_stimuli",
+       "arguments": {
+        "stimulus": "librivox_audiobook"
+       }
+      },
+      {
+       "name": "make_conditions",
+       "arguments": {
+        "condition": "intact"
+       }
+      },
+      {
+       "name": "check_conditions",
+       "arguments": {
+        "condition": "intact"
+       }
+      },
+      {
+       "name": "forecast",
+       "arguments": {
+        "stimulus": "librivox_audiobook"
+       }
+      }
+     ],
+     "s": 2.02,
+     "prompt_tokens": 1100,
+     "completion_tokens": 462
+    }
+   ],
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "population": "healthy_adults",
+    "language": "english",
+    "stimulus": "librivox_audiobook",
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ],
+   "tools": [
+    "list_stimuli",
+    "make_conditions",
+    "check_conditions",
+    "forecast"
+   ],
+   "card": "StudySpec: population=healthy_adults, language=english, brain_areas=['language_network'], conditions=['intact', 'sentence_scramble'], stimulus=librivox_audiobook, analysis=forecast_tribe_stock.\nStimuli (exploratory): librivox_audiobook, le_petit_prince.\nConditions from librivox_alice_ch01_75s.wav (exploratory): intact (1200000 samples).\nManipulation check (exploratory): {\"intact\": {\"n_words_heard\": 278, \"n_words_reference\": 263, \"order_vs_expected\": 0.9885931558935361, \"order_vs_original\": 0.9885931558935361, \"pass\": true, \"recall\": 0.9923954372623575, \"rule\": {\"order_vs_original_min\": 0.8, \"recall_min\": 0.85}, \"transcript\": \"Kind of having nothing to do. Once or twice she peeped into the book her sister was reading, but it had no pictures or conversations in it, and what's the use of a book, thought alice, without pictures or conversation so she was considering in her own mind as as well as she could for the hot day made her made her feel very sleepy and stupid stupid whether the pleasure of making a daisy chain would be worth the trouble of getting up up and picking the daisies when suddenly a white rabbit with pink eyes ran close by her there was nothing so very remarkable in that nor did alice think it so so very much out of the way to hear the the rabbit say to itself oh dear oh dear i shall be late when she thought it over afterwards it occurred to her to her that she ought to have wondered at at this but at the time it all seemed quite natural but when the rabbit actually took a watch out of its waistcoat pocket and looked at it and then hurried on alice started to her feet for it flashed across her mind that she had never before before seen a rabbit with either a waistcoat pocket or a watch to take out of it and burning with curiosity she ran ran across the field after it and fortunately was just in time to see it pop down a large rabbit hole under the under the hedge in another moment down went alice after it never once considering how in the world she she was to get out again the rabbit\"}, \"reversed\": {\"n_words_heard\": 0, \"n_words_reference\": 263, \"order_vs_expected\": 0.0, \"order_vs_original\": 0.0, \"pass\": null, \"recall\": 0.0, \"rule\": {}, \"transcript\": \"\"}, \"sentence_scramble\": {\"n_words_heard\": 272, \"n_words_reference\": 263, \"order_vs_expected\": 0.9809885931558935, \"order_vs_original\": 0.5855513307984791, \"pass\": true, \"recall\": 0.9809885931558935, \"rule\": {\"expected_minus_original_min\": 0.1, \"order_vs_expected_min\": 0.7, \"recall_min\": 0.8}, \"transcript\": \"So she was considering in her own mind mind as well as she could for the hot day made her feel very sleepy and stupid whether the pleasure of making a daisy chain would be worth the trouble of getting up getting up and picking the daisies when suddenly a white rabbit with pink eyes ran close by her but when the rabbit actually took a watch out of its waistcoat pocket and looked at it and then hurried on alice started to her feet for it flashed across her mind that she she'd never before seen a rabbit with either a waistcoat pocket or a watch to take out of it and burning with curiosity she ran across the field after field after it unfortunately was just in time to see it pop down a large rabbit hole under the hedge the rabbit there was nothing so so very remarkable in that nor did did alice think it so very much out of the the way to hear the rabbit say to itself oh dear oh dear i shall be late once or twice she peeped into the book her sister was reading but it had no pictures or conversations conversations in it and of having nothing to do and what's the use of a book thought alice without pictures or conversation when she thought it over afterwards it occurred to her that she ought to have wondered at this but at the time it all all seemed quite natural in another moment down went alice after it never once considering how in the world she was to get out again\"}, \"word_scramble\": {\"n_words_heard\": 51, \"n_words_reference\": 263, \"order_vs_expected\": 0.11787072243346007, \"order_vs_original\": 0.07224334600760456, \"pass\": false, \"recall\": 0.1634980988593156, \"rule\": {\"order_vs_original_max\": 0.5, \"recall_min\": 0.6}, \"transcript\": \"pocket outlined, learning after own mind this to itself waste across the book very much in Daisies, reading, the hedge, curiosity conversation stupid towards natural considered her feet very sudden thing took a on that daisy went time she was actually the rabbit time to foresee again Alice her another moment\"}}.\nForecast, not validated (exploratory): TRIBE's predicted response strength (hearing, audio-only). A forecast, not validated; it says nothing about language or understanding.",
+   "total_s": 5.42,
+   "prompt_tokens": 1488,
+   "completion_tokens": 1004,
+   "cost_usd": 0.00613,
+   "round": 1
+  },
+  {
+   "id": "DEMO2",
+   "label": "demo, not scored",
+   "text": "For English-speaking healthy adults, how would the hearing areas respond to Le Petit Prince read normally compared with the same recording played backwards?",
+   "backend": "spark-open-baseten",
+   "model": "baseten/muse-spark-open-1026",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.14,
+     "prompt_tokens": 370,
+     "completion_tokens": 426
+    },
+    {
+     "kind": "tools",
+     "tool_calls": [
+      {
+       "name": "list_stimuli",
+       "arguments": {
+        "stimulus": "le_petit_prince"
+       }
+      },
+      {
+       "name": "make_conditions",
+       "arguments": {
+        "condition": "intact"
+       }
+      },
+      {
+       "name": "make_conditions",
+       "arguments": {
+        "condition": "reversed"
+       }
+      },
+      {
+       "name": "check_conditions",
+       "arguments": {
+        "condition": "intact"
+       }
+      },
+      {
+       "name": "check_conditions",
+       "arguments": {
+        "condition": "reversed"
+       }
+      },
+      {
+       "name": "forecast",
+       "arguments": {
+        "stimulus": "le_petit_prince"
+       }
+      }
+     ],
+     "s": 2.02,
+     "prompt_tokens": 1097,
+     "completion_tokens": 500
+    }
+   ],
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "population": "healthy_adults",
+    "language": "english",
+    "stimulus": "le_petit_prince",
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ],
+   "tools": [
+    "list_stimuli",
+    "make_conditions",
+    "make_conditions",
+    "check_conditions",
+    "check_conditions",
+    "forecast"
+   ],
+   "card": "StudySpec: population=healthy_adults, language=english, brain_areas=['auditory'], conditions=['intact', 'reversed'], stimulus=le_petit_prince, analysis=forecast_tribe_stock.\nStimuli (exploratory): librivox_audiobook, le_petit_prince.\nConditions from librivox_alice_ch01_75s.wav (exploratory): intact (1200000 samples).\nConditions from librivox_alice_ch01_75s.wav (exploratory): reversed (1200000 samples).\nManipulation check (exploratory): {\"intact\": {\"n_words_heard\": 278, \"n_words_reference\": 263, \"order_vs_expected\": 0.9885931558935361, \"order_vs_original\": 0.9885931558935361, \"pass\": true, \"recall\": 0.9923954372623575, \"rule\": {\"order_vs_original_min\": 0.8, \"recall_min\": 0.85}, \"transcript\": \"Kind of having nothing to do. Once or twice she peeped into the book her sister was reading, but it had no pictures or conversations in it, and what's the use of a book, thought alice, without pictures or conversation so she was considering in her own mind as as well as she could for the hot day made her made her feel very sleepy and stupid stupid whether the pleasure of making a daisy chain would be worth the trouble of getting up up and picking the daisies when suddenly a white rabbit with pink eyes ran close by her there was nothing so very remarkable in that nor did alice think it so so very much out of the way to hear the the rabbit say to itself oh dear oh dear i shall be late when she thought it over afterwards it occurred to her to her that she ought to have wondered at at this but at the time it all seemed quite natural but when the rabbit actually took a watch out of its waistcoat pocket and looked at it and then hurried on alice started to her feet for it flashed across her mind that she had never before before seen a rabbit with either a waistcoat pocket or a watch to take out of it and burning with curiosity she ran ran across the field after it and fortunately was just in time to see it pop down a large rabbit hole under the under the hedge in another moment down went alice after it never once considering how in the world she she was to get out again the rabbit\"}, \"reversed\": {\"n_words_heard\": 0, \"n_words_reference\": 263, \"order_vs_expected\": 0.0, \"order_vs_original\": 0.0, \"pass\": null, \"recall\": 0.0, \"rule\": {}, \"transcript\": \"\"}, \"sentence_scramble\": {\"n_words_heard\": 272, \"n_words_reference\": 263, \"order_vs_expected\": 0.9809885931558935, \"order_vs_original\": 0.5855513307984791, \"pass\": true, \"recall\": 0.9809885931558935, \"rule\": {\"expected_minus_original_min\": 0.1, \"order_vs_expected_min\": 0.7, \"recall_min\": 0.8}, \"transcript\": \"So she was considering in her own mind mind as well as she could for the hot day made her feel very sleepy and stupid whether the pleasure of making a daisy chain would be worth the trouble of getting up getting up and picking the daisies when suddenly a white rabbit with pink eyes ran close by her but when the rabbit actually took a watch out of its waistcoat pocket and looked at it and then hurried on alice started to her feet for it flashed across her mind that she she'd never before seen a rabbit with either a waistcoat pocket or a watch to take out of it and burning with curiosity she ran across the field after field after it unfortunately was just in time to see it pop down a large rabbit hole under the hedge the rabbit there was nothing so so very remarkable in that nor did did alice think it so very much out of the the way to hear the rabbit say to itself oh dear oh dear i shall be late once or twice she peeped into the book her sister was reading but it had no pictures or conversations conversations in it and of having nothing to do and what's the use of a book thought alice without pictures or conversation when she thought it over afterwards it occurred to her that she ought to have wondered at this but at the time it all all seemed quite natural in another moment down went alice after it never once considering how in the world she was to get out again\"}, \"word_scramble\": {\"n_words_heard\": 51, \"n_words_reference\": 263, \"order_vs_expected\": 0.11787072243346007, \"order_vs_original\": 0.07224334600760456, \"pass\": false, \"recall\": 0.1634980988593156, \"rule\": {\"order_vs_original_max\": 0.5, \"recall_min\": 0.6}, \"transcript\": \"pocket outlined, learning after own mind this to itself waste across the book very much in Daisies, reading, the hedge, curiosity conversation stupid towards natural considered her feet very sudden thing took a on that daisy went time she was actually the rabbit time to foresee again Alice her another moment\"}}.\nManipulation check (exploratory): {\"intact\": {\"n_words_heard\": 278, \"n_words_reference\": 263, \"order_vs_expected\": 0.9885931558935361, \"order_vs_original\": 0.9885931558935361, \"pass\": true, \"recall\": 0.9923954372623575, \"rule\": {\"order_vs_original_min\": 0.8, \"recall_min\": 0.85}, \"transcript\": \"Kind of having nothing to do. Once or twice she peeped into the book her sister was reading, but it had no pictures or conversations in it, and what's the use of a book, thought alice, without pictures or conversation so she was considering in her own mind as as well as she could for the hot day made her made her feel very sleepy and stupid stupid whether the pleasure of making a daisy chain would be worth the trouble of getting up up and picking the daisies when suddenly a white rabbit with pink eyes ran close by her there was nothing so very remarkable in that nor did alice think it so so very much out of the way to hear the the rabbit say to itself oh dear oh dear i shall be late when she thought it over afterwards it occurred to her to her that she ought to have wondered at at this but at the time it all seemed quite natural but when the rabbit actually took a watch out of its waistcoat pocket and looked at it and then hurried on alice started to her feet for it flashed across her mind that she had never before before seen a rabbit with either a waistcoat pocket or a watch to take out of it and burning with curiosity she ran ran across the field after it and fortunately was just in time to see it pop down a large rabbit hole under the under the hedge in another moment down went alice after it never once considering how in the world she she was to get out again the rabbit\"}, \"reversed\": {\"n_words_heard\": 0, \"n_words_reference\": 263, \"order_vs_expected\": 0.0, \"order_vs_original\": 0.0, \"pass\": null, \"recall\": 0.0, \"rule\": {}, \"transcript\": \"\"}, \"sentence_scramble\": {\"n_words_heard\": 272, \"n_words_reference\": 263, \"order_vs_expected\": 0.9809885931558935, \"order_vs_original\": 0.5855513307984791, \"pass\": true, \"recall\": 0.9809885931558935, \"rule\": {\"expected_minus_original_min\": 0.1, \"order_vs_expected_min\": 0.7, \"recall_min\": 0.8}, \"transcript\": \"So she was considering in her own mind mind as well as she could for the hot day made her feel very sleepy and stupid whether the pleasure of making a daisy chain would be worth the trouble of getting up getting up and picking the daisies when suddenly a white rabbit with pink eyes ran close by her but when the rabbit actually took a watch out of its waistcoat pocket and looked at it and then hurried on alice started to her feet for it flashed across her mind that she she'd never before seen a rabbit with either a waistcoat pocket or a watch to take out of it and burning with curiosity she ran across the field after field after it unfortunately was just in time to see it pop down a large rabbit hole under the hedge the rabbit there was nothing so so very remarkable in that nor did did alice think it so very much out of the the way to hear the rabbit say to itself oh dear oh dear i shall be late once or twice she peeped into the book her sister was reading but it had no pictures or conversations conversations in it and of having nothing to do and what's the use of a book thought alice without pictures or conversation when she thought it over afterwards it occurred to her that she ought to have wondered at this but at the time it all all seemed quite natural in another moment down went alice after it never once considering how in the world she was to get out again\"}, \"word_scramble\": {\"n_words_heard\": 51, \"n_words_reference\": 263, \"order_vs_expected\": 0.11787072243346007, \"order_vs_original\": 0.07224334600760456, \"pass\": false, \"recall\": 0.1634980988593156, \"rule\": {\"order_vs_original_max\": 0.5, \"recall_min\": 0.6}, \"transcript\": \"pocket outlined, learning after own mind this to itself waste across the book very much in Daisies, reading, the hedge, curiosity conversation stupid towards natural considered her feet very sudden thing took a on that daisy went time she was actually the rabbit time to foresee again Alice her another moment\"}}.\nForecast, not validated (exploratory): TRIBE's predicted response strength (hearing, audio-only). A forecast, not validated; it says nothing about language or understanding.",
+   "total_s": 4.52,
+   "prompt_tokens": 1467,
+   "completion_tokens": 926,
+   "cost_usd": 0.00577,
+   "round": 1
+  },
+  {
+   "id": "DEMO3",
+   "label": "demo, not scored",
+   "text": "Can we use a word-shuffled version of the LibriVox chapter as the control, against the intact chapter, in healthy English-speaking adults?",
+   "backend": "spark-open-baseten",
+   "model": "baseten/muse-spark-open-1026",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.82,
+     "prompt_tokens": 373,
+     "completion_tokens": 997
+    }
+   ],
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ],
+   "tools": [],
+   "card": "Declined: condition_not_validated. Nearest validated option: condition intact. StillHere Pilot plans exploratory studies only from the validation table.",
+   "total_s": 3.82,
+   "prompt_tokens": 373,
+   "completion_tokens": 997,
+   "cost_usd": 0.0047,
+   "round": 1
+  },
+  {
+   "id": "DEMO4",
+   "label": "demo, not scored",
+   "text": "What changes in the brain if I remove the faces from this film?",
+   "backend": "spark-open-baseten",
+   "model": "baseten/muse-spark-open-1026",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.77,
+     "prompt_tokens": 358,
+     "completion_tokens": 1878
+    }
+   ],
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ],
+   "tools": [],
+   "card": "Declined: stimulus_not_validated. Nearest validated option: stimulus librivox_audiobook. StillHere Pilot plans exploratory studies only from the validation table.",
+   "total_s": 6.77,
+   "prompt_tokens": 358,
+   "completion_tokens": 1878,
+   "cost_usd": 0.00843,
+   "round": 1
+  },
+  {
+   "id": "DEMO5",
+   "label": "demo, not scored",
+   "text": "We scanned one patient on Tuesday while playing a short story. Can you look at that scan and tell us whether this person followed the story?",
+   "backend": "spark-open-baseten",
+   "model": "baseten/muse-spark-open-1026",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.58,
+     "prompt_tokens": 372,
+     "completion_tokens": 1136
+    }
+   ],
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ],
+   "tools": [],
+   "card": "Declined: analysis_not_offered. Nearest validated option: analysis forecast_tribe_stock. StillHere Pilot plans exploratory studies only from the validation table.",
+   "total_s": 5.59,
+   "prompt_tokens": 372,
+   "completion_tokens": 1136,
+   "cost_usd": 0.00529,
+   "round": 1
+  }
+ ],
+ "round": 1
+}

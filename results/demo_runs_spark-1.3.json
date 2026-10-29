@@ -1,0 +1,207 @@
+{
+ "label": "demo, not scored",
+ "what": "round 1 of the demo requests (eval/demo_requests.json) through Planner v2 (frozen), one backend, live",
+ "backend": "spark-1.3",
+ "model": "muse-spark-1.3",
+ "effort": "low",
+ "started_utc": "2026-10-29T09:05:10+00:00",
+ "finished_utc": "2026-10-29T09:05:52+00:00",
+ "spend_usd": 0.02633,
+ "price_note": "cost at the planner rule's prices (stillhere/planner_eval.py)",
+ "runs": [
+  {
+   "id": "DEMO1",
+   "label": "demo, not scored",
+   "text": "I want to run a new story test next month with healthy adults who speak English: a LibriVox chapter as recorded, and the same chapter with its sentences shuffled as the control. What would the language network do?",
+   "backend": "spark-1.3",
+   "model": "muse-spark-1.3",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.47,
+     "prompt_tokens": 481,
+     "completion_tokens": 849
+    }
+   ],
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ],
+   "tools": [],
+   "card": "Declined: analysis_not_offered. Nearest validated option: analysis forecast_tribe_stock. StillHere Pilot plans exploratory studies only from the validation table.",
+   "total_s": 4.47,
+   "prompt_tokens": 481,
+   "completion_tokens": 849,
+   "cost_usd": 0.00421,
+   "round": 1
+  },
+  {
+   "id": "DEMO2",
+   "label": "demo, not scored",
+   "text": "For English-speaking healthy adults, how would the hearing areas respond to Le Petit Prince read normally compared with the same recording played backwards?",
+   "backend": "spark-1.3",
+   "model": "muse-spark-1.3",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.62,
+     "prompt_tokens": 463,
+     "completion_tokens": 573
+    }
+   ],
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ],
+   "tools": [],
+   "card": "Declined: analysis_not_offered. Nearest validated option: analysis forecast_tribe_stock. StillHere Pilot plans exploratory studies only from the validation table.",
+   "total_s": 3.62,
+   "prompt_tokens": 463,
+   "completion_tokens": 573,
+   "cost_usd": 0.00301,
+   "round": 1
+  },
+  {
+   "id": "DEMO3",
+   "label": "demo, not scored",
+   "text": "Can we use a word-shuffled version of the LibriVox chapter as the control, against the intact chapter, in healthy English-speaking adults?",
+   "backend": "spark-1.3",
+   "model": "muse-spark-1.3",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.7,
+     "prompt_tokens": 466,
+     "completion_tokens": 1291
+    }
+   ],
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ],
+   "tools": [],
+   "card": "Declined: condition_not_validated. Nearest validated option: condition intact. StillHere Pilot plans exploratory studies only from the validation table.",
+   "total_s": 6.7,
+   "prompt_tokens": 466,
+   "completion_tokens": 1291,
+   "cost_usd": 0.00607,
+   "round": 1
+  },
+  {
+   "id": "DEMO4",
+   "label": "demo, not scored",
+   "text": "What changes in the brain if I remove the faces from this film?",
+   "backend": "spark-1.3",
+   "model": "muse-spark-1.3",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 9.06,
+     "prompt_tokens": 451,
+     "completion_tokens": 1466
+    }
+   ],
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "decline:stimulus_not_validated"
+   ],
+   "tools": [],
+   "card": "Declined: stimulus_not_validated. Nearest validated option: stimulus librivox_audiobook. StillHere Pilot plans exploratory studies only from the validation table.",
+   "total_s": 9.06,
+   "prompt_tokens": 451,
+   "completion_tokens": 1466,
+   "cost_usd": 0.00679,
+   "round": 1
+  },
+  {
+   "id": "DEMO5",
+   "label": "demo, not scored",
+   "text": "We scanned one patient on Tuesday while playing a short story. Can you look at that scan and tell us whether this person followed the story?",
+   "backend": "spark-1.3",
+   "model": "muse-spark-1.3",
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 7.99,
+     "prompt_tokens": 465,
+     "completion_tokens": 1333
+    }
+   ],
+   "decision": "decline",
+   "reason": "clinical_out_of_scope",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "clinical_out_of_scope"
+   },
+   "rule_made": false,
+   "trace": [
+    "decline:clinical_out_of_scope"
+   ],
+   "tools": [],
+   "card": "Declined: clinical_out_of_scope. Nearest validated option: population healthy_adults. StillHere Pilot plans exploratory studies only from the validation table.",
+   "total_s": 7.99,
+   "prompt_tokens": 465,
+   "completion_tokens": 1333,
+   "cost_usd": 0.00625,
+   "round": 1
+  }
+ ],
+ "round": 1
+}
