@@ -1,0 +1,99 @@
+# Ghost-line display rule (exploratory display; committed before any real trace is drawn or extracted)
+
+Cloud plan v2 (Oct 29, 16:20 IST), item 2. One picture repeats on the page and in the video: the ghost line. TRIBE v2's forecast is
+drawn first as a dashed gray line, and real public listeners are drawn over it as solid coloured lines. This rule fixes every choice
+behind that picture before any listener's series is extracted for it. It is a display rule only: it adds no statistic, and no frozen
+number is recomputed or restated differently.
+
+## What is drawn (LPP, the one ghost line with real listeners)
+
+- Data: LPP English section 8 (ds003643), the 49 listeners the frozen held-out proof used, from the parcel series that proof already
+  read (analysis folder `p1/cache_en8`, listeners `sub-EN057` to `sub-EN115`) and the stock TRIBE v2 forecast it already used
+  (`k2/out_en8/k2_out/pred_en8_full.npz`). No new download and no other data.
+- Region: the frozen proof's language parcels, exactly as `stillhere/heldout.py` `parcel_sets` defines them: Schaefer-400
+  17-network labels in the left hemisphere whose names contain TempPar, DefaultB_Temp, DefaultB_PFCv or DefaultB_PFCl (atlas
+  `atlas/lh.Schaefer2018_400Parcels_17Networks_order.annot`). Not redefined.
+- Segment: the proof's scored window, volumes 10 to 154 (145 volumes, TR 2.0 s, scan time 20 to 308 s), because it is exactly what
+  the "about 5, at least 2" number was measured on. Short view (video cold open and small tiles): volumes 10 to 69, the first 120 s of
+  that window, cropped from the full-window lines after cleaning and z-scoring, never re-cleaned or re-scaled.
+- TRIBE lag: the frozen proof's alignment, `heldout.align`: volume j reads the forecast for stimulus time 2j - 5 s (TRIBE's own 5 s
+  offset), linear between its 1 Hz samples. The proof's -1.25 s lag belongs to the word-rate and envelope regressors, which are not
+  drawn.
+- Cleaning: the proof's `heldout.clean` on volumes 10 to 154 for every parcel row (linear detrend, 0.03 Hz Butterworth high-pass,
+  z-score with ddof 1). Forecast rows are the per-parcel vertex means from `heldout.pred_parcels`, cleaned the same way.
+- One line per source: the mean over the language parcels of the cleaned rows, then z-scored over the window (ddof 1).
+- Smoothing: none. Lines join the volume points; no spline, no filter beyond the proof's cleaning.
+- The 49-listener line: the mean of the 49 listeners' lines, z-scored over the window. Labelled "49 public listeners (average)".
+- The 5-listener line: the mean of 5 listeners' lines, z-scored over the window. The 5 were drawn from the 49 IDs sorted as strings
+  (file names only, no data read) with numpy `default_rng(20261029).choice(ids, 5, replace=False)`, numpy 2.3.5, before any series
+  was extracted: `sub-EN068`, `sub-EN079`, `sub-EN091`, `sub-EN113`, `sub-EN114`. They may include the single listener below.
+  Labelled "5 public listeners (average)". Drawn only where the "about 5" line is on screen.
+- The single listener: the listener with the median frozen LANGUAGE z of the proof's primary run (stage `145_primary`,
+  `per_listener.language` in `d22/sec8/heldout_section8.json`, SHA-256 73aa5139b5057f00..., the source of `results/section8.json`):
+  the 25th of the 49 in ascending order, ties broken by ID. Labelled "1 public listener", with no verdict word and no number. Its ID is
+  recorded in the data file for reproducibility only and never shown.
+- Y axis: z units, unlabelled numbers allowed; X axis: seconds of the section's scan. Title on screen: "Le Petit Prince, section 8
+  (LPP English)". No other Le Petit Prince text (no words, transcript or captions of the story) appears on screen.
+
+## Draw order (always, every scene and tile)
+
+1. The gray dashed forecast, in full for the segment shown, before anything else.
+2. The trust chip.
+3. Solid coloured listener lines: the 49-listener line; the 5-listener line only where the "about 5" line is shown.
+4. The thin 1-listener line, last.
+
+A scene may stop after any step but never reorders them.
+
+## Numbers on screen
+
+Only the frozen numbers, copied from `results/section8.json` and never recomputed: "~5 volunteers' worth (at least 2). Group level."
+(volunteer equivalent 5.0, lower bound 2.58, language areas). This line appears only beside the LPP ghost line. It never appears next
+to a live or cached laptop forecast or any other clip.
+
+## Trust chips (exact text)
+
+Short chip on the line; long chip as its expansion or footnote.
+
+| Line | Short chip | Long chip |
+|---|---|---|
+| LPP section 8 | Checked: held-out LPP | held out; first measured Oct 22-23; LPP is one of TRIBE v2's own evaluation sets |
+| Story wall | Story wall: rule 340b74b | scoring rule committed Oct 28 · 340b74b; 41 of the 42 stories were used before then, for development or to tune a second model |
+| notthefall (D20) | notthefall: rule 340b74b | scoring rule committed before these scans were read · 340b74b |
+| Film (Emo-FilM) | Film: rule {film_commit} | rule committed before any viewer's scan was read · {film_commit} |
+| Live or cached laptop forecast | Forecast only · audio-only, laptop | No public scan of this clip. Forecast, not a scan. |
+
+How each chip was checked (dates in UTC; commits are in the public repository):
+
+- LPP: section 8 was first measured Oct 22-23, before this repository began (Oct 27), so the chip makes no rule-before-scans claim.
+- Story wall: the picker's scoring rule (PREREG chain head 31085486, with section 9 and D19 to D27) entered the repository in
+  340b74b (Oct 28 10:02). The picker's own download pass reads the scans from Oct 29 01:01, but 41 of the 42 picker stories are
+  listed in `picker_config.json` as used earlier (`touched` for development scoring, or in `tuned_training_clips`, whose scans were read
+  Oct 24-25 to tune the second model); only lppFR_section8 is in neither. So the chip states the date instead of a before-read claim.
+- notthefall (D20): the scoring code (MANIFEST 92efa035) entered the repository in 340b74b (Oct 28 10:02); notthefall is on the
+  picker's `never` list, was held out of tuning, and its scans are read only by the stillhere-d20-score run (from Oct 29 16:00). The
+  chip is used only if that run's start time, from its Kaggle log, is after 340b74b; otherwise it reads "scoring rule committed
+  Oct 28 · 340b74b; scans read <date>".
+- Film: {film_commit} is the last public commit touching the rule that scores the drawn result (`docs/rules/emofilm_rule.md` for the
+  intact film, `docs/rules/face_map_rule.md` for the face test) before the first viewer scan was opened, as the scoring runner's read
+  log records. The chip is used only if that log shows no scan opened before {film_commit}; otherwise it states both dates. One
+  session motion file was opened for its shape before the read guard existed (disclosure 8); it is not a brain scan and is disclosed
+  where the chip expands.
+- Never "before anyone looked", and never any chip text not in this table.
+
+## Other lines
+
+- Story wall and notthefall tiles use only the outputs their frozen scoring runs committed on Thursday or later in that run's own files
+  (`tierD_picker_wall.json`, `tierD_d20_score.json`). No new laptop-forecast-versus-scan comparison is computed for them, and no ghost
+  line is drawn for them unless the frozen output itself holds the series.
+- Live or cached laptop forecasts (the judge's own clip, condition and seed): the gray dashed line alone, with the chip "Forecast only ·
+  audio-only, laptop" and the line "No public scan of this clip. Forecast, not a scan." No coloured line and no volunteer number. The
+  notthefall pair may sit beside it as a separate tile with "Real listeners, different story."
+
+## Data file and checks
+
+`scripts/ghostline_lpp.py` writes `results/ghostline_lpp_s8.json` (the four lines on the full window, the short-view index range,
+times, labels, chips, the draw order, the quoted frozen line and its source, this rule's commit) and a local reference render outside
+the repository. It refuses before 2026-10-29 16:00 UTC (the D22 rule forbade printing parcel series before Thu Oct 29 noon ET), if
+this rule file has uncommitted changes or no commit, or if the frozen per-listener file's SHA-256 differs. It prints only counts,
+shapes and timings. `tests/test_ghostline.py` checks the data file against this rule (draw order, chip text, labels, short view = crop,
+z-scoring, the five IDs, no banned words, no verdict words on the single listener).
