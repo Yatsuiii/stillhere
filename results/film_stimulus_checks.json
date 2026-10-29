@@ -1,0 +1,51 @@
+{
+ "label": "exploratory",
+ "rule": "docs/rules/film_stimulus_rule.md",
+ "checks": {
+  "audio_identical": {
+   "pass": true,
+   "aac_packets_sha256": "e287d625b3db9332",
+   "pcm_sha256": "2f567c5c47bb4fcd"
+  },
+  "frame_count": {
+   "pass": true,
+   "frames": 4560
+  },
+  "outside_edit_identical": {
+   "pass": true,
+   "frames_with_any_difference": {
+    "faces_removed": 0,
+    "area_matched": 0
+   },
+   "pixels": {
+    "faces_removed": 0,
+    "area_matched": 0
+   }
+  },
+  "control_inside_view": {
+   "pass": true,
+   "control_pixels_outside_view": 0
+  },
+  "control_area_within_1pct": {
+   "pass": true,
+   "placed": 2666,
+   "outside_1pct": 0,
+   "faces_in_view": 2717,
+   "no_control": 51,
+   "split": 40,
+   "in_view_face_px_with_control": 0.8894
+  }
+ },
+ "reported": {
+  "median_eccentricity_view_px": {
+   "faces_removed": 95.09206065702857,
+   "area_matched": 77.69491617860206
+  },
+  "eccentricity_ratio_control_over_face": 0.817,
+  "change_energy_ratio_control_over_face": 0.8943,
+  "sampled_frames": 380
+ },
+ "manifest_sha256": "d4e27d55e2c462f8edd9d2373407692d03534893a3fac284a6819897f52a6f44",
+ "frames_checked": 4560,
+ "pass": true
+}

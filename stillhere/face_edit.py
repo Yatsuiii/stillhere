@@ -110,3 +110,112 @@ def release_frames(path, wanted):
         if n in wanted:
             yield n, f
         n += 1
+
+
+# ---- film stimuli v2 (docs/rules/film_stimulus_rule.md) --------------------------------------------------------------------------------
+# Edits are made on the intact segment's own decoded yuv420p planes and encoded losslessly, so every pixel outside an edit decodes
+# exactly as in the intact segment. Every edit region is snapped to the 2x2 chroma grid. A face's control patch is the part of the
+# face that TRIBE sees (inside VIEW), moved to the nearest free spot inside VIEW (exact pixel test, VIEW_GAP px from faces and other
+# patches), cut into 2, 4 or 8 equal pieces only when it fits nowhere whole; face removal and control then change the same number of
+# pixels that reach the model, except for faces whose in-view part fits nowhere even in 8 pieces (counted).
+VIEW = (404, 32, 873, 501)        # inclusive x0, y0, x1, y1: the release pixels V-JEPA2's preprocessing (shortest edge 292, centre crop 256)
+#                                   depends on, found by perturbing single rows and columns through the processor itself
+
+
+def view_mask():
+    v = np.zeros((REL_H, REL_W), bool); v[VIEW[1]:VIEW[3] + 1, VIEW[0]:VIEW[2] + 1] = True
+    return v
+
+
+def snap2(mask):
+    """Grows a mask to whole 2x2 blocks (the chroma grid of yuv420p)."""
+    m = mask.reshape(REL_H // 2, 2, REL_W // 2, 2).any(axis=(1, 3))
+    return np.repeat(np.repeat(m, 2, 0), 2, 1)
+
+
+VIEW_GAP, MAX_PIECES = 4, 8                # control patches keep 4 px from faces and from each other; at most 8 pieces per face
+
+
+def _place_px(shape_mask, occ):
+    """The nearest free top-left (in distance from where the shape is) inside VIEW, on the 2x2 grid, where the shape overlaps no
+    occupied pixel; exact pixel test for every position at once (FFT overlap count). The moved mask, or None."""
+    from scipy.signal import fftconvolve
+    X0, Y0, X1, Y1 = VIEW
+    ys, xs = np.nonzero(shape_mask); y0, y1, x0, x1 = ys.min(), ys.max(), xs.min(), xs.max()
+    shape = shape_mask[y0:y1 + 1, x0:x1 + 1].astype(np.float32)
+    o = occ[Y0:Y1 + 1, X0:X1 + 1].astype(np.float32)
+    if shape.shape[0] > o.shape[0] or shape.shape[1] > o.shape[1]:
+        return None
+    py, px = np.nonzero(fftconvolve(o, shape[::-1, ::-1], mode="valid") < 0.5)
+    keep = ((X0 + px) % 2 == 0) & ((Y0 + py) % 2 == 0)
+    py, px = py[keep], px[keep]
+    if not len(py):
+        return None
+    d = (X0 + px - x0) ** 2 + (Y0 + py - y0) ** 2
+    i = np.lexsort((px, py, d))[0]
+    moved = np.zeros_like(shape_mask); moved[ys + int(Y0 + py[i] - y0), xs + int(X0 + px[i] - x0)] = True
+    return moved
+
+
+def _pieces(m, n):
+    """n pieces of a shape, cut across its longer side at 2-px-aligned lines of equal pixel count."""
+    ys, xs = np.nonzero(m)
+    coord = ys if (ys.max() - ys.min()) >= (xs.max() - xs.min()) else xs
+    edges = [int(coord.min())] + [int(np.quantile(coord, q)) // 2 * 2 for q in np.linspace(0, 1, n + 1)[1:-1]] + [int(coord.max()) + 1]
+    out = []
+    for a, b in zip(edges[:-1], edges[1:]):
+        sel = (coord >= a) & (coord < b)
+        if sel.any():
+            p = np.zeros_like(m); p[ys[sel], xs[sel]] = True; out.append(p)
+    return out
+
+
+def place_in_view(m, occ):
+    """The control for one face's in-view part: the whole shape at the nearest free spot inside VIEW; failing that, the shape cut into
+    2, 4 or 8 equal pieces placed one by one. Returns (moved pixels, number of pieces), or (None, 0) if no split fits."""
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * VIEW_GAP + 1,) * 2)
+    n = 1
+    while n <= MAX_PIECES:
+        trial, moved = occ.copy(), np.zeros_like(m)
+        for p in _pieces(m, n):
+            mv = _place_px(p, trial)
+            if mv is None:
+                moved = None; break
+            moved |= mv; trial |= cv2.dilate(mv.astype(np.uint8), k).astype(bool)
+        if moved is not None:
+            return moved, n
+        n *= 2
+    return None, 0
+
+
+def fill_yuv(Y, U, V, region, exclude):
+    """Fills a 2x2-aligned region with the local mean of a RING px band around it, per plane (chroma at its own resolution)."""
+    band = cv2.dilate(region.astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * RING + 1,) * 2)).astype(bool) & ~region & ~exclude
+    Y[region] = np.uint8(round(float(Y[band].mean())))
+    rc, bc = region[::2, ::2], band[::2, ::2] & ~region[::2, ::2]
+    for P in (U, V):
+        P[rc] = np.uint8(round(float(P[bc].mean())))
+
+
+def edit_yuv(Y, U, V, masks):
+    """faces_removed and area_matched planes for one intact frame, the union region of each edit, and per face: snapped pixels, pixels
+    inside VIEW, control pixels and offset (None when the face is not in VIEW or no free spot exists)."""
+    snapped = [snap2(m) for m in masks]
+    faces = np.zeros((REL_H, REL_W), bool)
+    for s in snapped:
+        faces |= s
+    out = {"faces_removed": (Y.copy(), U.copy(), V.copy()), "area_matched": (Y.copy(), U.copy(), V.copy())}
+    for s in snapped:
+        fill_yuv(*out["faces_removed"], s, faces & ~s)
+    vm = view_mask(); k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * VIEW_GAP + 1,) * 2)
+    occ = cv2.dilate(faces.astype(np.uint8), k).astype(bool); ctrl = np.zeros_like(faces); stats = []
+    for s in snapped:
+        vis = s & vm; rec = {"px": int(s.sum()), "px_in_view": int(vis.sum()), "control_px": 0, "pieces": 0}
+        if vis.any():
+            moved, n = place_in_view(vis, occ)
+            if moved is not None:
+                occ |= cv2.dilate(moved.astype(np.uint8), k).astype(bool); ctrl |= moved
+                fill_yuv(*out["area_matched"], moved, faces)
+                rec.update(control_px=int(moved.sum()), pieces=n)
+        stats.append(rec)
+    return out, {"faces_removed": faces, "area_matched": ctrl}, stats
