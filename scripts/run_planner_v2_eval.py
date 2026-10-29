@@ -104,10 +104,14 @@ def main():
     t0 = datetime.datetime.now(datetime.timezone.utc); runs = []
     pools = {b: ThreadPoolExecutor(max_workers=a.workers) for b in CAPS}
     futs = [pools[b].submit(run_one, s, q, b, rep) for rep in range(1, a.repeats + 1) for s in ("heldout", "seen") for q in Q[s] for b in CAPS]
+    partial = ROOT / "results/planner_v2_eval.partial.jsonl"                  # crash safety: each finished run, as it lands
+    partial.parent.mkdir(exist_ok=True); partial.write_text("")
     for i, f in enumerate(futs, 1):
         r = f.result()
         if r:
             runs.append(r)
+            with partial.open("a") as fh:
+                fh.write(json.dumps(r) + "\n")
         if i % 150 == 0:
             print(f"{i}/{len(futs)} scheduled runs done; spend " + ", ".join(f"{b} ${v:.3f}" for b, v in spend.items()), flush=True)
     for p in pools.values():
@@ -116,6 +120,7 @@ def main():
     json.dump({"runs": runs, "spend_usd": spend, "skipped_runs": skipped}, open(ROOT / "results/planner_v2_eval.raw.json", "w"))   # kept even if scoring fails
     result = {"label": "exploratory", "rule": "docs/rules/planner_v2_eval_rule.md (stillhere-app 6c558d3)", "repeats": a.repeats,
               "models": planner.MODELS, "effort": planner.EFFORT, "baseten_note": "two hosted versions of Muse Spark Open, never a same-weights check",
+              "restart_note": "a first attempt (2026-10-29 05:18 to 05:40 UTC, 1,816 calls) was killed by a session restart before it wrote any result; nothing from it was read and this run started again from scratch (spend above is this run only)",
               "started_utc": t0.isoformat(timespec="seconds"), "finished_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
               "spend_usd": {b: round(v, 4) for b, v in spend.items()}, "caps_usd": CAPS, "skipped_runs": skipped, "sets": {}}
     lines = []
@@ -137,7 +142,7 @@ def main():
     result["runs"] = sorted(runs, key=lambda r: (r["set"], r["backend"], r["qid"], r["repeat"]))
     (ROOT / "results").mkdir(exist_ok=True)
     json.dump(result, open(ROOT / "results/planner_v2_eval.json", "w"), indent=1)
-    (ROOT / "results/planner_v2_eval.raw.json").unlink()
+    (ROOT / "results/planner_v2_eval.raw.json").unlink(); partial.unlink()
     (ROOT / "results/planner_v2_eval_summary.txt").write_text("Planner v2 evaluation (exploratory)\n" + "\n".join(lines) + "\n"
                                                               + f"spend {result['spend_usd']}; skipped {skipped}\n")
     print("\n".join(lines)); print(f"runs {len(runs)}; spend {result['spend_usd']}; skipped {skipped}")
