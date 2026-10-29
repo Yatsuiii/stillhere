@@ -238,6 +238,9 @@ def test_live_inset_or_one_cut():
     assert 'class="box"' in h and "30 s of waiting cut" in h and "w2v-BERT: sound" not in h       # the take and its cut note only
     i = SPEC["live"]["inset"]
     assert i["start"] == 60 and i["x"] + i["w"] <= 1920 and i["y"] + i["h"] <= 1080 - 150         # clear of the subtitles
+    # Reviewed on frames 60-121 s (Oct 29): the earlier 384x216 box at y 664 covered the D20 small print's third line (112-118 s) and
+    # the end of the reversed scene's hearing plot; this box sits below every scene's content and above the subtitles.
+    assert (i["x"], i["y"], i["w"], i["h"]) == (1544, 728, 352, 198)
 
 
 def test_film_ghost_line_follows_the_display_rule():
