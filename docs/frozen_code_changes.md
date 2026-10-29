@@ -158,3 +158,19 @@ Run in three parts so each part saves within Kaggle's 12-hour limit; the model c
      # 1. cached features: SHA-256 against the feature kernels' RESULT lines, stock checkpoint ----------------------------------------
      logged = {}
 ```
+
+## Film forecast input: the intact kernel reads a fixed segment (Oct 29, before any Emo-FilM BOLD was read)
+
+A plumbing change, made before any Emo-FilM brain data was opened (rulings of Oct 29, 06:00 and 06:50 UTC). The intact film forecast
+kernel (stillhere-pilot-bridge-intact) used to cut release 0 to 190 s of Tears of Steel itself on Kaggle (`ffmpeg -ss 0 -t 190 -c:v
+libx264 -preset veryfast -crf 18 -c:a aac -b:a 192k`). It now reads `seg_intact.mp4`, the same command run once on the laptop
+(SHA-256 69d561f8d18a0d12...), from the private dataset stillhere-film-stimuli, SHA-256 asserted. Reason: the face-edit cuts must be
+made from the exact frames the intact forecast reads, so pixels outside each edit are identical (docs/rules/film_stimulus_rule.md).
+The model stages are unchanged; the old kernel had never run.
+
+Check (Kaggle CPU kernel stillhere-segcompare: the release downloaded and SHA-256 checked, the old command run with Kaggle's ffmpeg
+6.1.1, every frame and the audio decoded with TRIBE's reader, moviepy 2.2.1): the old in-kernel cut and `seg_intact.mp4` (laptop ffmpeg
+9.0.2) are not byte-identical: 4,324 of 4,560 decoded frames differ (frames 0 to 213 are identical), at encoder level only: mean absolute
+pixel difference per frame median 1.14 and at most 2.85 (of 255), PSNR median 42.9 dB and at least 35.7 dB; the audio has the same
+sample count and differs by 4.2% RMS (a different AAC encoder build). Same frame count, size, frame rate and duration. Kaggle decodes
+`seg_intact.mp4` frame for frame exactly as the laptop does (4,560 of 4,560), so the file the forecast reads is what the checks saw.

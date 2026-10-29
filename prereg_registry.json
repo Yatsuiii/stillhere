@@ -447,13 +447,13 @@
   },
   {
    "path": "d22/picker_pred/saturday_chain.sh",
-   "sha256": "b2d9ed0f62df503b5c24c71df6ffb2cf99440bf219084d7843739369ae79a811",
+   "sha256": "b345ca9634f14b4ffc1d44b6bca28b79519c2f3180d967021e3f70275f4bc140",
    "role": "runner",
    "implements": [
     "§9",
     "D26"
    ],
-   "what": "Saturday chain: picker-pred rerun, intact film, film-rem, film-am, Glimmer edit check, the D26 fallback parts only if triggered, then the scoring call with the wall and the wall baselines",
+   "what": "Saturday chain: picker-pred rerun, intact film, gate 0 (CPU), film-rem and film-am only if it passes, then the R and C maps (or NOT RUN) pushed to the private repo, Glimmer edit check, the D26 fallback parts only if triggered, then the scoring call with the wall and the wall baselines",
    "history": [
     {
      "old_sha256": "a55061bbb2ef3fe58f9a01cf640cb4ac32998579e0c57d738485be9a9bfea900",
@@ -462,6 +462,10 @@
     {
      "old_sha256": "b9539f58eb13c4619623297447414f9ff6c724bd5ab9f61130613cbbcb4e75bc",
      "why": "ruling of Oct 29 06:00 UTC: GPU order picker-pred, intact film, film-rem, film-am (after intact completes), Glimmer edit check (k1e_editcheck), then the fallback parts only if triggered, then scoring; film-versions kernel removed"
+    },
+    {
+     "old_sha256": "b2d9ed0f62df503b5c24c71df6ffb2cf99440bf219084d7843739369ae79a811",
+     "why": "ruling of Oct 29 06:50 UTC: gate 0 runs on CPU right after the intact film forecast; film-rem and film-am are pushed only if it passes, then face_map_runner.py maps and results/face_map_RC.json is committed and pushed to the private repo; if the gate fails, face_map_runner.py not-run and results/face_map.json is committed and pushed instead; a forecast failure or a gate refusal publishes nothing and logs that a decision is needed"
     }
    ]
   },
