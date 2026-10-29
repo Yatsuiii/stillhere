@@ -231,6 +231,11 @@ def test_live_inset_or_one_cut():
     cut = V.timeline(SPEC, {"live": "cut"}); ins = V.timeline(SPEC, {"live": "inset"})
     assert [x["headline"] for x, _, _ in cut if x["id"] == "live_run"] == ["Live on a laptop"]
     assert [x["headline"] for x, _, _ in ins if x["id"] == "live_run"] == ["Live on a laptop, uncut"]
+    items = V.resolve(SC["live_run"], {"live": "cut"})[0][1]; ctx = {"live": live_ctx(), "ghost": V.synthetic_ghost()}
+    h = V.scene_html(cut[[x["id"] for x, _, _ in cut].index("live_run")][0], items, {}, SPEC, ctx)
+    assert 'class="box"' not in h and "top:860px" not in h and "w2v-BERT: sound" in h          # no take yet: a normal slide
+    h = V.scene_html(SC["live_run"], items, {"live_take": "/x/take.mp4", "n": 30}, SPEC, ctx)
+    assert 'class="box"' in h and "30 s of waiting cut" in h and "w2v-BERT: sound" not in h       # the take and its cut note only
     i = SPEC["live"]["inset"]
     assert i["start"] == 60 and i["x"] + i["w"] <= 1920 and i["y"] + i["h"] <= 1080 - 150         # clear of the subtitles
 

@@ -421,8 +421,10 @@ MOVING = ("cast", "film3", "take")
 
 
 def scene_html(sc: dict, items: list, values: dict, spec: dict, ctx: dict) -> str:
-    moving = [i for i in items if i["kind"] in MOVING]
-    rest = [i for i in items if i["kind"] not in MOVING]
+    moving = [i for i in items if i["kind"] in MOVING and (i["kind"] != "take" or values.get("live_take"))]
+    rest = [i for i in items if i not in moving]
+    if any(i["kind"] == "take" for i in moving):                       # cut mode with the filmed take: the take and its cut note only
+        rest = [i for i in rest if i["kind"] == "cutnote"]
     body = "".join(item_html(i, values, ctx) for i in moving)
     inner = "".join(item_html(i, values, ctx) for i in rest)
     if moving and moving[0]["kind"] == "film3":
@@ -671,7 +673,7 @@ def main(argv=None) -> None:
         for j, (_, items) in enumerate(steps):
             h = work / f"scene_{i:02d}_{j}.html"; h.write_text(scene_html(sc, items, values, spec, ctx))
             p = work / f"scene_{i:02d}_{j}.png"; RV.capture(h, p, work, spec["size"]); pngs.append(p)
-        mv = [it for _, items in steps for it in items if it["kind"] in MOVING]
+        mv = [it for _, items in steps for it in items if it["kind"] in MOVING and (it["kind"] != "take" or values.get("live_take"))]
         moving = moving_clip(mv[0], secs, work, i, values) if mv else None
         c = work / f"scene_{i:02d}.mp4"; scene_clip(pngs, [s for s, _ in steps], secs, moving, c, fps); clips.append(c)
         print(f"scene {i:02d} {sc['id']}: {secs:.1f} s, {len(pngs)} step(s){', moving picture' if mv else ''}", flush=True)
