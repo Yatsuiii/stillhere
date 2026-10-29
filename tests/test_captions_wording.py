@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 BANNED = ("aware", "awareness", "conscious", "consciousness", "hospital", "detect", "detects", "detected", "detection", "diagnose",
-          "a test for patients")
+          "detections", "a test for patients", "before anyone looked")
 FILES = ("docs/captions.md", "video/scenes_v3.json")
 
 

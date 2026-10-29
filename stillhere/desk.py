@@ -52,7 +52,7 @@ LINES = {
                              "{trs} TRs = {minutes} minutes per state)", {"deep_n": ("deep_effective_n", "i"), **_TIME}),
 }
 _P, _N, _THR = ("p", "p"), ("n", "i"), ("holm_threshold", "p")
-# bar -> (label, the §6 "If it fails" claim, detail with its number slots)
+# bar -> (label, the §6 "If it fails" claim, detail with its number slots); P4's claim is in plain words (cloud ruling of Oct 29, item 3)
 BARS = {
     "P7": ("P7 (pipeline sanity, read first)", "Fix preprocessing before reading anything else",
            "FPN LOO-ISC Awake > Deep p = {p_fpn}, n = {n_fpn}; Deep AUD LOO-ISC above its null p = {p_aud}, n = {n_aud} (brain-to-brain ISC, not TRIBE)",
@@ -70,7 +70,7 @@ BARS = {
             {"p": _P, "thr": _THR, "n": _N}),
     "P2b": ("P2b", "No individual-level claim", "TRIBE's individual detection rate against LOO-ISC's on the same runs, both gauges, n = {n}",
             {"n": ("H.n", "i")}),
-    "P4": ("P4", '"Replaces controls at group level only"',
+    "P4": ("P4", '"group-level result only; not claimed for one person"',
            "LANGUAGE AUC Awake vs Deep {auc} [95% CI {lo}, {hi}], delta AUC vs LOO-ISC {dauc}, n = {n}",
            {"auc": ("L.auc", "f2"), "lo": ("L.auc_ci_lo", "f2"), "hi": ("L.auc_ci_hi", "f2"), "dauc": ("L.delta_auc", "z"), "n": ("L.n", "i")}),
     "P5_H": ("P5 HEARING", "Limitation; downgrade the affected gauge", "N3 ratio {r3}, N4 ratio {r4}, p = {p} (Holm threshold {thr}), n = {n}",

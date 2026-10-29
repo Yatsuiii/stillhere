@@ -1,8 +1,8 @@
 """The Pilot page (demo/index.html, scripts/build_pilot_page.py): it is up to date; no banned wording, em dash, script or remote
 resource; every results panel carries "Not a diagnosis or medical advice." and every panel with film frames the CC BY 3.0 credit; the
 numbers come from their JSON; each slot shows a labelled pending panel without its file and fills from fixture files (every face-map
-ending, Glimmer pass and fail, the story wall, notthefall pass and not-pass, recorded plans); the sedation tab carries only the frozen
-fail format; the media match demo/media/MEDIA.json; and at phone width (390 px) headless Chrome renders it with no horizontal overflow."""
+ending, Glimmer pass and fail, the story wall, notthefall pass and not-pass, recorded plans, shown in plain words); the sedation case
+study is one link to its write-up and no sedation number is on the page; the media match demo/media/MEDIA.json; and at phone width (390 px) headless Chrome renders it with no horizontal overflow."""
 import copy
 import hashlib
 import html
@@ -62,16 +62,20 @@ def test_no_banned_wording_em_dash_scripts_or_remote_resources():
     low = text(PAGE).lower()
     for w in BP.BANNED:
         assert not re.search(r"\b" + re.escape(w) + r"\b", low), w
-    assert chr(0x2014) not in PAGE and "<script" not in PAGE.lower() and "http://" not in PAGE and "https://" not in PAGE
-    assert "Nearest validated option" not in PAGE                                   # planner v2's decline sentence (ruling pending)
-    with pytest.raises(AssertionError):
-        BP.check(PAGE.replace("</main>", "<p>It detects faces.</p></main>"))
+    assert chr(0x2014) not in PAGE and "<script" not in PAGE.lower() and "http://" not in PAGE
+    assert re.findall(r"https://[^\"'\s>]+", PAGE) == [BP.SEDATION_URL]               # the one link out: the write-up, an anchor
+    assert "Nearest validated option" not in PAGE and "validation table" not in PAGE and "no rule" not in text(PAGE)
+    assert "before anyone looked" in BP.BANNED and "validated" in BP.BANNED
+    for bad in ("<p>It detects faces.</p>", "<p>Checked before anyone looked.</p>", '<img src="https://example.org/x.png">',
+                f'<a href="https://example.org/">x</a>', f'<link href="{BP.REPO_URL}/x.css">'):
+        with pytest.raises(AssertionError):
+            BP.check(PAGE.replace("</main>", bad + "</main>"))
 
 
 def test_results_panels_carry_the_footer_and_film_frames_the_credit():
     results = PAGE[PAGE.index('id="check"'):PAGE.index("<footer")]
     ps = panels(results)
-    assert len(ps) == 9                                                               # check, film, Glimmer, forecast, LPP, 3 slots, sedation
+    assert len(ps) == 8                                                               # check, film, Glimmer, forecast, LPP, 3 slots
     for p in ps:
         assert p.rstrip().endswith(f'<p class="nd">{html.escape(BP.ND)}</p></div>'), re.sub(r"<[^>]+>", " ", p)[:120]
     for p in panels(PAGE):
@@ -93,7 +97,12 @@ def test_numbers_come_from_their_json():
     assert f"Le Petit Prince, section 8, held out: {BP.S8_LABEL}." in t and "beaten in 8 of 8 comparisons" in t
     assert ("the default planner (Muse Spark 1.3) accepted 2.3% it should have declined (upper bound 6.5%). Private mode, Muse Spark "
             "Open, which can run on your own servers: 7.6% (Fireworks), 6.8% (Baseten).") in t
-    assert "predicted in 7.87 s, peak 3.55 GB" in t and "a forecast, not validated" in t
+    assert "predicted in 7.87 s, peak 3.55 GB" in t and "a forecast, not checked against scans" in t
+    b = BP.load("results/section8_baselines.json")["145"]["LANG"]; s8 = BP.load("results/section8.json")
+    assert f"In language areas it beat a simple word-rate model in {b['tribe_vs']['word_rate']['k_tribe_higher']} of 49 listeners." in t
+    assert (f"the held-out language result is {s8['stage']['language_z']:.2f} z" in t and f"unpartialled, {b['mean_z']['tribe']:.2f} z "
+            "over the same 145 time points" in t and "1.76 z" in t and "1.65 z" in t)
+    assert "reversed speech: no word check (0 words heard)" in t
     lc = BP.load("results/demo_live_tribe_conditions.json")["mean_aud_response_strength"]
     assert f"intact story {lc['intact']:.3f}, sentence scramble {lc['sentence_scramble']:.3f} (raw TRIBE units)" in re.sub(r" ([,.])", r"\1", t)
     assert "it says nothing about language or understanding" in t and PAGE.count("<polyline") == 8     # 4 windows x 2 versions
@@ -105,13 +114,10 @@ def test_exact_upper_bound_matches_the_strict_report():
     assert abs(BP.upper95(0, 132) - (1 - 0.025 ** (1 / 132))) < 1e-9                # closed form when k = 0
 
 
-def test_sedation_tab_is_the_frozen_fail_format_only():
-    sed = PAGE[PAGE.index('<details id="sedation"'):PAGE.index("</details>", PAGE.index('<details id="sedation"'))]
-    for line in BP.SEDATION:
-        assert f"<p>{html.escape(line)}</p>" in sed
-    assert "missed by one" not in PAGE.lower()
-    outside = text(PAGE.replace(sed, "")).lower()                                  # elsewhere: the tab's link and the data credit only
-    assert outside.count("sedation") == 2 and "sedation case study credits" in outside and "the sedation data (ds003171)" in outside
+def test_sedation_is_one_link_to_its_write_up():
+    assert PAGE.count(f'href="{BP.SEDATION_URL}"') == 1 and (REPO / "docs/writeup_sedation.md").is_file()
+    t = text(PAGE).lower()                                                           # the link line and the TRIBE data credit only
+    assert t.count("sedation") == 3 and "the sedation data (ds003171)" in t and "9 of 12" not in t and "missed by one" not in t
 
 
 def test_media_match_their_manifest_and_stay_small():
@@ -154,9 +160,9 @@ def test_recorded_plans_fill_with_rounds_and_the_decline_wording_rule(monkeypatc
     page = build_with(monkeypatch, {**NONE, "demo_requests": REQS, "demo_runs": RUNS}); t = text(page)
     assert page.count('type="radio"') == 1                                           # the rewording is shown under its request
     assert "Round 2, reworded:" in t and "round 1 was declined." in t
-    assert "Declined: analysis_not_offered. StillHere Pilot plans exploratory studies only from the validation table." in t
-    assert "Nearest validated option" not in page                                    # stored sentence left out
-    assert "Nearest tested option: analysis forecast_tribe_stock." in t              # structured field, relabelled
+    assert ("Declined: analysis not offered. Nearest tested option: analysis forecast_tribe_stock. StillHere Pilot plans exploratory "
+            "studies only from its table of tested options.") in t                   # stored wording, shown in plain words
+    assert "Nearest validated option" not in page and "analysis_not_offered" not in t and BP.DISPLAY_NOTE in t
     assert "intact kept 99% of its words, pass." in t and "zzz secret words" not in page
     assert "tools run: list_stimuli, check_conditions" in t and "Shows: a decline" in t
 
@@ -203,7 +209,7 @@ ENDINGS = {
 @pytest.mark.parametrize("outcome", list(ENDINGS))
 def test_every_face_map_ending(monkeypatch, outcome):
     t = text(build_with(monkeypatch, {**NONE, "face_map": {"outcome": outcome, "viewers": 28, "B1": B1}}))
-    assert ENDINGS[outcome] in t and "Data TRIBE's authors never used: 28 real viewers of the intact film." in t
+    assert ENDINGS[outcome] in t and BP.FILM_FOOT.format(N=28) in t and "never used" not in t
 
 
 def test_pass_carried_by_visual_parcels_and_not_run_with_the_intact_film(monkeypatch):
@@ -214,7 +220,9 @@ def test_pass_carried_by_visual_parcels_and_not_run_with_the_intact_film(monkeyp
     assert ("The face test did not run: edit not confirmed by Glimmer. It was set to run once, by rules written before any brain data "
             "was read.") in t and "fills from results/emofilm_film_score.json when it lands" in t
     t = text(build_with(monkeypatch, {**NONE, "face_map": fm, "film_score": FILM}))
-    assert "VISUAL about 4, at least 2 1.50 [1.10, 1.90]" in t
+    assert "VISUAL about 4, at least 2 1.50 [1.10, 1.90]" in t and "Every gauge that ran" in t
+    page = build_with(monkeypatch, {**NONE, "face_map": fm, "film_score": FILM})
+    assert all(page.rfind("<details", 0, m.start()) > page.rfind("</details>", 0, m.start()) for m in re.finditer("<table", page))
     assert "What it had to beat: brightness, motion, sound envelope and word rate (VIS vs brightness: TRIBE beats; VIS vs motion: no " \
            "difference shown)." in t and "28 real viewers of the intact film" in t
 

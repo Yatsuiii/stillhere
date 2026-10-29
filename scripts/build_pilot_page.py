@@ -9,11 +9,11 @@ script) that walks one demo study through StillHere, with wording from docs/capt
   4. The SAM film edits (intact, faces filled, same-size control) at two instants, with the Spark Open edit check
      (results/edit_check_spark_open.json) and Glimmer's slot (results/edit_check_glimmer.json, Saturday).
   5. The laptop TRIBE forecast for the story study's two versions (results/demo_live_tribe_conditions.json, with the first live run
-     in results/live_tribe_librivox.json): a forecast, not validated.
+     in results/live_tribe_librivox.json): a forecast, not checked against scans.
   6. Did the forecasts hold up? LPP section 8 (results/section8.json) with its "what it had to beat" row (results/
      section8_baselines.json); slots for the story wall (results/story_wall.json), notthefall (results/d20_notthefall.json) and the film
      (results/face_map.json, results/emofilm_film_score.json). A missing file is a labelled pending slot.
-  A closed sedation tab carries only the frozen fail format. Media come from demo/media/ (scripts/build_pilot_media.py, built once).
+  The sedation case study is one link to docs/writeup_sedation.md. Stored card wording is shown in plain words (DISPLAY). Media come from demo/media/ (scripts/build_pilot_media.py, built once).
 Standard library only, so a clean clone builds it. The build refuses banned wording.
 usage: python scripts/build_pilot_page.py [--single OUT.html]   (--single also writes a copy with the media inlined, for hosting)"""
 import argparse
@@ -31,8 +31,10 @@ E = html.escape
 ND = "Not a diagnosis or medical advice."
 CREDIT = "Tears of Steel (CC) Blender Foundation | mango.blender.org, CC BY 3.0. Edited for this study."
 S8_LABEL = "recomputed with code built during the event; first measured Oct 22-23"
-BANNED = ("aware", "awareness", "conscious", "consciousness", "hospital", "detect", "detects", "detected", "detection", "diagnose",
-          "a test for patients", "face check", "detects faces", "blur")
+REPO_URL = "https://github.com/Yatsuiii/stillhere"                 # the only remote link: an anchor to the repository, never a resource
+SEDATION_URL = f"{REPO_URL}/blob/main/docs/writeup_sedation.md"
+BANNED = ("aware", "awareness", "conscious", "consciousness", "hospital", "detect", "detects", "detected", "detection", "detections",
+          "diagnose", "a test for patients", "before anyone looked", "face check", "detects faces", "blur", "validated")
 SLOTS = {"demo_requests": "eval/demo_requests.json", "demo_runs": "results/demo_runs.json", "glimmer": "results/edit_check_glimmer.json",
          "story_wall": "results/story_wall.json", "d20": "results/d20_notthefall.json", "face_map": "results/face_map.json",
          "film_score": "results/emofilm_film_score.json", "live_conditions": "results/demo_live_tribe_conditions.json"}
@@ -42,9 +44,6 @@ BACKENDS = {"spark-1.3": "Muse Spark 1.3 (Meta Model API), the default planner",
             "spark-open-baseten": "Muse Spark Open (Baseten)"}
 COND_NAMES = {"intact": "Intact story", "sentence_scramble": "Sentence scramble", "word_scramble": "Word scramble", "reversed": "Reversed"}
 VERSION_NAMES = {"intact": "Intact", "faces_removed": "Faces filled", "area_matched": "Same-size control"}
-SEDATION = ("TRIBE-only LANGUAGE did not reach the bar: it fell from awake to deep sedation in 9 of 12 (needed 10; p 0.003, HL 1.11 "
-            "[0.43, 1.78]).", "Fine-tuned TRIBE v2, the pre-registered second model: 10 of 12 (p 0.008, HL 0.82).",
-            "P3: hearing dropped more than language (HL -2.32 [-3.56, -0.79]).")                      # frozen fail format, word for word
 INK, MUTED, ACCENT, PASS, FAIL, WAIT = "#1b1f24", "#4a5560", "#1f4e79", "#1a6b34", "#a8261b", "#7a5200"
 CSS = f"""
 *{{box-sizing:border-box}} html{{-webkit-text-size-adjust:100%}}
@@ -111,7 +110,21 @@ def pending(title: str, when: str, rel: str, note: str = "") -> str:
 
 
 # ---- 1 and 2: pick a study, the recorded plan ------------------------------------------------------------------------------------
-NEAREST = re.compile(r" ?Nearest validated option: [^.]*\.")    # planner v2's decline sentence; shown only from a structured field
+REASONS = {"analysis_not_offered": "analysis not offered", "clinical_out_of_scope": "a clinical question, out of scope"} | \
+    {f"{a}_not_validated": f"{a.replace('_', ' ')} not on the tested menu" for a in ("population", "language", "brain_area", "condition", "stimulus")}
+DISPLAY = ((re.compile(r"Nearest validated option: "), "Nearest tested option: "),             # planner v2 is frozen; its stored text keeps
+           (re.compile(r"from the validation table"), "from its table of tested options"),     # these words, the page shows plain ones
+           (re.compile(r"\bnot validated\b"), "not checked against scans"))
+DISPLAY_NOTE = ("Display wording: the stored cards use code names (for example condition_not_validated) and older labels; this page shows "
+                "them in plain words. The records are unchanged in results/demo_runs.json.")
+
+
+def plain(text: str) -> str:
+    """Stored wording in plain words: decline codes, the planner's fixed sentences, the forecast label."""
+    text = re.sub(r"Declined: ([a-z_]+)\.", lambda m: f"Declined: {REASONS.get(m.group(1), m.group(1).replace('_', ' '))}.", text)
+    for rx, new in DISPLAY:
+        text = rx.sub(new, text)
+    return text
 
 
 def studies(reqs, runs) -> list:
@@ -144,9 +157,9 @@ def run_id(r: dict) -> str:
 
 
 def card_lines(r: dict) -> list:
-    """The recorded card, line by line, as stored. Two display rules: a manipulation-check line's JSON is summarised per condition
-    (transcripts left out; the full card stays in the results file), and on a decline the nearest-option sentence is shown only from a
-    structured field ("nearest"), labelled "Nearest tested option"; the stored sentence is left out (planner v2 is frozen)."""
+    """The recorded card, line by line. Display rules: a manipulation-check line's JSON is summarised per condition (transcripts left
+    out; the full card stays in the results file); a structured "nearest" field, when a record has one, replaces the stored nearest-option
+    sentence; and every line is shown in plain words (plain(); planner v2 is frozen, so its stored text keeps its own words)."""
     v = next((r[k] for k in ("card", "card_text", "display") if isinstance(r.get(k), (str, dict))), "")
     v = (v.get("text") or "") if isinstance(v, dict) else v
     if not v.strip():
@@ -160,14 +173,13 @@ def card_lines(r: dict) -> list:
             try:
                 checks = json.loads("{" + body.rstrip(".").rstrip())
                 ln = f"{head}: " + "; ".join(f"{c} kept {pct(x['recall'])} of its words, "
-                                             + {True: "pass", False: "fail"}.get(x.get("pass"), "no rule") for c, x in checks.items()) + "."
+                                             + {True: "pass", False: "fail"}.get(x.get("pass"), "no word check") for c, x in checks.items()) + "."
             except (ValueError, KeyError, TypeError, AttributeError):
                 pass
-        if r.get("decision") == "decline":
-            ln = NEAREST.sub("", ln)
-            if r.get("nearest") and ln.startswith("Declined:"):
-                ln += f" Nearest tested option: {r['nearest']}."
-        out.append(ln)
+        if r.get("decision") == "decline" and r.get("nearest") and ln.startswith("Declined:"):
+            sub = f"Nearest validated option: {r['nearest']}."
+            ln = re.sub(r"Nearest validated option: [^.]*\.", sub, ln) if "Nearest validated option:" in ln else f"{ln} {sub}"
+        out.append(plain(ln))
     return out
 
 
@@ -250,6 +262,7 @@ def picker_html(sts: list, runs_doc) -> tuple:
                 if "spark-1.3" in rf:
                     body.append(f'<h3>Round {E(str(rw.get("round") or 2))}, reworded: <q>{E(rw["text"])}</q></h3>'
                                 + (f'<p class="small">{E(rw["why"])}.</p>' if rw.get("why") else "") + cards_html(rf))
+            body.append(f'<p class="small">{E(DISPLAY_NOTE)}</p>')
             P.append(panel("".join(body), nd=False))
         else:
             P.append(pending("Muse Spark 1.3's recorded plan for this request", "Recorded live and replayed here once the run lands.",
@@ -273,7 +286,7 @@ def conditions_html(cm: dict) -> str:
         elif name == "word_scramble":
             res = f'{badge("fail", "caught as broken")}kept only {pct(r["recall"])} of its words'
         else:
-            res = f'{badge("info", "control")}reversed speech: no words expected ({r["n_words_heard"]} heard)'
+            res = f'{badge("info", "control")}reversed speech: no word check ({r["n_words_heard"]} words heard)'
         P.append(f'<div class="panel cond{" caught" if r["pass"] is False else ""}"><h3>{E(COND_NAMES.get(name, name))}</h3>'
                  f'<audio controls preload="metadata" src="media/alice_75s_{name}.mp3"></audio><p class="small">{res}</p></div>')
     P.append(f'</div><p class="big">The word scramble kept only {pct(w["recall"])} of its words, so it was caught as broken before scanning '
@@ -378,22 +391,22 @@ def timecourse_svg(lc: dict) -> str:
 def forecast_html(lt: dict, lc) -> str:
     first = (f'<p class="small">First live run, Oct 28: a {lt["clip_seconds"]:.0f} s clip of the same chapter, predicted in '
              f'{lt["predict_s"]:.2f} s, peak {lt["peak_vram_gb"]:.2f} GB of GPU memory; response strength '
-             f'{lt["predicted_aud_response_strength"]:.3f}. <code>results/live_tribe_librivox.json</code> ({E(lt["label"])}).</p>')
+             f'{lt["predicted_aud_response_strength"]:.3f}. <code>results/live_tribe_librivox.json</code> ({E(plain(lt["label"]))}).</p>')
     if lc is None:
-        body = (f'<p>{badge("wait", "a forecast, not validated")}Live on a laptop ({E(lt["device"])}): {E(lt["model"])}.</p>'
-                f'<p>{E(lt["wording"])}</p>' + first)
+        body = (f'<p>{badge("wait", "a forecast, not checked against scans")}Live on a laptop ({E(lt["device"])}): {E(lt["model"])}.</p>'
+                f'<p>{E(plain(lt["wording"]))}</p>' + first)
     else:
         rs = lc["runs"]; m = lc["mean_aud_response_strength"]
         pred = sorted(r["predict_s"] for r in rs)
-        body = (f'<p>{badge("wait", "a forecast, not validated")}Live on this laptop ({E(rs[0]["device"])}), {E(rs[0]["model"])}, for the '
+        body = (f'<p>{badge("wait", "a forecast, not checked against scans")}Live on this laptop ({E(rs[0]["device"])}), {E(rs[0]["model"])}, for the '
                 f'story study\'s two versions: each 75 s clip in four {rs[0]["clip_seconds"]} s windows, {len(rs)} predictions, '
                 f'{pred[0]:.1f}-{pred[-1]:.1f} s each once loaded; peak {max(r["peak_vram_gb"] for r in rs):.2f} GB of GPU memory.</p>'
                 f'<div class="tbl">{timecourse_svg(lc)}</div><p class="small">Per second, the mean over {rs[0]["n_aud_parcels"]} auditory '
                 f'parcels of the predicted response (raw TRIBE units); each window was predicted on its own, so the lines break between '
                 'windows.</p><p>Predicted response strength (hearing, audio-only): '
                 + ", ".join(f"{E(COND_NAMES.get(c, c).lower())} <b>{v:.3f}</b>" for c, v in m.items())
-                + f' (raw TRIBE units). {E(lc["wording"])}</p><p class="small"><code>results/demo_live_tribe_conditions.json</code> '
-                f'({E(lc["label"])}).</p>' + first)
+                + f' (raw TRIBE units). {E(plain(lc["wording"]))}</p><p class="small"><code>results/demo_live_tribe_conditions.json</code> '
+                f'({E(plain(lc["label"]))}).</p>' + first)
     return panel('<p class="big">TRIBE v2 forecasts the healthy-adult response.</p>' + body)
 
 
@@ -411,13 +424,19 @@ def dots_svg(point: float, claim: int, n: int = 15) -> str:
 def lpp_html(s8: dict, b: dict) -> str:
     ve = s8["volunteer_equivalent_language"]; assert s8["label"] == S8_LABEL == b["section8_label"]
     beats = [b[w][n]["tribe_vs"][x]["verdict"] for w in ("145", "full") for n in ("LANG", "AUD") for x in ("word_rate", "envelope")]
-    k = sum(v == "TRIBE beats" for v in beats)
+    k = sum(v == "TRIBE beats" for v in beats); wr = b["145"]["LANG"]["tribe_vs"]["word_rate"]
+    two = (f'Two numbers for the same {s8["listeners"]} listeners: the held-out language result is {s8["stage"]["language_z"]:.2f} z, '
+           'with word rate and sound partialled out of the forecast as the language gauge does (results/section8.json); the comparison with '
+           f'word rate and the sound envelope scores the forecast unpartialled, {b["145"]["LANG"]["mean_z"]["tribe"]:.2f} z over the same '
+           f'{s8["trs"]} time points, so that every predictor is scored the same way (results/section8_baselines.json).')
     return panel(f'<h3>{badge("pass", "held out")}Le Petit Prince, section 8</h3>'
                  f'<p class="big">On a held-out audiobook, the forecast was worth about {round(ve["point_k"])} real volunteers, and at least '
                  f'{ve["claim_k"]}. It agreed with the classic sound test.</p>{dots_svg(ve["point_k"], ve["claim_k"])}'
                  f'<p class="small">Each dot is one volunteer scan; a new story usually needs 12-15. Volunteer-equivalent {ve["point_k"]:.1f}, '
                  f'lower bound {ve["lower_k"]:.2f}, {s8["listeners"]} listeners.</p>'
-                 f'<p>What it had to beat: word rate and the sound envelope (beaten in {k} of {len(beats)} comparisons).</p>'
+                 f'<p>What it had to beat: word rate and the sound envelope (beaten in {k} of {len(beats)} comparisons). In language '
+                 f'areas it beat a simple word-rate model in {wr["k_tribe_higher"]} of {wr["n"]} listeners.</p>'
+                 f'<p class="small">{E(two)}</p>'
                  f'<p class="small">Le Petit Prince, section 8, held out: {S8_LABEL}. Baselines: {E(b["rule_timing"])} ({E(b["label"])}); '
                  '<code>results/section8.json</code>, <code>results/section8_baselines.json</code>.</p>')
 
@@ -448,7 +467,7 @@ def d20_html(d) -> str:
                  f'<code>{SLOTS["d20"]}</code>.</p>')
 
 
-FILM_FOOT = "Data TRIBE's authors never used: {N} real viewers of the intact film."
+FILM_FOOT = "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
 
 
 def film_score_html(fs: dict) -> str:
@@ -464,7 +483,8 @@ def film_score_html(fs: dict) -> str:
         net, base = pair.split(":"); r = bl.get(net)
         if isinstance(r, dict) and base in r:
             prim.append(f"{net} vs {names.get(base, base)}: {r[base]['verdict']}")
-    return (f'<div class="tbl"><table><tr><th>Gauge</th><th>Worth (real viewers)</th><th>Median z [95% CI]</th></tr>{"".join(rows)}</table></div>'
+    return (f'<details><summary>Every gauge that ran</summary><div class="tbl"><table><tr><th>Gauge</th><th>Worth (real viewers)</th>'
+            f'<th>Median z [95% CI]</th></tr>{"".join(rows)}</table></div></details>'
             f'<p>What it had to beat: brightness, motion, sound envelope and word rate ({E("; ".join(prim) or "comparisons pending")}).</p>')
 
 
@@ -520,7 +540,7 @@ def build(inline: bool = False) -> str:
              f'<p class="small">{badge("info", "replay only")}This page replays recorded runs: it calls no model, needs no key, and every number '
              f'comes from a JSON file in <code>results/</code>. Research tool for labs. {E(ND)}</p>')
     P.append('<nav><a href="#pick">1 Pick a study</a><a href="#plan">2 Plan</a><a href="#check">3 Check</a><a href="#film">4 Film edit</a>'
-             '<a href="#forecast">5 Forecast</a><a href="#held">6 Did it hold up?</a><a href="#sedation">Sedation case study</a>'
+             '<a href="#forecast">5 Forecast</a><a href="#held">6 Did it hold up?</a>'
              '<a href="#credits">Credits</a></nav>')
     P.append(f'<h2 id="pick">1. Pick a demo study</h2><p class="muted">A researcher types the study they want. Each request below was '
              f'labelled "demo, not scored". Round 1 is five requests as first written, run once live on every backend; round 2 rewords the '
@@ -534,9 +554,8 @@ def build(inline: bool = False) -> str:
              'at a time; a slot without its file says so.</p>')
     P.append(lpp_html(load("results/section8.json"), load("results/section8_baselines.json")))
     P.append(wall_html(sl["story_wall"]) + d20_html(sl["d20"]) + film_result_html(sl["face_map"], sl["film_score"]))
-    P.append('<details id="sedation"><summary>Sedation case study (frozen group statistics only; not in the video)</summary>'
-             + panel("".join(f"<p>{E(s)}</p>" for s in SEDATION) + '<p class="small">Frozen group statistics only; full write-up in '
-                     '<code>docs/writeup_sedation.md</code>.</p>') + "</details>")
+    P.append(f'<p class="small" id="sedation">Sedation case study (not in the video): <a href="{SEDATION_URL}">the write-up, '
+             'docs/writeup_sedation.md</a>.</p>')
     P.append('<footer id="credits"><p><b>A first healthy reference for a new test, with zero scans, and evidence for how far to trust it.</b></p><ul>'
              "<li>TRIBE v2 (Meta FAIR, CC BY-NC 4.0, not included in this repository) was trained on Courtois NeuroMod, BoldMoments, Lebel2023 "
              "and Wen2017 (25 participants) and evaluated by its authors on NNDb, LPP, Narratives and HCP (d'Ascoli et al. 2026, arXiv "
@@ -548,6 +567,7 @@ def build(inline: bool = False) -> str:
              "(ds002345), LibriVox (public domain), Tears of Steel (Blender Foundation, CC BY 3.0).</li>"
              f"<li>{E(CREDIT)}</li>"
              "<li>Research tool for labs. Tested only in healthy volunteers and public data. Not a diagnosis or medical advice.</li>"
+             f"<li>{E(DISPLAY_NOTE)}</li>"
              "<li>Built with <code>scripts/build_pilot_page.py</code> from the JSON files named on each panel; media by "
              "<code>scripts/build_pilot_media.py</code> (<code>demo/media/MEDIA.json</code>).</li></ul></footer></main></body></html>")
     page = "".join(P)
@@ -565,7 +585,10 @@ def check(page: str) -> None:
     for w in BANNED:
         assert not re.search(r"\b" + re.escape(w) + r"\b", low), f"banned wording on the page: {w!r}"
     assert chr(0x2014) not in page, "em dash on the page"
-    assert "<script" not in page.lower() and not re.search(r"""(src|href)=["']?(https?:)?//""", page), "script or remote resource"
+    assert "<script" not in page.lower() and not re.search(r"""src=["']?(https?:)?//""", page), "script or remote resource"
+    for m in re.finditer(r"""<(\w+)[^>]*?\s(\w+)=["']?((?:https?:)?//[^"'\s>]*)""", page):
+        assert m.group(1).lower() == "a" and m.group(2) == "href" and m.group(3).startswith(REPO_URL + "/"), \
+            f"remote link other than an anchor to the repository: {m.group(3)}"
 
 
 def inline_media(page: str) -> str:
