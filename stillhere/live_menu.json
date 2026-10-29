@@ -1,17 +1,7 @@
 {
- "about": "The live menu for planner v2.1: the public LibriVox clips a live run may use. The planner rebuilds its clip_id enum from this file on every request, so adding a clip needs no code change. Each excerpt's intact 16 kHz mono wav is on stillhere/public_audio_allowlist.txt. A plan for a stimulus that is not on this menu ends on its evidence panel, never on a live clip's output.",
+ "about": "The live menu for planner v2.1: the public LibriVox clips a live run may use. The planner rebuilds its clip_id enum from this file on every request, so adding a clip needs no code change. Each excerpt's intact 16 kHz mono wav is on stillhere/public_audio_allowlist.txt. A plan for a stimulus that is not on this menu ends on its evidence panel, never on a live clip's output. alice_ch02 is first because it is the only clip that starts and ends on whole sentences (10 sentences), and the planner defaults to the first clip. public_scan names a public fMRI dataset that played this stretch of audio, or null; checked Oct 29 against Narratives (OpenNeuro ds002345), Le Petit Prince (OpenNeuro ds003643) and the Alice Datasets (OpenNeuro ds002322): only the Alice Datasets used an Alice chapter, chapter 1 (Brennan and Hale's EEG also used chapter 1; EEG, not a scan). The page's end line follows public_scan (cloud plan of Oct 29, 19:20 UTC, 1a).",
  "default_seed": 20261028,
  "clips": [
-  {
-   "id": "alice_ch01",
-   "title": "Alice's Adventures in Wonderland, chapter 1",
-   "reader": "Kristen McQuillin",
-   "source": "LibriVox (public domain), wonderland_ch_01_64kb.mp3",
-   "start_s": 60.0,
-   "dur_s": 40.0,
-   "intact_wav_sha256": "35fd795aa583a4cb09a0add5f64e1bbf7eb634eda59045bab98f5b0d4369539e",
-   "short": "Alice chapter 1"
-  },
   {
    "id": "alice_ch02",
    "title": "Alice's Adventures in Wonderland, chapter 2",
@@ -20,7 +10,23 @@
    "start_s": 60.0,
    "dur_s": 40.0,
    "intact_wav_sha256": "5d0a79f4643f1ab055258db4c9e1bdc7292775e27ca0729b957589ceee648907",
-   "short": "Alice chapter 2"
+   "short": "Alice chapter 2",
+   "public_scan": null
+  },
+  {
+   "id": "alice_ch01",
+   "title": "Alice's Adventures in Wonderland, chapter 1",
+   "reader": "Kristen McQuillin",
+   "source": "LibriVox (public domain), wonderland_ch_01_64kb.mp3",
+   "start_s": 60.0,
+   "dur_s": 40.0,
+   "intact_wav_sha256": "35fd795aa583a4cb09a0add5f64e1bbf7eb634eda59045bab98f5b0d4369539e",
+   "short": "Alice chapter 1",
+   "public_scan": {
+    "dataset": "Alice Datasets",
+    "accession": "OpenNeuro ds002322",
+    "note": "Bhattasali et al. 2020 (LREC) used this LibriVox reading of chapter 1 (744 s); our 60-100 s window is inside it"
+   }
   },
   {
    "id": "alice_ch03",
@@ -30,7 +36,8 @@
    "start_s": 60.0,
    "dur_s": 40.0,
    "intact_wav_sha256": "4c41e4e0e7c15da5c3692ac03a51eaae6fd5d6b792d6806bfd965685b5efd391",
-   "short": "Alice chapter 3"
+   "short": "Alice chapter 3",
+   "public_scan": null
   }
  ],
  "evidence_panels": {

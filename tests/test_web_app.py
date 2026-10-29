@@ -2,6 +2,7 @@
 blocked; the wording guard replaces banned model lines; spend caps and the 5-runs-per-hour limit hold; the jobs API follows
 docs/jobs_api.md with a fake worker (token, events, result checks, expiry, cache); the evidence endings follow the rulings of Oct 29,
 18:15 IST; and the page lays out at 360 px with no horizontal scroll."""
+import datetime
 import io
 import json
 import re
@@ -85,7 +86,8 @@ def test_every_station_falls_back_to_its_recorded_run_with_the_apis_blocked(web,
     d = stations.build(run, "a" * 32, "alice_ch01", "sentence_scramble", 20261028)
     assert d["mode"] == "recorded" and d["checklist"]
     _, _, out = call(app, "POST", "/api/forecast", {"clip_id": "alice_ch01", "condition": "reversed", "seed": 0})
-    d = json.loads(out); assert d["state"] == "offline" and d["end_line"] == "No public scan of this clip. Forecast, not a scan."
+    d = json.loads(out); assert d["state"] == "offline" and d["end_line"] == (
+        "A public scan of this chapter exists (Alice Datasets, OpenNeuro ds002322); not compared here. Forecast, not a scan.")
     assert d["chip"]["short"] == "Forecast only · audio-only, laptop" and d["reversed_line"].startswith("0 words reach the text lane")
 
 
@@ -148,7 +150,7 @@ def test_spend_caps_and_the_session_limit(web, monkeypatch):
         ledger.reserve("fireworks", 0.06)
     assert e.value.code == "spend_cap" and ledger.remaining()["fireworks"]["total_left_usd"] == pytest.approx(0.03, abs=1e-6)
     with pytest.raises(ledger.Refused):
-        ledger.reserve("baseten", 0.01)
+        ledger.reserve("another_host", 0.01)
     t = 1_000_000.0
     for i in range(ledger.RUNS_PER_HOUR):
         ledger.start_run("c" * 32, now=t + i)
@@ -161,6 +163,58 @@ def test_spend_caps_and_the_session_limit(web, monkeypatch):
         ledger.use(run, "d" * 32, "plan")
     with pytest.raises(ledger.Refused):
         ledger.use(run, "e" * 32, "audit")                                         # another session cannot use this run
+
+
+def test_default_caps_follow_the_plan_of_oct_29_1920_utc(web):
+    app, jobs, ledger, stations, store = web
+    assert ledger.TOTAL_CAP == {"meta": 80, "fireworks": 50, "baseten": 50}
+    assert ledger.DAILY_CAP == {"meta": 20, "fireworks": 12, "baseten": 12}
+
+
+class _Card:
+    def __init__(self, ok):
+        self.spec = {"population": "healthy_adults", "decline_reason": "none", "stimulus": "librivox_audiobook"} if ok else {}
+        self.text = "Plan (v2.1): healthy adults." if ok else "Planner unavailable."
+        self.route = {"kind": "live", "clip_id": "alice_ch02", "condition": "sentence_scramble", "seed": 20261028, "defaults": []} if ok else None
+
+
+def test_spark_open_falls_back_to_baseten_on_stubs(web, monkeypatch):
+    """No real call: the planner and the chat call are stubs. Fireworks fails, or is capped, and Baseten answers."""
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setenv("BASETEN_API_KEY", "baseten-SECRET-0123456789")
+    calls = []
+
+    def fake_plan(q, backend, client):
+        calls.append(backend); return _Card(backend == "spark-open-baseten")
+    monkeypatch.setattr(stations.P, "plan", fake_plan)
+    d = stations.plan("Plan a story test on chapter 2.", "spark-open", "f" * 32)
+    assert d["mode"] == "live" and calls == ["spark-open", "spark-open-baseten"]
+    assert stations.get_receipt(d["receipt_id"])["host"] == "baseten"
+    calls.clear(); monkeypatch.setitem(ledger.DAILY_CAP, "fireworks", 0.0)              # Fireworks capped for the day: straight to Baseten
+    d = stations.plan("Plan a story test on chapter 2.", "spark-open", "f" * 32)
+    assert d["mode"] == "live" and calls == ["spark-open-baseten"]
+    chats = []
+    monkeypatch.setattr(stations.meta_client, "chat", lambda req: chats.append(req.model) or {"notes": ["Check the control."]})
+    a = stations.audit(d["run_id"], "f" * 32)
+    assert a["mode"] == "live" and chats == ["baseten/muse-spark-open-1026"] and a["notes"] == ["Check the control."]
+    monkeypatch.delenv("BASETEN_API_KEY"); calls.clear()
+    d = stations.plan("Plan a story test on chapter 2.", "spark-open", "f" * 32)
+    assert d["mode"] == "recorded" and calls == []                                    # Fireworks capped, Baseten off: recorded run
+
+
+def test_meta_credit_end_switches_meta_stations_to_recorded_runs(web, monkeypatch):
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setattr(stations.P, "plan", lambda *a: pytest.fail("no live call after the credit ends"))
+    monkeypatch.setenv("META_CREDIT_END_UTC", "2026-10-01T00:00:00Z")
+    assert stations.meta_credit_ended() and not stations.live_ok("meta")
+    d = stations.plan("Plan a story test on chapter 2.", "spark-1.3", "g" * 32)
+    assert d["mode"] == "recorded" and d["why"] == "The event's Meta API credit has ended, so this station shows its recorded run."
+    monkeypatch.setenv("META_CREDIT_END_UTC", "2099-01-01T00:00:00Z")
+    assert not stations.meta_credit_ended()
+    monkeypatch.delenv("META_CREDIT_END_UTC")                                         # default: the end of the event's ten days
+    assert stations.META_CREDIT_END_UTC == "2026-11-05T02:00:00Z"
+    assert stations.meta_credit_ended(datetime.datetime(2026, 11, 5, 2, 0, tzinfo=datetime.timezone.utc))
+    assert not stations.meta_credit_ended(datetime.datetime(2026, 11, 5, 1, 59, tzinfo=datetime.timezone.utc))
 
 
 # ---- jobs API with a fake worker --------------------------------------------------------------------------------------------------
@@ -245,6 +299,30 @@ def test_queued_jobs_expire_when_no_worker_is_online(web, monkeypatch):
     jid = json.loads(out)["job_id"]
     store.get_store().delete("worker:last_seen"); monkeypatch.setattr(jobs, "JOB_EXPIRY_S", -1)
     _, _, out = call(app, "GET", f"/api/forecast/{jid}"); assert json.loads(out)["status"] == "expired"
+
+
+def test_every_menu_clip_was_checked_for_a_public_scan_and_the_end_line_follows_it(web):
+    app, jobs, ledger, stations, store = web
+    menu = json.loads((REPO / "stillhere/live_menu.json").read_text())
+    assert menu["clips"][0]["id"] == "alice_ch02"                                     # the one clip with whole sentences at both ends
+    for c in menu["clips"]:
+        assert "public_scan" in c, c["id"]
+        line = stations.end_line(c["id"])
+        if c["public_scan"] is None:
+            assert line == "No public scan of this clip. Forecast, not a scan."
+        else:
+            assert "No public scan" not in line and c["public_scan"]["accession"] in line
+        _, _, out = call(app, "POST", "/api/forecast", {"clip_id": c["id"], "condition": "reversed", "seed": 0})
+        d = json.loads(out); assert d["end_line"] == line and d["chip"]["long"] == line
+    assert stations.end_line("alice_ch01") == ("A public scan of this chapter exists (Alice Datasets, OpenNeuro ds002322); not compared here. "
+                                               "Forecast, not a scan.")
+    ex = json.loads((REPO / "results/planner_v21_examples.json").read_text())
+    for e in ex["examples"]:                                                          # no example chip ends on "No public scan" for ch01
+        for r in e["runs"]:
+            if r["route"].get("clip_id") == "alice_ch01":
+                assert "No public scan" not in stations.end_line("alice_ch01")
+    with pytest.raises(KeyError):
+        stations.end_line("not_on_the_menu")
 
 
 def test_recipes_only_from_the_live_menu(web):

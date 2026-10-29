@@ -1,8 +1,8 @@
 """Spend caps and per-visitor limits, kept in the store so they survive restarts and hold across serverless instances.
 
 Spend: every paid call first reserves its worst-case price (INCRBYFLOAT returns the new total atomically, so two calls cannot both
-slip under a cap), then settles to the price it really cost. A provider stops for good at its total cap (Meta $25, Fireworks $15, the
-ruling of Oct 29: provider-side caps may not exist) and for the day at its daily cap. Per visitor session: at most RUNS_PER_HOUR runs in
+slip under a cap), then settles to the price it really cost. A provider stops for good at its total cap (Meta $80, Fireworks $50,
+Baseten $50) and for the day at its daily cap (Meta $20, Fireworks $12, Baseten $12): provider-side caps may not exist. Per visitor session: at most RUNS_PER_HOUR runs in
 any rolling hour, and each run may use each live station once (BUILD: once per allowed seed)."""
 import datetime
 import json
@@ -12,8 +12,10 @@ import time
 
 from web.store import get_store
 
-TOTAL_CAP = {"meta": float(os.environ.get("CAP_META_USD", 25)), "fireworks": float(os.environ.get("CAP_FIREWORKS_USD", 15))}
-DAILY_CAP = {"meta": float(os.environ.get("DAILY_CAP_META_USD", 8)), "fireworks": float(os.environ.get("DAILY_CAP_FIREWORKS_USD", 5))}
+TOTAL_CAP = {"meta": float(os.environ.get("CAP_META_USD", 80)), "fireworks": float(os.environ.get("CAP_FIREWORKS_USD", 50)),
+             "baseten": float(os.environ.get("CAP_BASETEN_USD", 50))}                   # cloud plan of Oct 29, 19:20 UTC, 1c
+DAILY_CAP = {"meta": float(os.environ.get("DAILY_CAP_META_USD", 20)), "fireworks": float(os.environ.get("DAILY_CAP_FIREWORKS_USD", 12)),
+             "baseten": float(os.environ.get("DAILY_CAP_BASETEN_USD", 12))}
 RUNS_PER_HOUR = 5
 RUN_TTL_S = 2 * 3600
 STATIONS = ("plan", "build", "audit", "forecast", "film")

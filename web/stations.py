@@ -25,6 +25,14 @@ from web.store import get_store
 REPO = Path(__file__).resolve().parents[1]
 REPLAY = REPO / "web/replay"
 PROVIDER = {"spark-1.3": "meta", "spark-open": "fireworks"}
+HOSTS = {"spark-1.3": (("meta", "spark-1.3"),),                            # (provider, planner backend) in the order tried: Baseten is
+         "spark-open": (("fireworks", "spark-open"), ("baseten", "spark-open-baseten"))}   # Spark Open's fallback host (plan of 19:20 UTC, 1c)
+KEY_ENV = {"fireworks": "FIREWORKS_API_KEY", "baseten": "BASETEN_API_KEY"}
+# The event's $150 Meta Model API credit: no source we can reach states when it ends (event details page saved Oct 26, the event's
+# Oct 26 emails, the claim form; checked Oct 29), and the account's card is charged once credit runs out. So until Yatsu reads an end
+# date on the Model API Billing page, the page treats the credit as ending with the event's ten days of building (Wed Nov 4, 9:00 PM ET); after
+# it, no live Meta call: recorded runs, labelled. Override with META_CREDIT_END_UTC (empty: no end).
+META_CREDIT_END_UTC = "2026-11-05T02:00:00Z"
 RESERVE = {"plan": 0.05, "audit": 0.03, "transcribe": 0.10, "sam": 0.50}   # worst case $ per call; Voice Transcribe and SAM publish no
 RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # price here, so they keep their reservation (never settled);
                                                                            # 7 is the third example chip's seed
@@ -73,13 +81,27 @@ def chat_cost(usage: list) -> float:
     return sum(PE.cost(u.get("prompt_tokens") or 0, u.get("completion_tokens") or 0) for u in usage)
 
 
+def meta_credit_ended(now: datetime.datetime = None) -> bool:
+    end = os.environ.get("META_CREDIT_END_UTC", META_CREDIT_END_UTC)
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    return bool(end) and now >= datetime.datetime.fromisoformat(end.replace("Z", "+00:00"))
+
+
 def live_ok(provider: str) -> bool:
-    if os.environ.get("STILLHERE_LIVE", "1") == "0":
+    if os.environ.get("STILLHERE_LIVE", "1") == "0" or (provider == "meta" and meta_credit_ended()):
         return False
     try:
-        return bool(meta_client._key()) if provider == "meta" else bool(os.environ.get("FIREWORKS_API_KEY"))
+        return bool(meta_client._key()) if provider == "meta" else bool(os.environ.get(KEY_ENV.get(provider, "")))
     except Exception:
         return False
+
+
+def first_live(backend: str):
+    """The first host for this backend whose key is set, or Refused (no_key or credit_ended)."""
+    for prov, b in HOSTS[backend]:
+        if live_ok(prov):
+            return prov, b
+    raise ledger.Refused("credit_ended" if backend == "spark-1.3" and meta_credit_ended() else "no_key")
 
 
 def _now() -> str:
@@ -106,7 +128,8 @@ def why_line(code: str) -> str:
     return {"session_limit": "This session has used its 5 live runs for this hour.", "spend_cap": "Today's live budget is used up.",
             "no_key": "Live calls are off on this server.", "api_error": "The live call failed.", "no_run": "Start with a plan first.",
             "station_used": "This run already used this station.", "provider_not_offered": "That model is not offered live.",
-            "recorded_plan": "This plan is a recorded run, so this station shows its recording."}.get(
+            "recorded_plan": "This plan is a recorded run, so this station shows its recording.",
+            "credit_ended": "The event's Meta API credit has ended, so this station shows its recorded run."}.get(
         code, "Live calls are off right now.")
 
 
@@ -152,24 +175,33 @@ def plan(text: str, backend: str, sid: str) -> dict:
         return {"mode": "refused", "line": "This request can't be sent to the planner. StillHere plans research studies in healthy "
                                            "volunteers with public stimuli."}
     try:
-        if not live_ok(PROVIDER[backend]):                     # checked first, so a recorded run never uses up a visitor's live runs
-            raise ledger.Refused("no_key")
+        first_live(backend)                                    # checked first, so a recorded run never uses up a visitor's live runs
         run_id = ledger.start_run(sid); ledger.use(run_id, sid, "plan")
-        res = ledger.reserve(PROVIDER[backend], RESERVE["plan"])
     except ledger.Refused as e:
         return recorded_plan(e.code)
-    t0 = time.time()
-    try:
-        with capture() as usage:
-            card = P.plan(q, backend, planner.live_client())
-    except Exception:
-        return recorded_plan("api_error")
-    usd = chat_cost(usage); ledger.settle(res, usd)
-    if not card.spec:                                          # "planner unavailable": the call failed, so show the recorded runs
-        return recorded_plan("api_error")
+    t0, card, why, used = time.time(), None, "no_key", None
+    for prov, b in HOSTS[backend]:                             # Spark Open: Fireworks, then Baseten when Fireworks is off, capped or fails
+        if not live_ok(prov):
+            continue
+        try:
+            res = ledger.reserve(prov, RESERVE["plan"])
+        except ledger.Refused as e:
+            why = e.code; continue
+        usage = []
+        try:
+            with capture() as usage:
+                c = P.plan(q, b, planner.live_client())
+        except Exception:
+            c = None
+        usd = chat_cost(usage); ledger.settle(res, usd)
+        if c is not None and c.spec:                           # an empty spec is "planner unavailable": try the next host
+            card, used = c, (prov, b); break
+        why = "api_error"
+    if card is None:
+        return recorded_plan(why)
     view = card_view(card)
     get_store().set(f"runspec:{run_id}", json.dumps({"spec": card.spec or {}, "route": getattr(card, "route", None)}), ttl=ledger.RUN_TTL_S)
-    rid = receipt({"station": "plan", "model": P.MODELS[backend], "planner": P.VERSION, "spec_sha256": hashlib.sha256(
+    rid = receipt({"station": "plan", "model": P.MODELS[used[1]], "host": used[0], "planner": P.VERSION, "spec_sha256": hashlib.sha256(
         json.dumps(card.spec or {}, sort_keys=True).encode()).hexdigest(), "seconds": round(time.time() - t0, 2), "usd": round(usd, 5)})
     return {"mode": "live", "run_id": run_id, "backend": backend, "card": view, "badge": P.BADGE, "receipt_id": rid, "nd": ND}
 
@@ -188,25 +220,36 @@ def audit(run_id: str, sid: str) -> dict:
                 "why": "This plan is a recorded run, so its check is too."}
     if (spec.get("decline_reason") or "none") != "none":
         return {"mode": "none", "label": label, "line": "No accepted plan to check."}
+    recorded = lambda why: {**(_load("web/replay/audit.json") or {"notes": []}), "mode": "recorded", "label": f"{label} ({RECORDED})",
+                            "why": why_line(why)}
     try:
-        if not live_ok("fireworks"):
-            raise ledger.Refused("no_key")
+        first_live("spark-open")
         ledger.use(run_id, sid, "audit")
-        res = ledger.reserve("fireworks", RESERVE["audit"])
     except ledger.Refused as e:
-        return {**(_load("web/replay/audit.json") or {"notes": []}), "mode": "recorded", "label": f"{label} ({RECORDED})", "why": why_line(e.code)}
+        return recorded(e.code)
     enums = {k: [v] if isinstance(v, str) else list(v) for k, v in spec.items()
              if k in ("population", "language", "stimulus", "analysis", "brain_areas", "conditions", "clip_id", "condition") and v}
-    model = P.MODELS["spark-open"]
-    t0 = time.time()
-    try:
-        with capture() as usage:
-            out = meta_client.chat(egress.Request(model=model, system=[planner.public("audit_system")],
-                                                  user=[egress.TableEnums(enums=enums)], schema_name="audit_notes",
-                                                  json_schema=AUDIT_SCHEMA))
-    except Exception:
-        return {**(_load("web/replay/audit.json") or {"notes": []}), "mode": "recorded", "label": f"{label} ({RECORDED})", "why": why_line("api_error")}
-    usd = chat_cost(usage); ledger.settle(res, usd)
+    t0, out, why, model = time.time(), None, "no_key", None
+    for prov, b in HOSTS["spark-open"]:                        # Fireworks, then Baseten
+        if not live_ok(prov):
+            continue
+        try:
+            res = ledger.reserve(prov, RESERVE["audit"])
+        except ledger.Refused as e:
+            why = e.code; continue
+        model, usage = P.MODELS[b], []
+        try:
+            with capture() as usage:
+                out = meta_client.chat(egress.Request(model=model, system=[planner.public("audit_system")],
+                                                      user=[egress.TableEnums(enums=enums)], schema_name="audit_notes",
+                                                      json_schema=AUDIT_SCHEMA))
+        except Exception:
+            out, why = None, "api_error"
+        usd = chat_cost(usage); ledger.settle(res, usd)
+        if out is not None:
+            break
+    if out is None:
+        return recorded(why)
     notes = [guard.clean(n) for n in (out.get("notes") or [])[:3] if isinstance(n, str)]
     rid = receipt({"station": "audit", "model": model, "seconds": round(time.time() - t0, 2), "usd": round(usd, 5)})
     return {"mode": "live", "label": label, "notes": notes, "receipt_id": rid}
@@ -298,7 +341,22 @@ def build(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> dic
 REVERSED_LINE = "0 words reach the text lane (model input, not a brain result)"
 WORD_RATE_LINE = "Flat by construction: a word-rate model cannot see order."
 GRAY_LINE = "No public scan of this clip. Forecast, not a scan."
-CHIP = {"short": "Forecast only · audio-only, laptop", "long": GRAY_LINE}
+SCANNED_LINE = "A public scan of this chapter exists ({dataset}, {accession}); not compared here. Forecast, not a scan."
+CHIP_SHORT = "Forecast only · audio-only, laptop"
+
+
+def end_line(clip_id: str) -> str:
+    """The live end line for one menu clip, from its public_scan field (cloud plan of Oct 29, 19:20 UTC, 1a): "No public scan" only for
+    a clip checked and found in no public story-fMRI dataset; a clip a public dataset played names that dataset."""
+    clip = next((c for c in (_load("stillhere/live_menu.json") or {}).get("clips", []) if c["id"] == clip_id), None)
+    if clip is None or "public_scan" not in clip:
+        raise KeyError(f"{clip_id}: not on the live menu, or never checked for a public scan")
+    ps = clip["public_scan"]
+    return GRAY_LINE if ps is None else SCANNED_LINE.format(dataset=ps["dataset"], accession=ps["accession"])
+
+
+def chip(clip_id: str) -> dict:
+    return {"short": CHIP_SHORT, "long": end_line(clip_id)}
 
 
 def forecast(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> dict:
@@ -306,7 +364,7 @@ def forecast(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> 
         r = jobs.recipe(clip_id, condition, seed)
     except ValueError as e:
         raise Bad(str(e))
-    base = {"chip": CHIP, "end_line": GRAY_LINE, "word_rate_line": WORD_RATE_LINE,
+    base = {"chip": chip(r["clip_id"]), "end_line": end_line(r["clip_id"]), "word_rate_line": WORD_RATE_LINE,
             "reversed_line": REVERSED_LINE if condition == "reversed" else None, "hours_et": hours_et()}
     try:
         ledger.use(run_id, sid, "forecast", max_uses=4)

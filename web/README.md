@@ -4,7 +4,9 @@ A stations rail: PLAN (planner v2.1 on Muse Spark 1.3, Spark Open selectable), B
 Muse Voice Transcribe reads it back and fills the checklist; Reshuffle; "Rebuild with the old bug"), AUDIT (Spark Open, advisory
 check, not measured), FORECAST (TRIBE v2 on the laptop GPU through the jobs API, lane bars from real worker events), EVIDENCE (the
 static page's panels) and FILM (SAM 3.1 on three allowlisted Tears of Steel frames, our fill and a same-size control). Every live run
-ends on the gray forecast line alone: "No public scan of this clip. Forecast, not a scan."
+ends on the gray forecast line alone, with the clip's own end line from `stillhere/live_menu.json` `public_scan`: "No public
+scan of this clip. Forecast, not a scan." for a clip no public dataset played, else for example "A public scan of this chapter exists
+(Alice Datasets, OpenNeuro ds002322); not compared here. Forecast, not a scan."
 
 Nothing is deployed. Deploying, the accounts and the keys are Yatsu's steps (below).
 
@@ -40,18 +42,27 @@ the confidential clip and never leaves the laptop, and the server holds nothing 
 
 ## Money
 
-- Hard stops kept in the store, so they hold across restarts and instances: Meta $25 total and $8 a day, Fireworks $15 total and
-  $5 a day (env `CAP_*_USD`, `DAILY_CAP_*_USD`). Each call reserves its worst case first; chat calls settle to their token cost at the
-  planner rule's prices. Voice Transcribe ($0.10 reserved) and SAM 3.1 ($0.50 reserved per frame) publish no price here, so their
-  reservations stand. Baseten is not offered live.
-- Provider alerts Yatsu should set where the consoles offer them (whether a hard per-key limit exists is unknown): Meta Model API
-  usage or billing alert below the remaining credit; Fireworks spend limit or alert at $15; Upstash max monthly budget (free tier);
-  Vercel Hobby has no paid overage.
+- Hard stops kept in the store, so they hold across restarts and instances (cloud plan of Oct 29, 19:20 UTC, 1c): totals Meta $80,
+  Fireworks $50, Baseten $50; daily Meta $20, Fireworks $12, Baseten $12 (env `CAP_*_USD`, `DAILY_CAP_*_USD`). Each call reserves its
+  worst case first; chat calls settle to their token cost at the planner rule's prices. Voice Transcribe ($0.10 reserved) and SAM 3.1
+  ($0.50 reserved per frame) publish no price here, so their reservations stand.
+- Spark Open runs on Fireworks; Baseten (`BASETEN_API_KEY`) is its fallback host when Fireworks has no key, is capped, or fails. The
+  receipt names the host that answered.
+- The event's Meta credit: no source we could reach gives its end. Checked Oct 29: the event details page (cerebralvalley.ai, saved
+  Oct 26: "$150 in Meta Model API credits ... a credit card must be applied to your account"; a "Spend Limit" notification on the
+  Billing page), the event's Oct 26 emails, and the claim form ("credits to build with during the hackathon"; claim by Nov 4, 9:00 PM
+  ET). Fireworks's grant says the opposite for its own credit: "Once added to your account, the credits don't expire" (Oct 27 email).
+  Because the card is charged once Meta credit is gone, the page treats the Meta credit as ending with the event's ten days of
+  building, Nov 5 02:00 UTC (`META_CREDIT_END_UTC`); after that every Meta station (PLAN on Spark 1.3, BUILD, FILM) shows its recorded
+  run with "The event's Meta API credit has ended, so this station shows its recorded run." If the Billing page shows a later end,
+  set `META_CREDIT_END_UTC` to it.
+- Provider alerts Yatsu should set: Meta Model API "Spend Limit" notification on the Billing page (the event page names it); Fireworks
+  spend limit or alert at $50; Baseten usage alert at $50; Upstash max monthly budget (free tier). Vercel Hobby has no paid overage.
 
 ## Deploy (Yatsu's steps; nothing here has been run)
 
 1. Vercel (Hobby) account; Upstash Redis from the Vercel Marketplace (sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`).
-2. Server secrets, entered by Yatsu: `MODEL_API_KEY`, `FIREWORKS_API_KEY`, `STILLHERE_WORKER_TOKEN`; plus
+2. Server secrets, entered by Yatsu: `MODEL_API_KEY`, `FIREWORKS_API_KEY`, `BASETEN_API_KEY`, `STILLHERE_WORKER_TOKEN`; plus
    `STILLHERE_QUESTION_BLOCKLIST=web/server_question_blocklist.txt`, `STILLHERE_USAGE_LOG=/tmp/usage.jsonl`, `WORKER_HOURS_ET`.
 3. From the repository root: `vercel deploy -A web/vercel.json` (ASSUMPTION: the Python builder serves the WSGI `app` and takes the
    `includeFiles` list; check on the first preview deploy). Keep the URL unlisted until Nov 3.

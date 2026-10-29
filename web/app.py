@@ -100,7 +100,10 @@ def forecast(req, m):
 @route("GET", "/api/forecast/([0-9a-f]{16})")
 def forecast_status(req, m):
     out = jobs.status(m.group(1))
-    return (200, {**out, "chip": stations.CHIP, "end_line": stations.GRAY_LINE}) if out else (404, {"error": "no_job"})
+    if not out:
+        return 404, {"error": "no_job"}
+    cid = out["recipe"]["clip_id"]
+    return 200, {**out, "chip": stations.chip(cid), "end_line": stations.end_line(cid)}
 
 
 @route("GET", "/api/evidence")
