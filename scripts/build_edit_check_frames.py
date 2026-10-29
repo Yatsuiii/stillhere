@@ -1,20 +1,22 @@
-"""Builds the edit-check frame set (docs/rules/edit_check_rule.md) from the FINAL film-version cuts and the committed bridge frames:
-- bridge: the 31 committed bridge frames (glimmer_edit_frames, MANIFEST checked), three versions, copied byte for byte;
-- new: the 31 sampled face frames (eval/edit_check_sample.json), decoded from {intact,faces_removed,area_matched}_0p00_190p00.mp4;
+"""Builds the edit-check frame set (docs/rules/edit_check_rule.md) from the FINAL film-version cuts (film stimuli v2, MANIFEST checked):
+- bridge: the 31 bridge instants (cut frames 600 + 12k, release 25.0-40.0 s), decoded from all three cuts;
+- new: the 31 sampled face frames (eval/edit_check_sample.json), decoded from all three cuts;
 - no_mask: the 31 sampled no-mask frames, decoded from the intact cut only.
 Decoded frames are written as JPEG quality 95 at the cuts' own size. Writes <version>/<name>.jpg, frames.json (sets, names, cut frame,
 film time, the cuts' MANIFEST hash) and MANIFEST.sha256. Shows no frame to any model. Prints counts only.
-usage: python build_edit_check_frames.py CUTS_DIR BRIDGE_FRAMES_DIR SAMPLE_JSON OUT_DIR"""
+usage: python build_edit_check_frames.py CUTS_DIR SAMPLE_JSON OUT_DIR"""
 import hashlib
 import json
 import os
-import shutil
 import sys
 
 import cv2
 
-CUTS, BRIDGE, SAMPLE, OUT = sys.argv[1:5]
+CUTS, SAMPLE, OUT = sys.argv[1:4]
 VERSIONS = ("intact", "faces_removed", "area_matched")
+CUT_FILES = {"intact": "seg_intact.mp4", "faces_removed": "faces_removed_v2.mp4", "area_matched": "area_matched_v2.mp4"}
+V2_MANIFEST = "d4e27d55e2c462f8edd9d2373407692d03534893a3fac284a6819897f52a6f44"
+BRIDGE = {600 + 12 * k: f"bridge_t{25.0 + 0.5 * k:05.1f}.jpg" for k in range(31)}
 sha = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
 
 
@@ -36,19 +38,20 @@ def decode(path, frames):
     return out
 
 
-cuts_hash, bridge_hash = check_manifest(CUTS), check_manifest(BRIDGE)
+cuts_hash = check_manifest(CUTS)
+assert cuts_hash == V2_MANIFEST, "the cuts are not film stimuli v2"
 S = json.load(open(SAMPLE)); new, nomask = S["face_frames"], S["no_mask_frames"]
-bridge_names = [f["name"] for f in json.load(open(f"{BRIDGE}/frames.json"))["frames"]]
 for v in VERSIONS:
     os.makedirs(f"{OUT}/{v}", exist_ok=True)
-    for name in bridge_names:
-        shutil.copyfile(f"{BRIDGE}/{v}/{name}", f"{OUT}/{v}/bridge_{name}")
-    want = set(new) | (set(nomask) if v == "intact" else set())
-    for c, img in decode(f"{CUTS}/{v}_0p00_190p00.mp4", want).items():
-        cv2.imwrite(f"{OUT}/{v}/f{c:04d}.jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 95])
-meta = {"rule": "docs/rules/edit_check_rule.md", "cuts_manifest_sha256": cuts_hash, "bridge_manifest_sha256": bridge_hash,
+    want = set(BRIDGE) | set(new) | (set(nomask) if v == "intact" else set())
+    for c, img in decode(f"{CUTS}/{CUT_FILES[v]}", want).items():
+        if c in BRIDGE:
+            cv2.imwrite(f"{OUT}/{v}/{BRIDGE[c]}", img, [cv2.IMWRITE_JPEG_QUALITY, 95])
+        if c in set(new) | set(nomask):
+            cv2.imwrite(f"{OUT}/{v}/f{c:04d}.jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 95])
+meta = {"rule": "docs/rules/edit_check_rule.md", "cuts_manifest_sha256": cuts_hash,
         "sample_sha256": sha(SAMPLE),
-        "sets": {"bridge": [{"name": f"bridge_{n}"} for n in bridge_names],
+        "sets": {"bridge": [{"name": n, "cut_frame": c, "film_s": round(c / 24, 3)} for c, n in sorted(BRIDGE.items())],
                  "new": [{"name": f"f{c:04d}.jpg", "cut_frame": c, "film_s": round(c / 24, 3)} for c in new],
                  "no_mask": [{"name": f"f{c:04d}.jpg", "cut_frame": c, "film_s": round(c / 24, 3)} for c in nomask]}}
 json.dump(meta, open(f"{OUT}/frames.json", "w"), indent=1)
@@ -56,4 +59,4 @@ files = sorted(f"{v}/{n}" for v in VERSIONS for n in os.listdir(f"{OUT}/{v}")) +
 with open(f"{OUT}/MANIFEST.sha256", "w") as fh:
     for p in files:
         fh.write(f"{sha(f'{OUT}/{p}')}  {p}\n")
-print(f"bridge {len(bridge_names)} x3, new {len(new)} x3, no-mask {len(nomask)} x1; files {len(files)}")
+print(f"bridge {len(BRIDGE)} x3, new {len(new)} x3, no-mask {len(nomask)} x1; files {len(files)}")

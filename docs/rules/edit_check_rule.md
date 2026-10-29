@@ -10,14 +10,19 @@ check the edits. Neither "detects faces", and no viewer saw an edited cut, so no
 `scripts/edit_check_sample.py` on the SAM 3.1 run over Tears of Steel release 0-190 s (`faces_api.jsonl`; cut frame c = release frame c);
 its output is committed with this rule as `eval/edit_check_sample.json`:
 
-- Bridge frames: the 31 committed frames of the bridge scene (`glimmer_edit_frames`, MANIFEST e31e4b19..., release 25.0-40.0 s at 2 per
-  second), unchanged, in their three versions.
+- Bridge frames: the 31 bridge instants (release 25.0, 25.5, ..., 40.0 s; cut frames 600 + 12k), decoded from the final cuts like the
+  new frames, in their three versions. (Amended before any frame of this sample was built or shown, on the coordinator's instruction
+  after the one allowed re-render: every edit-check frame comes from the final cuts; the earlier bridge-cut frame set is not used.)
 - New face frames: 31 frames from film time 10-180 s outside the bridge window, each with at least one SAM face whose box covers at
   least 500 pixels of the 640x360 cut (about 2,000 pixels at 1280x534, fixed before any frame was seen so that a speck does not count as
   a recognisable face); 1,611 frames qualify; one is drawn from each of 31 contiguous equal parts with seed 20261029. These are decoded
-  from the FINAL film-version cuts (`pilot/film/film_edits/{intact,faces_removed,area_matched}_0p00_190p00.mp4`, after the one re-render
-  the stimulus rule allows and before any edited forecast), in all three versions, and written as JPEG quality 95 at 1280x534 like the
-  committed frames.
+  from the FINAL film-version cuts, film stimuli v2 (`pilot/film/film_stim_v2`: seg_intact.mp4, faces_removed_v2.mp4,
+  area_matched_v2.mp4; MANIFEST.sha256 d4e27d55e2c462f8edd9d2373407692d03534893a3fac284a6819897f52a6f44, checked before any frame is
+  built), in all three versions, and written as JPEG quality 95 at 1280x534.
+- In v2 the fill is the local mean of the surrounding colour, the same for the controls; control patches sit inside the part of the
+  frame TRIBE's video reader keeps (release x 404-873, y 32-501). 51 of 2,717 in-view faces (the largest close-ups) have no control,
+  so the control covers 0.889 of in-view face pixels (reported per the stimulus rule). Control frames are asked as they are; the bar
+  does not change.
 - No-mask frames: 31 frames from film time 10-180 s where SAM found no face (1,955 qualify), drawn the same way with seed 20261030,
   intact version only, to count faces SAM missed.
 
