@@ -1264,11 +1264,11 @@
  ],
  "live": {
   "entry": {
-   "clip_id": "alice_ch01",
+   "clip_id": "alice_ch02",
    "condition": "sentence_scramble"
   },
   "reversed": {
-   "clip_id": "alice_ch01",
+   "clip_id": "alice_ch02",
    "condition": "reversed"
   },
   "inset": {

@@ -8,7 +8,8 @@ D20 passed, so its scene carries the pass line with N = 22 and the PREREG small 
 "15 of 22" and "13 of 21" stay out; "brain signal rose with on-screen face area" never appears (the face test compares patterns across
 parcels), and the PASS slide carries the PASS stamp and an "Exploratory" label; the LIVE beat says "on a laptop", draws from
 data/forecast_cache.json (saved runs labelled as such) and the filmed job, plays the job uncut as a corner inset (inset) or cut once
-with "{n} s of waiting cut" and no "uncut" (cut)."""
+with "{n} s of waiting cut" and no "uncut" (cut). Plan of Oct 29 19:20 UTC (1a): the LIVE beat's clip has no public scan (alice_ch02;
+ch01 is the Alice Datasets' stimulus), so "No one has scanned this yet" holds."""
 import importlib.util
 import json
 import re
@@ -220,6 +221,16 @@ def test_live_beat_draws_from_the_saved_runs():
     text = all_text(SPEC["scenes"]).lower()
     assert "order map" not in text and "order-map" not in text and "order_map" not in text and "note" not in SC["live_run"]
     assert [i["kind"] for _, items in V.resolve(SC["live_result"], {}) for i in items][0] == "endscreen"
+
+
+def test_live_clip_has_no_public_scan():
+    clip = SPEC["live"]["entry"]["clip_id"]
+    assert SPEC["live"]["reversed"]["clip_id"] == clip == "alice_ch02"
+    assert all(e["recipe"]["clip_id"] == clip for e in live_ctx().values())          # every 60-92 s panel reads this clip
+    menu = {c["id"]: c for c in json.loads((ROOT / "stillhere/live_menu.json").read_text())["clips"]}
+    if "public_scan" not in menu[clip]:
+        pytest.skip("stillhere/live_menu.json has no public_scan field yet")
+    assert menu[clip]["public_scan"] is None                                      # "No one has scanned this yet" must be true
 
 
 def test_live_inset_or_one_cut():
