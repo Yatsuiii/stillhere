@@ -1,0 +1,90 @@
+{
+ "what": "media for demo/index.html, built by scripts/build_pilot_media.py",
+ "frames_manifest_sha256": "fe3d936dcddc6101fe8ef8739a2e4c1bfce9205ad74b137b8641f71c993ae615",
+ "credit": "Tears of Steel (CC) Blender Foundation | mango.blender.org, CC BY 3.0. Edited for this study.",
+ "audio_source": "LibriVox, Alice's Adventures in Wonderland, chapter 1, read by Kristen McQuillin (public domain)",
+ "items": [
+  {
+   "file": "alice_75s_intact.mp3",
+   "source": "assets/conditions/alice_ch01_75s_intact.wav",
+   "source_sha256": "816db0f487454a1ff93569b61120ed7869ced67ebf5be4072d9d2d718d42b7f5",
+   "sha256": "6ed04262f6029020579f36884484c1bc4d94628e6e3a38c767c1fe27ba55fb0f",
+   "bytes": 300608
+  },
+  {
+   "file": "alice_75s_sentence_scramble.mp3",
+   "source": "assets/conditions/alice_ch01_75s_sentence_scramble.wav",
+   "source_sha256": "9b9a643bc6146af8812e39ae10661b15df76fb3e74907f12742473a8a6174020",
+   "sha256": "e408aec574d87044844d408d58ac28ea1c2e76c7d540c4f1586b7a276d699a62",
+   "bytes": 300608
+  },
+  {
+   "file": "alice_75s_word_scramble.mp3",
+   "source": "assets/conditions/alice_ch01_75s_word_scramble.wav",
+   "source_sha256": "c44565e2b0c5adb49b4cbcd3455bc4ce8ad78bcceb652957d6d185f75fc4045b",
+   "sha256": "18d9e7e0168b5c2ede0d6ae0d6ac61d53b9a3418c3820d7ee82fb7a83b17536a",
+   "bytes": 300608
+  },
+  {
+   "file": "alice_75s_reversed.mp3",
+   "source": "assets/conditions/alice_ch01_75s_reversed.wav",
+   "source_sha256": "e7ba002b1954959f71e603e8f20a1399345f03d40684831cef17a7ece145aac1",
+   "sha256": "54bb42a3bc7c8a120c326f5c3cb165adefee70649dedbd190ac3d355bd40729d",
+   "bytes": 300608
+  },
+  {
+   "file": "bridge_t032.5_intact.jpg",
+   "source": "edit_check_frames/intact/bridge_t032.5.jpg",
+   "source_sha256": "f72b8aa5b4c1da54a54ee2108829ac808a16c61836bc3469bb47573280070c38",
+   "frame": "bridge_t032.5.jpg",
+   "version": "intact",
+   "sha256": "0af7daab20f6593714e622eb8cec838b2b4e56a1339dfdf0ebd4cbe99c2b2af7",
+   "bytes": 24965
+  },
+  {
+   "file": "bridge_t032.5_faces_removed.jpg",
+   "source": "edit_check_frames/faces_removed/bridge_t032.5.jpg",
+   "source_sha256": "10b4fb838cbd6562a8752a630890da2a50f8af1bcc17c1ef4982f087e747a718",
+   "frame": "bridge_t032.5.jpg",
+   "version": "faces_removed",
+   "sha256": "16db313664a38c44427ccab06d8b2c3e2dc57fa3f6db3e8f0c8fb5859e952023",
+   "bytes": 24760
+  },
+  {
+   "file": "bridge_t032.5_area_matched.jpg",
+   "source": "edit_check_frames/area_matched/bridge_t032.5.jpg",
+   "source_sha256": "ae112f0f429d633cb65a69d29d1b970ed971081902da874ae5dec8348f98815b",
+   "frame": "bridge_t032.5.jpg",
+   "version": "area_matched",
+   "sha256": "74a0001e6227e9a9fa944ce412710906c394a1f973cb590c700ed584451dba6c",
+   "bytes": 24848
+  },
+  {
+   "file": "f1237_intact.jpg",
+   "source": "edit_check_frames/intact/f1237.jpg",
+   "source_sha256": "fe6620199a5d81d94cb26f27cd30db9fb1a172d23851246272dc07d262a5defb",
+   "frame": "f1237.jpg",
+   "version": "intact",
+   "sha256": "a5cdd34eb967bd6bf08008b4a2ce02cca606090b2946e5e4c88271d9515396e2",
+   "bytes": 24463
+  },
+  {
+   "file": "f1237_faces_removed.jpg",
+   "source": "edit_check_frames/faces_removed/f1237.jpg",
+   "source_sha256": "a42316ed3c58e73c064d52c848c34affd91b4ee7318e6dd86ed8c8f5099c97ea",
+   "frame": "f1237.jpg",
+   "version": "faces_removed",
+   "sha256": "6b821a73acace484795783228e2327d2d0a41a3e25e2526fbc27e345c5feb7f1",
+   "bytes": 23948
+  },
+  {
+   "file": "f1237_area_matched.jpg",
+   "source": "edit_check_frames/area_matched/f1237.jpg",
+   "source_sha256": "8da1b3a9eb7bdb59c3a8bfa010bdd1bd21d6cb98fa24065e2b7f1bb90de63148",
+   "frame": "f1237.jpg",
+   "version": "area_matched",
+   "sha256": "f14396dbdd7926103b152edf90c6d82c8e894c870857fae3c7550a55ce3ff2b2",
+   "bytes": 23968
+  }
+ ]
+}

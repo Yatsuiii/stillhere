@@ -1,4 +1,5 @@
-"""Builds demo/index.html, the StillHere Pilot page (PLAN §7, reshaped for the Pilot direction), from JSON only: results/gate1_real.json
+"""Builds demo/v1/index.html, the first StillHere Pilot page (superseded by scripts/build_pilot_page.py, which builds demo/index.html;
+kept for the first video) (PLAN §7, reshaped for the Pilot direction), from JSON only: results/gate1_real.json
 (frozen Gate 1 bars, group statistics only), results/section8.json (held-out LPP section 8), stillhere/validation_table.json (what can be
 planned today), results/conditions_manipulation_check.json, results/diarization_validation.json, results/live_tribe_librivox.json,
 demo/lines.json (PREREG §7 lines word for word, the planner examples, the section-8 label) and the Spark desk's REPLAY file. One
@@ -13,7 +14,7 @@ from pathlib import Path
 from stillhere import desk, frozen
 
 REPO = Path(__file__).resolve().parents[1]
-OUT = REPO / "demo/index.html"
+OUT = REPO / "demo/v1/index.html"
 STATES = ("awake", "light", "deep", "recovery")
 COL = {"HEARING": "#1d6fb8", "LANGUAGE": "#b4501a"}            # both >= 4.5:1 on white (tests check the contrast)
 INK, MUTED, BAND, RULE = "#1b1f24", "#4a5560", "#eef0f3", "#9aa3ad"

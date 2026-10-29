@@ -1,4 +1,5 @@
-"""The StillHere Pilot page (demo/index.html) is rebuilt from JSON and checked: it is up to date; every quoted line and note is PREREG §7
+"""The first StillHere Pilot page (demo/v1/index.html; the current page is tests/test_pilot_page.py's) is rebuilt from JSON and checked:
+it is up to date; every quoted line and note is PREREG §7
 word for word with its numbers filled from results/section8.json; every section-8 mention carries the label "recomputed with code built
 during the event; first measured Oct 22-23"; the planner section is labelled in progress and shows no invented model output; the
 manipulation checks, diarisation and live forecast numbers come from their JSON; the sedation case study carries only frozen group
@@ -27,7 +28,7 @@ def _mod(name):
 
 
 BP = _mod("build_demo_page")
-PAGE = (REPO / "demo/index.html").read_text()
+PAGE = (REPO / "demo/v1/index.html").read_text()
 TEXT = re.sub(r"<[^>]+>", " ", PAGE)
 S8, LINES = BP.load("results/section8.json"), BP.load("demo/lines.json")
 V = BP.line_values(S8, LINES)
