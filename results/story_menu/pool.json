@@ -1,0 +1,219 @@
+{
+ "rule": "docs/rules/story_menu_rule.md",
+ "projects": [
+  {
+   "id": "296",
+   "title": "Short Story Collection Vol. 001",
+   "archive": "https://www.archive.org/details/stories_001_librivox",
+   "sections": 10
+  },
+  {
+   "id": "297",
+   "title": "Short Story Collection Vol. 002",
+   "archive": "https://www.archive.org/details/stories_002_librivox",
+   "sections": 10
+  }
+ ],
+ "sections_seen": [
+  {
+   "book": "Short Story Collection Vol. 001",
+   "section": 1,
+   "title": "The Black Cat",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 1618,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 001",
+   "section": 2,
+   "title": "The Children of the Zodiac",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 2536,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 001",
+   "section": 3,
+   "title": "Duplicity of Hargraves",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 1806,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 001",
+   "section": 4,
+   "title": "The Golden Key",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 4048,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 001",
+   "section": 5,
+   "title": "Markheim",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 2636,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 001",
+   "section": 6,
+   "title": "The Nice People",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 1187,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 001",
+   "section": 7,
+   "title": "Pigs is Pigs",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 1393,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 001",
+   "section": 8,
+   "title": "The Pit and the Pendulum",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 2348,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 001",
+   "section": 9,
+   "title": "Taming the Bicycle",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 1691,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 001",
+   "section": 10,
+   "title": "The Tell-tale Heart",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 1088,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 002",
+   "section": 1,
+   "title": "A Baby Tramp",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 794,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 002",
+   "section": 2,
+   "title": "The Black Cat",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 1963,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 002",
+   "section": 3,
+   "title": "The Cask of Amontillado",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 945,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 002",
+   "section": 4,
+   "title": "The Diamond Necklace",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 1165,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 002",
+   "section": 5,
+   "title": "Esme",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 779,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 002",
+   "section": 6,
+   "title": "The Last Leaf",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 996,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 002",
+   "section": 7,
+   "title": "The Little Match Girl",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 413,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 002",
+   "section": 8,
+   "title": "Marjorie Daw",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 2749,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 002",
+   "section": 9,
+   "title": "The Toys of Peace",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 691,
+   "public_scan": null
+  },
+  {
+   "book": "Short Story Collection Vol. 002",
+   "section": 10,
+   "title": "Young Goodman Brown",
+   "language": "English",
+   "readers": 1,
+   "playtime_s": 2384,
+   "public_scan": null
+  }
+ ],
+ "pool": [
+  {
+   "book_id": "297",
+   "book": "Short Story Collection Vol. 002",
+   "section": 7,
+   "title": "The Little Match Girl",
+   "reader": "Ted Hanley",
+   "playtime_s": 413,
+   "listen_url": "https://www.archive.org/download/stories_002_librivox/little_match_girl_anderson_th_64kb.mp3"
+  },
+  {
+   "book_id": "297",
+   "book": "Short Story Collection Vol. 002",
+   "section": 9,
+   "title": "The Toys of Peace",
+   "reader": "Tae Jensen",
+   "playtime_s": 691,
+   "listen_url": "https://www.archive.org/download/stories_002_librivox/toys_of_peace_saki_tyj_64kb.mp3"
+  }
+ ]
+}
