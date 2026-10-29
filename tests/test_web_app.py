@@ -221,10 +221,30 @@ def test_worker_offline_serves_the_precomputed_cache(web, monkeypatch, tmp_path,
     doc = {"models": {}, "default_seed": 20261028, **({"entries": entries} if shape == "entries" else entries)}
     (tmp_path / "c.json").write_text(json.dumps(doc)); monkeypatch.setattr(jobs, "CACHE", tmp_path / "c.json")
     _, _, out = call(app, "POST", "/api/forecast", {"clip_id": "alice_ch03", "condition": "sentence_scramble", "seed": 3})
-    d = json.loads(out); assert d["state"] == "offline" and d["fallback"]["source"] == "cache"
+    d = json.loads(out); assert d["state"] == "offline" and d["fallback"]["source"] == "cache" and "job_id" not in d
     assert d["fallback"]["computed_utc"] and d["fallback"]["recipe"]["seed"] == 20261028
+    assert d["fallback"]["note"] == "No saved run for seed 3; shown: the saved run at seed 20261028."
     _, _, out = call(app, "POST", "/api/forecast", {"clip_id": "alice_ch03", "condition": "sentence_scramble", "seed": 20261028})
-    assert json.loads(out)["state"] == "offline"                                    # no run: cache only, still labelled by the page
+    d = json.loads(out); assert d["state"] == "offline" and d["fallback"]["note"] is None   # the saved run is for this very choice
+
+
+def test_recorded_build_only_for_its_own_clip_and_condition(web, monkeypatch):
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setenv("STILLHERE_LIVE", "0")
+    d = stations.build(None, "a" * 32, "alice_ch02", "reversed", 0)
+    assert d["mode"] == "recorded" and d["line"] == "No recorded check for this clip and condition." and d["checklist"] == []
+    d = stations.build(None, "a" * 32, "alice_ch01", "sentence_scramble", 1)
+    assert d["checklist"] and d["label"] == "recorded run, seed 20261028"
+
+
+def test_queued_jobs_expire_when_no_worker_is_online(web, monkeypatch):
+    app, jobs, ledger, stations, store = web
+    call(app, "POST", "/api/worker/claim", {}, auth=W)                              # worker online: the job queues
+    run = ledger.start_run("a" * 32)
+    _, _, out = call(app, "POST", "/api/forecast", {"run_id": run, "clip_id": "alice_ch02", "condition": "sentence_scramble", "seed": 2})
+    jid = json.loads(out)["job_id"]
+    store.get_store().delete("worker:last_seen"); monkeypatch.setattr(jobs, "JOB_EXPIRY_S", -1)
+    _, _, out = call(app, "GET", f"/api/forecast/{jid}"); assert json.loads(out)["status"] == "expired"
 
 
 def test_recipes_only_from_the_live_menu(web):
@@ -241,7 +261,9 @@ def test_evidence_pairs_the_gray_line_with_d20_only_on_a_pass(web, monkeypatch):
     app, jobs, ledger, stations, store = web
     real = stations._load
     for status, pair in (("pass", "d20"), ("fail", "lpp"), (None, "lpp")):
-        d20 = None if status is None else {"primary_intact_gt_shortscram": {"status": status, "n_pairs": 12, "k_intact_higher": 9, "p": 0.01}}
+        d20 = None if status is None else {**json.loads((REPO / "results/d20_notthefall.json").read_text())}
+        if d20:
+            d20["primary"] = {**d20["primary"], "status": status, "n": 12}
         monkeypatch.setattr(stations, "_load", lambda rel, d=d20: d if rel == "results/d20_notthefall.json" else real(rel))
         e = stations.evidence()
         assert e["pair"] == pair and e["pair_label"] == ("Real listeners, different story." if pair == "d20" else "Real listeners, held-out story")

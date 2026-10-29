@@ -76,19 +76,21 @@ the result (`upload` is the server's side).
 
 | Call | Body | Answer |
 |---|---|---|
-| `POST /api/forecast` | the recipe | `200 {"cached": {...result, "source": "cache"}}` when the cache key is known; otherwise `202 {"job_id"}`; `429` past the session limit; `503 {"fallback": {...cached default-seed result}}` when the worker is offline |
-| `GET /api/forecast/{job_id}` | | `{"status": "queued" or "running" or "done" or "failed" or "expired", "events": [...], "result": {...}}` |
+| `POST /api/forecast` | `{run_id, clip_id, condition, seed}` | `200 {"state": "cached", "result"}` when the cache key is known; `202 {"state": "queued", "job_id"}` when the worker is online; `200 {"state": "offline", "fallback"}` when it is not (no job is queued); `200 {"state": "busy", "job_id"}` while this session already has a job; a session past its runs gets the saved run only |
+| `GET /api/forecast/{job_id}` | | `{"status": "queued" or "running" or "done" or "failed" or "expired", "events": [...], "result"}`, with `"fallback"` when failed or expired |
 
 ## Timeouts and cache
 
 - A claimed job with no result `JOB_EXPIRY_S` = 120 s after its claim is `expired` (measured on the 4050 with a warm engine: reversed
-  about 39 s, intact or scrambled 47 to 56 s; the audio lane runs on CPU while Llama 3.2 stays on the GPU); the page then shows the cached default-seed forecast for that clip and
-  condition, labelled "Cached forecast, computed <UTC>", and a receipt link that fills if the worker returns.
+  about 39 s, intact or scrambled 47 to 56 s; the audio lane runs on CPU while Llama 3.2 stays on the GPU). A queued job also expires
+  after `JOB_EXPIRY_S` when no worker is online.
+- Every fallback (offline, failed, expired) is the saved run for that clip and condition at seed 20261028, labelled "Cached forecast,
+  computed <UTC>"; when the visitor asked for another seed it adds "No saved run for seed {seed}; shown: the saved run at seed 20261028."
 - Results are kept by `cache_key` (no TTL). `data/forecast_cache.json` (committed by the worker fork) holds the 12 clips x 4 conditions
   at the default seed, precomputed, in the result format above; the server loads it at start.
 - One queued or running job per session; at most 5 runs per hour per session (shared with the other live stations).
 
 ## Worker hours
 
-{worker_hours_et}: Yatsu decides (proposal: 10:00-14:00 ET daily, Nov 4-9). Published on the page and in the README in ET.
-Outside them the page says the worker is offline and serves the cache.
+10:00-14:00 ET, Nov 4-9 (15:00-19:00 UTC) (ruling of Oct 29, 17:35 UTC, item 8). Published on the page and in the README in ET.
+Outside them the page says the worker is offline and serves the saved runs.

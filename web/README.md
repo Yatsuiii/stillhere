@@ -59,8 +59,9 @@ the confidential clip and never leaves the laptop, and the server holds nothing 
 
 ## Worker hours
 
-{worker_hours_et} (Yatsu decides; the worker fork proposes 10:00-14:00 ET daily, Nov 4-9). Outside them the page serves cached
-forecasts, labelled "Cached forecast, computed <UTC>".
+10:00-14:00 ET, Nov 4-9 (15:00-19:00 UTC) (ruling of Oct 29, 17:35 UTC, item 8; `WORKER_HOURS_ET`). The page says: "A saved forecast is shown whenever one
+exists for your choice. New seeds run live on the laptop, 10:00-14:00 ET, Nov 4-9." Outside the hours, a saved run at another seed
+is labelled "No saved run for seed {seed}; shown: the saved run at seed 20261028."
 
 ## Hard stops (cloud plan v2)
 

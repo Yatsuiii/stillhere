@@ -463,28 +463,44 @@ D20_PASS = ("With zero same-clip controls, stock TRIBE v2's language readout was
             "version; the order of their two runs is not public).")                     # PREREG D20's pass line, word for word
 
 
+D20_CAVEAT = ("Each version also had its own TRIBE forecast, so a pass does not separate a change in the listeners' brains from a change in "
+              "TRIBE's forecast, and the run order is not public, so it cannot be separated from an order or repeat-listening effect.")
+PREREG_URL = f"{REPO_URL}/blob/main/PREREG.md"
+PREREG_NOTE = ("Frozen pre-registration (D0-D27). Lines it quotes in its Never lists, and lines replaced by D18 and D23, are not claims.")
+
+
 def d20_status(d) -> dict:
-    """notthefall's ending (ruling of Oct 29, 18:15 IST, item 3): a pass shows PREREG D20's pass line word for word with N filled;
-    any other ending leaves the D20 panel and its pair off the page (docs/captions.md: "the panel is left out")."""
+    """notthefall's ending (rulings of Oct 29, 18:15 IST item 3 and 17:35 UTC items 2-3), from results/d20_notthefall.json (the derived
+    summary of the frozen outputs, scripts/make_d20_summary.py): a pass shows PREREG D20's pass line word for word with N filled, the two
+    PREREG caveats and the secondary in its fail form as small print, and the stand-ins' row when the re-read matched the frozen run; any
+    other ending leaves the D20 panel and its pair off the page (docs/captions.md: "the panel is left out")."""
     if d is None:
         return {"status": None}
-    t = d.get("primary_intact_gt_shortscram", d)
-    out = {"status": t.get("status"), "n": t.get("n_pairs")}
-    if t.get("status") == "pass":
-        out["line"] = D20_PASS.replace("N listeners", f"{t['n_pairs']} listeners")
+    t = d["primary"]
+    out = {"status": t["status"], "n": t["n"]}
+    if t["status"] == "pass":
+        out["line"] = D20_PASS.replace("N listeners", f"{t['n']} listeners")
+        out["small"] = f"{D20_CAVEAT} {d['secondary']['line']}"
+        b = d.get("baselines") or {}
+        if b.get("matches_frozen"):
+            out["baseline"] = (f"Exploratory, same test, language areas: word rate alone p = {b['word_rate_p']:.2f}, sound envelope alone "
+                               f"p = {b['envelope_p']:.2f} ({b['n']} listeners, {d['minutes']} minutes = {d['trs_per_version']} TRs per version).")
     return out
 
 
 def d20_html(d) -> str:
     if d is None:
-        return pending("Real listeners, intact versus scrambled (Narratives notthefall)", "Tonight. Shown as a result only if it passes "
-                       "its pre-set bar.", SLOTS["d20"])
+        return pending("Real listeners, intact versus scrambled (Narratives notthefall)", "Shown as a result only if it passes its pre-set "
+                       "bar.", SLOTS["d20"])
     st = d20_status(d)
     if st["status"] != "pass":
         return ""
     line = E(st["line"].replace("`", ""))                                     # the words as PREREG has them, without its code marks
+    chip = GHOST_CHIPS["d20"]
     return panel(f'<h3>{badge("pass", "pass")}notthefall: real listeners, intact versus sentences shuffled</h3><p class="big">{line}</p>'
-                 f'<p class="small">{E(GHOST_CHIPS["d20"]["short"])}: {E(GHOST_CHIPS["d20"]["long"])}. <code>{SLOTS["d20"]}</code>.</p>')
+                 f'<p class="small">{E(st["small"])}</p>' + (f'<p>{E(st["baseline"])}</p>' if st.get("baseline") else "")
+                 + f'<p class="small">{E(chip["short"])}: {E(chip["long"])}. <a href="{PREREG_URL}">PREREG.md</a>: {E(PREREG_NOTE)} '
+                 f'<code>{SLOTS["d20"]}</code>.</p>')
 
 
 FILM_FOOT = "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."

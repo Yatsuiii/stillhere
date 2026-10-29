@@ -68,6 +68,7 @@ def respond(start, status: int, body=None, ctype="application/json", req: Req = 
 @route("GET", "/api/status")
 def status(req, m):
     return 200, {"worker_online": jobs.worker_online(), "worker_hours_et": stations.hours_et(),
+                 "saved_line": stations.SAVED_LINE.format(hours=stations.hours_et()),
                  "live": {"meta": stations.live_ok("meta"), "fireworks": stations.live_ok("fireworks")},
                  "budget": ledger.remaining(), "runs_per_hour": ledger.RUNS_PER_HOUR, "menu": stations.menu()}
 

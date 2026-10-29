@@ -1,0 +1,42 @@
+{
+ "format": "stillhere-d20-summary/1",
+ "label": "pre-registered (PREREG D20, D27): derived from the frozen outputs, only what the page shows",
+ "test": "language readout, intact > sentences shuffled (notthefall shortscram), one-sided Wilcoxon, p < 0.05",
+ "primary": {
+  "status": "pass",
+  "n": 22,
+  "hl": 0.03564933945089757,
+  "ci95": [
+   0.012484703054357373,
+   0.05878377780111932
+  ],
+  "p": 0.005162239074707031
+ },
+ "secondary": {
+  "status": "fail",
+  "n": 21,
+  "hl": 0.021460850913891896,
+  "ci95": [
+   -0.0067993472749044645,
+   0.053797335258858436
+  ],
+  "p": 0.07348203659057617,
+  "line": "Intact vs the coarser scramble (descriptive): HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735, 21 listeners, 9.1 minutes = 365 TRs per version; did not reach p < 0.05."
+ },
+ "minutes": 9.1,
+ "trs_per_version": 365,
+ "baselines": {
+  "label": "exploratory",
+  "rule": "docs/rules/cheap_baselines_rule.md",
+  "matches_frozen": true,
+  "areas": "language",
+  "n": 22,
+  "word_rate_p": 0.6127355098724365,
+  "envelope_p": 0.9267416000366211
+ },
+ "sources": {
+  "tierD_d20_score.json": "ef488b980e308372cdadc18b89b96f8169e52afaf7f481eba036d266d74a2f38",
+  "tierD_d20_baselines.json": "e9c0046969d5290f2be59c628dc818ca99103e78822be25072ad7550bdbff30d"
+ },
+ "scored_utc": "2026-10-29T16:24:37Z"
+}

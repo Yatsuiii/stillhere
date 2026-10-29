@@ -46,7 +46,7 @@ async function loadStatus() {
   const live = data.live || {};
   $("status-line").textContent = "Worker: " + (data.worker_online ? "online" : "offline (cached forecasts)") + ". Live models: " +
     (live.meta ? "on" : "off (recorded runs)") + ". Up to " + data.runs_per_hour + " live runs per hour per visitor.";
-  $("hours").textContent = "Live forecasts on the laptop GPU run during worker hours (ET): " + data.worker_hours_et + ". Outside them, cached forecasts.";
+  $("hours").textContent = data.saved_line || "";
 }
 
 // ---- PLAN ----------------------------------------------------------------------------------------------------------------------
@@ -111,6 +111,7 @@ function checklistView(d, cls) {
   }
   box.append(ul);
   if (d.caption) box.append(el("p", "small", d.caption));
+  if (d.line) box.append(el("p", "", d.line));
   const src = d.audio_b64 ? "data:audio/wav;base64," + d.audio_b64 : d.audio_url;
   if (src) { const a = el("audio"); a.controls = true; a.src = src; box.append(a); }
   box.append(receiptLink(d.receipt_id));
@@ -125,8 +126,8 @@ async function doBuild(seed) {
   if (status !== 200) { out.append(el("p", "small", "Build refused (" + (data.error || status) + ").")); return; }
   if (data.mode === "recorded") out.append(recordedNote(data));
   if (data.mode === "refused") { out.append(el("p", "", data.line)); return; }
-  S.seed = data.seed !== undefined ? data.seed : seed;
-  S.lastBuild = data; S.built = data.pass !== false;
+  if (data.mode === "live") S.seed = data.seed;               // a recorded build never sets the seed
+  S.lastBuild = data; S.built = data.mode === "live" ? data.pass !== false : data.pass === true;
   out.append(checklistView(data));
   $("forecast-go").disabled = !S.built;
   $("reshuffle").disabled = !["sentence_scramble", "word_scramble"].includes(S.route.condition);
@@ -204,6 +205,7 @@ async function showResult(res, d, label) {
   const end = el("div", "endscreen");
   const mine = el("div", "panel");
   mine.append(el("h3", "", label));
+  if (res && res.note) mine.append(el("p", "big", res.note));                // a fallback at another seed says so
   if (res && res.regions) {
     const wrap = el("div", "tbl"); wrap.append(grayLine(res.regions.language, d.chip)); mine.append(wrap);
   }
@@ -211,7 +213,7 @@ async function showResult(res, d, label) {
   mine.append(el("p", "small", d.chip.short + ": " + d.chip.long));
   if (d.reversed_line) mine.append(el("p", "small", d.reversed_line));
   mine.append(el("p", "small", d.word_rate_line));
-  if (res && res.timings_s) mine.append(el("p", "small", "Computed " + (res.computed_utc || "") + " on " + (res.gpu || "the laptop GPU") + "."));
+  if (res && res.timings_s) mine.append(el("p", "small", "Computed " + (res.computed_utc || "") + " on " + (res.gpu || "the laptop") + "."));
   mine.append(nd());
   end.append(mine);
   const ev = await api("/api/evidence");
@@ -219,6 +221,10 @@ async function showResult(res, d, label) {
   pair.append(el("h3", "", ev.data.pair_label || ""));
   if (ev.data.pair === "d20" && ev.data.d20 && ev.data.d20.line) {
     pair.append(el("p", "", ev.data.d20.line.replace(/`/g, "")));
+    if (ev.data.d20.small) pair.append(el("p", "small", ev.data.d20.small));
+    if (ev.data.d20.baseline) pair.append(el("p", "small", ev.data.d20.baseline));
+    const pre = el("p", "small"); const a = el("a", "", "PREREG.md"); a.href = ev.data.prereg_url;
+    pre.append(document.createTextNode(ev.data.d20_chip + ". "), a, document.createTextNode(": " + ev.data.prereg_note)); pair.append(pre);
   } else {
     pair.append(el("p", "small", "Le Petit Prince, section 8, held out: see the evidence panel below."));
   }
@@ -236,7 +242,6 @@ async function doForecast() {
   if (data.state === "offline" || data.state === "busy") {
     if (data.fallback) await showResult(data.fallback, data, "Cached forecast, computed " + (data.fallback.computed_utc || ""));
     else out.textContent = data.why || "The worker is offline and no cached forecast exists for this clip.";
-    if (data.job_id) out.append(el("p", "small", "Your seed waits for the worker; its result will appear at /api/forecast/" + data.job_id + "."));
     return;
   }
   const t0 = Date.now();
@@ -248,7 +253,7 @@ async function doForecast() {
       if (s.data.fallback) return showResult(s.data.fallback, data, "Cached forecast, computed " + (s.data.fallback.computed_utc || ""));
       out.textContent = "The live forecast did not finish."; return;
     }
-    out.textContent = (s.data.status === "running" ? "Running on the laptop GPU" : "Queued") + ", " + Math.round((Date.now() - t0) / 1000) + " s.";
+    out.textContent = (s.data.status === "running" ? "Running on the laptop" : "Queued") + ", " + Math.round((Date.now() - t0) / 1000) + " s.";
     setTimeout(poll, 1500);
   };
   poll();

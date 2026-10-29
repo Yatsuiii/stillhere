@@ -88,23 +88,24 @@ def submit(r: dict, sid: str) -> dict:
     busy = s.get(f"sjob:{sh}")
     if busy and (status(busy) or {}).get("status") in ("queued", "running"):
         return {"state": "busy", "job_id": busy}
-    online = worker_online()
-    if not online and r["seed"] == RESEED.get(r["condition"], default_seed()):
+    if not worker_online():                                # no queue without a worker: the saved run, labelled (ruling of 17:35 UTC, 7)
         return {"state": "offline", "fallback": fallback(r)}
     job_id = secrets.token_hex(8)
     s.set(f"job:{job_id}", json.dumps({"id": job_id, "recipe": r, "cache_key": key, "status": "queued", "created_utc": _now(),
-                                       "sid_hash": sh}), ttl=6 * 3600)
+                                       "sid_hash": sh, "created_t": time.time()}), ttl=6 * 3600)
     s.rpush("jobs:queue", job_id); s.set(f"sjob:{sh}", job_id, ttl=600)
-    if not online:                                         # a new seed waits for the worker; its receipt link fills when it returns
-        return {"state": "offline", "job_id": job_id, "fallback": fallback(r)}
     return {"state": "queued", "job_id": job_id}
 
 
 def fallback(r: dict):
-    """The cached forecast for this clip and condition at the default seed, or None."""
+    """The saved forecast for this clip and condition at the default seed, or None; when the visitor asked for another seed it says
+    so (ruling of Oct 29, 17:35 UTC, item 7)."""
     d = {**r, "seed": RESEED.get(r["condition"], default_seed())}
     hit = cached(cache_key(d))
-    return {**hit, "recipe": d} if hit else None
+    if not hit:
+        return None
+    note = None if d["seed"] == r["seed"] else f"No saved run for seed {r['seed']}; shown: the saved run at seed {d['seed']}."
+    return {**hit, "recipe": d, "requested_seed": r["seed"], "note": note}
 
 
 def status(job_id: str):
@@ -112,7 +113,9 @@ def status(job_id: str):
     if not raw:
         return None
     j = json.loads(raw)
-    if j["status"] == "running" and time.time() - j["claimed_t"] > JOB_EXPIRY_S:
+    stale = (j["status"] == "running" and time.time() - j["claimed_t"] > JOB_EXPIRY_S) or \
+        (j["status"] == "queued" and not worker_online() and time.time() - j.get("created_t", 0) > JOB_EXPIRY_S)
+    if stale:                                              # a running job past its time, or a queued one with no worker online
         j["status"] = "expired"; s.set(f"job:{job_id}", json.dumps(j), ttl=6 * 3600)
     out = {"status": j["status"], "recipe": j["recipe"], "events": [json.loads(e) for e in s.lrange(f"events:{job_id}")]}
     if j["status"] == "done":

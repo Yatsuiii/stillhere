@@ -30,6 +30,7 @@ RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # pri
                                                                            # 7 is the third example chip's seed
 FILM_FRAMES = REPO / "web/film/frames.json"
 RECORDED = "recorded run"
+NO_RECORDED_CHECK = "No recorded check for this clip and condition."
 ND = guard.DISCLAIMER
 OLD_BUG = {"audio": "assets/conditions/alice_ch01_75s_word_scramble.wav", "results": "results/conditions_manipulation_check.json",
            "commits": ("2002a8d", "64f3c99")}
@@ -256,7 +257,11 @@ def build(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> dic
     if condition in ("sentence_scramble", "word_scramble") and r["seed"] not in RESHUFFLE_SEEDS:
         raise Bad("seed_not_offered")
     rec = _load("web/replay/build.json") or {}
-    recorded = lambda why: {**rec.get(f"{clip_id}:{condition}", rec.get("default", {})), "mode": "recorded", "label": RECORDED, "why": why_line(why)}
+    def recorded(why):                                       # only a recording of this clip and condition, never another one's
+        got = rec.get(f"{clip_id}:{condition}")
+        if not got:
+            return {"mode": "recorded", "label": RECORDED, "why": why_line(why), "checklist": [], "line": NO_RECORDED_CHECK}
+        return {**got, "mode": "recorded", "label": f"{RECORDED}, seed {got.get('seed')}", "why": why_line(why)}
     try:
         if not live_ok("meta"):
             raise ledger.Refused("no_key")
@@ -312,7 +317,10 @@ def forecast(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> 
 
 
 def hours_et() -> str:
-    return os.environ.get("WORKER_HOURS_ET", "{worker_hours_et}")
+    return os.environ.get("WORKER_HOURS_ET", "10:00-14:00 ET, Nov 4-9")
+
+
+SAVED_LINE = "A saved forecast is shown whenever one exists for your choice. New seeds run live on the laptop, {hours}."   # ruling 8
 
 
 # ---- FILM -----------------------------------------------------------------------------------------------------------------------
@@ -392,4 +400,6 @@ def evidence() -> dict:
     return {"html": html, "lpp_ghost": _load("results/ghostline_lpp_s8.json"), "film_ghost": _load("results/ghostline_film.json"),
             "d20": d20, "pair": "d20" if d20["status"] == "pass" else "lpp",
             "pair_label": "Real listeners, different story." if d20["status"] == "pass" else "Real listeners, held-out story",
-            "order_map": {"verdict": om.get("verdict"), "consequence": om.get("consequence")}}
+            "order_map": {"verdict": om.get("verdict"), "consequence": om.get("consequence")},
+            "d20_chip": f'{bp.GHOST_CHIPS["d20"]["short"]}: {bp.GHOST_CHIPS["d20"]["long"]}', "prereg_url": bp.PREREG_URL,
+            "prereg_note": bp.PREREG_NOTE}

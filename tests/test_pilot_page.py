@@ -63,11 +63,11 @@ def test_no_banned_wording_em_dash_scripts_or_remote_resources():
     for w in BP.BANNED:
         assert not re.search(r"\b" + re.escape(w) + r"\b", low), w
     assert chr(0x2014) not in PAGE and "<script" not in PAGE.lower() and "http://" not in PAGE
-    assert re.findall(r"https://[^\"'\s>]+", PAGE) == [BP.SEDATION_URL]               # the one link out: the write-up, an anchor
+    assert sorted(re.findall(r"https://[^\"'\s>]+", PAGE)) == sorted([BP.SEDATION_URL, BP.PREREG_URL])   # links out: anchors only
     assert "Nearest validated option" not in PAGE and "validation table" not in PAGE and "no rule" not in text(PAGE)
     assert "before anyone looked" in BP.BANNED and "validated" in BP.BANNED
     for bad in ("<p>It detects faces.</p>", "<p>Checked before anyone looked.</p>", '<img src="https://example.org/x.png">',
-                f'<a href="https://example.org/">x</a>', f'<link href="{BP.REPO_URL}/x.css">'):
+                '<a href="https://example.org/">x</a>', f'<link href="{BP.REPO_URL}/x.css">'):
         with pytest.raises(AssertionError):
             BP.check(PAGE.replace("</main>", bad + "</main>"))
 
@@ -75,7 +75,7 @@ def test_no_banned_wording_em_dash_scripts_or_remote_resources():
 def test_results_panels_carry_the_footer_and_film_frames_the_credit():
     results = PAGE[PAGE.index('id="check"'):PAGE.index("<footer")]
     ps = panels(results)
-    assert len(ps) == 8                                                               # check, film, Glimmer, forecast, LPP, 3 slots
+    assert len(ps) == 8                                                               # check, film, Glimmer, forecast, LPP, wall, D20, film
     for p in ps:
         assert p.rstrip().endswith(f'<p class="nd">{html.escape(BP.ND)}</p></div>'), re.sub(r"<[^>]+>", " ", p)[:120]
     for p in panels(PAGE):
@@ -183,17 +183,33 @@ def test_glimmer_pass_and_fail(monkeypatch):
 
 def test_story_wall_and_notthefall(monkeypatch):
     wall = {"wall": {"N": 7, "M": 9, "bar_pass": True}, "lines": {"line": "A pre-written line.", "guards": []}}
-    d20 = {"primary_intact_gt_shortscram": {"n_pairs": 12, "k_intact_higher": 10, "p": 0.0034, "status": "pass"}}
-    t = text(build_with(monkeypatch, {**NONE, "story_wall": wall, "d20": d20}))
+    t = text(build_with(monkeypatch, {**NONE, "story_wall": wall}))
     assert "A pre-written line." in t and "7 of 9 story families" in t and "bar met" in t
+    d20 = json.loads((REPO / "results/d20_notthefall.json").read_text())             # not BP.load: build_with patched it above
+    t = text(build_with(monkeypatch, {**NONE, "d20": d20}))
     assert ("With zero same-clip controls, stock TRIBE v2's language readout was stronger when the same healthy listeners heard a public "
-            "story intact than when they heard its sentences shuffled (Narratives notthefall, 12 listeners, 9.1 minutes = 365 TRs per "
-            "version; the order of their two runs is not public).") in t                # PREREG D20's pass line, N filled (ruling 3)
-    assert BP.D20_PASS.count("N listeners") == 1
+            "story intact than when they heard its sentences shuffled (Narratives notthefall, 22 listeners, 9.1 minutes = 365 TRs per "
+            "version; the order of their two runs is not public).") in t                # PREREG D20's pass line, N filled (17:35 UTC item 2)
+    assert ("Each version also had its own TRIBE forecast, so a pass does not separate a change in the listeners' brains from a change in "
+            "TRIBE's forecast, and the run order is not public, so it cannot be separated from an order or repeat-listening effect. Intact "
+            "vs the coarser scramble (descriptive): HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735, 21 listeners, 9.1 minutes = 365 TRs "
+            "per version; did not reach p < 0.05.") in t                               # item 3 small print, word for word
+    assert ("Exploratory, same test, language areas: word rate alone p = 0.61, sound envelope alone p = 0.93 (22 listeners, 9.1 minutes = "
+            "365 TRs per version).") in t and "What it had to beat" not in t.split("notthefall: real")[1].split("Film face test")[0]
+    assert BP.PREREG_NOTE in t and f'href="{BP.PREREG_URL}"' in build_with(monkeypatch, {**NONE, "d20": d20})
+    assert not re.search(r"\b1[35] of 2[12]\b", t)                                # D23(b): no k of N for D20
+    d20["baselines"]["matches_frozen"] = False
+    assert "word rate alone" not in text(build_with(monkeypatch, {**NONE, "d20": d20}))
     for status in ("fail", "not run"):                                               # any other ending: the panel leaves the page
-        d20["primary_intact_gt_shortscram"]["status"] = status
+        d20["primary"]["status"] = status
         t = text(build_with(monkeypatch, {**NONE, "d20": d20}))
         assert "notthefall" not in t.lower().replace("the sedation data", "") and "stock TRIBE v2's language readout" not in t
+
+
+def test_d20_summary_holds_no_k_of_n_or_per_listener_values():
+    d = BP.load("results/d20_notthefall.json"); raw = json.dumps(d)
+    assert "k_intact_higher" not in raw and "per_listener" not in raw and d["primary"]["status"] == "pass" and d["primary"]["n"] == 22
+    assert set(d["sources"]) == {"tierD_d20_score.json", "tierD_d20_baselines.json"} and d["baselines"]["matches_frozen"] is True
 
 
 FILM = {"viewers": {"scored": 28}, "gauges": {"VISUAL": {"median_z": 1.5, "ci95": [1.1, 1.9]}, "HEARING": "not run"},

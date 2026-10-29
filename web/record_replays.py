@@ -56,7 +56,7 @@ def main():
     OUT.mkdir(exist_ok=True)
     meta = {"recorded_utc": stations._now(), "label": "recorded run"}
     json.dump({**meta, "runs": runs}, open(OUT / "plan.json", "w"), indent=1)
-    json.dump({**meta, "default": b, f"{rt['clip_id']}:{rt['condition']}": b}, open(OUT / "build.json", "w"), indent=1)
+    json.dump({**meta, f"{rt['clip_id']}:{rt['condition']}": b}, open(OUT / "build.json", "w"), indent=1)      # keyed per clip x condition
     json.dump({**meta, **a}, open(OUT / "audit.json", "w"), indent=1)
     json.dump({**meta, **{k: v for k, v in f.items() if k != "mode"}}, open(OUT / "film.json", "w"))
     print("spend:", stations.ledger.remaining())
