@@ -1,0 +1,112 @@
+{
+ "rule": "docs/rules/story_menu_rule.md section 1 (amended Oct 29, 19:55 UTC): title searched with fMRI and with OpenNeuro before a story goes on the menu",
+ "searched_utc": "2026-10-29T20:08:28Z",
+ "engine": "web search (standard), Claude Code WebSearch tool",
+ "stories": {
+  "story_black_cat": {
+   "queries": [
+    "\"The Black Cat\" Poe story fMRI",
+    "\"The Black Cat\" Poe OpenNeuro"
+   ],
+   "examples_of_results": [
+    "https://human.libretexts.org/Bookshelves/Literature_and_Literacy/Poetry_Plays_Essays_and_other_Genres/Sci-fi_Fantasy_Anthology_(Hoppe)/Extra_Stories/05.5%3A_The_Black_Cat",
+    "https://pep-web.org/search/document/AIM.079.0311A",
+    "https://www.bu.edu/partisanreview/books/PR1950V17N8/HTML/files/assets/basic-html/page69.html"
+   ],
+   "hit_naming_a_scanned_stimulus": false,
+   "reading": "no result names this story as an fMRI stimulus or an OpenNeuro dataset; results were literary pages or general fMRI/OpenNeuro pages"
+  },
+  "story_nice_people": {
+   "queries": [
+    "\"The Nice People\" Bunner story fMRI",
+    "\"The Nice People\" Bunner OpenNeuro"
+   ],
+   "examples_of_results": [
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8287321/",
+    "https://baltimore.org/event/fmri-flash-fiction-prize-a-reading-and-celebration/",
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8550750/"
+   ],
+   "hit_naming_a_scanned_stimulus": false,
+   "reading": "no result names this story as an fMRI stimulus or an OpenNeuro dataset; results were literary pages or general fMRI/OpenNeuro pages"
+  },
+  "story_pigs_is_pigs": {
+   "queries": [
+    "\"Pigs is Pigs\" Butler story fMRI",
+    "\"Pigs is Pigs\" OpenNeuro"
+   ],
+   "examples_of_results": [
+    "https://pubmed.ncbi.nlm.nih.gov/31115245/",
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8550750/"
+   ],
+   "hit_naming_a_scanned_stimulus": false,
+   "reading": "no result names this story as an fMRI stimulus or an OpenNeuro dataset; results were literary pages or general fMRI/OpenNeuro pages"
+  },
+  "story_telltale_heart": {
+   "queries": [
+    "\"The Tell-Tale Heart\" Poe story fMRI",
+    "\"The Tell-Tale Heart\" OpenNeuro"
+   ],
+   "examples_of_results": [
+    "https://learningenglish.voanews.com/amp/tell-tale-heart-edgar-allen-poe-american-stories/2634706.html",
+    "https://zenodo.org/records/20561319",
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8550750/"
+   ],
+   "hit_naming_a_scanned_stimulus": false,
+   "reading": "no result names this story as an fMRI stimulus or an OpenNeuro dataset; results were literary pages or general fMRI/OpenNeuro pages"
+  },
+  "story_cask_of_amontillado": {
+   "queries": [
+    "\"The Cask of Amontillado\" fMRI",
+    "\"The Cask of Amontillado\" OpenNeuro"
+   ],
+   "examples_of_results": [
+    "https://www.supersummary.com/the-cask-of-amontillado/summary",
+    "https://nmr.mgh.harvard.edu/node/198",
+    "https://en.wikipedia.org/wiki/OpenNeuro"
+   ],
+   "hit_naming_a_scanned_stimulus": false,
+   "reading": "no result names this story as an fMRI stimulus or an OpenNeuro dataset; results were literary pages or general fMRI/OpenNeuro pages"
+  },
+  "story_esme": {
+   "queries": [
+    "\"Esme\" Saki story fMRI",
+    "\"Esme\" Saki OpenNeuro"
+   ],
+   "examples_of_results": [
+    "https://baltimore.org/event/fmri-flash-fiction-prize-a-reading-and-celebration/",
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8550750/"
+   ],
+   "hit_naming_a_scanned_stimulus": false,
+   "reading": "no result names this story as an fMRI stimulus or an OpenNeuro dataset; results were literary pages or general fMRI/OpenNeuro pages"
+  },
+  "story_last_leaf": {
+   "queries": [
+    "\"The Last Leaf\" O. Henry fMRI",
+    "\"The Last Leaf\" O. Henry OpenNeuro"
+   ],
+   "examples_of_results": [
+    "https://en.wikipedia.org/wiki/The_Last_Leaf",
+    "https://www.sparknotes.com/short-stories/the-last-leaf/"
+   ],
+   "hit_naming_a_scanned_stimulus": false,
+   "reading": "no result names this story as an fMRI stimulus or an OpenNeuro dataset; results were literary pages or general fMRI/OpenNeuro pages"
+  },
+  "story_toys_of_peace": {
+   "queries": [
+    "\"The Toys of Peace\" Saki fMRI",
+    "\"The Toys of Peace\" OpenNeuro"
+   ],
+   "examples_of_results": [
+    "https://arxiv.org/pdf/1603.01351",
+    "https://standardebooks.org/ebooks/saki/short-fiction/text/the-toys-of-peace"
+   ],
+   "hit_naming_a_scanned_stimulus": false,
+   "reading": "no result names this story as an fMRI stimulus or an OpenNeuro dataset; results were literary pages or general fMRI/OpenNeuro pages"
+  }
+ },
+ "not_searched": {
+  "story_baby_tramp": "failed the trim",
+  "story_taming_the_bicycle": "failed the trim",
+  "story_diamond_necklace": "failed the trim"
+ }
+}

@@ -153,11 +153,18 @@ def allowlist(path: Path, lines: list, marker: str):
     return len(new)
 
 
+def pool_ids() -> set:
+    """Ids of the current pool (results/story_menu/pool.json); story folders outside it are never screened or used."""
+    p = RESULTS / "pool.json"
+    return {short_id(s["title"]) for s in json.loads(p.read_text())["pool"]} if p.exists() else None
+
+
 def screen(work: Path, transcribe, ledger: Ledger, only=None, cap=SM.SCREEN_CAP_USD):
     """transcribe(path) -> Voice Transcribe DIARIZATION JSON. Stops before a call that would take the screen past the cap."""
     from stillhere import egress
+    ids = pool_ids()
     stories = sorted((json.loads(p.read_text()) for p in work.glob("story_*/story.json")), key=lambda i: (i["book_id"], i["section"]))
-    for info in stories:
+    for info in [i for i in stories if ids is None or i["id"] in ids]:
         sid = info["id"]; d = work / sid
         if (only and sid != only) or info.get("failed") or (d / "screen.json").exists():
             continue
@@ -220,9 +227,10 @@ def keep_notes(raw: list, words: list) -> list:
 def notes(work: Path, call, ledger: Ledger, only=None):
     """call(model, text) -> (content, usage). Fireworks first; Baseten only if Fireworks fails twice; one host per story."""
     from stillhere import planner_eval as PE
+    ids = pool_ids()
     for p in sorted(work.glob("story_*/screen.json")):
         scr = json.loads(p.read_text()); sid = scr["id"]; d = p.parent
-        if (only and sid != only) or not scr["pass"] or (d / "notes.json").exists():
+        if (only and sid != only) or (ids is not None and sid not in ids) or not scr["pass"] or (d / "notes.json").exists():
             continue
         info = json.loads((d / "story.json").read_text())
         words = json.loads((d / "words.json").read_text())["words"][info["trim"]["first_word"]:info["trim"]["last_word"] + 1]
@@ -277,9 +285,11 @@ RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                   # web/stations.py 
 
 def screened(work: Path) -> list:
     """Stories in catalogue order with their screen result (None when not screened)."""
-    out = []
+    out, ids = [], pool_ids()
     for p in sorted(work.glob("story_*/story.json")):
         info = json.loads(p.read_text()); scr = p.parent / "screen.json"
+        if ids is not None and info["id"] not in ids:
+            continue
         out.append((info, json.loads(scr.read_text()) if scr.exists() else None))
     return sorted(out, key=lambda x: (x[0]["book_id"], x[0]["section"]))
 
