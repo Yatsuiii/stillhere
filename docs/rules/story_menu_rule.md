@@ -9,15 +9,22 @@ step it changes runs. Results are labelled exploratory.
 - Source: the LibriVox catalogue entries "Short Story Collection Vol. 001" and "Short Story Collection Vol. 002", in that order. If
   either title does not resolve to exactly one LibriVox project, stop and report; no other volume is substituted.
 - A section (one story) enters the pool only if, per the LibriVox catalogue: its language is English; it lists exactly one reader;
-  its listed length is from 4:00 to 12:00 (m:ss) inclusive.
+  its listed length is from 4:00 to 30:00 (m:ss) inclusive. (Amended Oct 29, cloud ruling of 19:55 UTC: the first commit said
+  4:00 to 12:00, under which only 2 stories of Vol. 001-002 qualify; a 30-40 s window does not need a short story, and the bar only
+  limited screen cost.)
 - Order: catalogue order (Vol. 001 sections in section order, then Vol. 002). The first 25 sections that meet the conditions above and
   are not excluded below are the pool; later sections are never read.
 - Excluded: known public story-fMRI stimuli. A section is excluded if its title, lower-cased with punctuation removed, equals a
   stimulus title of: Narratives (OpenNeuro ds002345, every story in its stimuli list), Le Petit Prince (ds003643), the Alice Datasets
   (ds002322, Alice's Adventures in Wonderland chapter 1), the Moth stories of LeBel et al. 2023 (ds003020), Harry Potter and the
-  Philosopher's Stone chapter 9 (Wehbe et al. 2014) and the Natural Stories texts (Futrell et al. 2018; fMRI in Shain et al. 2020). The
-  same check is applied to every clip on stillhere/live_menu.json, and its result is that clip's "public_scan" field (null, or the
-  dataset). The page shows "No public scan" only for a clip whose public_scan is null.
+  Philosopher's Stone chapter 9 (Wehbe et al. 2014) and the Natural Stories texts (Futrell et al. 2018; fMRI in Shain et al. 2020).
+  Also excluded by name: The Little Match Girl, whose adapted text ("The Matchstick Seller") is in the Natural Stories set (amended
+  Oct 29, 19:55 UTC ruling; keeps every menu story's "No public scan" line true without a footnote).
+- Before a story goes on the menu, its title is searched on the web with "fMRI" and with "OpenNeuro"; the queries and what they found
+  are recorded with the story. On any hit naming a scanned stimulus of that story, it is excluded (or, if it is already on the menu,
+  its public_scan field records the dataset). (Amended Oct 29, 19:55 UTC ruling.)
+- The title exclusion and this search are applied to every clip on stillhere/live_menu.json, and their result is that clip's
+  "public_scan" field (null, or the dataset). The page shows "No public scan" only for a clip whose public_scan is null.
 - Audio: the section's 64 kb MP3 from the LibriVox archive.org item, decoded to 16 kHz mono WAV with ffmpeg (bit-exact flags, as
   scripts/order_map.py cut_clip). Word table: local faster-whisper base.en word timings with the settings of scripts/order_map.py
   whisper_words. All of this runs on the laptop CPU.
@@ -42,7 +49,8 @@ story passes only if all three hold:
    the faster-whisper table's words, over the number of faster-whisper words, is at least 0.95. (The faster-whisper table is what
    TRIBE's text lane reads; this checks Voice Transcribe confirms it.)
 
-Spend: the Voice Transcribe screen stops before a call that would take its batch past $25. A story that is not fully screened when the
+Spend: the Voice Transcribe screen stops before a call that would take its batch past $35 (amended Oct 29, 19:55 UTC ruling; the
+first commit said $25). A story that is not fully screened when the
 cap is reached does not pass. The real cost is reported.
 
 ## 4. Content notes (Muse Spark Open)
