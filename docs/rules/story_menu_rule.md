@@ -56,17 +56,25 @@ cap is reached does not pass. The real cost is reported.
 
 ## 4. Content notes (Muse Spark Open)
 
-- One call per passing story, on Fireworks; Baseten only if the Fireworks call fails (an error or no valid output after 2 attempts).
-  A story's notes come from exactly one host, recorded with them.
+- Amended Oct 29 under the cloud ruling of 20:30 UTC (the first commit allowed one call per story and a free list of notes; its
+  answers were empty for 2 of 2 stories, see the commit message):
+- Exactly 3 calls per passing story, on Fireworks; Baseten only if a Fireworks call fails (an error or no valid output after 2
+  attempts). A story's 3 calls run on one host, recorded with them. Temperature 0.6, written into every answer's record. All 3
+  answers are kept.
+- Prompt: go through the tag list one tag at a time and decide each (the word "clearly" is not used). The prompt text is committed in
+  scripts/story_menu_run.py and sent as allowlisted public text.
 - Input: the trimmed story's faster-whisper text, sent as allowlisted public text through stillhere/egress.py. Nothing else.
-- Output (json_schema): a list of notes, each a tag from the list below and a word-for-word quote from the text, plus a description of
-  exactly two sentences (stored, not shown).
+- Output (json_schema): one entry per tag of the fixed list, every tag present: {tag, applies: true or false, quotes: up to 3
+  word-for-word quotes of at most 12 words each}, plus a description of exactly two sentences (stored, not shown).
 - Tags (fixed list, shown as written): death or dying; injury or illness; falls or head injury; being trapped or unable to move or
   speak; drowning; suicide or self-harm; grief or loss; medical care; violence; cruelty to animals; sexual content; alcohol or drugs;
   frightening scenes; slurs or demeaning language.
-- Code keeps a note only if its quote's normalised words occur as a contiguous run in the story's normalised words, and times it at
-  the start of that run, in seconds of the original LibriVox file. If the egress guard blocks a quote, the quote is withheld and the
-  tag and time stay.
+- Code keeps a quote only if its normalised words occur as a contiguous run in the story's normalised words, and times it at the
+  start of that run, in seconds of the original LibriVox file. If the egress guard blocks a quote, the quote is withheld and the tag
+  and time stay.
+- The card shows the union across the 3 calls of tags with at least one verified quote; each tag appears once, at its earliest
+  verified time. A tag marked applies with no verified quote is dropped and counted in the record. If no tag survives, the card says
+  "none of the listed tags found".
 - Content notes do not decide which stories reach the menu.
 
 ## 5. Window (the live clip)
