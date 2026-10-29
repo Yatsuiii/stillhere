@@ -224,20 +224,35 @@ def screen(work: Path, transcribe, ledger: Ledger, only=None, cap=SM.SCREEN_CAP_
 
 # ---- content notes (Spark Open) --------------------------------------------------------------------------------------------------
 def notes_schema() -> dict:
+    """One entry per tag, every tag present: "tags" is an object with one required property per tag of the fixed list (the model
+    cannot return an empty list, which it did with an array), each entry {tag, applies, quotes}."""
     from stillhere.story_tags import TAGS
-    entry = {"type": "object", "additionalProperties": False, "required": ["tag", "applies", "quotes"],
-             "properties": {"tag": {"type": "string", "enum": list(TAGS)}, "applies": {"type": "boolean"},
-                            "quotes": {"type": "array", "items": {"type": "string"}}}}
+    entry = lambda t: {"type": "object", "additionalProperties": False, "required": ["tag", "applies", "quotes"],
+                       "properties": {"tag": {"type": "string", "enum": [t]}, "applies": {"type": "boolean"},
+                                      "quotes": {"type": "array", "items": {"type": "string"}}}}
     return {"type": "object", "additionalProperties": False, "required": ["tags", "description"],
-            "properties": {"tags": {"type": "array", "items": entry}, "description": {"type": "string"}}}
+            "properties": {"tags": {"type": "object", "additionalProperties": False, "required": list(TAGS),
+                                    "properties": {t: entry(t) for t in TAGS}},
+                           "description": {"type": "string"}}}
+
+
+def as_list(content) -> dict:
+    """The answer with "tags" as a list of entries in the fixed order (accepts the keyed form the schema asks for)."""
+    from stillhere.story_tags import TAGS
+    if isinstance(content, dict) and isinstance(content.get("tags"), dict):
+        return {**content, "tags": [content["tags"].get(t) for t in TAGS]}
+    return content
 
 
 def valid_answer(content) -> bool:
     """Every tag of the fixed list exactly once, applies a boolean, at most 3 quotes (strings)."""
     from stillhere.story_tags import TAGS
+    content = as_list(content)
     if not isinstance(content, dict) or not isinstance(content.get("tags"), list) or not isinstance(content.get("description"), str):
         return False
-    seen = [e.get("tag") for e in content["tags"] if isinstance(e, dict)]
+    if not all(isinstance(e, dict) for e in content["tags"]):
+        return False
+    seen = [e.get("tag") for e in content["tags"]]
     return (sorted(seen) == sorted(TAGS) and all(isinstance(e.get("applies"), bool) and isinstance(e.get("quotes"), list)
                                                   and len(e["quotes"]) <= 3 and all(isinstance(q, str) for q in e["quotes"])
                                                   for e in content["tags"]))
@@ -326,7 +341,7 @@ def notes(work: Path, call, ledger: Ledger, only=None):
                         record.append({"host": host, "call": k, "attempt": attempt, "temperature": NOTES_TEMPERATURE, "valid": good,
                                        "usage": usage, "answer": content})
                         if good:
-                            ok = content; break
+                            ok = as_list(content); break
                     except Exception as e:
                         ledger.add(kind="spark_open", story=sid, host=host, call=k, attempt=attempt, temperature=NOTES_TEMPERATURE,
                                    usd=0.0, error=type(e).__name__)
@@ -354,7 +369,7 @@ def live_call(model: str, text: str, temperature: float = None):
     req = egress.Request(model=model, system=[egress.PublicText(text=NOTES_SYSTEM)], user=[egress.PublicText(text=text)],
                          schema_name="content_notes", json_schema=notes_schema())
     rows_before = meta_client.USAGE_LOG.read_text().count("\n") if meta_client.USAGE_LOG.exists() else 0
-    out = meta_client.call(req, timeout=180, temperature=temperature)
+    out = meta_client.call(req, timeout=300, temperature=temperature)
     rows = [json.loads(r) for r in meta_client.USAGE_LOG.read_text().splitlines()[rows_before:]]
     row = next(r for r in reversed(rows) if r.get("schema") == "content_notes" and r.get("model") == model)
     return out["content"], {"prompt_tokens": row.get("prompt_tokens"), "completion_tokens": row.get("completion_tokens")}

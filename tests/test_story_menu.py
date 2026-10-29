@@ -139,8 +139,13 @@ def test_notes_schema_and_validity():
     pytest.importorskip("stillhere.story_tags")
     import scripts.story_menu_run as RUN
     from stillhere.story_tags import TAGS
-    sch = RUN.notes_schema()["properties"]["tags"]["items"]["properties"]
-    assert sch["tag"]["enum"] == list(TAGS) and sch["applies"]["type"] == "boolean" and sch["quotes"]["type"] == "array"
+    tags = RUN.notes_schema()["properties"]["tags"]
+    assert tags["required"] == list(TAGS) and tags["additionalProperties"] is False      # every tag present, no empty answer
+    sch = tags["properties"]["violence"]["properties"]
+    assert sch["tag"]["enum"] == ["violence"] and sch["applies"]["type"] == "boolean" and sch["quotes"]["type"] == "array"
+    keyed = {"tags": {t: {"tag": t, "applies": False, "quotes": []} for t in TAGS}, "description": "One. Two."}
+    assert RUN.valid_answer(keyed) and RUN.as_list(keyed)["tags"][0]["tag"] == TAGS[0]
+    assert not RUN.valid_answer({"tags": [], "description": "One. Two."})
     assert RUN.valid_answer(_answer({"violence": ["a b"]}))
     bad = _answer({}); bad["tags"] = bad["tags"][1:]
     assert not RUN.valid_answer(bad)                                     # every tag must be present
