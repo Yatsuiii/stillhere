@@ -106,7 +106,7 @@ def live_ctx():
 
 def test_footers_and_film_credit():
     ctx = {"ghost": V.synthetic_ghost(), "film_ghost": V.synthetic_film_ghost(), "maps": {"R": Path("/x/R.png"), "M": Path("/x/M.png")},
-           "live": live_ctx()}
+           "live": live_ctx(), "cards": {"story_black_cat": "card"}}
     film_ok = (V.FILM / "edits_v2.json").exists()
     ctx["d20_line"] = V.d20_line(SPEC)
     for x in SPEC["scenes"]:
@@ -243,8 +243,26 @@ def test_part4_lines():
     n = menu["screen_summary"]["n_on_menu"]
     assert V.auto_values()["n_screened"] == n == sum(c["id"].startswith("story_") for c in menu["clips"])
     assert f"A judge picks one of {n} screened public stories" in (ROOT / "docs/vo_script.md").read_text()
-    html = V.menu_notes_html()
-    assert html.count("<tr>") == n and "Advisory" not in all_text(SC["build_audit"]) and "audit_line" not in all_text(SC["build_audit"])
+    assert SC["build_audit"]["items"] == [{"kind": "storycard", "clip": "story_black_cat"}]
+    assert "Advisory" not in all_text(SC["build_audit"]) and "audit_line" not in all_text(SC["build_audit"])
+
+
+def test_the_53_s_slide_is_the_story_card_word_for_word():
+    try:
+        from web import stations as ST
+    except ImportError:
+        pytest.skip("the web app's dependencies are not in this interpreter")
+    card = ST.story_card("story_black_cat")["text"]
+    rule = flat((ROOT / "docs/rules/story_menu_rule.md").read_text())
+    lead, tail = card.split(" · notes: ")[0], card[card.index(". Content notes come from"):]
+    assert lead.startswith("The Black Cat, read by ") and "one of 4 screened public stories · 1 voice heard · " in lead
+    assert tail.strip() in rule and V.story_card_text("story_black_cat") == card
+    times = [int(m) * 60 + int(s_) for m, s_ in re.findall(r"\((\d+):(\d\d)\)", card)]
+    assert times == sorted(times) and len(times) == len(ST.story_card("story_black_cat")["notes"])
+    ctx = {"cards": {"story_black_cat": card}, "live": live_ctx(), "ghost": V.synthetic_ghost()}
+    h = V.scene_html(SC["build_audit"], SC["build_audit"]["items"], {}, SPEC, ctx)
+    body = re.search(r'<div class="storycard">(.*?)</div>', h).group(1)
+    assert __import__("html").unescape(body) == card
 
 
 def test_live_inset_or_one_cut():

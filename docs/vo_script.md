@@ -45,7 +45,7 @@ one that happened. On a d20 fail the notthefall scene leaves and the story wall 
 
 - 50.0-53.0 s: "Our first word scramble failed this check." (7 words, 2.3 words/s)
 
-## 53-60 s · build_audit · headline: "Spark Open read each screened story"
+## 53-60 s · build_audit · headline: "Spark Open read every screened story"
 
 - 53.0-59.8 s: "Spark Open read every screened story and noted what is in it, with the line and the time." (18 words, 2.6 words/s)
 

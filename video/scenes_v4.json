@@ -344,10 +344,11 @@
    "beat": "build",
    "start": 53,
    "end": 60,
-   "headline": "Spark Open read each screened story",
+   "headline": "Spark Open read every screened story",
    "items": [
     {
-     "kind": "menu_notes"
+     "kind": "storycard",
+     "clip": "story_black_cat"
     }
    ]
   },

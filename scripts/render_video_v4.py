@@ -13,6 +13,7 @@ usage: python scripts/render_video_v4.py [--endings slot=ending,...] [--values V
 import argparse
 import html
 import json
+import os
 import re
 import subprocess
 import sys
@@ -29,7 +30,6 @@ FILM_GHOST = REPO / "results/ghostline_film.json"                         # the 
 FILM = REPO.parent / "stillhere/pilot/film/film_stim_v2"                   # seg_intact.mp4, faces_removed_v2.mp4, area_matched_v2.mp4
 RC_FILES = (REPO / "results/face_map_RC.json", REPO.parent / "stillhere-pilot-public/results/face_map_RC.json")
 MENU = REPO / "stillhere/live_menu.json"                                 # the live menu; its screen summary fills {n_screened}
-SCREEN = REPO / "results/story_menu/screen_summary.json"                  # Spark Open's notes on every screened story
 CACHE = REPO / "data/forecast_cache.json"                                # the page's saved runs (recomputed Oct 29 17:07 UTC), LIVE beat
 GHOST_ORDER = ("forecast", "chip", "group", "five", "one")                # display rule draw order (group and five are "listeners")
 BOX = (104, 176, 1712, 640)                                              # x, y, w, h of a scene's moving picture
@@ -91,13 +91,20 @@ def clip_title(clip_id: str) -> str:
     return next((c["short"] for c in json.loads(MENU.read_text())["clips"] if c["id"] == clip_id), clip_id)
 
 
-def menu_notes_html() -> str:
-    """The screened stories on the live menu, in menu order, with how many notes Spark Open made and the first few of them."""
-    menu = [c for c in json.loads(MENU.read_text())["clips"] if c["id"].startswith("story_")]
-    notes = {x["id"]: x.get("notes_tags", []) for x in json.loads(SCREEN.read_text())["stories"]}
-    rows = "".join(f"<tr><td>{E(c['short'])}</td><td>{len(notes.get(c['id'], []))} notes</td>"
-                   f"<td>{E(', '.join(notes.get(c['id'], [])[:3]))}</td></tr>" for c in menu)
-    return f'<div class="small">Muse Spark Open, screening notes (results/story_menu/screen_summary.json)</div><table class="notes">{rows}</table>'
+def story_card_text(clip_id: str) -> str:
+    """The story card of docs/rules/story_menu_rule.md section 6, word for word, from Fork A's formatter (web/stations.py story_card),
+    so the page and the video cannot drift. When this interpreter lacks the web app's dependencies, the same function runs in the
+    product environment."""
+    try:
+        from web import stations as ST
+        return ST.story_card(clip_id)["text"]
+    except ImportError:
+        py = sorted(Path.home().glob(".local/share/uv/python/cpython-3.12*/bin/python3.12"))[0]
+        site = next(p for v in (REPO, REPO.parent / "stillhere-app") for p in (v / ".venv/lib").glob("python3.12/site-packages"))
+        code = f"import json; from web import stations as ST; print(json.dumps(ST.story_card({clip_id!r})['text']))"
+        out = subprocess.run([str(py), "-c", code], cwd=REPO, env={**os.environ, "PYTHONPATH": f"{REPO}:{site}"}, capture_output=True,
+                             text=True, check=True)
+        return json.loads(out.stdout.strip().splitlines()[-1])
 
 
 def fill(text: str, values: dict) -> str:
@@ -361,7 +368,7 @@ table{font-size:34px;border-collapse:collapse} td{padding:10px 40px 10px 0;verti
 .maps2{display:flex;gap:32px} .maps2 figure{margin:0;width:840px} .maps2 img{width:840px;display:block} .maptitle{font-size:28px;font-weight:600;margin-bottom:6px}
 .tag2{align-self:flex-start;font-size:26px;padding:4px 16px;border-radius:20px;background:#eceef1;color:#5d6470;font-weight:600}
 .cutnote{align-self:flex-start;font-size:34px;font-weight:700;color:#fff;background:#11141a;padding:8px 20px;border-radius:10px}
-table.notes{font-size:32px} table.notes td{padding:10px 36px 10px 0} table.notes td:last-child{color:#5d6470;font-size:26px}
+.storycard{font-size:36px;line-height:1.45;background:#fff;border:2px solid #e3e0d8;border-radius:14px;padding:24px 30px}
 .receipt{font-size:24px;color:#5d6470;font-family:"Noto Sans Mono",monospace}
 .foot{position:absolute;left:104px;right:104px;bottom:12px;font-size:18px;color:#5d6470;line-height:1.3}
 """
@@ -419,8 +426,8 @@ def item_html(it: dict, values: dict, ctx: dict) -> str:
     if k == "maps":
         return '<div class="maps2">' + "".join(f'<figure><div class="maptitle">{fill(m["title"], values)}</div>'
                                                f'<img src="{ctx["maps"][m["key"]].as_uri()}"></figure>' for m in it["maps"]) + "</div>"
-    if k == "menu_notes":
-        return menu_notes_html()
+    if k == "storycard":
+        return f'<div class="storycard">{E(ctx["cards"][it["clip"]])}</div>'
     if k == "tag":
         return f'<div class="tag2">{E(it["text"])}</div>'
     if k == "cutnote":
@@ -689,7 +696,8 @@ def main(argv=None) -> None:
     work = a.work or Path(tempfile.mkdtemp(prefix="stillhere-v4-")); work.mkdir(parents=True, exist_ok=True)
     endings.setdefault("live", "inset")                                     # the plan; "cut" is the fallback if the inset reads badly
     ctx = {"ghost": ghost_doc(), "film_ghost": film_ghost_doc(), "maps": render_maps_for(spec, work), "d20_line": d20_line(spec),
-           "live": {k: cache_entry(spec, k) for k in ("entry", "reversed")}}
+           "live": {k: cache_entry(spec, k) for k in ("entry", "reversed")},
+           "cards": {it["clip"]: story_card_text(it["clip"]) for sc in spec["scenes"] for it in sc.get("items", []) if it["kind"] == "storycard"}}
     ctx["live"]["live"] = ctx["live"]["entry"]
     fps, xf = spec["fps"], spec["crossfade_s"]
     tl = timeline(spec, endings); clips = []
