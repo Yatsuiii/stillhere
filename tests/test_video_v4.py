@@ -281,7 +281,8 @@ def test_numbers_match_their_results():
 
 
 def test_voice_over_script_is_generated():
-    assert (ROOT / "docs/vo_script.md").read_text() == V.vo_markdown(SPEC)
+    script = (ROOT / "docs/vo_script.md").read_text()
+    assert script == V.vo_markdown(SPEC) and "39-56 s per warm worker job" in script        # the open LIVE timing question
 
 
 def test_old_cut_removed():

@@ -385,7 +385,8 @@
      "text": "Sunday's uncut live run (phone + laptop + wall clock) replaces this panel; shown: the Oct 29 laptop forecast from results/order_map_gonogo.json"
     }
    ],
-   "results": true
+   "results": true,
+   "note": "Open question for the cloud thread: Fork W measured 39-56 s per warm worker job, so an uncut live run does not fit the LIVE beat (60-92 s, 32 s) as planned. The slot and timings are unchanged until it is decided. Options: a shorter clip, a longer beat, or a visible cut with the clock shown."
   },
   {
    "id": "live_reversed",

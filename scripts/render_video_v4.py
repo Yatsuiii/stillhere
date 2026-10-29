@@ -562,6 +562,8 @@ def vo_markdown(spec: dict) -> str:
     for sc in spec["scenes"]:
         cues = [c for c in spec["vo"] if owner(spec, c) is sc]
         lines += [f"## {sc['start']:g}-{sc['end']:g} s · {sc['id']} · headline: \"{sc['headline']}\"", ""]
+        if sc.get("note"):
+            lines.append(f"- Note: {sc['note']}")
         if not cues:
             lines.append("- (the line above carries on over this scene)")
         for c in cues:

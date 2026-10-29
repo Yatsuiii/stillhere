@@ -51,6 +51,7 @@ one that happened. On a d20 fail the notthefall scene leaves and the story wall 
 
 ## 60-76 s · live_run · headline: "Live on a laptop GPU, uncut"
 
+- Note: Open question for the cloud thread: Fork W measured 39-56 s per warm worker job, so an uncut live run does not fit the LIVE beat (60-92 s, 32 s) as planned. The slot and timings are unchanged until it is decided. Options: a shorter clip, a longer beat, or a visible cut with the clock shown.
 - 60.2-65.6 s: "This part runs live and uncut, on a laptop GPU." (10 words, 1.9 words/s)
 - 65.6-71.6 s: "A judge picks a public clip, a condition and a seed." (11 words, 1.8 words/s)
 - 71.6-76.0 s: "TRIBE v2 forecasts the brain response, stage by stage." (9 words, 2.0 words/s)
