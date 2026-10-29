@@ -163,6 +163,7 @@ def test_max_polls_counts_failed_claims(monkeypatch, tmp_path):
     tf = tmp_path / "tok"; tf.write_text("t" * 64)
     monkeypatch.setenv("STILLHERE_JOBS_URL", f"http://127.0.0.1:{_port()}")     # nothing listens here
     monkeypatch.setattr(T, "POLL_S", 0.01); monkeypatch.setattr(T, "STATE", tmp_path)
+    monkeypatch.setattr(T, "within_hours", lambda *a, **k: True)                    # independent of the clock (worker hours)
     slept = []; monkeypatch.setattr(T.time, "sleep", slept.append)
     T.main(["serve", "--token-file", str(tf), "--max-polls", "3"])
     assert slept == [0.01, 0.02]                                                    # backoff still doubles between failures
