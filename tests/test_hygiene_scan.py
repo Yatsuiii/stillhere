@@ -79,3 +79,25 @@ def test_a_term_removed_in_a_later_commit_still_fails(tmp_path):
     subprocess.run(["git", "-C", str(r), "commit", "-q", "-am", "fix"], check=True, capture_output=True)
     [finding] = H.scan(r, blocklist(tmp_path))
     assert finding.startswith("n.md (history ") and finding.endswith("):1: blocklisted_term")
+
+
+PREREG = Path(__file__).resolve().parents[1] / "PREREG.md"
+
+
+def test_pinned_exception_holds_only_for_the_frozen_prereg_at_its_path(tmp_path, capsys):
+    """Ruling of Oct 29, 17:35 UTC, item 11: the frozen PREREG's known lines pass at exactly PREREG.md with exactly its SHA-256 (the
+    registry's chain head), and the scan says so; the same bytes elsewhere, or one changed byte, fail as usual."""
+    import json
+    head = json.loads((PREREG.parent / "prereg_registry.json").read_text())["prereg"]["chain"][-1]
+    data = PREREG.read_bytes()
+    assert H.PINNED["PREREG.md"][0] == head["sha256"] == hashlib.sha256(data).hexdigest()
+    assert H.PINNED["PREREG.md"][1] == {"clip_name", "subject_id"}
+    bl = blocklist(tmp_path)
+    for d in "abc":
+        (tmp_path / d).mkdir()
+    assert H.main(["--repo", str(repo(tmp_path / "a", {"PREREG.md": data})), "--blocklist", str(bl)]) == 0
+    assert "pinned exception: PREREG.md sha256 310854864a01... (frozen PREREG D0-D27), 5 known" in capsys.readouterr().out
+    moved = H.scan(repo(tmp_path / "b", {"docs/PREREG.md": data}), bl)
+    edited = H.scan(repo(tmp_path / "c", {"PREREG.md": data + b"\n"}), bl)
+    for found in (moved, edited):
+        assert {f.rsplit(": ", 1)[1] for f in found} == {"clip_name", "subject_id"} and len(found) == 5

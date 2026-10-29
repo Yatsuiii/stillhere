@@ -10,9 +10,14 @@ message, and fails on:
 - absolute paths that name the laptop user;
 - subject IDs in the private sedation dataset's format;
 - the clip's name; em dashes; and any file over 10 MB.
+One pinned exception (ruling of Oct 29, 17:35 UTC, item 11): the frozen PREREG (D0-D27) at exactly PREREG.md with exactly its SHA-256 may
+carry its known clip_name and subject_id lines (two ordinary English phrases that start with the clip's name, and the sedation
+dataset's subject IDs);
+every other rule still applies to it, and any other path or byte fails as usual. The scan's output names the exception every run.
 Findings name the file, the line and the rule, never the matched text. Standard library only.
 usage: python scripts/hygiene_scan.py [--repo DIR] [--blocklist PATH]"""
 import argparse
+import hashlib
 import os
 import re
 import subprocess
@@ -37,6 +42,13 @@ RULES = [
     ("clip_name", re.compile(rf"\b{CLIP}\b", re.I)),
     ("em_dash", re.compile(chr(0x2014))),
 ]
+PINNED = {"PREREG.md": ("310854864a0154ebeb1b31201010192f8a4c577c73d61883078d20acd78a3c36", frozenset({"clip_name", "subject_id"}))}
+
+
+def pinned_rules(name: str, data: bytes) -> frozenset:
+    """The rules a pinned file may hit: only at its exact path and SHA-256, else none."""
+    pin = PINNED.get(name)
+    return pin[1] if pin and hashlib.sha256(data).hexdigest() == pin[0] else frozenset()
 
 
 def git(repo: Path, *args) -> bytes:
@@ -60,9 +72,9 @@ def scan_text(name: str, text: str, salt: bytes, blocked: frozenset) -> list:
     return out
 
 
-def scan(repo: Path, blocklist: Path) -> list:
+def scan(repo: Path, blocklist: Path, notes: list = None) -> list:
     salt, blocked = blockterms.load(blocklist)
-    findings = []
+    findings = []; notes = [] if notes is None else notes
     if not git(repo, "rev-parse", "--verify", "--quiet", "HEAD").strip():
         return findings
     for name in git(repo, "ls-tree", "-r", "-z", "--name-only", "HEAD").decode().split("\0"):
@@ -73,7 +85,13 @@ def scan(repo: Path, blocklist: Path) -> list:
             findings.append(f"{name}: file_over_10MB")
         if b"\0" in data[:8192]:
             continue                                                  # binary: size rule only
-        findings += scan_text(name, data.decode("utf-8", "replace"), salt, blocked)
+        found, allow = scan_text(name, data.decode("utf-8", "replace"), salt, blocked), pinned_rules(name, data)
+        if allow:
+            kept = [f for f in found if f.rsplit(": ", 1)[1] not in allow]
+            notes.append(f"pinned exception: {name} sha256 {PINNED[name][0][:12]}... (frozen PREREG D0-D27), "
+                         f"{len(found) - len(kept)} known {'/'.join(sorted(allow))} line(s) allowed")
+            found = kept
+        findings += found
     head = {e.split()[2] for e in git(repo, "ls-tree", "-r", "-z", "HEAD").decode().split("\0") if e}
     for path, blob in history_blobs(repo):
         if blob not in head:
@@ -91,17 +109,20 @@ def main(argv=None) -> int:
     ap.add_argument("--blocklist", type=Path,
                     default=Path(os.environ.get("STILLHERE_QUESTION_BLOCKLIST", Path.home() / ".config/stillhere/question_blocklist.txt")))
     a = ap.parse_args(argv)
+    notes = []
     try:
-        findings = scan(a.repo, a.blocklist)
+        findings = scan(a.repo, a.blocklist, notes)
     except ValueError as e:
         print(f"hygiene-scan: FAIL CLOSED: {e}")
         return 1
     if findings:
         print(f"hygiene-scan: FAIL, {len(findings)} finding(s)")
-        print("\n".join(f"  {f}" for f in findings))
+        print("\n".join(f"  {f}" for f in findings + notes))
         return 1
     files = len([n for n in git(a.repo, "ls-tree", "-r", "-z", "--name-only", "HEAD").decode().split("\0") if n])
     print(f"hygiene-scan: clean ({files} files, every older blob and every commit message)")
+    for n in notes:
+        print(f"  {n}")
     return 0
 
 

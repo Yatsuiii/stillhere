@@ -173,3 +173,23 @@ def test_repo_scope_checks_only_this_repo_and_never_weakens_a_full_tree(tmp_path
     assert len(G.check(r)) == 1 and "changed" in G.check(r)[0] and G.main(["--registry", str(r)]) == 1
     (tmp_path / "stillhere").mkdir()                                                          # a full tree is present: scope ignored
     assert not G.repo_scope(r) and any("PREREG not found" in x for x in G.check(r))
+
+
+def test_repo_copy_of_prereg_must_be_the_chain_head(tree, tmp_path, monkeypatch):
+    """Check 5: a PREREG.md next to the registry is verified in full and in repo scope; an older or edited copy is a finding."""
+    root, write = tree
+    reg = write()
+    (tmp_path / "PREREG.md").write_text(V3)
+    assert G.check(reg) == []
+    (tmp_path / "PREREG.md").write_text(V2)
+    assert [x for x in G.check(reg) if x.startswith("repo copy PREREG is not the registered chain head")]
+    monkeypatch.setenv("STILLHERE_ANALYSIS_ROOT", str(tmp_path / "nowhere")); monkeypatch.setenv("STILLHERE_GUARD_SCOPE", "repo")
+    assert G.repo_scope(reg) and any(x.startswith("repo copy PREREG") for x in G.check(reg))
+
+
+def test_this_repos_prereg_is_the_frozen_d0_d27_file():
+    """The PREREG.md shipped in this repository is the frozen D0-D27 file, byte for byte (ruling of Oct 29, 17:35 UTC, item 11)."""
+    reg = json.loads(G.REGISTRY.read_text()); head = reg["prereg"]["chain"][-1]
+    data = (G.REGISTRY.parent / "PREREG.md").read_bytes()
+    assert (len(data), sha(data)) == (head["bytes"], head["sha256"]) == (98295, "310854864a0154ebeb1b31201010192f8a4c577c73d61883078d20acd78a3c36")
+    assert G.check_repo_copy(G.REGISTRY, reg["prereg"]["chain"]) == []

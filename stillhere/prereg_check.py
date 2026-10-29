@@ -9,6 +9,8 @@ in the registry, not in the frozen files, so registering never edits analysis co
    that entry, continuation lines included (e.g. "D22 Part B").
 4. Every file under the scan roots whose name matches an entry-point pattern is registered, is a byte copy of a registered file (a
    packaged Kaggle input), or is listed under not_entry_points with a reason.
+5. The repository's own copy, PREREG.md next to the registry (added Oct 29 for readers), is byte-identical to the chain head; this
+   check also runs in repo scope, so a clone without the analysis tree still verifies it.
 Before hard_fail_from (2026-10-29 00:00 ET) findings are warnings and the exit code is 0; from then on any finding exits 1.
 STILLHERE_PREREG_MODE=warn|hard overrides the date; STILLHERE_ANALYSIS_ROOT overrides the registry's analysis root. Stdlib only, so
 the git and Muse Code hooks can run it without the project venv.
@@ -102,10 +104,16 @@ def repo_scope(registry: Path) -> bool:
     return os.environ.get("STILLHERE_GUARD_SCOPE") == "repo" and not root.is_dir()
 
 
+def check_repo_copy(registry: Path, chain: list) -> list:
+    """Check 5: the repository's PREREG.md, when present, is the chain head byte for byte."""
+    p = registry.parent / "PREREG.md"
+    return [f"repo copy {msg}" for msg in check_chain(p.read_bytes(), chain[-1:])] if p.is_file() else []
+
+
 def check_repo(registry: Path) -> list:
     """Repo scope: the registry's own entries for this repository (paths ../<repo>/...) must match their registered SHA-256 and cite
     PREREG IDs; their ID validity needs PREREG and is checked on the laptop."""
-    reg = json.loads(registry.read_text()); prefix = f"../{registry.parent.resolve().name}/"; out = []
+    reg = json.loads(registry.read_text()); prefix = f"../{registry.parent.resolve().name}/"; out = check_repo_copy(registry, reg["prereg"]["chain"])
     for e in reg["entries"]:
         if not e["path"].startswith(prefix):
             continue
@@ -131,7 +139,7 @@ def check(registry: Path = REGISTRY) -> list:
     if not prereg.is_file():
         return [f"PREREG not found: {prereg}"]
     data = prereg.read_bytes()
-    out = check_chain(data, reg["prereg"]["chain"])
+    out = check_chain(data, reg["prereg"]["chain"]) + check_repo_copy(registry, reg["prereg"]["chain"])
     ids = prereg_ids(data.decode("utf-8"))
     for e in reg["entries"]:
         p = root / e["path"]
