@@ -1,0 +1,4 @@
+# The hosted server question list (egress.PublicQuestion via STILLHERE_QUESTION_BLOCKLIST): a salt and no terms. The laptop-only list
+# is built from the confidential clip and never leaves the laptop; the server holds nothing from that clip, so it has no terms to block.
+# Typed requests are still length-checked, sent only through the typed egress, and every model line passes web/guard.py.
+salt bd4476f509e0aa85107fab462894ebc3b2b430051c5ecef55f6161f98bad44ea

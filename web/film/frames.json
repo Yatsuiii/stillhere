@@ -1,0 +1,24 @@
+{
+ "about": "The FILM station's three allowlisted public frames (Tears of Steel, CC BY 3.0): each a one-frame H.264 clip at the bridge cut's 640x360 letterbox (active picture 640x268 at y 46) for SAM 3.1, and the 1280x534 release frame StillHere fills.",
+ "credit": "Tears of Steel (CC) Blender Foundation | mango.blender.org, CC BY 3.0",
+ "frames": [
+  {
+   "id": "bridge_t032.5",
+   "clip": "web/film/bridge_t032.5_cut.mp4",
+   "release_jpg": "web/film/bridge_t032.5.jpg",
+   "source": "Tears of Steel release, the edit check's intact frame set (results/edit_check_spark_open.json)"
+  },
+  {
+   "id": "f1237",
+   "clip": "web/film/f1237_cut.mp4",
+   "release_jpg": "web/film/f1237.jpg",
+   "source": "Tears of Steel release, the edit check's intact frame set (results/edit_check_spark_open.json)"
+  },
+  {
+   "id": "f2453",
+   "clip": "web/film/f2453_cut.mp4",
+   "release_jpg": "web/film/f2453.jpg",
+   "source": "Tears of Steel release, the edit check's intact frame set (results/edit_check_spark_open.json)"
+  }
+ ]
+}

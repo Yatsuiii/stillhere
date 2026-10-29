@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>StillHere Pilot</title>
+<link rel="stylesheet" href="/pilot.css">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<main>
+<h1>StillHere Pilot</h1>
+<p class="lead">Pilot the story before booking the scanner. Type a study; StillHere plans it, builds and checks the stimulus, and
+forecasts the healthy-adult brain response with TRIBE v2, live on a laptop GPU. Research tool. Healthy volunteers and public data only.</p>
+<p class="small" id="status-line">Loading live status.</p>
+<nav class="rail" aria-label="Stations">
+<a href="#plan">Plan</a><a href="#build">Build</a><a href="#audit">Audit</a><a href="#forecast">Forecast</a><a href="#evidence">Evidence</a><a href="#film">Film</a>
+</nav>
+
+<section id="plan">
+<h2>1. Plan</h2>
+<p class="small" id="menu-text"></p>
+<div class="chips" id="chips"></div>
+<label for="ask" class="small">Your study request (never stored or logged)</label>
+<textarea id="ask" maxlength="280" rows="3"></textarea>
+<div class="row">
+<select id="backend" aria-label="Planner model">
+<option value="spark-1.3">Muse Spark 1.3 (default planner)</option>
+<option value="spark-open">Muse Spark Open (private mode)</option>
+</select>
+<button id="plan-go" type="button">Plan it</button>
+</div>
+<p class="small" id="scoreboard"></p>
+<div id="plan-out"></div>
+</section>
+
+<section id="build">
+<h2>2. Build and check</h2>
+<p class="small">The condition is cut at sentence boundaries with short crossfades; Muse Voice Transcribe reads the built audio back and
+fills the checklist. A failed check blocks the build.</p>
+<div id="build-recipe" class="small">Plan a study first.</div>
+<div class="row">
+<button id="build-go" type="button" disabled>Build and check</button>
+<button id="reshuffle" type="button" disabled>Reshuffle</button>
+<button id="old-bug" type="button">Rebuild with the old bug</button>
+</div>
+<div id="build-out"></div>
+</section>
+
+<section id="audit">
+<h2>3. Audit</h2>
+<p class="small">Muse Spark Open reads the plan and leaves notes. Advisory check, not measured: it never blocks anything.</p>
+<button id="audit-go" type="button" disabled>Ask for notes</button>
+<div id="audit-out"></div>
+</section>
+
+<section id="forecast">
+<h2>4. Forecast</h2>
+<div class="lanes" id="lanes">
+<div class="lane" data-lane="w2v-bert"><span>w2v-BERT: sound</span><i></i><b>idle</b></div>
+<div class="lane" data-lane="llama-3.2"><span>Llama 3.2: words in context</span><i></i><b>idle</b></div>
+<div class="lane" data-lane="v-jepa-2"><span>V-JEPA 2: off (audio)</span><i></i><b>off</b></div>
+</div>
+<p class="small" id="lane-note"></p>
+<button id="forecast-go" type="button" disabled>Forecast</button>
+<div id="forecast-out"></div>
+</section>
+
+<section id="evidence">
+<h2>5. Did the forecasts hold up?</h2>
+<p class="small">Each forecast against real public scans it never saw. These panels replay committed results files.</p>
+<div id="evidence-out">Loading.</div>
+</section>
+
+<section id="film">
+<h2>6. Film: the same loop on video</h2>
+<p class="small">SAM 3.1 masks what you type in three public Tears of Steel frames; StillHere fills each mask with the surrounding
+colour and fills a same-size patch elsewhere in the frame the same way, as a control.</p>
+<div class="row">
+<input id="concept" maxlength="40" value="face" aria-label="What SAM should mask">
+<button id="film-go" type="button">Mask and fill</button>
+</div>
+<div id="film-out"></div>
+</section>
+
+<footer>
+<p><b>A first healthy reference for a new story, before any scans, and evidence for how far to trust it.</b></p>
+<ul>
+<li>Research use. Healthy volunteers and public data. TRIBE v2 CC BY-NC. Not a diagnosis or medical advice.</li>
+<li>Live calls are limited to 5 runs per hour per visitor and to a daily budget; past either, each station shows a recorded run, labelled so.</li>
+<li id="hours"></li>
+<li>Tears of Steel (CC) Blender Foundation | mango.blender.org, CC BY 3.0. Edited for this study.</li>
+</ul>
+</footer>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

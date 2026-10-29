@@ -105,7 +105,7 @@ def test_numbers_come_from_their_json():
     assert "reversed speech: no word check (0 words heard)" in t
     lc = BP.load("results/demo_live_tribe_conditions.json")["mean_aud_response_strength"]
     assert f"intact story {lc['intact']:.3f}, sentence scramble {lc['sentence_scramble']:.3f} (raw TRIBE units)" in re.sub(r" ([,.])", r"\1", t)
-    assert "it says nothing about language or understanding" in t and PAGE.count("<polyline") == 8     # 4 windows x 2 versions
+    assert "it says nothing about language" in t and "understanding" not in t.lower() and PAGE.count("<polyline") == 8
     assert "so the tool lines above describe that clip, not le_petit_prince." in t                     # DEMO2's Baseten card
 
 
@@ -184,11 +184,14 @@ def test_story_wall_and_notthefall(monkeypatch):
     d20 = {"primary_intact_gt_shortscram": {"n_pairs": 12, "k_intact_higher": 10, "p": 0.0034, "status": "pass"}}
     t = text(build_with(monkeypatch, {**NONE, "story_wall": wall, "d20": d20}))
     assert "A pre-written line." in t and "7 of 9 story families" in t and "bar met" in t
-    assert ("Real listeners' brains followed the intact story more than the scrambled one where TRIBE said they would (10 of 12, "
-            "p = 0.0034).") in t
-    d20["primary_intact_gt_shortscram"]["status"] = "fail"
-    t = text(build_with(monkeypatch, {**NONE, "d20": d20}))
-    assert "Status: fail. Only a pass is shown as a result line" in t and "Real listeners' brains followed" not in t
+    assert ("With zero same-clip controls, stock TRIBE v2's language readout was stronger when the same healthy listeners heard a public "
+            "story intact than when they heard its sentences shuffled (Narratives notthefall, 12 listeners, 9.1 minutes = 365 TRs per "
+            "version; the order of their two runs is not public).") in t                # PREREG D20's pass line, N filled (ruling 3)
+    assert BP.D20_PASS.count("N listeners") == 1
+    for status in ("fail", "not run"):                                               # any other ending: the panel leaves the page
+        d20["primary_intact_gt_shortscram"]["status"] = status
+        t = text(build_with(monkeypatch, {**NONE, "d20": d20}))
+        assert "notthefall" not in t.lower().replace("the sedation data", "") and "stock TRIBE v2's language readout" not in t
 
 
 FILM = {"viewers": {"scored": 28}, "gauges": {"VISUAL": {"median_z": 1.5, "ci95": [1.1, 1.9]}, "HEARING": "not run"},
@@ -210,6 +213,22 @@ ENDINGS = {
 def test_every_face_map_ending(monkeypatch, outcome):
     t = text(build_with(monkeypatch, {**NONE, "face_map": {"outcome": outcome, "viewers": 28, "B1": B1}}))
     assert ENDINGS[outcome] in t and BP.FILM_FOOT.format(N=28) in t and "never used" not in t
+
+
+def test_film_headline_never_says_hearing_beats_the_envelope(monkeypatch):
+    fs = copy.deepcopy(FILM); fs["baselines"]["primary"].append("AUD:envelope"); fs["baselines"]["AUD"] = {"envelope": {"verdict": "TRIBE beats"}}
+    t = text(build_with(monkeypatch, {**NONE, "face_map": {"outcome": "NOT RUN", "why": "x"}, "film_score": fs}))
+    assert "AUD vs sound envelope" not in t and "VIS vs brightness: TRIBE beats" in t
+
+
+def test_ghost_lines_keep_the_draw_order():
+    doc = {"time_s": [20.0, 22.0, 24.0, 26.0], "chip": {"short": "Checked: held-out LPP", "long": "held out"},
+           "lines": {"forecast": {"label": "TRIBE v2 forecast", "values": [0.1, 0.3, -0.2, 0.0]},
+                     "group": {"label": "49 public listeners (average)", "values": [0.0, 0.2, None, 0.1]},
+                     "one": {"label": "1 public listener", "values": [0.2, -0.1, 0.0, 0.3]}}}
+    svg = BP.ghost_svg(doc)
+    order = [svg.index(x) for x in ('class="g-forecast"', "Checked: held-out LPP", 'class="g-group"', 'class="g-one"')]
+    assert order == sorted(order) and 'stroke-dasharray="7 5"' in svg.split('class="g-group"')[0]
 
 
 def test_pass_carried_by_visual_parcels_and_not_run_with_the_intact_film(monkeypatch):

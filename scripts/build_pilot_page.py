@@ -34,7 +34,8 @@ S8_LABEL = "recomputed with code built during the event; first measured Oct 22-2
 REPO_URL = "https://github.com/Yatsuiii/stillhere"                 # the only remote link: an anchor to the repository, never a resource
 SEDATION_URL = f"{REPO_URL}/blob/main/docs/writeup_sedation.md"
 BANNED = ("aware", "awareness", "conscious", "consciousness", "hospital", "detect", "detects", "detected", "detection", "detections",
-          "diagnose", "a test for patients", "before anyone looked", "face check", "detects faces", "blur", "validated")
+          "diagnose", "a test for patients", "before anyone looked", "face check", "detects faces", "blur", "validated", "understanding",
+          "comprehension")
 SLOTS = {"demo_requests": "eval/demo_requests.json", "demo_runs": "results/demo_runs.json", "glimmer": "results/edit_check_glimmer.json",
          "story_wall": "results/story_wall.json", "d20": "results/d20_notthefall.json", "face_map": "results/face_map.json",
          "film_score": "results/emofilm_film_score.json", "live_conditions": "results/demo_live_tribe_conditions.json"}
@@ -114,7 +115,8 @@ REASONS = {"analysis_not_offered": "analysis not offered", "clinical_out_of_scop
     {f"{a}_not_validated": f"{a.replace('_', ' ')} not on the tested menu" for a in ("population", "language", "brain_area", "condition", "stimulus")}
 DISPLAY = ((re.compile(r"Nearest validated option: "), "Nearest tested option: "),             # planner v2 is frozen; its stored text keeps
            (re.compile(r"from the validation table"), "from its table of tested options"),     # these words, the page shows plain ones
-           (re.compile(r"\bnot validated\b"), "not checked against scans"))
+           (re.compile(r"\bnot validated\b"), "not checked against scans"),
+           (re.compile(r"(nothing about language) or understanding\b"), r"\1"))
 DISPLAY_NOTE = ("Display wording: the stored cards use code names (for example condition_not_validated) and older labels; this page shows "
                 "them in plain words. The records are unchanged in results/demo_runs.json.")
 
@@ -421,7 +423,7 @@ def dots_svg(point: float, claim: int, n: int = 15) -> str:
             f'volunteer scans, at least {claim}">{"".join(c)}</svg>')
 
 
-def lpp_html(s8: dict, b: dict) -> str:
+def lpp_html(s8: dict, b: dict, ghost: dict = None) -> str:
     ve = s8["volunteer_equivalent_language"]; assert s8["label"] == S8_LABEL == b["section8_label"]
     beats = [b[w][n]["tribe_vs"][x]["verdict"] for w in ("145", "full") for n in ("LANG", "AUD") for x in ("word_rate", "envelope")]
     k = sum(v == "TRIBE beats" for v in beats); wr = b["145"]["LANG"]["tribe_vs"]["word_rate"]
@@ -429,7 +431,11 @@ def lpp_html(s8: dict, b: dict) -> str:
            'with word rate and sound partialled out of the forecast as the language gauge does (results/section8.json); the comparison with '
            f'word rate and the sound envelope scores the forecast unpartialled, {b["145"]["LANG"]["mean_z"]["tribe"]:.2f} z over the same '
            f'{s8["trs"]} time points, so that every predictor is scored the same way (results/section8_baselines.json).')
-    return panel(f'<h3>{badge("pass", "held out")}Le Petit Prince, section 8</h3>'
+    g = ""
+    if ghost:
+        g = (f'<div class="tbl">{ghost_svg(ghost, ("group", "one"))}</div><p class="small">{E(ghost["chip"]["long"])}. '
+             f'{E(ghost["frozen_line"]["text"])}</p>')
+    return panel(f'<h3>{badge("pass", "held out")}Le Petit Prince, section 8</h3>{g}'
                  f'<p class="big">On a held-out audiobook, the forecast was worth about {round(ve["point_k"])} real volunteers, and at least '
                  f'{ve["claim_k"]}. It agreed with the classic sound test.</p>{dots_svg(ve["point_k"], ve["claim_k"])}'
                  f'<p class="small">Each dot is one volunteer scan; a new story usually needs 12-15. Volunteer-equivalent {ve["point_k"]:.1f}, '
@@ -452,22 +458,79 @@ def wall_html(d) -> str:
                  + "".join(f" {E(g)}." for g in guards) + f' <code>{SLOTS["story_wall"]}</code>.</p>')
 
 
+D20_PASS = ("With zero same-clip controls, stock TRIBE v2's language readout was stronger when the same healthy listeners heard a public "
+            "story intact than when they heard its sentences shuffled (Narratives `notthefall`, N listeners, 9.1 minutes = 365 TRs per "
+            "version; the order of their two runs is not public).")                     # PREREG D20's pass line, word for word
+
+
+def d20_status(d) -> dict:
+    """notthefall's ending (ruling of Oct 29, 18:15 IST, item 3): a pass shows PREREG D20's pass line word for word with N filled;
+    any other ending leaves the D20 panel and its pair off the page (docs/captions.md: "the panel is left out")."""
+    if d is None:
+        return {"status": None}
+    t = d.get("primary_intact_gt_shortscram", d)
+    out = {"status": t.get("status"), "n": t.get("n_pairs")}
+    if t.get("status") == "pass":
+        out["line"] = D20_PASS.replace("N listeners", f"{t['n_pairs']} listeners")
+    return out
+
+
 def d20_html(d) -> str:
     if d is None:
         return pending("Real listeners, intact versus scrambled (Narratives notthefall)", "Tonight. Shown as a result only if it passes "
                        "its pre-set bar.", SLOTS["d20"])
-    t = d.get("primary_intact_gt_shortscram", d)
-    if t.get("status") == "pass":
-        return panel(f'<h3>{badge("pass", "pass")}Real listeners, intact versus scrambled</h3><p class="big">Real listeners\' brains followed '
-                     f'the intact story more than the scrambled one where TRIBE said they would ({t["k_intact_higher"]} of {t["n_pairs"]}, '
-                     f'p = {pnum(t["p"])}).</p><p>What it had to beat: word rate and the sound envelope of each version.</p>'
-                     f'<p class="small">Narratives notthefall; <code>{SLOTS["d20"]}</code>.</p>')
-    return panel(f'<h3>{badge("fail", "not shown as a result")}Real listeners, intact versus scrambled</h3><p>Status: '
-                 f'{E(str(t.get("status")))}. Only a pass is shown as a result line, as set before the run; the numbers are in '
-                 f'<code>{SLOTS["d20"]}</code>.</p>')
+    st = d20_status(d)
+    if st["status"] != "pass":
+        return ""
+    line = E(st["line"].replace("`", ""))                                     # the words as PREREG has them, without its code marks
+    return panel(f'<h3>{badge("pass", "pass")}notthefall: real listeners, intact versus sentences shuffled</h3><p class="big">{line}</p>'
+                 f'<p class="small">{E(GHOST_CHIPS["d20"]["short"])}: {E(GHOST_CHIPS["d20"]["long"])}. <code>{SLOTS["d20"]}</code>.</p>')
 
 
 FILM_FOOT = "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
+FILM_GHOST_CAPTION = "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"          # ruling of Oct 29, 18:15 IST, item 4
+GHOST_CHIPS = {"d20": {"short": "notthefall: rule 340b74b", "long": "scoring rule committed before these scans were read · 340b74b"}}
+GHOST_COLOURS = {"group": ACCENT, "five": "#b4501a", "one": "#3d6b2e"}
+
+
+def ghost_svg(doc: dict, keys=("group", "one"), title: str = "") -> str:
+    """docs/rules/display_rule_ghostline.md: the gray dashed forecast in full first, then the chip, then the coloured group line, then
+    the thin single line, in that DOM order; no smoothing; gaps (null) stay gaps; optional face ticks under the lines."""
+    t, L = doc["time_s"], doc["lines"]
+    W, H, l, r, top, b = 640, 250, 34, 12, 40, 30
+    vals = [v for k in ("forecast",) + tuple(keys) for v in L[k]["values"] if v is not None]
+    lo, hi = min(vals), max(vals); pad = (hi - lo) * 0.06 or 1
+    lo, hi = lo - pad, hi + pad
+    X = lambda x: l + (W - l - r) * (x - t[0]) / ((t[-1] - t[0]) or 1)
+    Y = lambda y: top + (H - top - b) * (hi - y) / (hi - lo)
+
+    def path(v):
+        segs, cur = [], []
+        for x, y in zip(t, v):
+            if y is None:
+                segs.append(cur); cur = []
+            else:
+                cur.append(f"{X(x):.1f},{Y(y):.1f}")
+        return [c for c in segs + [cur] if len(c) > 1]
+    P = [f'<svg viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img" aria-label="{E(title or doc.get("title", "ghost line"))}">']
+    for tick in doc.get("ticks") or []:                                              # step 1, with the forecast
+        P.append(f'<line x1="{X(tick[0]):.1f}" y1="{H - b}" x2="{X(tick[0]):.1f}" y2="{H - b - 14 * tick[1]:.1f}" stroke="#9aa3ad"/>')
+    for seg in path(L["forecast"]["values"]):
+        P.append(f'<polyline class="g-forecast" fill="none" stroke="#8a929b" stroke-width="2.4" stroke-dasharray="7 5" points="{" ".join(seg)}"/>')
+    P.append(f'<text x="{l}" y="16" font-size="14" fill="{INK}" font-weight="600">{E(doc["chip"]["short"])}</text>')
+    for k in keys:
+        thin = k == "one"
+        for seg in path(L[k]["values"]):
+            P.append(f'<polyline class="g-{k}" fill="none" stroke="{GHOST_COLOURS.get(k, ACCENT)}" stroke-width="{1.2 if thin else 2.6}" '
+                     f'points="{" ".join(seg)}"/>')
+    x0 = l
+    for k in ("forecast",) + tuple(keys):
+        lab = L[k]["label"]
+        col = "#8a929b" if k == "forecast" else GHOST_COLOURS.get(k, ACCENT)
+        P.append(f'<rect x="{x0}" y="{top - 14}" width="14" height="4" fill="{col}"/><text x="{x0 + 18}" y="{top - 9}" font-size="12" '
+                 f'fill="{MUTED}">{E(lab)}</text>')
+        x0 += 30 + 6.2 * len(lab)
+    return "".join(P) + f'<text x="{l}" y="{H - 8}" font-size="12" fill="{MUTED}">seconds of scan</text></svg>'
 
 
 def film_score_html(fs: dict) -> str:
@@ -481,6 +544,8 @@ def film_score_html(fs: dict) -> str:
     prim = []
     for pair in bl.get("primary", []):
         net, base = pair.split(":"); r = bl.get(net)
+        if net in ("AUD", "HEARING") and base == "envelope":                      # ruling of Oct 29, 18:15 IST, item 4: the headline
+            continue                                                              # never says hearing beats the sound envelope
         if isinstance(r, dict) and base in r:
             prim.append(f"{net} vs {names.get(base, base)}: {r[base]['verdict']}")
     return (f'<details><summary>Every gauge that ran</summary><div class="tbl"><table><tr><th>Gauge</th><th>Worth (real viewers)</th>'
@@ -488,7 +553,7 @@ def film_score_html(fs: dict) -> str:
             f'<p>What it had to beat: brightness, motion, sound envelope and word rate ({E("; ".join(prim) or "comparisons pending")}).</p>')
 
 
-def film_result_html(fm, fs) -> str:
+def film_result_html(fm, fs, ghost: dict = None) -> str:
     if fm is None:
         return pending("Film face test, 28 real viewers", "Sunday, scored once at the logged onsets. If the edit check fails or a gate "
                        "stops it, it is NOT RUN and the intact film is scored alone.", f'{SLOTS["face_map"]} and {SLOTS["film_score"]}')
@@ -519,6 +584,9 @@ def film_result_html(fm, fs) -> str:
         N = N or n
     elif o == "NOT RUN":
         body += f'<p class="small">The intact film\'s score fills from <code>{SLOTS["film_score"]}</code> when it lands.</p>'
+    if ghost and N:
+        body += (f'<div class="tbl">{ghost_svg(ghost, ("group", "one"))}</div><p class="small">{E(FILM_GHOST_CAPTION.format(N=N))}. '
+                 f'{E(ghost["chip"]["short"])}: {E(ghost["chip"]["long"])}.</p>')
     if N:
         body += f'<p class="small">{E(FILM_FOOT.format(N=N))}</p>'
     return panel(body)
@@ -552,8 +620,9 @@ def build(inline: bool = False) -> str:
     P.append(f'<h2 id="forecast">5. The forecast</h2>{forecast_html(load("results/live_tribe_librivox.json"), sl["live_conditions"])}')
     P.append('<h2 id="held">6. Did the forecasts hold up?</h2><p class="muted">Each forecast against real scans it never saw. Results land one '
              'at a time; a slot without its file says so.</p>')
-    P.append(lpp_html(load("results/section8.json"), load("results/section8_baselines.json")))
-    P.append(wall_html(sl["story_wall"]) + d20_html(sl["d20"]) + film_result_html(sl["face_map"], sl["film_score"]))
+    P.append(lpp_html(load("results/section8.json"), load("results/section8_baselines.json"), load("results/ghostline_lpp_s8.json")))
+    P.append(wall_html(sl["story_wall"]) + d20_html(sl["d20"])
+             + film_result_html(sl["face_map"], sl["film_score"], load("results/ghostline_film.json")))
     P.append(f'<p class="small" id="sedation">Sedation case study (not in the video): <a href="{SEDATION_URL}">the write-up, '
              'docs/writeup_sedation.md</a>.</p>')
     P.append('<footer id="credits"><p><b>A first healthy reference for a new test, with zero scans, and evidence for how far to trust it.</b></p><ul>'

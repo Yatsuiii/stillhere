@@ -1,0 +1,167 @@
+{
+ "recorded_utc": "2026-10-29T14:44:54Z",
+ "label": "recorded run",
+ "runs": [
+  {
+   "request": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: LibriVox Alice chapter 1, intact versus sentences shuffled, in the language network.",
+   "backend": "spark-1.3",
+   "backend_label": "Muse Spark 1.3",
+   "source": "results/planner_v21_examples.json",
+   "card": {
+    "decision": "accept",
+    "route": {
+     "kind": "live",
+     "clip_id": "alice_ch01",
+     "condition": "sentence_scramble",
+     "seed": 20261028,
+     "defaults": [
+      "seed"
+     ]
+    },
+    "lines": [
+     "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.",
+     "Live run: Alice's Adventures in Wonderland, chapter 1, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).",
+     "Build: pending.",
+     "Check: pending.",
+     "Forecast: pending."
+    ]
+   }
+  },
+  {
+   "request": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: LibriVox Alice chapter 1, intact versus sentences shuffled, in the language network.",
+   "backend": "spark-open",
+   "backend_label": "Muse Spark Open (Fireworks)",
+   "source": "results/planner_v21_examples.json",
+   "card": {
+    "decision": "accept",
+    "route": {
+     "kind": "live",
+     "clip_id": "alice_ch01",
+     "condition": "sentence_scramble",
+     "seed": 20261028,
+     "defaults": [
+      "seed"
+     ]
+    },
+    "lines": [
+     "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.",
+     "Live run: Alice's Adventures in Wonderland, chapter 1, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).",
+     "Build: pending.",
+     "Check: pending.",
+     "Forecast: pending."
+    ]
+   }
+  },
+  {
+   "request": "Plan an exploratory stock TRIBE forecast of the hearing areas for healthy English-speaking adults: LibriVox Alice chapter 2, intact versus played backwards.",
+   "backend": "spark-1.3",
+   "backend_label": "Muse Spark 1.3",
+   "source": "results/planner_v21_examples.json",
+   "card": {
+    "decision": "accept",
+    "route": {
+     "kind": "live",
+     "clip_id": "alice_ch02",
+     "condition": "reversed",
+     "seed": 20261028,
+     "defaults": [
+      "seed"
+     ]
+    },
+    "lines": [
+     "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.",
+     "Live run: Alice's Adventures in Wonderland, chapter 2, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).",
+     "Build: pending.",
+     "Check: pending.",
+     "Forecast: pending."
+    ]
+   }
+  },
+  {
+   "request": "Plan an exploratory stock TRIBE forecast of the hearing areas for healthy English-speaking adults: LibriVox Alice chapter 2, intact versus played backwards.",
+   "backend": "spark-open",
+   "backend_label": "Muse Spark Open (Fireworks)",
+   "source": "results/planner_v21_examples.json",
+   "card": {
+    "decision": "accept",
+    "route": {
+     "kind": "live",
+     "clip_id": "alice_ch02",
+     "condition": "reversed",
+     "seed": 20261028,
+     "defaults": [
+      "seed"
+     ]
+    },
+    "lines": [
+     "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, played backwards; brain areas hearing areas; analysis: stock TRIBE v2 forecast.",
+     "Live run: Alice's Adventures in Wonderland, chapter 2, intact against played backwards, seed 20261028 (no seed named, so the default seed is used).",
+     "Build: pending.",
+     "Check: pending.",
+     "Forecast: pending."
+    ]
+   }
+  },
+  {
+   "request": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: LibriVox Alice chapter 3, intact versus sentences shuffled with seed 7, in the language network and hearing areas.",
+   "backend": "spark-1.3",
+   "backend_label": "Muse Spark 1.3",
+   "source": "results/planner_v21_examples.json",
+   "card": {
+    "decision": "accept",
+    "route": {
+     "kind": "live",
+     "clip_id": "alice_ch03",
+     "condition": "sentence_scramble",
+     "seed": 7,
+     "defaults": []
+    },
+    "lines": [
+     "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network, hearing areas; analysis: stock TRIBE v2 forecast.",
+     "Live run: Alice's Adventures in Wonderland, chapter 3, intact against sentences shuffled, seed 7.",
+     "Build: pending.",
+     "Check: pending.",
+     "Forecast: pending."
+    ]
+   }
+  },
+  {
+   "request": "Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: LibriVox Alice chapter 3, intact versus sentences shuffled with seed 7, in the language network and hearing areas.",
+   "backend": "spark-open",
+   "backend_label": "Muse Spark Open (Fireworks)",
+   "source": "results/planner_v21_examples.json",
+   "card": {
+    "decision": "accept",
+    "route": {
+     "kind": "live",
+     "clip_id": "alice_ch03",
+     "condition": "sentence_scramble",
+     "seed": 7,
+     "defaults": []
+    },
+    "lines": [
+     "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network, hearing areas; analysis: stock TRIBE v2 forecast.",
+     "Live run: Alice's Adventures in Wonderland, chapter 3, intact against sentences shuffled, seed 7.",
+     "Build: pending.",
+     "Check: pending.",
+     "Forecast: pending."
+    ]
+   }
+  },
+  {
+   "request": "Use this on my patient to see if they understand.",
+   "backend": "spark-1.3",
+   "backend_label": "Muse Spark 1.3",
+   "source": "web/record_replays.py",
+   "card": {
+    "decision": "decline",
+    "lines": [
+     "Declined: questions about patients or one person's scan are out of scope for this research tool. Nearest tested option: people: healthy adults. StillHere Pilot plans exploratory studies only from its table of tested options."
+    ],
+    "route": {
+     "kind": "decline"
+    }
+   }
+  }
+ ]
+}

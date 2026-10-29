@@ -1,0 +1,56 @@
+{
+ "recorded_utc": "2026-10-29T14:44:54Z",
+ "label": "recorded run",
+ "default": {
+  "mode": "live",
+  "condition": "sentence_scramble",
+  "seed": 20261028,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "98%",
+    "ok": true,
+    "rule": "at least 80%"
+   },
+   {
+    "item": "Sentences heard in the new order",
+    "value": "98%",
+    "ok": true,
+    "rule": "at least 70%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "15%",
+    "ok": true,
+    "rule": "new order beats the old by at least 10%"
+   }
+  ]
+ },
+ "alice_ch01:sentence_scramble": {
+  "mode": "live",
+  "condition": "sentence_scramble",
+  "seed": 20261028,
+  "pass": true,
+  "checklist": [
+   {
+    "item": "Words heard (word match)",
+    "value": "98%",
+    "ok": true,
+    "rule": "at least 80%"
+   },
+   {
+    "item": "Sentences heard in the new order",
+    "value": "98%",
+    "ok": true,
+    "rule": "at least 70%"
+   },
+   {
+    "item": "Order changed from the original",
+    "value": "15%",
+    "ok": true,
+    "rule": "new order beats the old by at least 10%"
+   }
+  ]
+ }
+}

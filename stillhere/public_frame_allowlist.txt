@@ -313,3 +313,7 @@ f9a622c0cee7f20cda44af4a527473324080d03e157e13fc788e24391359fad5  tears_of_steel
 82ee4dfdb9ec2e07a113590aabafcbd6b7ace2c8bed6fba4dfb60d53fa0d4056  tears_of_steel edit-check frame intact/f4180.jpg (film stimuli v2, MANIFEST d4e27d55; set MANIFEST fe3d936d)
 9741353e7536c96eba06341c4da23f2273ec34f2f70ebb6f75e3456657f099c7  tears_of_steel edit-check frame intact/f4268.jpg (film stimuli v2, MANIFEST d4e27d55; set MANIFEST fe3d936d)
 af114dcd98e2bdb05772cd853c21dd3f19a240ac20487de3933e9c0ab7ed5ae8  tears_of_steel edit-check frame intact/f4300.jpg (film stimuli v2, MANIFEST d4e27d55; set MANIFEST fe3d936d)
+# live FILM station clips (web/film/frames.json): one-frame 640x360 letterboxed Tears of Steel frames for SAM 3.1
+7858b520bc77f99b2c2f9c1c24612390ce6ebbb9b39be8f71ad2ead317b73a33  bridge_t032.5_cut.mp4 (Tears of Steel, CC BY 3.0)
+4d3c6bbc1f4a8a90dee2e9918907231c9def0be46da9d140c5feb5aed6709d12  f1237_cut.mp4 (Tears of Steel, CC BY 3.0)
+739d198cfb87a3cc23f8903f1211cca87fbbf1b68f28cd386c00823906fed779  f2453_cut.mp4 (Tears of Steel, CC BY 3.0)
