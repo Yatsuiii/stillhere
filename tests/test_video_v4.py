@@ -93,7 +93,7 @@ def test_banned_wording_everywhere():
 
 
 def test_footers_and_film_credit():
-    ctx = {"ghost": V.synthetic_ghost(), "maps": {"R": Path("/x/R.png"), "M": Path("/x/M.png")}}
+    ctx = {"ghost": V.synthetic_ghost(), "film_ghost": V.synthetic_film_ghost(), "maps": {"R": Path("/x/R.png"), "M": Path("/x/M.png")}}
     film_ok = (V.FILM / "edits_v2.json").exists()
     ctx["d20_line"] = V.d20_line(SPEC)
     for x in SPEC["scenes"]:
@@ -176,7 +176,8 @@ def test_film_sentences_verbatim_and_neutral():
     for e, items in SC["film_ghost"]["variants"].items():
         assert (rose in all_text(items)) == (e == "PASS"), e
     assert rose not in all_text(SC["film_ghost"]["common"]) and rose.lower() not in all_text(SPEC["vo"]).lower()
-    assert SC["film_ghost"]["common"][0]["title"] == "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"
+    titles = {i["title"] for st in SC["film_ghost"]["steps"] for i in st["items"] if i["kind"] == "filmghost"}
+    assert titles == {"Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"}
     assert SC["film_maps"]["items"][0]["maps"][1]["title"] == "{N} real viewers: brain signal vs on-screen face area"
 
 
@@ -194,12 +195,39 @@ def test_live_beat_ends_on_the_no_go_time_courses():
     assert [i["kind"] for _, items in V.resolve(SC["live_result"], {}) for i in items][0] == "endscreen"
 
 
+def test_film_ghost_line_follows_the_display_rule():
+    rule = (ROOT / "docs/rules/display_rule_ghostline.md").read_text()
+    assert "## Film ghost line" in rule
+    prev, steps = [], SC["film_ghost"]["steps"]
+    for n, st in enumerate(steps):
+        fg = [i for i in st["items"] if i["kind"] == "filmghost"]; chip = [i for i in st["items"] if i["kind"] == "chip"]
+        assert len(fg) == 1 and fg[0]["show"] == ["forecast", "group", "one"][: len(fg[0]["show"])]
+        assert prev == fg[0]["show"][: len(prev)]; prev = fg[0]["show"]
+        assert bool(chip) == (n >= 1) and (len(fg[0]["show"]) == 1 or chip)          # forecast with ticks, then chip, then group, then one
+        assert all(c["text"] == "Film: rule {film_commit}" for c in chip)
+    assert prev == ["forecast", "group", "one"]
+    doc = V.synthetic_film_ghost()
+    assert doc["lines"]["group"]["label"] == "{N} public viewers (average)" and doc["lines"]["one"]["label"] == "1 public viewer"
+    t = doc["time_s"]
+    assert len(t) == 135 and t[0] == 10 and abs(t[-1] - 184.2) < 1e-6
+    svg = V.filmghost_svg(doc, ["forecast", "group", "one"], "x", {})
+    assert "Ticks: share of the frame covered by faces, each second" in svg and "#1f6fb4" in svg
+    assert "#1f6fb4" not in V.filmghost_svg(doc, ["forecast"], "x", {})
+    if (V.FILM / "edits_v2.json").exists():
+        ticks = V.face_ticks()
+        assert ticks and all(0 <= s_ <= 185 and v > 0 for s_, v in ticks)
+
+
 def test_ghost_file_swaps_in(tmp_path, monkeypatch):
     doc = {k: v for k, v in V.synthetic_ghost().items() if k != "placeholder"}
     f = tmp_path / "ghostline_lpp_s8.json"; f.write_text(json.dumps(doc))
     monkeypatch.setattr(V, "GHOST", f)
     g = V.ghost_doc()
     assert "placeholder" not in g and "PLACEHOLDER" not in V.ghost_svg(g, "short", list(V.GHOST_ORDER))
+    fdoc = {k: v for k, v in V.synthetic_film_ghost().items() if k != "placeholder"}
+    ff = tmp_path / "ghostline_film.json"; ff.write_text(json.dumps(fdoc))
+    monkeypatch.setattr(V, "FILM_GHOST", ff)
+    assert "PLACEHOLDER" not in V.filmghost_svg(V.film_ghost_doc(), ["forecast", "group", "one"], "x", {})
 
 
 def test_every_slot_ending_resolves():

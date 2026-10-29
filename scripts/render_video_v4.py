@@ -25,6 +25,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(REPO / "scripts"), str(REPO)]
 SCENES = REPO / "video/scenes_v4.json"
 GHOST = REPO / "results/ghostline_lpp_s8.json"
+FILM_GHOST = REPO / "results/ghostline_film.json"                         # the film ghost line (display rule, film section), Sunday
 FILM = REPO.parent / "stillhere/pilot/film/film_stim_v2"                   # seg_intact.mp4, faces_removed_v2.mp4, area_matched_v2.mp4
 RC_FILES = (REPO / "results/face_map_RC.json", REPO.parent / "stillhere-pilot-public/results/face_map_RC.json")
 ORDER = REPO / "results/order_map_gonogo.json"                            # the laptop forecasts behind the LIVE beat (NO-GO: no order map)
@@ -43,16 +44,18 @@ def words(text: str) -> int:
 def resolve(sc: dict, endings: dict) -> list:
     """[(at, items)] steps of a scene under the chosen endings; a slot without an ending shows its default and a placeholder tag; None
     when the chosen ending leaves the scene out (D20 fail)."""
-    if "steps" in sc:
-        return [(s["at"], s["items"]) for s in sc["steps"]]
+    steps = [(s["at"], s["items"]) for s in sc["steps"]] if "steps" in sc else [(0.0, sc.get("items", []))]
     if "slot" not in sc:
-        return [(0.0, sc["items"])]
+        return steps
     e = endings.get(sc["slot"])
     if e is None:
-        tag = {"kind": "placeholder", "text": f"{sc['slot']}: one of {', '.join(sc['variants'])}"}
-        return [(0.0, sc.get("common", []) + sc.get("default", []) + [tag])]
-    v = sc["variants"][e]
-    return None if v is None else [(0.0, sc.get("common", []) + v)]
+        extra = sc.get("default", []) + [{"kind": "placeholder", "text": f"{sc['slot']}: one of {', '.join(sc['variants'])}"}]
+    elif sc["variants"][e] is None:
+        return None
+    else:
+        extra = sc["variants"][e]
+    at, items = steps[-1]                                                   # a slot's lines join the scene's last step
+    return steps[:-1] + [(at, sc.get("common", []) + items + extra)]
 
 
 def timeline(spec: dict, endings: dict) -> list:
@@ -222,29 +225,63 @@ def receipt_text(cond: str) -> str:
             f"({', '.join(t['dtypes'])}, no quantization).")
 
 
-def face_seconds() -> np.ndarray:
-    """Fraction of each film second with a face on screen (stimulus file only: edits_v2.json, whole frame)."""
+def face_ticks() -> list:
+    """[film second, share of the 1280 x 534 frame covered by faces] for every second from 0 to 185 s with a share above 0: the face
+    rule's F before any HRF (edits_v2.json field px), as the film section of the display rule draws it. Stimulus file only."""
     pf = json.loads((FILM / "edits_v2.json").read_text())["per_frame"]
-    on = np.array([bool(f["faces"]) for f in pf], float)
-    return on[: len(on) // 24 * 24].reshape(-1, 24).mean(1)
+    share = np.array([sum(f["px"] for f in fr["faces"]) for fr in pf], float) / (1280 * 534)
+    per_s = share[: len(share) // 24 * 24].reshape(-1, 24).mean(1)
+    return [[s, round(float(v), 4)] for s, v in enumerate(per_s[:186]) if v > 0]
 
 
-def filmghost_svg(title_html: str) -> str:
-    """Placeholder: synthetic gray forecast and coloured 28-viewer average; the face-on-screen ticks are real (stimulus file)."""
-    fs = face_seconds(); t = np.arange(10, 186); rng = np.random.default_rng(31)
-    base = np.convolve(rng.normal(size=t.size + 6), np.ones(6) / 6, "valid")[: t.size]
-    W, H = 1712, 470; x0, y0, w, h = 70, 20, 1600, 360; xr, yr = (10, 185), (-3, 3)
-    z = lambda x: (x - x.mean()) / x.std()
+def synthetic_film_ghost() -> dict:
+    """Same layout as results/ghostline_film.json (time_s, lines, chip, ticks), made-up lines on the rule's grid (film time 10 to 185 s,
+    135 points at 1.3 s); the ticks are real. For placeholder frames only."""
+    rng = np.random.default_rng(31); t = np.arange(10, 185 + 1e-9, 1.3)[:135]
+    def z(x): return ((x - x.mean()) / x.std(ddof=1)).round(3).tolist()
+    base = np.convolve(rng.normal(size=t.size + 5), np.ones(5) / 5, "valid")[: t.size]
+    lab = {"forecast": "TRIBE v2 forecast", "group": "{N} public viewers (average)", "one": "1 public viewer"}
+    vals = {"forecast": z(base), "group": z(base + rng.normal(size=t.size) * 0.5), "one": z(base + rng.normal(size=t.size) * 1.0)}
+    return {"placeholder": True, "time_s": t.round(1).tolist(), "lines": {k: {"label": lab[k], "values": v} for k, v in vals.items()},
+            "chip": {"short": "Film: rule {film_commit}", "long": "rule committed before any viewer's scan was read · {film_commit}"},
+            "ticks": face_ticks() if (FILM / "edits_v2.json").exists() else []}
+
+
+def film_ghost_doc() -> dict:
+    return json.loads(FILM_GHOST.read_text()) if FILM_GHOST.exists() else synthetic_film_ghost()
+
+
+def filmghost_svg(doc: dict, show: list, title_html: str, values: dict) -> str:
+    """The film ghost line (display rule, film section): face ticks and the gray dashed forecast first, then the group line, then the
+    thin single viewer, on film time 0 to 185 s; gaps stay gaps. The chip is a separate item, drawn from the second step on."""
+    assert list(show) == ["forecast", "group", "one"][: len(show)], show
+    W, H = 1712, 470; x0, y0, w, h = 70, 20, 1600, 330; xr, yr = (0, 185), (-3.2, 3.2)
+    sx = lambda x: x0 + (x - xr[0]) / (xr[1] - xr[0]) * w
+    sy = lambda y: y0 + h - (y - yr[0]) / (yr[1] - yr[0]) * h
     p = [f'<div class="charttitle">{title_html}</div>',
-         f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">',
-         f'<path d="{_path(t, z(base), x0, y0, w, h, xr, yr)}" {STYLE["forecast"]}/>',
-         f'<path d="{_path(t, z(base + rng.normal(size=t.size) * 0.6), x0, y0, w, h, xr, yr)}" {STYLE["group"]}/>']
-    for s in range(10, min(186, len(fs))):
-        if fs[s] > 0.5:
-            x = x0 + (s - 10) / 175 * w
-            p.append(f'<rect x="{x:.1f}" y="{y0 + h + 14}" width="{w / 175:.1f}" height="18" fill="#7a4fb0"/>')
-    p.append(f'<text x="{x0}" y="{y0 + h + 62}" font-size="22" fill="#5d6470">ticks: a face on screen for most of that second (film time 10 to 185 s)</text>'
-             f'<text x="{W / 2}" y="{H / 2}" font-size="40" text-anchor="middle" fill="#6b5600" opacity="0.8">PLACEHOLDER: synthetic lines (Sunday)</text>')
+         f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">']
+    for s_, v in doc.get("ticks") or []:
+        p.append(f'<line x1="{sx(s_):.1f}" y1="{y0 + h + 40}" x2="{sx(s_):.1f}" y2="{y0 + h + 40 - 30 * min(1, v / 0.1):.1f}" stroke="#7a4fb0" stroke-width="5"/>')
+    t = doc["time_s"]
+    for k in show:
+        segs, cur = [], []
+        for x, y in zip(t, doc["lines"][k]["values"]):
+            if y is None:
+                segs.append(cur); cur = []
+            else:
+                cur.append(f"{sx(x):.1f},{sy(y):.1f}")
+        for seg in segs + [cur]:
+            if len(seg) > 1:
+                p.append(f'<path d="M{" L".join(seg)}" {STYLE[k]}/>')
+    lx = x0
+    for k in show:
+        lab = fill(doc["lines"][k]["label"], values)
+        p.append(f'<line x1="{lx}" y1="{H - 14}" x2="{lx + 44}" y2="{H - 14}" {STYLE[k]}/><text x="{lx + 54}" y="{H - 6}" font-size="22" fill="#1d1f23">'
+                 f'{re.sub(r"<[^>]+>", "", lab)}</text>')
+        lx += 120 + 11 * len(doc["lines"][k]["label"])
+    p.append(f'<text x="{x0}" y="{y0 + h + 66}" font-size="22" fill="#5d6470">Ticks: share of the frame covered by faces, each second (film time 0 to 185 s)</text>')
+    if doc.get("placeholder"):
+        p.append(f'<text x="{W / 2}" y="{y0 + h / 2}" font-size="40" text-anchor="middle" fill="#6b5600" opacity="0.8">PLACEHOLDER: synthetic lines (Sunday)</text>')
     return "".join(p) + "</svg>"
 
 
@@ -358,7 +395,7 @@ def item_html(it: dict, values: dict, ctx: dict) -> str:
     if k == "endscreen":
         return endscreen_html(it["pair"], values, ctx)
     if k == "filmghost":
-        return filmghost_svg(fill(it["title"], values))
+        return filmghost_svg(ctx["film_ghost"], it["show"], fill(it["title"], values), values)
     if k == "maps":
         return '<div class="maps2">' + "".join(f'<figure><div class="maptitle">{fill(m["title"], values)}</div>'
                                                f'<img src="{ctx["maps"][m["key"]].as_uri()}"></figure>' for m in it["maps"]) + "</div>"
@@ -399,11 +436,13 @@ def scene_html(sc: dict, items: list, values: dict, spec: dict, ctx: dict) -> st
         foot.append(spec["research"])
     if any(i["kind"] == "ghost" or (i["kind"] == "endscreen" and i["pair"] == "lpp") for i in items):
         foot.append("Checked: held-out LPP: " + ctx["ghost"]["chip"]["long"] + ".")
+    if any(i["kind"] == "chip" and i["text"].startswith("Film: rule") for i in items):
+        foot.append("Film: rule {film_commit}: rule committed before any viewer's scan was read · {film_commit}.")
     if sc.get("film"):
         foot.append(spec["credit"])
     if sc.get("results"):
         foot.append(spec["nd"])
-    f = f'<div class="foot">{E("  ".join(foot))}</div>' if foot else ""
+    f = f'<div class="foot">{fill("  ".join(foot), values)}</div>' if foot else ""
     return (f'<!doctype html><meta charset="utf-8"><style>{CSS}</style><main><h1>{fill(sc["headline"], values)}</h1>'
             f"{body}{f}</main>")
 
@@ -577,7 +616,7 @@ def main(argv=None) -> None:
         assert s in slots and e in slots[s], f"no ending {s}={e}"
     values = json.loads(a.values.read_text()) if a.values else {}
     work = a.work or Path(tempfile.mkdtemp(prefix="stillhere-v4-")); work.mkdir(parents=True, exist_ok=True)
-    ctx = {"ghost": ghost_doc(), "maps": render_maps_for(spec, work), "d20_line": d20_line(spec)}
+    ctx = {"ghost": ghost_doc(), "film_ghost": film_ghost_doc(), "maps": render_maps_for(spec, work), "d20_line": d20_line(spec)}
     fps, xf = spec["fps"], spec["crossfade_s"]
     tl = timeline(spec, endings); clips = []
     for i, (sc, start, end) in enumerate(tl):
@@ -614,7 +653,8 @@ def main(argv=None) -> None:
     dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(a.out)],
                                capture_output=True, text=True, check=True).stdout)
     print(f"{a.out.name}: {len(clips)} scenes, {dur:.2f} s, {a.out.stat().st_size / 1e6:.1f} MB; endings {endings or 'placeholders'}; "
-          f"ghost {'placeholder' if ctx['ghost'].get('placeholder') else 'results/ghostline_lpp_s8.json'}; frames in {work}")
+          f"LPP ghost {'placeholder' if ctx['ghost'].get('placeholder') else 'results/ghostline_lpp_s8.json'}; "
+          f"film ghost {'placeholder' if ctx['film_ghost'].get('placeholder') else 'results/ghostline_film.json'}; frames in {work}")
 
 
 if __name__ == "__main__":

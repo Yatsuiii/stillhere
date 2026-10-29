@@ -747,16 +747,7 @@
    "results": true,
    "headline": "Viewers drawn over the forecast",
    "slot": "film",
-   "common": [
-    {
-     "kind": "filmghost",
-     "title": "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"
-    },
-    {
-     "kind": "chip",
-     "text": "Film: rule {film_commit}"
-    }
-   ],
+   "common": [],
    "variants": {
     "PASS": [
      {
@@ -769,7 +760,72 @@
     "FAIL": [],
     "UNINFORMATIVE": [],
     "NOT_RUN": []
-   }
+   },
+   "steps": [
+    {
+     "at": 0.0,
+     "items": [
+      {
+       "kind": "filmghost",
+       "show": [
+        "forecast"
+       ],
+       "title": "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"
+      }
+     ]
+    },
+    {
+     "at": 1.2,
+     "items": [
+      {
+       "kind": "filmghost",
+       "show": [
+        "forecast"
+       ],
+       "title": "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"
+      },
+      {
+       "kind": "chip",
+       "text": "Film: rule {film_commit}"
+      }
+     ]
+    },
+    {
+     "at": 2.2,
+     "items": [
+      {
+       "kind": "filmghost",
+       "show": [
+        "forecast",
+        "group"
+       ],
+       "title": "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"
+      },
+      {
+       "kind": "chip",
+       "text": "Film: rule {film_commit}"
+      }
+     ]
+    },
+    {
+     "at": 3.6,
+     "items": [
+      {
+       "kind": "filmghost",
+       "show": [
+        "forecast",
+        "group",
+        "one"
+       ],
+       "title": "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"
+      },
+      {
+       "kind": "chip",
+       "text": "Film: rule {film_commit}"
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "film_stamp",
@@ -1126,7 +1182,7 @@
   {
    "start": 137.8,
    "end": 143.8,
-   "text": "Twenty-eight real viewers of the intact film are the test."
+   "text": "{N} real viewers of the intact film are the test."
   },
   {
    "start": 143.8,
