@@ -33,7 +33,8 @@ step it changes runs. Results are labelled exploratory.
 
 Words are normalised with stillhere/manipulation_check.words (lower case, punctuation stripped, hyphens split).
 - Start: find, within the first 90 s of the section, the last occurrence of any of these phrases in the word table: "librivox org",
-  "librivox dot org", "read by", "recorded by", "reading by". The trimmed story starts at the first sentence (stillhere/conditions.py
+  "librivox dot org", "libravox org", "libravox", "read by", "recorded by", "reading by". ("libravox org" and "libravox" added Oct 29
+  under the cloud ruling of 20:15 UTC: faster-whisper spells LibriVox "LibraVox" in nearly every story.) The trimmed story starts at the first sentence (stillhere/conditions.py
   sentences()) that begins after that phrase. No phrase found: the section fails the screen ("no LibriVox preamble found").
 - End: find, within the last 60 s, the first occurrence of any of "end of", "this recording is in the public domain", "the end". The
   trimmed story ends at the last sentence that ends before it. No phrase found: it ends at the end of the last complete sentence.
