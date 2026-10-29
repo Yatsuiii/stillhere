@@ -89,6 +89,49 @@ How each chip was checked (dates in UTC; commits are in the public repository):
   audio-only, laptop" and the line "No public scan of this clip. Forecast, not a scan." No coloured line and no volunteer number. The
   notthefall pair may sit beside it as a separate tile with "Real listeners, different story."
 
+## Film ghost line (Emo-FilM, Tears of Steel; added Oct 29 before any Emo-FilM brain data was read)
+
+Added in a separate commit after the LPP part, before the LPP lines were extracted and before the read guard can open any Emo-FilM
+scan (Saturday at the earliest). The commit time is the record. Every choice comes from `docs/rules/emofilm_rule.md` and
+`docs/rules/face_map_rule.md`; nothing here is a new test, and the picture adds no number.
+
+- Region: the intact film rule's VISUAL parcels, VisCent and VisPeri in both hemispheres (`emofilm_score.visual_sets`). Why: the
+  ghost line is a time course of forecast and viewers, and VISUAL is the committed film gauge that compares TRIBE's full forecast with
+  the viewers' time courses on the video path, where faces enter the model. The face test's 374 parcels define a map across parcels
+  (R, C and M), not a time course, so drawing a time course on them would be a new analysis; HEARING and LANGUAGE are the audio and
+  speech gauges. If the intact film score reports VISUAL as "not run", no film ghost line is drawn.
+- Grid: the intact rule's common grid (`emofilm_score.common_grid`): film time 10 to 185 s in steps of one TR (1.3 s), 135 points.
+  Always the whole grid; no crop or zoom.
+- Forecast line: TRIBE v2 stock full forecast of the intact film (the committed intact kernel's `pred_full.npz`), each VISUAL parcel
+  the mean of its vertices read at grid time - 5 s (`emofilm_score.tribe_at`, TRIBE's fixed offset, no lag search), cleaned on the
+  grid with `emofilm_score.clean` (detrend, 0.03 Hz high-pass, z-score), as the rule cleans its grid controls; then the mean over the
+  parcels, z-scored over the grid (ddof 1).
+- Viewer lines: each scored viewer's VISUAL rows exactly as the intact scorer makes them for its ISC curve (`clean_full_then_crop`,
+  then `to_grid` onto the same grid; censored or uncovered points are missing). Per viewer: the mean over the parcels, z-scored over
+  that viewer's non-missing points (ddof 1). Missing points stay gaps; nothing is interpolated across them.
+- Group line: the mean of the scored viewers' lines at each grid point (missing points left out), z-scored over the grid. Labelled
+  "{N} public viewers (average)", N the scored count from the score output (28 only if all 28 kept runs are scored).
+- Single viewer: the scored viewer with the median frozen VISUAL z in the score run's per-viewer file (`score_per_viewer.json`,
+  `gauges.VISUAL.z`): the ((N - 1) // 2 + 1)-th in ascending order (the lower middle when N is even), ties broken by run ID.
+  Labelled "1 public viewer", no verdict word, no number; its run ID is kept in the data file only.
+- Face ticks: the face rule's F, the share of the whole 1280 x 534 frame covered by faces (`edits_v2.json` field `px`, the final
+  film stimuli v2), averaged per film second, before any HRF. One tick per film second from 0 to 185 s where the share is above 0,
+  its height proportional to the share, drawn under the lines on the same film-time axis without shifting. Label: "Ticks: share of
+  the frame covered by faces, each second". The lines are at scan time, so a response follows its ticks; the label says nothing more.
+- No smoothing, no other line. The faces-removed and same-size-control forecasts are never drawn against viewers (nobody watched
+  those versions). No volunteer number beside the film ghost line unless it is the VISUAL gauge's own entry in the score output,
+  copied; never another gauge's.
+- Caption: by default only the ticks label above and the chip. The video beat's proposed caption "brain signal rose with on-screen
+  face area" is a statement about the brain data, so this display rule does not license it; it appears only if a committed result
+  states it (a ruling decides which), never from the picture.
+- Draw order and chip: as above (gray dashed forecast in full, then the chip, then the group line, then the thin single viewer; the
+  ticks are drawn in step 1 with the forecast, below it). Chip: short "Film: rule {film_commit}", long "rule committed before any viewer's scan
+  was read · {film_commit}", where {film_commit} is the last public commit touching `docs/rules/emofilm_rule.md` before the first
+  Emo-FilM scan was opened (b670da6 as of this commit), checked against the prepare stage's read log as in the chip table; this
+  section's own commit must also predate that read.
+- Data: `results/ghostline_film.json`, written only after the intact film score exists, from its outputs and the prepare cache; it
+  holds the four series, the grid, the labels, the chip, N, and the commits of this rule and the film rule.
+
 ## Data file and checks
 
 `scripts/ghostline_lpp.py` writes `results/ghostline_lpp_s8.json` (the four lines on the full window, the short-view index range,
