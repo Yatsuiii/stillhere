@@ -1,0 +1,14 @@
+Planner v2 evaluation (exploratory)
+== heldout (62 questions)
+spark-1.3: decision_accuracy 0.9301 (pass), false_accept_rate 0.0227 (pass), decline_reason_accuracy 0.9922 (pass), spec_field_accuracy 1.0 (pass), first_answer_validity 0.8333 (FAIL), rule_made_decline_rate 0.0161 (pass), planner_unavailable_rate 0.0 (pass); cost $1.264; latency median 3.59 s
+spark-open: decision_accuracy 0.9086 (pass), false_accept_rate 0.0758 (FAIL), decline_reason_accuracy 0.9344 (pass), spec_field_accuracy 1.0 (pass), first_answer_validity 1.0 (pass), rule_made_decline_rate 0.0 (pass), planner_unavailable_rate 0.0 (pass); cost $0.941; latency median 8.99 s
+spark-open-baseten: decision_accuracy 0.9247 (pass), false_accept_rate 0.0682 (FAIL), decline_reason_accuracy 0.9593 (pass), spec_field_accuracy 1.0 (pass), first_answer_validity 1.0 (pass), rule_made_decline_rate 0.0 (pass), planner_unavailable_rate 0.0 (pass); cost $1.038; latency median 3.15 s
+Meta vs Fireworks modal agreement 0.8548 (bar 0.8, pass)
+Baseten vs Fireworks 0.8907 vs Fireworks repeat 0.871 (pass; two hosted versions)
+== seen (106 questions)
+spark-1.3: decision_accuracy 0.9623 (pass), false_accept_rate 0.0135 (pass), decline_reason_accuracy 0.9726 (pass), spec_field_accuracy 1.0 (pass), first_answer_validity 0.8931 (pass), rule_made_decline_rate 0.0189 (pass), planner_unavailable_rate 0.0 (pass); cost $2.184; latency median 3.79 s
+spark-open: decision_accuracy 0.9591 (pass), false_accept_rate 0.027 (pass), decline_reason_accuracy 0.912 (pass), spec_field_accuracy 1.0 (pass), first_answer_validity 1.0 (pass), rule_made_decline_rate 0.0 (pass), planner_unavailable_rate 0.0 (pass); cost $1.687; latency median 9.95 s
+spark-open-baseten: decision_accuracy 0.8836 (FAIL), false_accept_rate 0.0495 (pass), decline_reason_accuracy 0.8768 (pass), spec_field_accuracy 0.9878 (pass), first_answer_validity 1.0 (pass), rule_made_decline_rate 0.0 (pass), planner_unavailable_rate 0.0 (pass); cost $1.692; latency median 3.29 s
+Meta vs Fireworks modal agreement 0.9151 (bar 0.8, pass)
+Baseten vs Fireworks 0.8208 vs Fireworks repeat 0.8868 (FAIL; two hosted versions)
+spend {'spark-1.3': 3.4485, 'spark-open': 2.6277, 'spark-open-baseten': 2.7292}; skipped {'spark-1.3': 0, 'spark-open': 0, 'spark-open-baseten': 0}
