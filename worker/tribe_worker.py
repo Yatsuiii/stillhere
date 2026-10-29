@@ -115,18 +115,23 @@ def serve(args):
         try:
             code, body = jobs.claim(models)
         except (urllib.error.URLError, TimeoutError, OSError) as e:
-            log(f"claim failed ({type(e).__name__}); retrying in {backoff:.0f} s"); time.sleep(backoff); backoff = min(backoff * 2, 60); continue
-        backoff = POLL_S
+            code, body = None, None
+            log(f"claim failed ({type(e).__name__}); retrying in {backoff:.0f} s")
         if code == 200 and body and body.get("job"):
+            backoff = POLL_S
             handle(body["job"], engine, jobs, index)
             continue
-        if code not in (200, 204):
+        if code is not None and code not in (200, 204):
             log(f"claim answered {code}")
+        # --max-polls (tests only; 0 = forever) counts every poll that brought no job, failed claims included
         if args.max_polls and args.max_polls > 0:
             args.max_polls -= 1
             if args.max_polls == 0:
                 return
-        time.sleep(POLL_S)
+        if code is None:
+            time.sleep(backoff); backoff = min(backoff * 2, 60)
+        else:
+            backoff = POLL_S; time.sleep(POLL_S)
 
 
 def precompute(args):

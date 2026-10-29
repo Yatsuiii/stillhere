@@ -152,6 +152,19 @@ def test_protocol_end_to_end_with_fake_server(monkeypatch, tmp_path):
     assert st.events["j2"] == st.events["j3"] == []                     # refused jobs never start a stage
 
 
+def test_max_polls_counts_failed_claims(monkeypatch, tmp_path):
+    """A test run ends once the jobs server is gone: --max-polls counts failed claims too (Oct 29 E2E kept retrying)."""
+    import worker.engine
+    from worker import tribe_worker as T
+    monkeypatch.setattr(worker.engine, "Engine", StubEngine)
+    tf = tmp_path / "tok"; tf.write_text("t" * 64)
+    monkeypatch.setenv("STILLHERE_JOBS_URL", f"http://127.0.0.1:{_port()}")     # nothing listens here
+    monkeypatch.setattr(T, "POLL_S", 0.01); monkeypatch.setattr(T, "STATE", tmp_path)
+    slept = []; monkeypatch.setattr(T.time, "sleep", slept.append)
+    T.main(["serve", "--token-file", str(tf), "--max-polls", "3"])
+    assert slept == [0.01, 0.02]                                                    # backoff still doubles between failures
+
+
 def test_wrong_token_gets_401_and_https_only(tmp_path):
     from worker import tribe_worker as T
     st = F.State("right" * 8, []); port = _port(); srv = F.serve(port, st)
