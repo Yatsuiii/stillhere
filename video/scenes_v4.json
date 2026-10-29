@@ -1,6 +1,9 @@
 {
- "format": "v4 re-cut, cloud plan v2 (Oct 29, 16:20 IST), items 8-9: 172 s, a burned-in headline of at most 7 words on every scene, voice-over and subtitles on every scene. Ghost lines follow docs/rules/display_rule_ghostline.md. {placeholders} fill when their results land; until then they show as yellow tags.",
- "size": [1920, 1080],
+ "format": "v4 re-cut, cloud plan v2 (Oct 29, 16:20 IST), items 8-9, with the rulings of Oct 29 18:15 IST: 172 s, a burned-in headline of at most 7 words on every scene, voice-over and subtitles on every scene. Ghost lines follow docs/rules/display_rule_ghostline.md. Slots: wall, d20 (pass or fail; on a fail the D20 scene leaves and the live end screen pairs the gray line with the LPP ghost line), ec, film (six endings, result sentences verbatim from docs/captions.md). The order map is not used (NO-GO, results/order_map_gonogo.json). {placeholders} fill when their results land; until then they show as yellow tags.",
+ "size": [
+  1920,
+  1080
+ ],
  "fps": 30,
  "crossfade_s": 0.4,
  "total_s": 172,
@@ -10,321 +13,1154 @@
  "nd": "Not a diagnosis or medical advice.",
  "research": "Research tool. Healthy volunteers and public data only.",
  "beats": [
-  {"id": "cold_open", "start": 0, "end": 10},
-  {"id": "problem", "start": 10, "end": 24},
-  {"id": "plan", "start": 24, "end": 42},
-  {"id": "build", "start": 42, "end": 60},
-  {"id": "live", "start": 60, "end": 92},
-  {"id": "trust", "start": 92, "end": 118},
-  {"id": "film", "start": 118, "end": 150},
-  {"id": "close", "start": 150, "end": 172}
+  {
+   "id": "cold_open",
+   "start": 0,
+   "end": 10
+  },
+  {
+   "id": "problem",
+   "start": 10,
+   "end": 24
+  },
+  {
+   "id": "plan",
+   "start": 24,
+   "end": 42
+  },
+  {
+   "id": "build",
+   "start": 42,
+   "end": 60
+  },
+  {
+   "id": "live",
+   "start": 60,
+   "end": 92
+  },
+  {
+   "id": "trust",
+   "start": 92,
+   "end": 118
+  },
+  {
+   "id": "film",
+   "start": 118,
+   "end": 150
+  },
+  {
+   "id": "close",
+   "start": 150,
+   "end": 172
+  }
  ],
  "scenes": [
   {
-   "id": "cold_open", "beat": "cold_open", "start": 0, "end": 10, "results": true, "research": true,
+   "id": "cold_open",
+   "beat": "cold_open",
+   "start": 0,
+   "end": 10,
+   "results": true,
+   "research": true,
    "headline": "A forecast first, then real listeners",
    "steps": [
-    {"at": 0.0, "items": [
-     {"kind": "title", "text": "StillHere Pilot: pilot the story before booking the scanner."},
-     {"kind": "ghost", "view": "short", "show": ["forecast"]}]},
-    {"at": 2.4, "items": [
-     {"kind": "title", "text": "StillHere Pilot: pilot the story before booking the scanner."},
-     {"kind": "ghost", "view": "short", "show": ["forecast", "chip"]}]},
-    {"at": 3.8, "items": [
-     {"kind": "title", "text": "StillHere Pilot: pilot the story before booking the scanner."},
-     {"kind": "ghost", "view": "short", "show": ["forecast", "chip", "group"]}]},
-    {"at": 5.6, "items": [
-     {"kind": "title", "text": "StillHere Pilot: pilot the story before booking the scanner."},
-     {"kind": "ghost", "view": "short", "show": ["forecast", "chip", "group", "five"], "frozen_line": true}]},
-    {"at": 7.8, "items": [
-     {"kind": "title", "text": "StillHere Pilot: pilot the story before booking the scanner."},
-     {"kind": "ghost", "view": "short", "show": ["forecast", "chip", "group", "five", "one"], "frozen_line": true}]}
+    {
+     "at": 0.0,
+     "items": [
+      {
+       "kind": "title",
+       "text": "StillHere Pilot: pilot the story before booking the scanner."
+      },
+      {
+       "kind": "ghost",
+       "view": "short",
+       "show": [
+        "forecast"
+       ]
+      }
+     ]
+    },
+    {
+     "at": 2.4,
+     "items": [
+      {
+       "kind": "title",
+       "text": "StillHere Pilot: pilot the story before booking the scanner."
+      },
+      {
+       "kind": "ghost",
+       "view": "short",
+       "show": [
+        "forecast",
+        "chip"
+       ]
+      }
+     ]
+    },
+    {
+     "at": 3.8,
+     "items": [
+      {
+       "kind": "title",
+       "text": "StillHere Pilot: pilot the story before booking the scanner."
+      },
+      {
+       "kind": "ghost",
+       "view": "short",
+       "show": [
+        "forecast",
+        "chip",
+        "group"
+       ]
+      }
+     ]
+    },
+    {
+     "at": 5.6,
+     "items": [
+      {
+       "kind": "title",
+       "text": "StillHere Pilot: pilot the story before booking the scanner."
+      },
+      {
+       "kind": "ghost",
+       "view": "short",
+       "show": [
+        "forecast",
+        "chip",
+        "group",
+        "five"
+       ],
+       "frozen_line": true
+      }
+     ]
+    },
+    {
+     "at": 7.8,
+     "items": [
+      {
+       "kind": "title",
+       "text": "StillHere Pilot: pilot the story before booking the scanner."
+      },
+      {
+       "kind": "ghost",
+       "view": "short",
+       "show": [
+        "forecast",
+        "chip",
+        "group",
+        "five",
+        "one"
+       ],
+       "frozen_line": true
+      }
+     ]
+    }
    ]
   },
   {
-   "id": "problem_naci", "beat": "problem", "start": 10, "end": 14.5,
+   "id": "problem_naci",
+   "beat": "problem",
+   "start": 10,
+   "end": 14.5,
    "headline": "Volunteers first, for every test",
    "items": [
-    {"kind": "big", "text": "Passive tests play a story or a film, and every new one needs healthy volunteers scanned first."},
-    {"kind": "small", "text": "Naci et al., PNAS 2014, used a film."}
+    {
+     "kind": "big",
+     "text": "Passive tests play a story or a film, and every new one needs healthy volunteers scanned first."
+    },
+    {
+     "kind": "small",
+     "text": "Naci et al., PNAS 2014, used a film."
+    }
    ]
   },
   {
-   "id": "problem_bodien", "beat": "problem", "start": 14.5, "end": 19.5,
+   "id": "problem_bodien",
+   "beat": "problem",
+   "start": 14.5,
+   "end": 19.5,
    "headline": "1 in 4 responded on command tasks",
    "items": [
-    {"kind": "big", "text": "1 in 4 brain-injured patients who could not follow commands at the bedside showed brain activity on command-following tasks, on fMRI or EEG."},
-    {"kind": "text", "text": "That figure comes from command-following tests, not passive listening."},
-    {"kind": "small", "text": "Bodien et al., NEJM 2024."}
+    {
+     "kind": "big",
+     "text": "1 in 4 brain-injured patients who could not follow commands at the bedside showed brain activity on command-following tasks, on fMRI or EEG."
+    },
+    {
+     "kind": "text",
+     "text": "That figure comes from command-following tests, not passive listening."
+    },
+    {
+     "kind": "small",
+     "text": "Bodien et al., NEJM 2024."
+    }
    ]
   },
   {
-   "id": "problem_cost", "beat": "problem", "start": 19.5, "end": 24,
+   "id": "problem_cost",
+   "beat": "problem",
+   "start": 19.5,
+   "end": 24,
    "headline": "Each story needs 12-15 volunteers",
    "items": [
-    {"kind": "people", "n": 15},
-    {"kind": "big", "text": "$5-15k of scanner time per stimulus, per language."},
-    {"kind": "small", "text": "University scanner rates, $450-700 an hour (Michigan $620, Kentucky up to $625, Yale $696), before recruitment."}
+    {
+     "kind": "people",
+     "n": 15
+    },
+    {
+     "kind": "big",
+     "text": "$5-15k of scanner time per stimulus, per language."
+    },
+    {
+     "kind": "small",
+     "text": "University scanner rates, $450-700 an hour (Michigan $620, Kentucky up to $625, Yale $696), before recruitment."
+    }
    ]
   },
   {
-   "id": "plan_accept", "beat": "plan", "start": 24, "end": 31,
+   "id": "plan_accept",
+   "beat": "plan",
+   "start": 24,
+   "end": 31,
    "headline": "Spark 1.3 turns requests into plans",
    "items": [
-    {"kind": "cast", "file": "video/live/planner_round2_spark-1.3.cast", "t0": 1.8, "t1": 8.8, "rows": 16,
-     "label": "Recorded live, Oct 29, real time. Round 2 request, reworded after round 1 (demo, not scored)."}
+    {
+     "kind": "cast",
+     "file": "video/live/planner_round2_spark-1.3.cast",
+     "t0": 1.8,
+     "t1": 8.8,
+     "rows": 16,
+     "label": "Recorded live, Oct 29, real time. Round 2 request, reworded after round 1 (demo, not scored)."
+    }
    ]
   },
   {
-   "id": "plan_decline", "beat": "plan", "start": 31, "end": 38,
+   "id": "plan_decline",
+   "beat": "plan",
+   "start": 31,
+   "end": 38,
    "headline": "Out-of-scope requests get a reason",
    "items": [
-    {"kind": "cast", "file": "video/live/planner_spark-1.3.cast", "t0": 34.5, "t1": 41.5, "rows": 16,
+    {
+     "kind": "cast",
+     "file": "video/live/planner_spark-1.3.cast",
+     "t0": 34.5,
+     "t1": 41.5,
+     "rows": 16,
      "mask": "Nearest validated option: [^.]*\\.",
-     "label": "Recorded live, Oct 29, real time. Round 1 request (demo, not scored). One planner line masked."}
+     "label": "Recorded live, Oct 29, real time. Round 1 request (demo, not scored). One planner line masked."
+    }
    ]
   },
   {
-   "id": "plan_score", "beat": "plan", "start": 38, "end": 42, "results": true,
+   "id": "plan_score",
+   "beat": "plan",
+   "start": 38,
+   "end": 42,
+   "results": true,
    "headline": "Wrong accepts on 62 unseen requests",
    "items": [
-    {"kind": "big", "text": "Planner v2 · 62 unseen requests · 2.3% vs 7.6% / 6.8% (5% bar)"},
-    {"kind": "card", "rows": [["Muse Spark 1.3 (default)", "2.3% wrong accepts (exact 95% upper bound 6.5%)"],
-                              ["Muse Spark Open, Fireworks", "7.6%"], ["Muse Spark Open, Baseten", "6.8%"]]},
-    {"kind": "small", "text": "v2.1 adds clip, condition, seed; not re-measured."}
+    {
+     "kind": "big",
+     "text": "Planner v2 · 62 unseen requests · 2.3% vs 7.6% / 6.8% (5% bar)"
+    },
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "Muse Spark 1.3 (default)",
+       "2.3% wrong accepts (exact 95% upper bound 6.5%)"
+      ],
+      [
+       "Muse Spark Open, Fireworks",
+       "7.6%"
+      ],
+      [
+       "Muse Spark Open, Baseten",
+       "6.8%"
+      ]
+     ]
+    },
+    {
+     "kind": "small",
+     "text": "v2.1 adds clip, condition, seed; not re-measured."
+    }
    ]
   },
   {
-   "id": "build_check", "beat": "build", "start": 42, "end": 50, "results": true,
+   "id": "build_check",
+   "beat": "build",
+   "start": 42,
+   "end": 50,
+   "results": true,
    "headline": "Voice Transcribe checks the audio",
    "steps": [
-    {"at": 0.0, "items": [
-     {"kind": "karaoke"},
-     {"kind": "checklist", "state": "pending"}]},
-    {"at": 3.6, "items": [
-     {"kind": "karaoke"},
-     {"kind": "checklist", "state": "done"}]}
+    {
+     "at": 0.0,
+     "items": [
+      {
+       "kind": "karaoke"
+      },
+      {
+       "kind": "checklist",
+       "state": "pending"
+      }
+     ]
+    },
+    {
+     "at": 3.6,
+     "items": [
+      {
+       "kind": "karaoke"
+      },
+      {
+       "kind": "checklist",
+       "state": "done"
+      }
+     ]
+    }
    ]
   },
   {
-   "id": "build_bug", "beat": "build", "start": 50, "end": 53, "results": true,
+   "id": "build_bug",
+   "beat": "build",
+   "start": 50,
+   "end": 53,
+   "results": true,
    "headline": "Word scramble failed, never scanned",
    "items": [
-    {"kind": "alarm", "text": "The word scramble kept only 16% of its words, so it was caught as broken before scanning and is not used."},
-    {"kind": "small", "text": "Voice Transcribe heard 51 of its 263 words (results/conditions_manipulation_check.json)."}
+    {
+     "kind": "alarm",
+     "text": "The word scramble kept only 16% of its words, so it was caught as broken before scanning and is not used."
+    },
+    {
+     "kind": "small",
+     "text": "Voice Transcribe heard 51 of its 263 words (results/conditions_manipulation_check.json)."
+    }
    ]
   },
   {
-   "id": "build_audit", "beat": "build", "start": 53, "end": 60,
+   "id": "build_audit",
+   "beat": "build",
+   "start": 53,
+   "end": 60,
    "headline": "Spark Open adds an advisory note",
    "items": [
-    {"kind": "advisory", "label": "Advisory check, not measured", "text": "{audit_line}"},
-    {"kind": "small", "text": "Muse Spark Open reads the plan and the checklist and writes one note. It never blocks a build."},
-    {"kind": "placeholder", "text": "the AUDIT station's real card (Friday)"}
+    {
+     "kind": "advisory",
+     "label": "Advisory check, not measured",
+     "text": "{audit_line}"
+    },
+    {
+     "kind": "small",
+     "text": "Muse Spark Open reads the plan and the checklist and writes one note. It never blocks a build."
+    },
+    {
+     "kind": "placeholder",
+     "text": "the AUDIT station's real card (Friday)"
+    }
    ]
   },
   {
-   "id": "live_run", "beat": "live", "start": 60, "end": 76,
+   "id": "live_run",
+   "beat": "live",
+   "start": 60,
+   "end": 76,
    "headline": "Live on a laptop GPU, uncut",
    "items": [
-    {"kind": "cast", "file": "video/live/tribe_conditions.cast", "t0": 20.0, "t1": 36.4, "rows": 16,
-     "label": "PLACEHOLDER until Sunday's uncut run (phone + laptop + wall clock): Oct 29's live terminal run, real time (demo, not scored)."}
-   ]
+    {
+     "kind": "lanes",
+     "condition": "intact"
+    },
+    {
+     "kind": "livetc",
+     "condition": "intact"
+    },
+    {
+     "kind": "receipt",
+     "condition": "intact"
+    },
+    {
+     "kind": "placeholder",
+     "text": "Sunday's uncut live run (phone + laptop + wall clock) replaces this panel; shown: the Oct 29 laptop forecast from results/order_map_gonogo.json"
+    }
+   ],
+   "results": true
   },
   {
-   "id": "live_reversed", "beat": "live", "start": 76, "end": 82,
+   "id": "live_reversed",
+   "beat": "live",
+   "start": 76,
+   "end": 82,
    "headline": "Reversed speech: no words reach text",
    "items": [
-    {"kind": "lanes", "rows": [["w2v-BERT: sound", "on"], ["Llama 3.2: words in context", "0 words"], ["V-JEPA 2: off (audio)", "off"]]},
-    {"kind": "text", "text": "0 words reach the text lane (model input, not a brain result)."},
-    {"kind": "placeholder", "text": "lane events from the live worker's reversed run (Friday)"}
+    {
+     "kind": "lanes",
+     "condition": "reversed"
+    },
+    {
+     "kind": "livetc",
+     "condition": "reversed"
+    },
+    {
+     "kind": "text",
+     "text": "0 words reach the text lane (model input, not a brain result)."
+    }
+   ],
+   "results": true
+  },
+  {
+   "id": "live_result",
+   "beat": "live",
+   "start": 82,
+   "end": 92,
+   "results": true,
+   "headline": "No one has scanned this yet",
+   "slot": "d20",
+   "common": [],
+   "variants": {
+    "pass": [
+     {
+      "kind": "endscreen",
+      "pair": "d20"
+     }
+    ],
+    "fail": [
+     {
+      "kind": "endscreen",
+      "pair": "lpp"
+     }
+    ]
+   },
+   "default": [
+    {
+     "kind": "endscreen",
+     "pair": "pending"
+    }
    ]
   },
   {
-   "id": "live_result", "beat": "live", "start": 82, "end": 92, "results": true,
-   "headline": "No one has scanned this yet",
-   "slot": "order",
-   "common": [
-    {"kind": "chip", "text": "Forecast only · audio-only, laptop"},
-    {"kind": "small", "text": "No public scan of this clip. Forecast, not a scan."}
-   ],
-   "variants": {
-    "GO": [{"kind": "placeholder", "text": "order map from results/order_map_gonogo.json (docs/rules/order_map_gonogo.md, GO)"}],
-    "NO_GO": [{"kind": "livelines"}, {"kind": "small", "text": "Flat by construction: a word-rate model cannot see order."},
-              {"kind": "placeholder", "text": "time-course panels and the reversed variant from results/order_map_gonogo.json replace Oct 29's hearing-only run"}]
-   },
-   "default": [{"kind": "livelines"}]
-  },
-  {
-   "id": "trust_curve", "beat": "trust", "start": 92, "end": 106, "results": true,
+   "id": "trust_curve",
+   "beat": "trust",
+   "start": 92,
+   "end": 106,
+   "results": true,
    "headline": "Worth about 5 volunteers, at least 2",
    "steps": [
-    {"at": 0.0, "items": [{"kind": "ghost", "view": "short", "show": ["forecast"], "half": true}, {"kind": "curve", "show": ["forecast"]}]},
-    {"at": 3.0, "items": [{"kind": "ghost", "view": "short", "show": ["forecast", "chip"], "half": true}, {"kind": "curve", "show": ["forecast"]}]},
-    {"at": 4.5, "items": [{"kind": "ghost", "view": "short", "show": ["forecast", "chip", "group"], "half": true}, {"kind": "curve", "show": ["forecast", "real"]}]},
-    {"at": 8.0, "items": [{"kind": "ghost", "view": "short", "show": ["forecast", "chip", "group", "five"], "half": true, "frozen_line": true}, {"kind": "curve", "show": ["forecast", "real", "marks"]}]},
-    {"at": 10.6, "items": [{"kind": "ghost", "view": "short", "show": ["forecast", "chip", "group", "five", "one"], "half": true, "frozen_line": true}, {"kind": "curve", "show": ["forecast", "real", "marks"]},
-                         {"kind": "text", "text": "In language areas it beat a simple word-rate model in 43 of 49 listeners."},
-                         {"kind": "small", "text": "Exploratory: the word-rate rule was written after section 8 was first measured."}]}
+    {
+     "at": 0.0,
+     "items": [
+      {
+       "kind": "ghost",
+       "view": "short",
+       "show": [
+        "forecast"
+       ],
+       "half": true
+      },
+      {
+       "kind": "curve",
+       "show": [
+        "forecast"
+       ]
+      }
+     ]
+    },
+    {
+     "at": 3.0,
+     "items": [
+      {
+       "kind": "ghost",
+       "view": "short",
+       "show": [
+        "forecast",
+        "chip"
+       ],
+       "half": true
+      },
+      {
+       "kind": "curve",
+       "show": [
+        "forecast"
+       ]
+      }
+     ]
+    },
+    {
+     "at": 4.5,
+     "items": [
+      {
+       "kind": "ghost",
+       "view": "short",
+       "show": [
+        "forecast",
+        "chip",
+        "group"
+       ],
+       "half": true
+      },
+      {
+       "kind": "curve",
+       "show": [
+        "forecast",
+        "real"
+       ]
+      }
+     ]
+    },
+    {
+     "at": 8.0,
+     "items": [
+      {
+       "kind": "ghost",
+       "view": "short",
+       "show": [
+        "forecast",
+        "chip",
+        "group",
+        "five"
+       ],
+       "half": true,
+       "frozen_line": true
+      },
+      {
+       "kind": "curve",
+       "show": [
+        "forecast",
+        "real",
+        "marks"
+       ]
+      }
+     ]
+    },
+    {
+     "at": 10.6,
+     "items": [
+      {
+       "kind": "ghost",
+       "view": "short",
+       "show": [
+        "forecast",
+        "chip",
+        "group",
+        "five",
+        "one"
+       ],
+       "half": true,
+       "frozen_line": true
+      },
+      {
+       "kind": "curve",
+       "show": [
+        "forecast",
+        "real",
+        "marks"
+       ]
+      },
+      {
+       "kind": "text",
+       "text": "In language areas it beat a simple word-rate model in 43 of 49 listeners."
+      },
+      {
+       "kind": "small",
+       "text": "Exploratory: the word-rate rule was written after section 8 was first measured."
+      }
+     ]
+    }
    ]
   },
   {
-   "id": "trust_wall", "beat": "trust", "start": 106, "end": 112, "results": true,
+   "id": "trust_wall",
+   "beat": "trust",
+   "start": 106,
+   "end": 112,
+   "results": true,
    "headline": "Every story tile, weak ones kept",
    "slot": "wall",
-   "common": [{"kind": "chip", "text": "Story wall: rule 340b74b"},
-              {"kind": "small", "text": "scoring rule committed Oct 28 · 340b74b; 41 of the 42 stories were used before then, for development or to tune a second model"}],
+   "common": [
+    {
+     "kind": "chip",
+     "text": "Story wall: rule 340b74b"
+    },
+    {
+     "kind": "small",
+     "text": "scoring rule committed Oct 28 · 340b74b; 41 of the 42 stories were used before then, for development or to tune a second model"
+    }
+   ],
    "variants": {
-    "scored": [{"kind": "placeholder", "text": "story wall tiles from tierD_picker_wall.json: {wall_k} of {wall_M}, weak tiles kept"}],
-    "not_run": [{"kind": "text", "text": "Story wall: pre-registered, not run ({wall_reason})."}]
+    "scored": [
+     {
+      "kind": "placeholder",
+      "text": "story wall tiles from tierD_picker_wall.json: {wall_k} of {wall_M}, weak tiles kept"
+     }
+    ],
+    "not_run": [
+     {
+      "kind": "text",
+      "text": "Story wall: pre-registered, not run ({wall_reason})."
+     }
+    ]
    }
   },
   {
-   "id": "trust_d20", "beat": "trust", "start": 112, "end": 118, "results": true,
+   "id": "trust_d20",
+   "beat": "trust",
+   "start": 112,
+   "end": 118,
+   "results": true,
    "headline": "A new story, real listeners",
    "slot": "d20",
-   "common": [{"kind": "chip", "text": "notthefall: rule 340b74b"}, {"kind": "small", "text": "Real listeners, different story."}],
+   "common": [],
    "variants": {
-    "pass": [{"kind": "text", "text": "Real listeners' brains followed the intact story more than the scrambled one where TRIBE said they would ({d20_k} of {d20_N}, p = {d20_p})."}],
-    "fail": [{"kind": "text", "text": "notthefall: {d20_status}. Only a pass is shown as a result line, as set before the run; the numbers are in the repository."}],
-    "not_run": [{"kind": "text", "text": "notthefall: pre-registered, not run ({d20_reason})."}]
+    "pass": [
+     {
+      "kind": "chip",
+      "text": "notthefall: rule 340b74b"
+     },
+     {
+      "kind": "big",
+      "text": "Real listeners, different story."
+     },
+     {
+      "kind": "text",
+      "text": "With zero same-clip controls, stock TRIBE v2's language readout was stronger when the same healthy listeners heard a public story intact than when they heard its sentences shuffled (Narratives notthefall, {d20_N} listeners, 9.1 minutes = 365 TRs per version; the order of their two runs is not public)."
+     }
+    ],
+    "fail": null
    }
   },
   {
-   "id": "film_edit", "beat": "film", "start": 118, "end": 126, "film": true,
+   "id": "film_edit",
+   "beat": "film",
+   "start": 118,
+   "end": 126,
+   "film": true,
    "headline": "Remove the faces, keep the film",
    "items": [
-    {"kind": "film3", "t0": 26.0},
-    {"kind": "text", "text": "SAM 3.1 masked the faces; StillHere filled them with the surrounding colour."},
-    {"kind": "small", "text": "The same-size patch covers 89% of face area; the 51 largest close-ups have none."}
+    {
+     "kind": "film3",
+     "t0": 26.0
+    },
+    {
+     "kind": "text",
+     "text": "SAM 3.1 masked the faces; StillHere filled them with the surrounding colour."
+    },
+    {
+     "kind": "small",
+     "text": "The same-size patch covers 89% of face area; the 51 largest close-ups have none."
+    }
    ]
   },
   {
-   "id": "film_check", "beat": "film", "start": 126, "end": 132, "film": true, "results": true,
+   "id": "film_check",
+   "beat": "film",
+   "start": 126,
+   "end": 132,
+   "film": true,
+   "results": true,
    "headline": "Glimmer decides the edit check",
    "slot": "ec",
-   "common": [{"kind": "card", "rows": [["", "Glimmer (decides)", "Spark Open (beside)"],
-                                       ["Intact: face seen", "{ec_int} of {ec_N}", "54 of 62"],
-                                       ["Faces filled: no face seen", "{ec_rem} of {ec_N}", "62 of 62"],
-                                       ["Same-size control: face seen", "{ec_am} of {ec_N}", "51 of 62"]]}],
+   "common": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "",
+       "Glimmer (decides)",
+       "Spark Open (beside)"
+      ],
+      [
+       "Intact: face seen",
+       "{ec_int} of {ec_N}",
+       "54 of 62"
+      ],
+      [
+       "Faces filled: no face seen",
+       "{ec_rem} of {ec_N}",
+       "62 of 62"
+      ],
+      [
+       "Same-size control: face seen",
+       "{ec_am} of {ec_N}",
+       "51 of 62"
+      ]
+     ]
+    }
+   ],
    "variants": {
-    "pass": [{"kind": "text", "text": "Edit check passed: the film test runs."}],
-    "fail": [{"kind": "text", "text": "The edit check failed ({ec_detail}), so the film test did not run."}]
+    "pass": [
+     {
+      "kind": "text",
+      "text": "Edit check passed: the film test runs."
+     }
+    ],
+    "fail": [
+     {
+      "kind": "text",
+      "text": "The edit check failed ({ec_detail}), so the film test did not run."
+     }
+    ]
    }
   },
   {
-   "id": "film_maps", "beat": "film", "start": 132, "end": 138, "film": true, "results": true,
-   "headline": "Forecast maps: faces versus control",
+   "id": "film_maps",
+   "beat": "film",
+   "start": 132,
+   "end": 138,
+   "film": true,
+   "results": true,
+   "headline": "Forecast map and viewers' face map",
    "items": [
-    {"kind": "maps", "maps": [{"key": "R", "title": "R: intact minus faces filled (forecast)", "seed": 1},
-                              {"key": "C", "title": "C: intact minus same-size control (forecast)", "seed": 2}]},
-    {"kind": "small", "text": "Forecasts only, from results/face_map_RC.json; no viewer data."}
+    {
+     "kind": "maps",
+     "maps": [
+      {
+       "key": "R",
+       "source": "rc",
+       "title": "TRIBE forecast: intact minus faces filled",
+       "seed": 1
+      },
+      {
+       "key": "M",
+       "source": "viewers",
+       "title": "{N} real viewers: brain signal vs on-screen face area",
+       "seed": 3
+      }
+     ]
+    },
+    {
+     "kind": "small",
+     "text": "Left: forecast only, no viewer data."
+    },
+    {
+     "kind": "small",
+     "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+    }
    ]
   },
   {
-   "id": "film_ghost", "beat": "film", "start": 138, "end": 144, "film": true, "results": true,
-   "headline": "28 viewers over the forecast",
+   "id": "film_ghost",
+   "beat": "film",
+   "start": 138,
+   "end": 144,
+   "film": true,
+   "results": true,
+   "headline": "Viewers drawn over the forecast",
    "slot": "film",
-   "common": [{"kind": "filmghost"}, {"kind": "chip", "text": "Film: rule {film_commit}"}],
+   "common": [
+    {
+     "kind": "filmghost",
+     "title": "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"
+    },
+    {
+     "kind": "chip",
+     "text": "Film: rule {film_commit}"
+    }
+   ],
    "variants": {
-    "PASS": [{"kind": "text", "text": "Brain signal rose with on-screen face area."}],
-    "PASS_VISUAL": [{"kind": "text", "text": "Brain signal rose with on-screen face area."}],
-    "FAIL_NFS": [], "FAIL": [], "UNINFORMATIVE": [], "NOT_RUN": []
+    "PASS": [
+     {
+      "kind": "text",
+      "text": "Brain signal rose with on-screen face area."
+     }
+    ],
+    "PASS_VISUAL": [],
+    "FAIL_NFS": [],
+    "FAIL": [],
+    "UNINFORMATIVE": [],
+    "NOT_RUN": []
    }
   },
   {
-   "id": "film_stamp", "beat": "film", "start": 144, "end": 150, "film": true, "results": true,
+   "id": "film_stamp",
+   "beat": "film",
+   "start": 144,
+   "end": 150,
+   "film": true,
+   "results": true,
    "headline": "The film test, scored once",
    "slot": "film",
-   "common": [{"kind": "text", "text": "On the intact film, the forecast was worth about {veq_film} real viewers, and at least {veq_film_lo}."}],
+   "common": [
+    {
+     "kind": "text",
+     "text": "On the intact film, the forecast was worth about {veq_film} real viewers, and at least {veq_film_lo}."
+    }
+   ],
    "variants": {
-    "PASS": [{"kind": "stamp", "text": "PASS", "tone": "pass"},
-             {"kind": "small", "text": "TRIBE's forecast lined up with where {film_N} real viewers' brains tracked faces ({film_k} of {film_N} viewers, p = {film_p}), and more than for the control."}],
-    "PASS_VISUAL": [{"kind": "stamp", "text": "PASS", "tone": "pass"},
-                    {"kind": "small", "text": "TRIBE's forecast lined up with where {film_N} real viewers' brains tracked faces ({film_k} of {film_N}, p = {film_p}). Most of the match comes from visual-network areas."}],
-    "FAIL_NFS": [{"kind": "stamp", "text": "FAIL", "tone": "fail"},
-                 {"kind": "small", "text": "It lined up ({film_k} of {film_N}), but no better than its forecast for the control: not specific to faces."}],
-    "FAIL": [{"kind": "stamp", "text": "FAIL", "tone": "fail"},
-             {"kind": "small", "text": "TRIBE's forecast of the filled faces did not line up with where {film_N} real viewers' brains tracked faces ({film_k} of {film_N}, p = {film_p}). We show it because we said we would."}],
-    "UNINFORMATIVE": [{"kind": "stamp", "text": "UNINFORMATIVE", "tone": "fail"},
-                      {"kind": "small", "text": "The {film_N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."}],
-    "NOT_RUN": [{"kind": "stamp", "text": "NOT RUN", "tone": "neutral"},
-                {"kind": "small", "text": "The face test did not run ({film_reason}), before any of these viewers' brain data was read."}]
+    "PASS": [
+     {
+      "kind": "stamp",
+      "text": "PASS",
+      "tone": "pass"
+     },
+     {
+      "kind": "text",
+      "text": "SAM filled the faces it masked; TRIBE forecast the change; that forecast lined up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the control."
+     },
+     {
+      "kind": "small",
+      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+     }
+    ],
+    "PASS_VISUAL": [
+     {
+      "kind": "stamp",
+      "text": "PASS",
+      "tone": "pass"
+     },
+     {
+      "kind": "text",
+      "text": "SAM filled the faces it masked; TRIBE forecast the change; that forecast lined up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the control."
+     },
+     {
+      "kind": "text",
+      "text": "Most of the match comes from visual-network areas."
+     },
+     {
+      "kind": "small",
+      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+     }
+    ],
+    "FAIL_NFS": [
+     {
+      "kind": "stamp",
+      "text": "FAIL",
+      "tone": "fail"
+     },
+     {
+      "kind": "text",
+      "text": "TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}), but no better than its forecast for the control: not specific to faces."
+     },
+     {
+      "kind": "small",
+      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+     }
+    ],
+    "FAIL": [
+     {
+      "kind": "stamp",
+      "text": "FAIL",
+      "tone": "fail"
+     },
+     {
+      "kind": "text",
+      "text": "TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces ({k} of {N} viewers, p = {p}). We show it because we said we would."
+     },
+     {
+      "kind": "small",
+      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+     }
+    ],
+    "UNINFORMATIVE": [
+     {
+      "kind": "stamp",
+      "text": "UNINFORMATIVE",
+      "tone": "fail"
+     },
+     {
+      "kind": "text",
+      "text": "The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."
+     },
+     {
+      "kind": "small",
+      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+     }
+    ],
+    "NOT_RUN": [
+     {
+      "kind": "stamp",
+      "text": "NOT RUN",
+      "tone": "neutral"
+     },
+     {
+      "kind": "small",
+      "text": "What it had to beat: brightness, motion, sound envelope and word rate ({film_beat})."
+     },
+     {
+      "kind": "text",
+      "text": "The face test did not run: {reason}. It was set to run once, by rules written before any brain data was read."
+     },
+     {
+      "kind": "small",
+      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+     }
+    ]
    }
   },
   {
-   "id": "close_rail", "beat": "close", "start": 150, "end": 160,
+   "id": "close_rail",
+   "beat": "close",
+   "start": 150,
+   "end": 160,
    "headline": "Meta models, one job each",
    "items": [
-    {"kind": "rail", "rows": [["Muse Spark 1.3", "plans the study, or declines with the reason"],
-                              ["Muse Spark Open", "private planner mode and the advisory check"],
-                              ["Muse Voice Transcribe", "reads every built condition back"],
-                              ["SAM 3.1", "masks the faces in the film"],
-                              ["Muse Glimmer 30B", "decides the edit check"],
-                              ["TRIBE v2", "forecasts the brain response (V-JEPA 2, w2v-BERT and Llama 3.2 inside)"]]}
+    {
+     "kind": "rail",
+     "rows": [
+      [
+       "Muse Spark 1.3",
+       "plans the study, or declines with the reason"
+      ],
+      [
+       "Muse Spark Open",
+       "private planner mode and the advisory check"
+      ],
+      [
+       "Muse Voice Transcribe",
+       "reads every built condition back"
+      ],
+      [
+       "SAM 3.1",
+       "masks the faces in the film"
+      ],
+      [
+       "Muse Glimmer 30B",
+       "decides the edit check"
+      ],
+      [
+       "TRIBE v2",
+       "forecasts the brain response (V-JEPA 2, w2v-BERT and Llama 3.2 inside)"
+      ]
+     ]
+    }
    ]
   },
   {
-   "id": "close_line", "beat": "close", "start": 160, "end": 168, "results": true,
+   "id": "close_line",
+   "beat": "close",
+   "start": 160,
+   "end": 168,
+   "results": true,
    "headline": "A first reading before any scans",
    "items": [
-    {"kind": "card", "rows": [["One live run", "{run_s} s on a laptop GPU, {run_cost} in API calls (receipt {receipt_id})"],
-                              ["Try it", "{page_url}"], ["Code and evidence", "{repo_url}"]]},
-    {"kind": "big", "text": "A first healthy reference for a new story, before any scans, and evidence for how far to trust it."},
-    {"kind": "small", "text": "Research use. Healthy volunteers and public data. TRIBE v2 CC BY-NC. Not a diagnosis or medical advice."}
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "One live run",
+       "{run_s} s on a laptop GPU, {run_cost} in API calls (receipt {receipt_id})"
+      ],
+      [
+       "Try it",
+       "{page_url}"
+      ],
+      [
+       "Code and evidence",
+       "{repo_url}"
+      ]
+     ]
+    },
+    {
+     "kind": "big",
+     "text": "A first healthy reference for a new story, before any scans, and evidence for how far to trust it."
+    },
+    {
+     "kind": "small",
+     "text": "Research use. Healthy volunteers and public data. TRIBE v2 CC BY-NC. Not a diagnosis or medical advice."
+    }
    ]
   },
   {
-   "id": "end_card", "beat": "close", "start": 168, "end": 172,
+   "id": "end_card",
+   "beat": "close",
+   "start": 168,
+   "end": 172,
    "headline": "Licences and credits",
    "items": [
-    {"kind": "small", "text": "TRIBE v2: Meta FAIR, CC BY-NC 4.0, not included in the repository. SAM 3.1 through Meta's Model API, decoded with meta-sam-parser under Meta's SAM License."},
-    {"kind": "small", "text": "Data: Le Petit Prince (OpenNeuro ds003643), Narratives (ds002345), Emo-FilM (ds004892, ds004872, CC0), LibriVox (public domain), Tears of Steel (Blender Foundation, CC BY 3.0)."},
-    {"kind": "small", "text": "Full licence details are in the README."}
+    {
+     "kind": "small",
+     "text": "TRIBE v2: Meta FAIR, CC BY-NC 4.0, not included in the repository. SAM 3.1 through Meta's Model API, decoded with meta-sam-parser under Meta's SAM License."
+    },
+    {
+     "kind": "small",
+     "text": "Data: Le Petit Prince (OpenNeuro ds003643), Narratives (ds002345), Emo-FilM (ds004892, ds004872, CC0), LibriVox (public domain), Tears of Steel (Blender Foundation, CC BY 3.0)."
+    },
+    {
+     "kind": "small",
+     "text": "Full licence details are in the README."
+    }
    ]
   }
  ],
  "vo": [
-  {"start": 0.2, "end": 6.4, "text": "Labs study people who can't respond after brain injury by playing them stories in the scanner."},
-  {"start": 6.4, "end": 12.4, "text": "But every new story needs its own 12-15 healthy volunteers scanned first, in that language."},
-  {"start": 12.4, "end": 20.4, "text": "For a new story, StillHere gives labs a first reading with zero volunteer scans, measured against each listener's own brain."},
-  {"start": 20.4, "end": 23.8, "text": "It has been tested only in healthy volunteers."},
-  {"start": 24.2, "end": 27.0, "text": "A researcher types the study they want."},
-  {"start": 27.0, "end": 31.2, "text": "Muse Spark 1.3 turns it into a plan from a tested menu."},
-  {"start": 31.2, "end": 35.6, "text": "Ask about one patient's scan, and it declines, with the reason."},
-  {"start": 35.6, "end": 41.8, "text": "On 62 unseen requests, it wrongly accepted 2.3 percent; Spark Open, 7.6 and 6.8."},
-  {"start": 42.2, "end": 45.8, "text": "StillHere cuts the story at sentence boundaries."},
-  {"start": 45.8, "end": 50.0, "text": "Voice Transcribe hears 98 percent of the words, reordered."},
-  {"start": 50.0, "end": 53.0, "text": "Our first word scramble failed this check."},
-  {"start": 53.0, "end": 59.8, "text": "Spark Open adds a second opinion on the conditions. It is advisory, and never blocks a build."},
-  {"start": 60.2, "end": 65.6, "text": "This part runs live and uncut, on a laptop GPU."},
-  {"start": 65.6, "end": 71.6, "text": "A judge picks a public clip, a condition and a seed."},
-  {"start": 71.6, "end": 76.0, "text": "TRIBE v2 forecasts the brain response, stage by stage."},
-  {"start": 76.0, "end": 82.0, "text": "Played backwards, no words reach the text lane. That is model input, not a brain result."},
-  {"start": 82.0, "end": 88.0, "text": "Every live run ends on the gray forecast, with no real line drawn over it."},
-  {"start": 88.0, "end": 91.8, "text": "No one has scanned this yet."},
-  {"start": 92.2, "end": 96.6, "text": "Gray is the forecast; colour is real listeners."},
-  {"start": 96.6, "end": 102.2, "text": "On a held-out audiobook, it was worth about five volunteers, at least two."},
-  {"start": 102.2, "end": 107.6, "text": "In language areas, it beat a word-rate model in 43 of 49 listeners."},
-  {"start": 107.6, "end": 112.0, "text": "Every story we scored stays on the wall, weak ones too."},
-  {"start": 112.0, "end": 117.8, "text": "And a new story with real listeners is shown exactly as it came out."},
-  {"start": 118.2, "end": 121.0, "text": "The same loop works on film."},
-  {"start": 121.0, "end": 126.0, "text": "SAM 3.1 masked the faces; StillHere filled them with the surrounding colour."},
-  {"start": 126.0, "end": 131.8, "text": "Glimmer's counts decide whether the edits worked; Spark Open's are shown beside them."},
-  {"start": 131.8, "end": 137.8, "text": "TRIBE then forecasts where filling the faces changes the brain response."},
-  {"start": 137.8, "end": 143.8, "text": "Twenty-eight real viewers of the intact film are the test."},
-  {"start": 143.8, "end": 149.8, "slot": "film", "text": "{film_vo}",
+  {
+   "start": 0.2,
+   "end": 6.4,
+   "text": "Labs study people who can't respond after brain injury by playing them stories in the scanner."
+  },
+  {
+   "start": 6.4,
+   "end": 12.4,
+   "text": "But every new story needs its own 12-15 healthy volunteers scanned first, in that language."
+  },
+  {
+   "start": 12.4,
+   "end": 20.4,
+   "text": "For a new story, StillHere gives labs a first reading with zero volunteer scans, measured against each listener's own brain."
+  },
+  {
+   "start": 20.4,
+   "end": 23.8,
+   "text": "It has been tested only in healthy volunteers."
+  },
+  {
+   "start": 24.2,
+   "end": 27.0,
+   "text": "A researcher types the study they want."
+  },
+  {
+   "start": 27.0,
+   "end": 31.2,
+   "text": "Muse Spark 1.3 turns it into a plan from a tested menu."
+  },
+  {
+   "start": 31.2,
+   "end": 35.6,
+   "text": "Ask about one patient's scan, and it declines, with the reason."
+  },
+  {
+   "start": 35.6,
+   "end": 41.8,
+   "text": "On 62 unseen requests, it wrongly accepted 2.3 percent; Spark Open, 7.6 and 6.8."
+  },
+  {
+   "start": 42.2,
+   "end": 45.8,
+   "text": "StillHere cuts the story at sentence boundaries."
+  },
+  {
+   "start": 45.8,
+   "end": 50.0,
+   "text": "Voice Transcribe hears 98 percent of the words, reordered."
+  },
+  {
+   "start": 50.0,
+   "end": 53.0,
+   "text": "Our first word scramble failed this check."
+  },
+  {
+   "start": 53.0,
+   "end": 59.8,
+   "text": "Spark Open adds a second opinion on the conditions. It is advisory, and never blocks a build."
+  },
+  {
+   "start": 60.2,
+   "end": 65.6,
+   "text": "This part runs live and uncut, on a laptop GPU."
+  },
+  {
+   "start": 65.6,
+   "end": 71.6,
+   "text": "A judge picks a public clip, a condition and a seed."
+  },
+  {
+   "start": 71.6,
+   "end": 76.0,
+   "text": "TRIBE v2 forecasts the brain response, stage by stage."
+  },
+  {
+   "start": 76.0,
+   "end": 82.0,
+   "text": "Played backwards, no words reach the text lane. That is model input, not a brain result."
+  },
+  {
+   "start": 82.0,
+   "end": 88.0,
+   "text": "Every live run ends on the gray forecast, with no real line drawn over it."
+  },
+  {
+   "start": 88.0,
+   "end": 91.8,
+   "text": "No one has scanned this yet."
+  },
+  {
+   "start": 92.2,
+   "end": 96.6,
+   "text": "Gray is the forecast; colour is real listeners."
+  },
+  {
+   "start": 96.6,
+   "end": 102.2,
+   "text": "On a held-out audiobook, it was worth about five volunteers, at least two."
+  },
+  {
+   "start": 102.2,
+   "end": 107.6,
+   "text": "In language areas, it beat a word-rate model in 43 of 49 listeners."
+  },
+  {
+   "start": 107.6,
+   "end": 112.0,
+   "text": "Every story we scored stays on the wall, weak ones too."
+  },
+  {
+   "start": 112.0,
+   "end": 117.8,
+   "slot": "d20",
+   "text": "{d20_vo}",
+   "variants": {
+    "pass": "On a new story, TRIBE's language readout was stronger intact than shuffled.",
+    "fail": "Where no public scan exists, the forecast stays gray."
+   }
+  },
+  {
+   "start": 118.2,
+   "end": 121.0,
+   "text": "The same loop works on film."
+  },
+  {
+   "start": 121.0,
+   "end": 126.0,
+   "text": "SAM 3.1 masked the faces; StillHere filled them with the surrounding colour."
+  },
+  {
+   "start": 126.0,
+   "end": 131.8,
+   "text": "Glimmer's counts decide whether the edits worked; Spark Open's are shown beside them."
+  },
+  {
+   "start": 131.8,
+   "end": 137.8,
+   "text": "TRIBE then forecasts where filling the faces changes the brain response."
+  },
+  {
+   "start": 137.8,
+   "end": 143.8,
+   "text": "Twenty-eight real viewers of the intact film are the test."
+  },
+  {
+   "start": 143.8,
+   "end": 149.8,
+   "slot": "film",
+   "text": "{film_vo}",
    "variants": {
     "PASS": "The forecast lined up with where these viewers' brains tracked faces.",
-    "PASS_VISUAL": "It lined up, mostly in the brain's visual areas.",
-    "FAIL_NFS": "It lined up, but no better than for the control.",
+    "PASS_VISUAL": "It lined up; most of the match comes from visual-network areas.",
+    "FAIL_NFS": "It lined up, but no better than its forecast for the control.",
     "FAIL": "It did not line up. We show it because we said we would.",
-    "UNINFORMATIVE": "The viewers' own face maps did not agree, so this film cannot test it.",
-    "NOT_RUN": "The face test did not run, before any of these viewers' brain data was read."
-   }},
-  {"start": 150.2, "end": 155.0, "text": "Every model here is Meta's, and each has one job."},
-  {"start": 155.0, "end": 160.0, "text": "A full live run takes {run_s} seconds and costs {run_cost}."},
-  {"start": 160.0, "end": 167.6, "text": "A first healthy reference for a new story, before any scans, and evidence for how far to trust it."},
-  {"start": 168.0, "end": 171.8, "text": "Research use only. Not a diagnosis or medical advice."}
+    "UNINFORMATIVE": "The viewers' own face maps did not agree, so this film cannot test the forecast.",
+    "NOT_RUN": "The face test did not run; it was set to run once."
+   }
+  },
+  {
+   "start": 150.2,
+   "end": 155.0,
+   "text": "Every model here is Meta's, and each has one job."
+  },
+  {
+   "start": 155.0,
+   "end": 160.0,
+   "text": "A full live run takes {run_s} seconds and costs {run_cost}."
+  },
+  {
+   "start": 160.0,
+   "end": 167.6,
+   "text": "A first healthy reference for a new story, before any scans, and evidence for how far to trust it."
+  },
+  {
+   "start": 168.0,
+   "end": 171.8,
+   "text": "Research use only. Not a diagnosis or medical advice."
+  }
  ]
 }

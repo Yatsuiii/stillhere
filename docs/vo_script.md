@@ -2,8 +2,8 @@
 
 Generated from video/scenes_v4.json by `python scripts/render_video_v4.py --vo-md docs/vo_script.md`; do not edit by hand.
 Read at about 2.5 words a second. The first four lines are the frozen D23 opener, word for word; they start under the cold
-open. Lines in {braces} are filled before recording. The film result line has one reading per ending; record the one that
-happened. Yatsu records Monday.
+open. Lines in {braces} are filled before recording. The d20 and film result lines have one reading per ending; record the
+one that happened. On a d20 fail the notthefall scene leaves and the story wall runs on to 118 s. Yatsu records Monday.
 
 ## 0-10 s · cold_open · headline: "A forecast first, then real listeners"
 
@@ -76,7 +76,9 @@ happened. Yatsu records Monday.
 
 ## 112-118 s · trust_d20 · headline: "A new story, real listeners"
 
-- 112.0-117.8 s: "And a new story with real listeners is shown exactly as it came out." (14 words, 2.4 words/s)
+- 112.0-117.8 s, one reading per d20 ending:
+  - pass: "On a new story, TRIBE's language readout was stronger intact than shuffled." (12 words, 2.1 words/s)
+  - fail: "Where no public scan exists, the forecast stays gray." (9 words, 1.6 words/s)
 
 ## 118-126 s · film_edit · headline: "Remove the faces, keep the film"
 
@@ -87,11 +89,11 @@ happened. Yatsu records Monday.
 
 - 126.0-131.8 s: "Glimmer's counts decide whether the edits worked; Spark Open's are shown beside them." (13 words, 2.2 words/s)
 
-## 132-138 s · film_maps · headline: "Forecast maps: faces versus control"
+## 132-138 s · film_maps · headline: "Forecast map and viewers' face map"
 
 - 131.8-137.8 s: "TRIBE then forecasts where filling the faces changes the brain response." (11 words, 1.8 words/s)
 
-## 138-144 s · film_ghost · headline: "28 viewers over the forecast"
+## 138-144 s · film_ghost · headline: "Viewers drawn over the forecast"
 
 - 137.8-143.8 s: "Twenty-eight real viewers of the intact film are the test." (10 words, 1.7 words/s)
 
@@ -99,11 +101,11 @@ happened. Yatsu records Monday.
 
 - 143.8-149.8 s, one reading per film ending:
   - PASS: "The forecast lined up with where these viewers' brains tracked faces." (11 words, 1.8 words/s)
-  - PASS_VISUAL: "It lined up, mostly in the brain's visual areas." (9 words, 1.5 words/s)
-  - FAIL_NFS: "It lined up, but no better than for the control." (10 words, 1.7 words/s)
+  - PASS_VISUAL: "It lined up; most of the match comes from visual-network areas." (11 words, 1.8 words/s)
+  - FAIL_NFS: "It lined up, but no better than its forecast for the control." (12 words, 2.0 words/s)
   - FAIL: "It did not line up. We show it because we said we would." (13 words, 2.2 words/s)
-  - UNINFORMATIVE: "The viewers' own face maps did not agree, so this film cannot test it." (14 words, 2.3 words/s)
-  - NOT_RUN: "The face test did not run, before any of these viewers' brain data was read." (15 words, 2.5 words/s)
+  - UNINFORMATIVE: "The viewers' own face maps did not agree, so this film cannot test the forecast." (15 words, 2.5 words/s)
+  - NOT_RUN: "The face test did not run; it was set to run once." (12 words, 2.0 words/s)
 
 ## 150-160 s · close_rail · headline: "Meta models, one job each"
 
@@ -118,4 +120,4 @@ happened. Yatsu records Monday.
 
 - 168.0-171.8 s: "Research use only. Not a diagnosis or medical advice." (9 words, 2.4 words/s)
 
-Total: 384 words in 172 s (2.23 words/s, longest film reading counted).
+Total: 382 words in 172 s (2.22 words/s, longest reading of each slot counted).

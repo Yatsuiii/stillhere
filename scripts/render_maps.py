@@ -51,8 +51,9 @@ def synthetic(P: dict, seed: int) -> np.ndarray:
 
 
 def render(vert: np.ndarray, out: Path, title: str = "", vmax: float | None = None, placeholder: bool = False,
-           size=(1600, 430)) -> Path:
-    """Four views of 20,484 vertex values in one PNG of `size` pixels; symmetric diverging colour scale."""
+           size=(1600, 430), views: str = "all") -> Path:
+    """Four views (views="all") or the two lateral views ("lateral") of 20,484 vertex values in one PNG of `size` pixels; symmetric
+    diverging colour scale."""
     os.environ.setdefault("MPLCONFIGDIR", str(REPO.parent / ".cache/mpl"))
     import matplotlib
     matplotlib.use("Agg")
@@ -61,9 +62,11 @@ def render(vert: np.ndarray, out: Path, title: str = "", vmax: float | None = No
     fs5 = datasets.fetch_surf_fsaverage("fsaverage5")
     vmax = float(vmax or np.nanmax(np.abs(vert)) or 1.0)
     dpi = 100; fig = plt.figure(figsize=(size[0] / dpi, size[1] / dpi), dpi=dpi, facecolor="white")
-    views = [("left", "lateral"), ("left", "medial"), ("right", "medial"), ("right", "lateral")]
-    for i, (h, view) in enumerate(views):
-        ax = fig.add_axes([0.005 + i * 0.235, 0.02, 0.235, 0.84], projection="3d")
+    vs = [("left", "lateral"), ("left", "medial"), ("right", "medial"), ("right", "lateral")] if views == "all" else \
+        [("left", "lateral"), ("right", "lateral")]
+    step = 0.94 / len(vs)
+    for i, (h, view) in enumerate(vs):
+        ax = fig.add_axes([0.005 + i * step, 0.02, step, 0.84 if title else 0.96], projection="3d")
         data = vert[:NV] if h == "left" else vert[NV:]
         plotting.plot_surf_stat_map(fs5[f"infl_{h}"], data, hemi=h, view=view, bg_map=fs5[f"sulc_{h}"], axes=ax, figure=fig,
                                     cmap="RdBu_r", vmax=vmax, colorbar=False, threshold=None)
@@ -72,7 +75,7 @@ def render(vert: np.ndarray, out: Path, title: str = "", vmax: float | None = No
     if title:
         fig.text(0.01, 0.93, title, fontsize=18, color="#1d1f23", weight="bold")
     if placeholder:
-        fig.text(0.5, 0.45, PLACEHOLDER, fontsize=34, color="#4a3b00", ha="center", va="center", weight="bold",
+        fig.text(0.5, 0.45, PLACEHOLDER, fontsize=34 if views == "all" else 24, color="#4a3b00", ha="center", va="center", weight="bold",
                  bbox=dict(boxstyle="round,pad=0.4", fc="#ffe58a", ec="#d4a500", alpha=0.92))
     out = Path(out); out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=dpi, facecolor="white"); plt.close(fig)
@@ -85,7 +88,8 @@ def main(argv=None) -> None:
     g.add_argument("--synthetic", type=int, metavar="SEED"); g.add_argument("--rc", type=Path); g.add_argument("--vertices", type=Path)
     ap.add_argument("--key", choices=("R", "C")); ap.add_argument("--atlas", type=Path, default=ATLAS); ap.add_argument("--title", default="")
     ap.add_argument("--vmax", type=float); ap.add_argument("--tested-only", action="store_true")
-    ap.add_argument("--size", type=int, nargs=2, default=(1600, 430)); a = ap.parse_args(argv)
+    ap.add_argument("--size", type=int, nargs=2, default=(1600, 430)); ap.add_argument("--views", choices=("all", "lateral"), default="all")
+    a = ap.parse_args(argv)
     if a.vertices is not None:
         vert = np.load(a.vertices).astype(float)
         assert vert.shape == (2 * NV,), f"expected {2 * NV} vertex values, got {vert.shape}"
@@ -97,7 +101,7 @@ def main(argv=None) -> None:
             assert a.key, "--rc needs --key R or C"
             vals = json.load(open(a.rc))[a.key]
         vert = to_vertices(vals, P, a.tested_only)
-    render(vert, a.out, a.title, a.vmax, a.synthetic is not None, tuple(a.size))
+    render(vert, a.out, a.title, a.vmax, a.synthetic is not None, tuple(a.size), a.views)
     print(f"{a.out}: {'synthetic placeholder' if a.synthetic is not None else 'map'}, {int(np.isfinite(vert).sum())} vertices coloured")
 
 

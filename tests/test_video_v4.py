@@ -2,7 +2,9 @@
 most 7 words that fits the frame at 88 px (49.5 px at 1080 wide), voice-over and subtitles on every scene at a speakable rate, the D23
 opener word for word, the banned wording, footers, the ghost-line display rule (draw order, chips, the about-5 line only beside the LPP
 ghost line), every slot ending, the masked planner sentence, numbers against their results files, the generated voice-over script, and
-the old skeleton cut removed."""
+the old skeleton cut removed. Rulings of Oct 29 18:15 IST: D20 pass uses the PREREG pass line verbatim and a fail drops the scene and
+pairs the live gray line with the LPP ghost line; film result sentences come verbatim from docs/captions.md and "brain signal rose with
+on-screen face area" appears only on a PASS; the LIVE beat ends on the NO-GO time courses with the reversed variant."""
 import importlib.util
 import json
 import re
@@ -17,7 +19,9 @@ SPEC = json.loads((ROOT / "video/scenes_v4.json").read_text())
 SC = {s["id"]: s for s in SPEC["scenes"]}
 BEATS = [(0, 10), (10, 24), (24, 42), (42, 60), (60, 92), (92, 118), (118, 150), (150, 172)]
 BANNED = ("aware", "awareness", "conscious", "consciousness", "hospital", "detect", "detects", "detected", "detection", "diagnose",
-          "a test for patients", "before anyone looked", "face check", "validated", "sedation", "blur")
+          "a test for patients", "before anyone looked", "face check", "validated", "sedation", "blur", "understanding", "comprehension",
+          "beats the sound envelope", "beat the sound envelope")
+PREREG = ROOT.parent / "stillhere/PREREG.md"                            # the analysis repository's hashed text, outside this repository
 FONT = Path("/usr/share/fonts/noto/NotoSans-Black.ttf")               # what Chrome draws the 800-weight headline with here
 FILM_ENDINGS = {"PASS", "PASS_VISUAL", "FAIL_NFS", "FAIL", "UNINFORMATIVE", "NOT_RUN"}
 
@@ -32,6 +36,10 @@ def all_text(o, skip=("mask", "file", "kind", "tone", "key", "view", "show")) ->
 
 def endings_of(slot):
     return next(s["variants"] for s in SPEC["scenes"] if s.get("slot") == slot)
+
+
+def flat(text: str) -> str:
+    return re.sub(r"\s+", " ", text)
 
 
 def test_timeline_and_beats():
@@ -85,12 +93,13 @@ def test_banned_wording_everywhere():
 
 
 def test_footers_and_film_credit():
-    ctx = {"ghost": V.synthetic_ghost(), "maps": {"R": Path("/x/R.png"), "C": Path("/x/C.png")}}
+    ctx = {"ghost": V.synthetic_ghost(), "maps": {"R": Path("/x/R.png"), "M": Path("/x/M.png")}}
     film_ok = (V.FILM / "edits_v2.json").exists()
+    ctx["d20_line"] = V.d20_line(SPEC)
     for x in SPEC["scenes"]:
         options = [dict()] + ([{x["slot"]: e} for e in x["variants"]] if "slot" in x else [])
         for end in options:
-            if x["id"] == "film_ghost" and not film_ok:
+            if x["id"] == "film_ghost" and not film_ok or V.resolve(x, end) is None:
                 continue
             for _, items in V.resolve(x, end):
                 h = V.scene_html(x, items, {}, SPEC, ctx)
@@ -121,7 +130,76 @@ def test_ghost_line_display_rule():
         text = all_text(x)
         if any(it["kind"] in ("livelines", "filmghost") for _, items in steps for it in items) or x["beat"] in ("live", "film"):
             assert "volunteers' worth" not in text and "frozen_line" not in json.dumps(x), x["id"]
+    for x in SPEC["scenes"]:
+        for items in [x.get("common", [])] + [v for v in x.get("variants", {}).values() if v]:
+            for it in items:
+                assert it["kind"] != "chip" or it["text"] in chips, it["text"]
     assert "Checked: held-out LPP" in chips and "Forecast only · audio-only, laptop" in chips
+
+
+def test_d20_endings_keep_172_s():
+    assert set(SC["trust_d20"]["variants"]) == set(SC["live_result"]["variants"]) == {"pass", "fail"}
+    assert SC["trust_d20"]["variants"]["fail"] is None and SC["live_result"]["slot"] == SC["trust_d20"]["slot"] == "d20"
+    for e in ("pass", "fail", None):
+        tl = V.timeline(SPEC, {"d20": e} if e else {})
+        assert tl[0][1] == 0 and tl[-1][2] == 172 and all(a[2] == b[1] for a, b in zip(tl, tl[1:]))
+        ids = [x["id"] for x, _, _ in tl]
+        assert ("trust_d20" in ids) == (e != "fail")
+        if e == "fail":
+            assert next(b for x, _, b in tl if x["id"] == "trust_wall") == 118
+    pair = {e: V.resolve(SC["live_result"], {"d20": e})[0][1] for e in ("pass", "fail")}
+    assert [i["pair"] for i in pair["pass"] if i["kind"] == "endscreen"] == ["d20"]
+    assert [i["pair"] for i in pair["fail"] if i["kind"] == "endscreen"] == ["lpp"]
+    ctx = {"ghost": V.synthetic_ghost(), "maps": {}, "d20_line": V.d20_line(SPEC)}
+    assert "Real listeners, held-out story" in V.endscreen_html("lpp", {}, ctx)
+    assert "Real listeners, different story." in V.endscreen_html("d20", {}, ctx)
+
+
+def test_d20_pass_line_is_the_prereg_line():
+    line = V.d20_line(SPEC)
+    if not PREREG.exists():
+        pytest.skip("PREREG.md lives in the analysis repository")
+    d20 = re.search(r"\*\*D20 \(added.*?(?=\n- \*\*D)", PREREG.read_text(), re.S).group(0)
+    m = re.search(r'Pass: "([^"]+)"', d20)
+    assert m and line.replace("{d20_N} listeners", "N listeners").replace("notthefall", "`notthefall`") == m.group(1)
+
+
+def test_film_sentences_verbatim_and_neutral():
+    caps = flat((ROOT / "docs/captions.md").read_text())
+    for e, items in SC["film_stamp"]["variants"].items():
+        for it in items:
+            if it["kind"] in ("text", "small"):
+                assert it["text"] in caps, (e, it["text"])
+    for it in SC["film_stamp"]["common"]:
+        assert it["text"] in caps
+    rose = "Brain signal rose with on-screen face area."
+    for e, items in SC["film_ghost"]["variants"].items():
+        assert (rose in all_text(items)) == (e == "PASS"), e
+    assert rose not in all_text(SC["film_ghost"]["common"]) and rose.lower() not in all_text(SPEC["vo"]).lower()
+    assert SC["film_ghost"]["common"][0]["title"] == "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"
+    assert SC["film_maps"]["items"][0]["maps"][1]["title"] == "{N} real viewers: brain signal vs on-screen face area"
+
+
+def test_live_beat_ends_on_the_no_go_time_courses():
+    o = json.loads((ROOT / "results/order_map_gonogo.json").read_text())
+    assert o["verdict"] == "NO-GO" and not any(x.get("slot") == "order" for x in SPEC["scenes"])
+    assert "order map" not in all_text(SPEC["scenes"]).lower()
+    run = o["clips"][V.LIVE_CLIP]["runs"]
+    assert run["reversed"]["word_events_reaching_text_lane"] == 0 and "0 words" in V.lanes_html("reversed")
+    assert f"{run['intact']['word_events_reaching_text_lane']} words" in V.lanes_html("intact")
+    assert "0 words reach the text lane (model input, not a brain result)." in all_text(SC["live_reversed"])
+    for cond in ("intact", "reversed", "order"):
+        svg = V.livetc_svg(cond)
+        assert "Forecasts, not scans." in svg and "#1f6fb4" not in svg                # gray forecasts only, no listener colour
+    assert [i["kind"] for _, items in V.resolve(SC["live_result"], {}) for i in items][0] == "endscreen"
+
+
+def test_ghost_file_swaps_in(tmp_path, monkeypatch):
+    doc = {k: v for k, v in V.synthetic_ghost().items() if k != "placeholder"}
+    f = tmp_path / "ghostline_lpp_s8.json"; f.write_text(json.dumps(doc))
+    monkeypatch.setattr(V, "GHOST", f)
+    g = V.ghost_doc()
+    assert "placeholder" not in g and "PLACEHOLDER" not in V.ghost_svg(g, "short", list(V.GHOST_ORDER))
 
 
 def test_every_slot_ending_resolves():
@@ -129,11 +207,11 @@ def test_every_slot_ending_resolves():
     for x in SPEC["scenes"]:
         if "slot" in x:
             for e in x["variants"]:
-                assert V.resolve(x, {x["slot"]: e})
+                assert V.resolve(x, {x["slot"]: e}) or x["variants"][e] is None
             assert any(it["kind"] == "placeholder" for _, items in V.resolve(x, {}) for it in items)
     film_vo = next(c for c in SPEC["vo"] if c.get("slot") == "film")
     assert set(film_vo["variants"]) == FILM_ENDINGS
-    assert "before any of these viewers' brain data was read" in all_text(SC["film_stamp"]["variants"]["NOT_RUN"])
+    assert "It was set to run once, by rules written before any brain data was read." in all_text(SC["film_stamp"]["variants"]["NOT_RUN"])
     assert "On the intact film, the forecast was worth about {veq_film} real viewers, and at least {veq_film_lo}." in all_text(SC["film_stamp"]["common"])
     assert V.vo_cues(SPEC, {"film": "FAIL"})[[c.get("slot") for c in SPEC["vo"]].index("film")]["text"] == film_vo["variants"]["FAIL"]
 

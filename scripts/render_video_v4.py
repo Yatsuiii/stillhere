@@ -27,6 +27,8 @@ SCENES = REPO / "video/scenes_v4.json"
 GHOST = REPO / "results/ghostline_lpp_s8.json"
 FILM = REPO.parent / "stillhere/pilot/film/film_stim_v2"                   # seg_intact.mp4, faces_removed_v2.mp4, area_matched_v2.mp4
 RC_FILES = (REPO / "results/face_map_RC.json", REPO.parent / "stillhere-pilot-public/results/face_map_RC.json")
+ORDER = REPO / "results/order_map_gonogo.json"                            # the laptop forecasts behind the LIVE beat (NO-GO: no order map)
+LIVE_CLIP = "alice_ch01"
 GHOST_ORDER = ("forecast", "chip", "group", "five", "one")                # display rule draw order (group and five are "listeners")
 BOX = (104, 176, 1712, 640)                                              # x, y, w, h of a scene's moving picture
 E = html.escape
@@ -39,7 +41,8 @@ def words(text: str) -> int:
 
 # ---- spec ----------------------------------------------------------------------------------------------------------------------
 def resolve(sc: dict, endings: dict) -> list:
-    """[(at, items)] steps of a scene under the chosen endings; a slot without an ending shows its default and a placeholder tag."""
+    """[(at, items)] steps of a scene under the chosen endings; a slot without an ending shows its default and a placeholder tag; None
+    when the chosen ending leaves the scene out (D20 fail)."""
     if "steps" in sc:
         return [(s["at"], s["items"]) for s in sc["steps"]]
     if "slot" not in sc:
@@ -48,7 +51,19 @@ def resolve(sc: dict, endings: dict) -> list:
     if e is None:
         tag = {"kind": "placeholder", "text": f"{sc['slot']}: one of {', '.join(sc['variants'])}"}
         return [(0.0, sc.get("common", []) + sc.get("default", []) + [tag])]
-    return [(0.0, sc.get("common", []) + sc["variants"][e])]
+    v = sc["variants"][e]
+    return None if v is None else [(0.0, sc.get("common", []) + v)]
+
+
+def timeline(spec: dict, endings: dict) -> list:
+    """(scene, start, end) of every scene shown; a scene an ending leaves out is covered by the scene before it, so the cut stays 172 s."""
+    out = []
+    for sc in spec["scenes"]:
+        if resolve(sc, endings) is None:
+            prev, a, _ = out[-1]; out[-1] = (prev, a, sc["end"])
+        else:
+            out.append((sc, sc["start"], sc["end"]))
+    return out
 
 
 def vo_cues(spec: dict, endings: dict) -> list:
@@ -101,14 +116,13 @@ STYLE = {"forecast": 'stroke="#8a8f98" stroke-width="5" stroke-dasharray="16 10"
          "one": 'stroke="#2a9d55" stroke-width="1.8" fill="none"'}
 
 
-def ghost_svg(doc: dict, view: str, show: list, half: bool) -> str:
+def ghost_svg(doc: dict, view: str, show: list, size: str = "full") -> str:
     """The ghost line as the display rule draws it; `show` is a prefix of the draw order, so a step can stop early but never reorder."""
     assert list(show) == list(GHOST_ORDER[: len(show)]), f"ghost steps must follow the display rule's draw order: {show}"
     t = np.array(doc["time_s"]); i0, i1 = doc["short_view"]["index"] if view == "short" else (0, len(t))
-    if half:
-        W, H, x0, y0, w, h = 820, 470, 30, 110, 770, 250
-    else:
-        W, H, x0, y0, w, h = 1712, 560, 70, 70, 1612, 400
+    W, H, x0, y0, w, h = {"full": (1712, 560, 70, 70, 1612, 400), "half": (820, 470, 30, 110, 770, 250),
+                          "tile": (600, 420, 20, 104, 560, 190)}[size]
+    half = size != "full"
     xs = t[i0:i1]; L = doc["lines"]; yr = (-3.2, 3.2); xr = (xs[0], xs[-1])
     parts = [f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">',
              f'<text x="{x0}" y="36" font-size="28" fill="#1d1f23" font-weight="600">{E(doc["title"])}</text>',
@@ -117,7 +131,7 @@ def ghost_svg(doc: dict, view: str, show: list, half: bool) -> str:
     shown = [k for k in ("forecast", "group", "five", "one") if k in show]
     for k in shown:
         parts.append(f'<path d="{_path(xs, L[k]["values"][i0:i1], x0, y0, w, h, xr, yr)}" {STYLE[k]}/>')
-    per_row = 2 if half else 4
+    per_row = {"full": 4, "half": 2, "tile": 1}[size]
     for n, k in enumerate(shown):
         lx = x0 + (n % per_row) * (w / per_row); ly = y0 + h + 70 + (n // per_row) * 34
         parts.append(f'<line x1="{lx:.0f}" y1="{ly - 8}" x2="{lx + 44:.0f}" y2="{ly - 8}" {STYLE[k]}/>'
@@ -161,19 +175,51 @@ def curve_svg(show: list) -> str:
     return "".join(p) + "</svg>"
 
 
-def livelines_svg() -> str:
-    """Oct 29's live laptop forecast (audio-only, stock TRIBE v2): the gray line alone, intact dashed and sentence scramble dotted."""
-    d = json.loads((REPO / "results/demo_live_tribe_conditions.json").read_text())
-    ser = {c: np.concatenate([np.array(r["aud_parcel_timecourse"]).mean(1) for r in d["runs"] if r["condition"] == c])
-           for c in ("intact", "sentence_scramble")}
-    W, H = 1712, 520; x0, y0, w, h = 70, 40, 1600, 400
-    allv = np.concatenate(list(ser.values())); yr = (allv.min() - 0.02, allv.max() + 0.02); n = max(len(v) for v in ser.values())
-    p = [f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">']
-    dash = {"intact": STYLE["forecast"], "sentence_scramble": 'stroke="#8a8f98" stroke-width="4" stroke-dasharray="3 9" stroke-linecap="round" fill="none"'}
-    for c, v in ser.items():
-        p.append(f'<path d="{_path(np.arange(len(v)), v, x0, y0, w, h, (0, n - 1), yr)}" {dash[c]}/>')
-    p.append(f'<text x="{x0}" y="{H - 34}" font-size="22" fill="#5d6470">TRIBE v2 forecast, hearing areas, one public LibriVox clip: dashed intact, dotted sentence scramble ({n} s)</text>')
-    return "".join(p) + "</svg>"
+def live_runs() -> dict:
+    return json.loads(ORDER.read_text())["clips"][LIVE_CLIP]
+
+
+def livetc_svg(cond: str, W: int = 1712, H: int = 330) -> str:
+    """Laptop forecasts from results/order_map_gonogo.json (stock TRIBE v2, LibriVox Alice ch. 1, 40 s), gray only: language and hearing
+    areas side by side. intact: the intact forecast; reversed: the reversed audio's forecast in its own time; order: the intact forecast
+    with the sentence-shuffled forecast put back in the original order (kept seconds only, dots)."""
+    tc = live_runs()["timecourses_raw_units"]
+    pw = W / 2; out = [f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">']
+    for n, (reg, name) in enumerate((("LANGUAGE", "Language areas"), ("HEARING", "Hearing areas"))):
+        x0, y0, w, h = n * pw + 20, 44, pw - 60, H - 110
+        vals = tc[reg]["reversed"] if cond == "reversed" else tc[reg]["intact"]
+        pts = tc[reg]["unshuffled_kept"]
+        allv = vals + (pts["value"] if cond == "order" else [])
+        yr = (min(allv) - 0.05, max(allv) + 0.05); xr = (0, 40)
+        out.append(f'<text x="{x0}" y="28" font-size="26" fill="#1d1f23" font-weight="600">{name}</text>')
+        out.append(f'<path d="{_path(np.arange(len(vals)), vals, x0, y0, w, h, xr, yr)}" {STYLE["forecast"]}/>')
+        if cond == "order":
+            for t, v in zip(pts["original_time_s"], pts["value"]):
+                cx = x0 + t / 40 * w; cy = y0 + h - (v - yr[0]) / (yr[1] - yr[0]) * h
+                out.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="5" fill="#5d6470"/>')
+        out.append(f'<text x="{x0}" y="{y0 + h + 30}" font-size="20" fill="#5d6470">0 to 40 s of the clip</text>')
+    lab = {"intact": "TRIBE v2 forecast, intact (dashed)", "reversed": "TRIBE v2 forecast, the same audio reversed (dashed, in its own time)",
+           "order": "Intact (dashed); shuffled, then put back in order (dots)"}[cond]
+    out.append(f'<text x="20" y="{H - 12}" font-size="22" fill="#1d1f23">{lab}. LibriVox, Alice ch. 1, 40 s. Forecasts, not scans.</text>')
+    return "".join(out) + "</svg>"
+
+
+def lanes_html(cond: str) -> str:
+    """TRIBE's three input lanes as that run logged them (results/order_map_gonogo.json)."""
+    r = live_runs()["runs"][cond]
+    assert r["video_lane"].startswith("off") and r["audio_lane"] and r["text_lane"]["loaded"]
+    n = r["word_events_reaching_text_lane"]
+    rows = [("w2v-BERT: sound", "on", 100), ("Llama 3.2: words in context", f"{n} words", 100 if n else 0), ("V-JEPA 2: off (audio)", "off", 0)]
+    return '<div class="lanes">' + "".join(
+        f'<div class="lane"><div class="bar"><div class="fill" style="width:{pct}%"></div></div><span>{E(a)}</span>'
+        f'<span class="st">{E(st)}</span></div>' for a, st, pct in rows) + "</div>"
+
+
+def receipt_text(cond: str) -> str:
+    r = live_runs()["runs"][cond]; t = r["text_lane"]
+    return (f"{r['device'].replace('NVIDIA GeForce ', '')}, {r['utc'][:10]} {r['utc'][11:16]} UTC: model load {r['model_load_s']:.1f} s, "
+            f"predict {r['predict_s']:.1f} s, peak {r['peak_vram_gb']:.1f} GB; Llama 3.2 3B text features {t['features_s']:.0f} s "
+            f"({', '.join(t['dtypes'])}, no quantization).")
 
 
 def face_seconds() -> np.ndarray:
@@ -183,14 +229,14 @@ def face_seconds() -> np.ndarray:
     return on[: len(on) // 24 * 24].reshape(-1, 24).mean(1)
 
 
-def filmghost_svg() -> str:
+def filmghost_svg(title_html: str) -> str:
     """Placeholder: synthetic gray forecast and coloured 28-viewer average; the face-on-screen ticks are real (stimulus file)."""
     fs = face_seconds(); t = np.arange(10, 186); rng = np.random.default_rng(31)
     base = np.convolve(rng.normal(size=t.size + 6), np.ones(6) / 6, "valid")[: t.size]
-    W, H = 1712, 560; x0, y0, w, h = 70, 60, 1600, 380; xr, yr = (10, 185), (-3, 3)
+    W, H = 1712, 470; x0, y0, w, h = 70, 20, 1600, 360; xr, yr = (10, 185), (-3, 3)
     z = lambda x: (x - x.mean()) / x.std()
-    p = [f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">',
-         f'<text x="{x0}" y="36" font-size="28" fill="#1d1f23" font-weight="600">Tears of Steel, intact film: 28 Emo-FilM viewers (average)</text>',
+    p = [f'<div class="charttitle">{title_html}</div>',
+         f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">',
          f'<path d="{_path(t, z(base), x0, y0, w, h, xr, yr)}" {STYLE["forecast"]}/>',
          f'<path d="{_path(t, z(base + rng.normal(size=t.size) * 0.6), x0, y0, w, h, xr, yr)}" {STYLE["group"]}/>']
     for s in range(10, min(186, len(fs))):
@@ -200,6 +246,21 @@ def filmghost_svg() -> str:
     p.append(f'<text x="{x0}" y="{y0 + h + 62}" font-size="22" fill="#5d6470">ticks: a face on screen for most of that second (film time 10 to 185 s)</text>'
              f'<text x="{W / 2}" y="{H / 2}" font-size="40" text-anchor="middle" fill="#6b5600" opacity="0.8">PLACEHOLDER: synthetic lines (Sunday)</text>')
     return "".join(p) + "</svg>"
+
+
+def endscreen_html(pair: str, values: dict, ctx: dict) -> str:
+    """The LIVE beat's last screen: the laptop forecast alone in gray, and beside it, as a separate tile, real listeners on another story:
+    notthefall on a D20 pass ("Real listeners, different story."), the LPP ghost line on a fail ("Real listeners, held-out story")."""
+    left = ('<div class="chip">Forecast only · audio-only, laptop</div>' + livetc_svg("order", 1060, 330)
+            + '<div class="small">No public scan of this clip. Forecast, not a scan.</div>')
+    if pair == "d20":
+        right = ('<div class="chip">notthefall: rule 340b74b</div><div class="tiletitle">Real listeners, different story.</div>'
+                 f'<div class="small">{fill(ctx["d20_line"], values)}</div>')
+    elif pair == "lpp":
+        right = ghost_svg(ctx["ghost"], "short", ["forecast", "chip", "group"], "tile") + '<div class="tiletitle">Real listeners, held-out story</div>'
+    else:
+        right = '<div class="phbox">PLACEHOLDER: d20 pass (notthefall tile) or fail (LPP ghost line), tonight</div>'
+    return f'<div class="row"><div class="col">{left}</div><div class="tile">{right}</div></div>'
 
 
 def people_svg(n: int) -> str:
@@ -241,6 +302,10 @@ table{font-size:34px;border-collapse:collapse} td{padding:10px 40px 10px 0;verti
 .below{position:absolute;left:104px;top:470px;width:1712px;display:flex;flex-direction:column;gap:18px}
 .ph{background:#ffe58a;color:#4a3b00;padding:0 6px;border-radius:5px;font-weight:600}
 .phbox{border:3px dashed #d4a500;padding:12px 18px;font-size:26px;color:#6b5600;border-radius:10px;background:#fff8d6}
+.col{width:1060px;display:flex;flex-direction:column;gap:12px} .tile{width:600px;border:2px solid #e3e0d8;border-radius:14px;padding:14px;background:#fff;display:flex;flex-direction:column;gap:10px}
+.tiletitle{font-size:34px;font-weight:700;color:#1f6fb4} .charttitle{font-size:30px;font-weight:600}
+.maps2{display:flex;gap:32px} .maps2 figure{margin:0;width:840px} .maps2 img{width:840px;display:block} .maptitle{font-size:28px;font-weight:600;margin-bottom:6px}
+.receipt{font-size:24px;color:#5d6470;font-family:"Noto Sans Mono",monospace}
 .foot{position:absolute;left:104px;right:104px;bottom:12px;font-size:18px;color:#5d6470;line-height:1.3}
 """
 
@@ -279,37 +344,37 @@ def item_html(it: dict, values: dict, ctx: dict) -> str:
         return ('<table class="check">' + "".join(f"<tr><td>{mark}</td><td>{E(a)}</td><td>{fill(b, values) if done else ''}</td></tr>"
                                                     for a, b in rows) + "</table>")
     if k == "ghost":
-        out = ghost_svg(ctx["ghost"], it["view"], it["show"], it.get("half", False))
+        out = ghost_svg(ctx["ghost"], it["view"], it["show"], "half" if it.get("half") else "full")
         assert "five" not in it["show"] or it.get("frozen_line"), "the 5-listener line only where the about-5 line is shown"
         return out + (frozen_html(ctx["ghost"]) if it.get("frozen_line") and not it.get("half") else "")
     if k == "curve":
         return curve_svg(it["show"])
-    if k == "livelines":
-        return livelines_svg()
-    if k == "filmghost":
-        return filmghost_svg()
+    if k == "livetc":
+        return livetc_svg(it["condition"])
     if k == "lanes":
-        st = {"on": ("100%", "#1f6fb4"), "off": ("0%", "#e3e0d8"), "0 words": ("0%", "#e3e0d8")}
-        return '<div class="lanes">' + "".join(
-            f'<div class="lane"><div class="bar"><div class="fill" style="width:{st[s][0]}"></div></div><span>{E(a)}</span>'
-            f'<span class="st">{E(s)}</span></div>' for a, s in it["rows"]) + "</div>"
+        return lanes_html(it["condition"])
+    if k == "receipt":
+        return f'<div class="receipt">{E(receipt_text(it["condition"]))}</div>'
+    if k == "endscreen":
+        return endscreen_html(it["pair"], values, ctx)
+    if k == "filmghost":
+        return filmghost_svg(fill(it["title"], values))
     if k == "maps":
-        return '<div class="maps">' + "".join(f'<img src="{ctx["maps"][m["key"]].as_uri()}">' for m in it["maps"]) + "</div>"
+        return '<div class="maps2">' + "".join(f'<figure><div class="maptitle">{fill(m["title"], values)}</div>'
+                                               f'<img src="{ctx["maps"][m["key"]].as_uri()}"></figure>' for m in it["maps"]) + "</div>"
     if k == "stamp":
         return f'<div class="stamp {it["tone"]}">{E(it["text"])}</div>'
     if k == "rail":
         return '<div class="rail">' + "".join(f'<div class="m">{E(a)}</div><div>{E(b)}</div>' for a, b in it["rows"]) + "</div>"
     if k == "cast":
         return f'<div class="box"></div><div class="boxlab">{E(it["label"])}</div>'
-    if k == "mp4":
-        return '<div class="box"></div>'
     if k == "film3":
         return ('<div class="film3"></div>' + "".join(f'<div class="film3lab" style="left:{104 + i * 580}px">{lab}</div>'
                                                       for i, lab in enumerate(("Intact", "Faces filled", "Same-size control"))))
     raise ValueError(k)
 
 
-MOVING = ("cast", "mp4", "film3")
+MOVING = ("cast", "film3")
 
 
 def scene_html(sc: dict, items: list, values: dict, spec: dict, ctx: dict) -> str:
@@ -332,7 +397,7 @@ def scene_html(sc: dict, items: list, values: dict, spec: dict, ctx: dict) -> st
     foot = []
     if sc.get("research"):
         foot.append(spec["research"])
-    if any(i["kind"] == "ghost" for i in items):
+    if any(i["kind"] == "ghost" or (i["kind"] == "endscreen" and i["pair"] == "lpp") for i in items):
         foot.append("Checked: held-out LPP: " + ctx["ghost"]["chip"]["long"] + ".")
     if sc.get("film"):
         foot.append(spec["credit"])
@@ -382,13 +447,6 @@ def moving_clip(it: dict, seconds: float, work: Path, idx: int):
     out = work / f"moving_{idx:02d}.mp4"
     if it["kind"] == "cast":
         cast_clip(it, seconds, out); return out, BOX[0], BOX[1]
-    if it["kind"] == "mp4":
-        w, h = BOX[2], BOX[3]
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", str(it["t0"]), "-t", f"{seconds:.3f}", "-i", str(REPO / it["file"]),
-                        "-vf", f"scale={w}:{h}:force_original_aspect_ratio=decrease,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:color=0x11141a,fps=30,"
-                        f"tpad=stop_mode=clone:stop_duration={seconds}", "-t", f"{seconds:.3f}", "-an", "-c:v", "libx264", "-crf", "18",
-                        "-pix_fmt", "yuv420p", str(out)], check=True)
-        return out, BOX[0], BOX[1]
     if it["kind"] == "film3":
         tw, th, gap = 552, 230, 28
         args = ["ffmpeg", "-y", "-loglevel", "error"]
@@ -459,8 +517,8 @@ def vo_markdown(spec: dict) -> str:
     lines = ["# Voice-over script, v4 cut (172 s)", "",
              "Generated from video/scenes_v4.json by `python scripts/render_video_v4.py --vo-md docs/vo_script.md`; do not edit by hand.",
              "Read at about 2.5 words a second. The first four lines are the frozen D23 opener, word for word; they start under the cold",
-             "open. Lines in {braces} are filled before recording. The film result line has one reading per ending; record the one that",
-             "happened. Yatsu records Monday.", ""]
+             "open. Lines in {braces} are filled before recording. The d20 and film result lines have one reading per ending; record the",
+             "one that happened. On a d20 fail the notthefall scene leaves and the story wall runs on to 118 s. Yatsu records Monday.", ""]
     total_words = 0
     for sc in spec["scenes"]:
         cues = [c for c in spec["vo"] if owner(spec, c) is sc]
@@ -469,7 +527,7 @@ def vo_markdown(spec: dict) -> str:
             lines.append("- (the line above carries on over this scene)")
         for c in cues:
             if "variants" in c:
-                lines.append(f"- {c['start']:.1f}-{c['end']:.1f} s, one reading per film ending:")
+                lines.append(f"- {c['start']:.1f}-{c['end']:.1f} s, one reading per {c['slot']} ending:")
                 for e, txt in c["variants"].items():
                     lines.append(f"  - {e}: \"{txt}\" ({words(txt)} words, {words(txt) / (c['end'] - c['start']):.1f} words/s)")
                 total_words += max(words(t) for t in c["variants"].values())
@@ -477,12 +535,14 @@ def vo_markdown(spec: dict) -> str:
                 n = words(c["text"]); total_words += n
                 lines.append(f"- {c['start']:.1f}-{c['end']:.1f} s: \"{c['text']}\" ({n} words, {n / (c['end'] - c['start']):.1f} words/s)")
         lines.append("")
-    lines += [f"Total: {total_words} words in {spec['total_s']} s ({total_words / spec['total_s']:.2f} words/s, longest film reading counted).", ""]
+    lines += [f"Total: {total_words} words in {spec['total_s']} s ({total_words / spec['total_s']:.2f} words/s, longest reading of each slot counted).", ""]
     return "\n".join(lines)
 
 
 # ---- main ----------------------------------------------------------------------------------------------------------------------
 def render_maps_for(spec: dict, work: Path) -> dict:
+    """Map images, lateral views, side by side. The forecast map (source rc) reads results/face_map_RC.json once it exists; the viewers'
+    map (source viewers) comes from Sunday's scoring and stays a stamped synthetic placeholder until it is wired in."""
     import render_maps as RM
     rc = next((p for p in RC_FILES if p.exists()), None)
     out, P = {}, RM.parcels()
@@ -490,10 +550,17 @@ def render_maps_for(spec: dict, work: Path) -> dict:
         for it in sc.get("items", []):
             if it["kind"] == "maps":
                 for m in it["maps"]:
-                    vals = json.loads(rc.read_text())[m["key"]] if rc else RM.synthetic(P, m["seed"])
-                    out[m["key"]] = RM.render(RM.to_vertices(vals, P), work / f"map_{m['key']}.png", m["title"],
-                                              placeholder=rc is None, size=(1712, 300))
+                    real = m["source"] == "rc" and rc is not None
+                    vals = json.loads(rc.read_text())[m["key"]] if real else RM.synthetic(P, m["seed"])
+                    out[m["key"]] = RM.render(RM.to_vertices(vals, P), work / f"map_{m['key']}.png", placeholder=not real,
+                                              size=(840, 330), views="lateral")
     return out
+
+
+def d20_line(spec: dict) -> str:
+    """The PREREG D20 pass line, as the notthefall scene carries it."""
+    v = next(sc for sc in spec["scenes"] if sc["id"] == "trust_d20")["variants"]["pass"]
+    return next(i["text"] for i in v if i["kind"] == "text")
 
 
 def main(argv=None) -> None:
@@ -510,11 +577,11 @@ def main(argv=None) -> None:
         assert s in slots and e in slots[s], f"no ending {s}={e}"
     values = json.loads(a.values.read_text()) if a.values else {}
     work = a.work or Path(tempfile.mkdtemp(prefix="stillhere-v4-")); work.mkdir(parents=True, exist_ok=True)
-    ctx = {"ghost": ghost_doc(), "maps": render_maps_for(spec, work)}
-    fps, xf, sc_list = spec["fps"], spec["crossfade_s"], spec["scenes"]
-    clips = []
-    for i, sc in enumerate(sc_list):
-        secs = sc["end"] - sc["start"] + (xf if i < len(sc_list) - 1 else 0)
+    ctx = {"ghost": ghost_doc(), "maps": render_maps_for(spec, work), "d20_line": d20_line(spec)}
+    fps, xf = spec["fps"], spec["crossfade_s"]
+    tl = timeline(spec, endings); clips = []
+    for i, (sc, start, end) in enumerate(tl):
+        secs = end - start + (xf if i < len(tl) - 1 else 0)
         steps = resolve(sc, endings); pngs = []
         for j, (_, items) in enumerate(steps):
             h = work / f"scene_{i:02d}_{j}.html"; h.write_text(scene_html(sc, items, values, spec, ctx))
@@ -532,11 +599,11 @@ def main(argv=None) -> None:
     fc = [f"[{i}:v]settb=AVTB,fps={fps}[v{i}]" for i in range(len(clips))]
     prev = "v0"
     for i in range(1, len(clips)):
-        fc.append(f"[{prev}][v{i}]xfade=transition=fade:duration={xf}:offset={sc_list[i]['start']:.3f}[x{i}]"); prev = f"x{i}"
+        fc.append(f"[{prev}][v{i}]xfade=transition=fade:duration={xf}:offset={tl[i][1]:.3f}[x{i}]"); prev = f"x{i}"
     fc.append(f"[{prev}]ass={ass}[out]")
     subprocess.run(args + ["-filter_complex", ";".join(fc), "-map", "[out]", "-an", "-c:v", "libx264", "-preset", "medium", "-crf", "21",
                            "-pix_fmt", "yuv420p", "-r", str(fps), "-movflags", "+faststart", str(a.out)], check=True)
-    sheet = a.out.with_name(a.out.stem + "_sheet.png"); mids = [(s["start"] + s["end"]) / 2 + 1.0 for s in sc_list]
+    sheet = a.out.with_name(a.out.stem + "_sheet.png"); mids = [(a0 + b0) / 2 + 1.0 for _, a0, b0 in tl]
     fr = []
     for k, t in enumerate(mids):
         f = work / f"sheet_{k:02d}.png"
