@@ -203,7 +203,7 @@ def livetc_svg(e: dict, W: int = 1712, H: int = 330) -> str:
     seed = f", seed {r['seed']}" if r["seed"] else ""
     out.append(f'<text x="20" y="{H - 12}" font-size="22" fill="#1d1f23">TRIBE v2 forecast, {COND[r["condition"]]}{seed}. LibriVox, {ch}, '
                f'{n} s. Saved run. Forecast, not a scan.</text>')
-    return '<div class="chip saved">saved run</div>' + "".join(out) + "</svg>"
+    return "".join(out) + "</svg>"
 
 
 def lanes_html(e: dict) -> str:
@@ -339,7 +339,6 @@ table{font-size:34px;border-collapse:collapse} td{padding:10px 40px 10px 0;verti
 .col{width:1060px;display:flex;flex-direction:column;gap:12px} .tile{width:600px;border:2px solid #e3e0d8;border-radius:14px;padding:14px;background:#fff;display:flex;flex-direction:column;gap:10px}
 .tiletitle{font-size:34px;font-weight:700;color:#1f6fb4} .charttitle{font-size:30px;font-weight:600}
 .maps2{display:flex;gap:32px} .maps2 figure{margin:0;width:840px} .maps2 img{width:840px;display:block} .maptitle{font-size:28px;font-weight:600;margin-bottom:6px}
-.chip.saved{background:#eceef1;border-color:#9aa3ad;color:#5d6470;font-size:24px;padding:4px 16px;margin-bottom:6px}
 .tag2{align-self:flex-start;font-size:26px;padding:4px 16px;border-radius:20px;background:#eceef1;color:#5d6470;font-weight:600}
 .cutnote{align-self:flex-start;font-size:34px;font-weight:700;color:#fff;background:#11141a;padding:8px 20px;border-radius:10px}
 .receipt{font-size:24px;color:#5d6470;font-family:"Noto Sans Mono",monospace}

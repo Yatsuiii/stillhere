@@ -211,7 +211,12 @@ def test_live_beat_draws_from_the_saved_runs():
     assert "0 words reach the text lane (model input, not a brain result)." in all_text(SC["live_reversed"])
     for e in (lc["entry"], lc["reversed"]):
         svg = V.livetc_svg(e)
-        assert "saved run" in svg and "Saved run. Forecast, not a scan." in svg and "#1f6fb4" not in svg     # gray only
+        assert "Saved run. Forecast, not a scan." in svg and "#1f6fb4" not in svg                        # gray only
+    for sid in ("live_reversed", "live_run"):                       # ruling 6: the 76-82 s reversed scene is a saved run, labelled so
+        items = [i for _, its in V.resolve(SC[sid], {"live": "inset"}) for i in its]
+        assert {"kind": "tag", "text": "saved run"} in items, sid
+        ctx = {"live": lc, "ghost": V.synthetic_ghost()}
+        assert '<div class="tag2">saved run</div>' in V.scene_html(SC[sid], items, {}, SPEC, ctx), sid
     text = all_text(SPEC["scenes"]).lower()
     assert "order map" not in text and "order-map" not in text and "order_map" not in text and "note" not in SC["live_run"]
     assert [i["kind"] for _, items in V.resolve(SC["live_result"], {}) for i in items][0] == "endscreen"
