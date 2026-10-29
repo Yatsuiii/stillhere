@@ -15,8 +15,9 @@ import numpy as np
 
 from . import egress
 
-LABEL = "live, audio-only, stock TRIBE v2, one public clip; a forecast, not validated"
-WORDING = "TRIBE's predicted response strength (hearing, audio-only). A forecast, not validated; it says nothing about language or understanding."
+LABEL = "live, audio-only, stock TRIBE v2, one public clip; a forecast, not checked against scans"
+WORDING = ("TRIBE's predicted response strength (hearing, audio-only). A forecast, not checked against scans; it says nothing about "
+           "language or understanding.")
 UNITS = "raw TRIBE units: mean over the auditory parcels of the SD over time of the parcel-mean audio-only prediction"
 STOCK_CKPT_SHA256 = "9c79ffff6b642b7b0c71d558c935fb3fa33f2788bfb509feead94fafbba2f321"     # facebook/tribev2 best.ckpt, as on Kaggle
 MAX_SECONDS = 25.0

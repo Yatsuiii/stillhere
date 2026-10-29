@@ -1,5 +1,5 @@
-"""Live demo, not validated: stock TRIBE v2, audio-only, on this laptop's GPU, for one LibriVox story chapter (the 75 s Alice ch. 1
-excerpt in assets/conditions) intact and sentence-scrambled. The live run takes at most 25 s of audio, so each condition is cut into
+"""Live demo, not checked against scans: stock TRIBE v2, audio-only, on this laptop's GPU, for one LibriVox story chapter (the 75 s
+Alice ch. 1 excerpt in assets/conditions) intact and sentence-scrambled. The live run takes at most 25 s of audio, so each condition is cut into
 four back-to-back 18.75 s windows (wave module, so the bytes and their SHA-256 are the same on every run); every window must be on the
 public-audio allowlist (--cut writes the windows and prints their allowlist lines). Prints one line per window; writes
 results/demo_live_tribe_conditions.json: timings, peak VRAM, shapes, the predicted AUD response strength, and the per-second
@@ -19,7 +19,7 @@ from stillhere import egress, live_tribe
 ROOT = Path(__file__).resolve().parent.parent
 W = Path(os.environ.get("STILLHERE_WORK", "."))
 CONDITIONS = ("intact", "sentence_scramble")
-N_WIN, LABEL = 4, "demo, not validated"
+N_WIN, LABEL = 4, "demo, not checked against scans"
 ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
 ap.add_argument("--cut", action="store_true")
 ap.add_argument("--atlas", default=os.environ.get("STILLHERE_ATLAS", str(W / "stillhere/atlas")))
@@ -81,4 +81,4 @@ out = {"label": LABEL, "what": "live laptop run, stock TRIBE v2 audio-only, one 
        "mean_aud_response_strength": mean, "total_s": round(time.time() - t0, 2), "runs": runs}
 Path(a.out).write_text(json.dumps(out, indent=1) + "\n")
 print(f"mean predicted AUD strength: intact {mean['intact']:.4f}, sentence-scrambled {mean['sentence_scramble']:.4f}", flush=True)
-print(f"{len(runs)} windows in {out['total_s']:.0f} s | a forecast for hearing only, not validated", flush=True)
+print(f"{len(runs)} windows in {out['total_s']:.0f} s | a forecast for hearing only, not checked against scans", flush=True)
