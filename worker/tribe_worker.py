@@ -24,6 +24,8 @@ sys.path.insert(0, str(HERE.parent))
 from worker import recipe as R  # noqa: E402
 
 POLL_S = float(os.environ.get("STILLHERE_POLL_S", "2"))
+HOURS_ET = os.environ.get("STILLHERE_HOURS_ET", "10:00-14:00")     # worker hours, America/New_York; "00:00-24:00" = any time
+EXIT_RESTART = 75                                                  # non-zero: systemd (Restart=on-failure) starts a fresh worker
 WORKER_NAME = "laptop-4050"
 STATE = Path(os.environ.get("STATE_DIRECTORY", HERE.parent / ".worker_state"))
 HIDDEN = [p for p in os.environ.get("STILLHERE_SELFTEST_HIDDEN", "").split(":") if p]
@@ -105,13 +107,29 @@ def read_token(path) -> str:
     return tok
 
 
+def within_hours(now=None, hours: str = None) -> bool:
+    """True inside the worker hours (America/New_York wall clock, start inclusive, end exclusive)."""
+    import datetime
+    from zoneinfo import ZoneInfo
+    now = now or datetime.datetime.now(ZoneInfo("America/New_York"))
+    a, b = (hours or HOURS_ET).split("-")
+    mins = lambda hm: int(hm.split(":")[0]) * 60 + int(hm.split(":")[1])
+    return mins(a) <= now.hour * 60 + now.minute < mins(b)
+
+
 def serve(args):
+    """Polls for jobs inside the worker hours. Exit 0 (stay down until the timer's next start) once outside them with no job running;
+    exit EXIT_RESTART after a job that filled TRIBE's feature cache, so systemd restarts it with an empty cache."""
     from worker.engine import Engine
+    if not within_hours():
+        log(f"outside worker hours ({HOURS_ET} ET); not starting"); return 0
     index = R.load_index(); jobs = Jobs(os.environ["STILLHERE_JOBS_URL"], read_token(args.token_file))
     engine = Engine(STATE / "feature_cache").load(); models = engine.models()
-    log(f"engine loaded in {engine.load_s} s on {engine.gpu}; polling every {POLL_S} s")
+    log(f"engine loaded in {engine.load_s} s on {engine.gpu}; polling every {POLL_S} s until {HOURS_ET.split('-')[1]} ET")
     backoff = POLL_S
     while True:
+        if not within_hours():
+            log("worker hours over; stopping (exit 0)"); return 0
         try:
             code, body = jobs.claim(models)
         except (urllib.error.URLError, TimeoutError, OSError) as e:
@@ -120,8 +138,8 @@ def serve(args):
         if code == 200 and body and body.get("job"):
             backoff = POLL_S
             handle(body["job"], engine, jobs, index)
-            if engine.cache_full():                                   # restart fresh (systemd Restart=always) rather than prune live
-                log("feature cache past its limit; exiting for a fresh restart"); return
+            if engine.cache_full():                                   # restart fresh between jobs rather than prune live
+                log("feature cache past its limit; exiting for a fresh restart"); return EXIT_RESTART
             continue
         if code is not None and code not in (200, 204):
             log(f"claim answered {code}")
@@ -129,7 +147,7 @@ def serve(args):
         if args.max_polls and args.max_polls > 0:
             args.max_polls -= 1
             if args.max_polls == 0:
-                return
+                return 0
         if code is None:
             time.sleep(backoff); backoff = min(backoff * 2, 60)
         else:
@@ -137,25 +155,32 @@ def serve(args):
 
 
 def precompute(args):
+    """The 12 clips x 4 conditions at the default seed, plus any extra recipes (--extra clip:condition:seed, kept in the file's
+    extra_recipes, e.g. the page's example chips), into one cache file. Resumable; same engine as live jobs."""
     from worker.engine import Engine
     index = R.load_index(); out = Path(args.out)
     cache = json.loads(out.read_text()) if out.exists() else {}
-    entries = cache.get("entries", {})
-    engine = Engine(STATE / "feature_cache").load()
+    entries = cache.get("entries", {}); extras = cache.get("extra_recipes", [])
+    for spec in args.extra or []:
+        c, cond, seed = spec.split(":"); rec = R.normalize({"clip_id": c, "condition": cond, "seed": int(seed)}, index)
+        if rec not in extras:
+            extras.append(rec)
     todo = [{"clip_id": c["id"], "condition": cond, "seed": 0 if cond in R.SEEDLESS else index["default_seed"]}
-            for c in index["clips"] for cond in R.CONDITIONS]
+            for c in index["clips"] for cond in R.CONDITIONS] + extras
+    engine = None
     for i, rec in enumerate(todo, 1):
         key = R.cache_key(rec, index)
         if key in entries:
             continue
+        engine = engine or Engine(STATE / "feature_cache").load()
         res = engine.run(R.build_condition(rec, index), STATE / "jobs", lambda *a: None)
         entries[key] = {"cache_key": key, "recipe": rec, **res}
         doc = {"about": "Cached TRIBE v2 forecasts for the live page (docs/worker.md): the 12 clips x 4 conditions at the default seed, "
-                        "computed by worker/tribe_worker.py precompute with the same engine as live jobs. Region values only. "
-                        "Forecast, not a scan.",
-               "models": index["models"], "default_seed": index["default_seed"], "entries": entries}
+                        "plus extra_recipes, computed by worker/tribe_worker.py precompute with the same engine as live jobs. Region "
+                        "values only. Forecast, not a scan.",
+               "models": index["models"], "default_seed": index["default_seed"], "extra_recipes": extras, "entries": entries}
         tmp = out.with_suffix(".tmp"); tmp.write_text(json.dumps(doc, indent=1) + "\n"); tmp.replace(out)
-        log(f"{i}/{len(todo)} {rec['clip_id']} {rec['condition']}: {res['timings_s']}")
+        log(f"{i}/{len(todo)} {rec['clip_id']} {rec['condition']} seed {rec['seed']}: {res['timings_s']}")
 
 
 def self_test(args):
@@ -195,11 +220,12 @@ def main(argv=None):
     ap = argparse.ArgumentParser(); sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("serve"); s.add_argument("--token-file"); s.add_argument("--max-polls", type=int, default=0)
     p = sub.add_parser("precompute"); p.add_argument("--out", default=str(HERE.parent / "data/forecast_cache.json"))
+    p.add_argument("--extra", action="append", help="clip_id:condition:seed, may repeat")
     sub.add_parser("self-test")
     o = sub.add_parser("once"); o.add_argument("recipe")
     a = ap.parse_args(argv)
-    {"serve": serve, "precompute": precompute, "self-test": self_test, "once": once}[a.cmd](a)
+    return {"serve": serve, "precompute": precompute, "self-test": self_test, "once": once}[a.cmd](a)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() or 0)

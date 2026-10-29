@@ -1,10 +1,13 @@
 # StillHere live TRIBE worker, sandboxed (ruling of Oct 29, 18:15 IST, item 6). Rendered by worker/install_worker.sh into
-# stillhere-worker.service (ExecStart = serve) and stillhere-worker-selftest.service (ExecStart = self-test, Type=oneshot); both share
-# every sandbox line below. @...@ fields are filled by the install script.
+# stillhere-worker.service (ExecStart = serve; started only by stillhere-worker.timer, 10:00 ET Nov 4-9, and by hand) and
+# stillhere-worker-selftest.service (ExecStart = self-test, Type=oneshot); both share every sandbox line below. @...@ fields are filled
+# by the install script. Neither has an [Install] section: only the timer is enabled.
 [Unit]
 Description=StillHere live TRIBE worker (@ROLE@)
 After=network-online.target
 Wants=network-online.target
+# serve: keeps the laptop awake while it runs (stillhere-worker-awake.service holds a logind sleep inhibitor as root)
+Wants=@WANTS@
 
 [Service]
 Type=@TYPE@
@@ -56,10 +59,12 @@ Environment=PYTHONNOUSERSITE=1
 Environment=PYTHONDONTWRITEBYTECODE=1
 Environment=PYTHONPATH=/opt/stillhere-worker/app:/opt/stillhere-worker/site-packages:/opt/stillhere-worker/spacy
 Environment=STILLHERE_JOBS_URL=@JOBS_URL@
+# serve stops itself (exit 0) outside 10:00-14:00 ET; a root-owned override file can widen it, e.g. for filming outside the hours
+Environment=STILLHERE_HOURS_ET=10:00-14:00
+EnvironmentFile=-/etc/stillhere-worker/worker.env
 Environment=STILLHERE_SELFTEST_HIDDEN=@HIDDEN@
 Environment=STILLHERE_SELFTEST_READONLY=/opt/stillhere-worker/models/hub:/opt/stillhere-worker/site-packages:/opt/stillhere-worker/spacy:/opt/stillhere-worker/app
+# serve: on-failure. Exit 0 (worker hours over) stays down; exit 75 (feature cache full, between jobs) and crashes restart.
 Restart=@RESTART@
 RestartSec=5
 
-[Install]
-WantedBy=multi-user.target

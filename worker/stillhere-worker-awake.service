@@ -1,0 +1,16 @@
+# Keeps the laptop from suspending while the StillHere worker runs (cloud ruling of Oct 29, 17:35 UTC, item 8). Pulled in by
+# stillhere-worker.service (Wants=) and bound to it (BindsTo=), so it stops when the worker stops, including at 14:00 ET. Runs as root
+# only to hold a logind block inhibitor for sleep, idle and the lid switch; it runs nothing else.
+[Unit]
+Description=StillHere live worker: keep the laptop awake while the worker runs
+BindsTo=stillhere-worker.service
+After=stillhere-worker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/systemd-inhibit --what=sleep:idle:handle-lid-switch --who=StillHere --why=live-worker-hours --mode=block /usr/bin/sleep infinity
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+TemporaryFileSystem=/run/media

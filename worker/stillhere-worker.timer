@@ -1,0 +1,12 @@
+# Starts the StillHere live worker at 10:00 America/New_York on Nov 4-9, 2026 (15:00 UTC, EST); the worker stops itself at 14:00 ET.
+# Persistent=true: a start missed while the laptop was off runs at the next boot (the worker exits at once if that is after 14:00 ET).
+[Unit]
+Description=StillHere live worker hours: 10:00-14:00 ET, Nov 4-9
+
+[Timer]
+OnCalendar=2026-11-04..09 10:00:00 America/New_York
+Persistent=true
+Unit=stillhere-worker.service
+
+[Install]
+WantedBy=timers.target

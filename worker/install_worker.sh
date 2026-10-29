@@ -11,7 +11,9 @@
 #  4. renders stillhere-worker.service and stillhere-worker-selftest.service from worker/stillhere-worker.service.in;
 #  5. runs the self-test INSIDE the sandbox and refuses to finish unless it passes (hidden paths cannot be listed, the bound folders
 #     are read-only, the GPU is visible).
-# It does not start or enable the worker; the commands for that are printed at the end. Undo everything: sudo bash worker/uninstall_worker.sh
+#  6. enables ONLY stillhere-worker.timer (10:00 America/New_York, Nov 4-9, Persistent=true); the worker stops itself at 14:00 ET, and
+#     stillhere-worker-awake.service holds a sleep inhibitor while it runs.
+# It does not start the worker; the commands for that are printed at the end. Undo everything: sudo bash worker/uninstall_worker.sh
 set -euo pipefail
 [ "$(id -u)" = 0 ] || { echo "run with sudo"; exit 1; }
 URL=${1:-}
@@ -47,14 +49,16 @@ if [ ! -s "$ETC/job_token" ]; then (umask 077; head -c 32 /dev/urandom | od -An 
 chown root:root "$ETC/job_token"; chmod 0600 "$ETC/job_token"
 
 echo "4/5 units"
-render() {   # role type command restart -> stdout
-  sed -e "s#@ROLE@#$1#" -e "s#@TYPE@#$2#" -e "s#@COMMAND@#$3#" -e "s#@RESTART@#$4#" -e "s#@MODELS@#$MODELS#" -e "s#@SITE@#$SITE#" \
-      -e "s#@SPACY@#$SPACY#" -e "s#@JOBS_URL@#$URL#" -e "s#@HIDDEN@#$HIDDEN#" "$REPO/worker/stillhere-worker.service.in"
+render() {   # role type command restart wants -> stdout
+  sed -e "s#@ROLE@#$1#" -e "s#@TYPE@#$2#" -e "s#@COMMAND@#$3#" -e "s#@RESTART@#$4#" -e "s#@WANTS@#$5#" -e "s#@MODELS@#$MODELS#" \
+      -e "s#@SITE@#$SITE#" -e "s#@SPACY@#$SPACY#" -e "s#@JOBS_URL@#$URL#" -e "s#@HIDDEN@#$HIDDEN#" "$REPO/worker/stillhere-worker.service.in"
 }
-render "serve" simple serve always > "$UNIT/stillhere-worker.service"
-render "self-test" oneshot self-test no | sed '/^\[Install\]/,$d' > "$UNIT/stillhere-worker-selftest.service"
+render "serve" simple serve on-failure stillhere-worker-awake.service > "$UNIT/stillhere-worker.service"
+render "self-test" oneshot self-test no "" > "$UNIT/stillhere-worker-selftest.service"
+install -m 0644 "$REPO/worker/stillhere-worker-awake.service" "$REPO/worker/stillhere-worker.timer" "$UNIT/"
 if grep -q "@[A-Z_]*@" "$UNIT/stillhere-worker.service" "$UNIT/stillhere-worker-selftest.service"; then echo "unrendered field"; exit 1; fi
-systemd-analyze verify "$UNIT/stillhere-worker.service" "$UNIT/stillhere-worker-selftest.service"
+systemd-analyze verify "$UNIT/stillhere-worker.service" "$UNIT/stillhere-worker-selftest.service" "$UNIT/stillhere-worker-awake.service" \
+  "$UNIT/stillhere-worker.timer"
 systemctl daemon-reload
 
 echo "5/5 self-test inside the sandbox"
@@ -62,11 +66,16 @@ if systemctl start stillhere-worker-selftest.service; then st=0; else st=1; fi
 journalctl -u stillhere-worker-selftest.service -n 30 --no-pager -o cat | grep -E "PASS|FAIL|info:" || true
 [ $st = 0 ] || { echo "SELF-TEST FAILED: the worker is installed but must not be started; fix it or run worker/uninstall_worker.sh"; exit 1; }
 
+echo "enabling the timer only (10:00 ET, Nov 4-9; the worker stops itself at 14:00 ET)"
+systemctl enable --now stillhere-worker.timer
+systemctl list-timers stillhere-worker.timer --no-pager | head -3
+
 cat <<EOF
 
-Installed. Next steps (nothing is running yet):
+Installed. Next steps (the worker itself is not running; the timer starts it at 10:00 ET on Nov 4-9):
   - put the job token into the page's server secrets as STILLHERE_WORKER_TOKEN yourself:  sudo cat $ETC/job_token
-  - start during worker hours:   sudo systemctl start stillhere-worker      stop:  sudo systemctl stop stillhere-worker
+  - start by hand (inside 10:00-14:00 ET):   sudo systemctl start stillhere-worker      stop:  sudo systemctl stop stillhere-worker
+  - outside the hours (e.g. filming): echo STILLHERE_HOURS_ET=00:00-24:00 | sudo tee $ETC/worker.env, start, then sudo rm $ETC/worker.env
   - logs (counts and timings only):   journalctl -u stillhere-worker -f
   - rerun the self-test any time:  sudo systemctl start stillhere-worker-selftest && journalctl -u stillhere-worker-selftest -n 20 -o cat
   - undo everything:  sudo bash $REPO/worker/uninstall_worker.sh
