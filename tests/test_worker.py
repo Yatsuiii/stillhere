@@ -83,6 +83,17 @@ def test_build_condition(cond):
         assert a.wav_sha256 != R.build_condition({**rec, "seed": 3}, IDX).wav_sha256
 
 
+def test_word_table_round_trips_through_pandas(tmp_path):
+    """A word that starts with a double quote must not open a quoted field (it silently dropped half of alice_ch07's words once)."""
+    pd = pytest.importorskip("pandas")
+    from worker.engine import check_tsv, write_tsv
+    for cid in ("alice_ch07", "alice_ch08", "alice_ch12"):
+        b = R.build_condition({"clip_id": cid, "condition": "word_scramble", "seed": 7}, IDX)
+        assert any(w["word"].startswith('"') for w in b.words)
+        p = tmp_path / f"{cid}.tsv"; write_tsv(b.words, p); check_tsv(b.words, p)
+        assert len(pd.read_csv(p, sep="\t")) == len(b.words)
+
+
 def test_word_rate_and_regions():
     assert R.word_rate([{"start": 0.2}, {"start": 0.9}, {"start": 2.5}, {"start": 40.2}], 3) == [2, 0, 1]
     reg = json.loads((REPO / "worker/regions.json").read_text())
@@ -189,7 +200,8 @@ def test_forecast_cache():
         for k in ("language", "hearing"):
             v = e["regions"][k]; assert 30 <= len(v) <= 60 and all(math.isfinite(x) for x in v)
         assert len(e["word_rate"]) == len(e["regions"]["language"])
-        assert e["n_words_text_lane"] == (0 if e["recipe"]["condition"] == "reversed" else R.clip_entry(e["recipe"]["clip_id"], IDX)["n_words"])
+        n = 0 if e["recipe"]["condition"] == "reversed" else R.clip_entry(e["recipe"]["clip_id"], IDX)["n_words"]
+        assert n - 1 <= e["n_words_text_lane"] <= n          # TRIBE's own word steps may drop one (alice_ch06 word scramble: 145 of 146)
         assert e["input_sha256"] == R.build_condition(e["recipe"], IDX).wav_sha256
         assert not any(k in e for k in ("P", "vertices", "transcript", "audio"))
     assert len(seen) == 48

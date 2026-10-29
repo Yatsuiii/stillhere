@@ -38,11 +38,24 @@ def sha256_file(p) -> str:
 
 
 def write_tsv(words: list, path) -> int:
-    """<wav>.tsv in the table TRIBE's ExtractWordsFromAudio reads instead of running its own speech-to-text."""
-    lines = ["text\tstart\tduration\tsequence_id\tsentence"]
-    lines += [f"{w['word']}\t{w['start']:.4f}\t{w['end'] - w['start']:.4f}\t0\t" for w in words]
-    Path(path).write_text("\n".join(lines) + "\n")
+    """<wav>.tsv in the table TRIBE's ExtractWordsFromAudio reads (pandas read_csv, tab separated) instead of running its own
+    speech-to-text. Written with csv quoting, so a word that starts with a double quote cannot open a quoted field and swallow the
+    rows after it (unquoted, a clip with quoted dialogue silently lost half its words); check_tsv proves the round trip."""
+    import csv
+    with open(path, "w", newline="") as f:
+        w = csv.writer(f, delimiter="\t", quoting=csv.QUOTE_MINIMAL, lineterminator="\n")
+        w.writerow(["text", "start", "duration", "sequence_id", "sentence"])
+        for x in words:
+            w.writerow([x["word"], f"{x['start']:.4f}", f"{x['end'] - x['start']:.4f}", 0, ""])
     return len(words)
+
+
+def check_tsv(words: list, path) -> None:
+    """Reads the table back exactly as TRIBE does and refuses to go on unless every word comes back unchanged and in order."""
+    import pandas as pd
+    t = pd.read_csv(path, sep="\t")
+    if [str(v) for v in t["text"]] != [x["word"] for x in words]:
+        raise ValueError("word table does not read back unchanged")
 
 
 def build_events(wav: Path, with_text: bool):
@@ -123,6 +136,8 @@ class Engine:
         wav = workdir / built.wav_sha256[:20] / "condition.wav"; wav.parent.mkdir(parents=True, exist_ok=True)
         wav.write_bytes(R.wav_bytes(built.audio, built.sr))
         n_words = write_tsv(built.words, wav.with_suffix(".tsv")) if built.words else 0
+        if n_words:
+            check_tsv(built.words, wav.with_suffix(".tsv"))
         ev = build_events(wav, with_text=n_words > 0)
         t["build"] = round(time.time() - t0, 2); emit("build", None, "end", {})
         emit("video_lane", "v-jepa-2", "off", {})

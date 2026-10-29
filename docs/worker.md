@@ -45,6 +45,12 @@ The engine writes each build at a content-addressed path, because TRIBE's featur
 second job at the same path would silently reuse the first job's features. The development run hit this and it is now fixed. The
 engine also deletes each job's cached features afterwards.
 
+The word table TRIBE reads (`<wav>.tsv`, through pandas) is written with csv quoting and read back before every run. Unquoted, a word starting with a double quote (dialogue in chapters 7, 8
+and 12) opened a quoted field and silently swallowed the rows after it. The first precompute lost about half of alice_ch07's words
+that way; those two entries were discarded and recomputed. The order-map clips (chapters 1-3) contain no such word, so the
+order-map run is unaffected. `n_words_text_lane` is what reached TRIBE's text lane after its own sentence and missing-value steps,
+and it can be one below the table: alice_ch06 word scramble gives 145 of 146.
+
 Output is region values only:
 
 - per second, the mean over the frozen proof's language (19 parcels) and hearing (7 parcels) sets of the parcel-mean forecast, in raw
