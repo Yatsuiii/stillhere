@@ -1,0 +1,347 @@
+{
+ "format": "hero-first cut, about 3 minutes; captions from docs/captions.md word for word; {placeholders} filled on Sunday",
+ "crossfade_s": 0.5,
+ "fps": 30,
+ "size": [
+  1920,
+  1080
+ ],
+ "credit": "Tears of Steel (CC) Blender Foundation | mango.blender.org, CC BY 3.0. Edited for this study.",
+ "scenes": [
+  {
+   "id": "hook",
+   "seconds": 8,
+   "title": "Run a brain experiment before you book the scanner",
+   "items": [
+    {
+     "kind": "text",
+     "text": "StillHere: a researcher types a study, Meta's models build and check the stimuli, TRIBE v2 forecasts the brain response, and real public scans show how far to trust it."
+    },
+    {
+     "kind": "small",
+     "text": "Research tool for brain-imaging labs. Healthy volunteers and public data. Not a diagnosis or medical advice."
+    }
+   ]
+  },
+  {
+   "id": "question",
+   "seconds": 10,
+   "title": "A researcher asks",
+   "items": [
+    {
+     "kind": "question",
+     "text": "If I remove the faces from this film scene, what changes in the brain?"
+    }
+   ]
+  },
+  {
+   "id": "plan",
+   "seconds": 15,
+   "title": "Muse Spark plans it, with a control",
+   "items": [
+    {
+     "kind": "text",
+     "text": "Muse Spark turned the question into a study: the intact film, a version with the faces removed, and an equal-area control with the same amount of picture removed somewhere else."
+    },
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "stimulus",
+       "Tears of Steel, film time 10-180 s"
+      ],
+      [
+       "versions",
+       "intact | faces removed | equal-area control"
+      ],
+      [
+       "forecast",
+       "TRIBE v2 (stock), whole cortex"
+      ],
+      [
+       "checked against",
+       "{N} real viewers of the intact film (Emo-FilM)"
+      ]
+     ]
+    },
+    {
+     "kind": "placeholder",
+     "text": "Swap for the planner's real card once the film is in the validation table."
+    }
+   ]
+  },
+  {
+   "id": "edit",
+   "seconds": 15,
+   "title": "SAM 3.1 makes the edits",
+   "items": [
+    {
+     "kind": "text",
+     "text": "SAM 3.1 masked every face in three minutes of film; StillHere removed them, and removed the same area elsewhere for the control."
+    },
+    {
+     "kind": "frames",
+     "labels": [
+      "intact",
+      "faces removed",
+      "equal-area control"
+     ],
+     "frame": "t032.5.jpg"
+    },
+    {
+     "kind": "credit"
+    }
+   ]
+  },
+  {
+   "id": "editcheck",
+   "seconds": 12,
+   "title": "Edit check: Spark Open and Glimmer",
+   "slot": "editcheck",
+   "variants": {
+    "pass": [
+     {
+      "kind": "text",
+      "text": "Edit check: Spark Open and Glimmer saw a face in {k_int} of {N} intact frames, none in {k_rem} of {N} edited ones, and still saw faces in {k_am} of {N} control frames."
+     }
+    ],
+    "fail": [
+     {
+      "kind": "text",
+      "text": "Edit check failed ({detail}), so the face-map test did not run."
+     }
+    ]
+   }
+  },
+  {
+   "id": "maps",
+   "seconds": 30,
+   "title": "TRIBE's forecast beside real viewers",
+   "slot": "film",
+   "common": [
+    {
+     "kind": "maps",
+     "left": "TRIBE: where removing faces changes the forecast",
+     "right": "{N} real viewers: where the brain tracked faces"
+    }
+   ],
+   "variants": {
+    "PASS": [
+     {
+      "kind": "text",
+      "text": "SAM masked the faces; TRIBE forecast the change; that forecast lined up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the equal-area control."
+     }
+    ],
+    "PASS_visual": [
+     {
+      "kind": "text",
+      "text": "SAM masked the faces; TRIBE forecast the change; that forecast lined up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the equal-area control. Most of the match comes from visual-network areas."
+     }
+    ],
+    "FAIL_not_face_specific": [
+     {
+      "kind": "text",
+      "text": "TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}), but no better than its forecast for the equal-area control: not face-specific."
+     }
+    ],
+    "FAIL": [
+     {
+      "kind": "text",
+      "text": "TRIBE's forecast of the face edit did not line up with where {N} real viewers' brains tracked faces ({k} of {N} viewers, p = {p}). We show it because we said we would."
+     }
+    ],
+    "UNINFORMATIVE": [
+     {
+      "kind": "text",
+      "text": "The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."
+     }
+    ],
+    "NOT_RUN": [
+     {
+      "kind": "text",
+      "text": "The face-map test did not run: {reason}. It was set to run once, by rules written before any brain data was read."
+     }
+    ]
+   }
+  },
+  {
+   "id": "proof",
+   "seconds": 18,
+   "title": "How much is a forecast worth?",
+   "items": [
+    {
+     "kind": "big",
+     "text": "a forecast worth about {veq} real volunteers, and at least {veq_lo}"
+    },
+    {
+     "kind": "text",
+     "text": "On a story chapter it never saw, TRIBE's forecast was worth about {veq} real volunteers, and at least {veq_lo}. It agreed with the classic sound test."
+    },
+    {
+     "kind": "beat",
+     "text": "What it had to beat: word rate and the sound envelope."
+    },
+    {
+     "kind": "small",
+     "text": "LPP section 8, held out: recomputed with code built during the event; first measured Oct 22-23."
+    }
+   ]
+  },
+  {
+   "id": "wall",
+   "seconds": 15,
+   "title": "The story wall",
+   "slot": "wall",
+   "variants": {
+    "scored": [
+     {
+      "kind": "text",
+      "text": "Across {N} stories from public scans, TRIBE's forecast {wall_result}."
+     },
+     {
+      "kind": "beat",
+      "text": "What it had to beat: {baselines}."
+     }
+    ],
+    "next_step": [
+     {
+      "kind": "text",
+      "text": "Too few stories passed the pre-registered data checks to score the wall; the rule says to report it as a next step."
+     }
+    ],
+    "not_run": [
+     {
+      "kind": "text",
+      "text": "Pre-registered, not run (GPU time ran out)."
+     }
+    ]
+   }
+  },
+  {
+   "id": "d20",
+   "seconds": 12,
+   "title": "Intact story versus the same words scrambled",
+   "slot": "d20",
+   "variants": {
+    "pass": [
+     {
+      "kind": "text",
+      "text": "Listeners' brains followed the intact story more than the scrambled one where TRIBE said they would ({k} of {N}, p = {p})."
+     },
+     {
+      "kind": "beat",
+      "text": "What it had to beat: word rate and the sound envelope of each version."
+     }
+    ],
+    "fail": [
+     {
+      "kind": "text",
+      "text": "The intact-versus-scrambled test did not pass ({k} of {N}, p = {p})."
+     },
+     {
+      "kind": "beat",
+      "text": "What it had to beat: word rate and the sound envelope of each version."
+     }
+    ],
+    "not_run": [
+     {
+      "kind": "text",
+      "text": "Pre-registered, not run ({reason})."
+     }
+    ]
+   }
+  },
+  {
+   "id": "planner",
+   "seconds": 15,
+   "title": "It says no when it should",
+   "items": [
+    {
+     "kind": "text",
+     "text": "Ask for something it cannot support and it says so, with the reason and the nearest thing it can do."
+    },
+    {
+     "kind": "text",
+     "text": "False accepts: {k} of {N} ({p_upper} upper bound when {k} is 0). Declines from the model: {k_model}; from the planner's fixed rules: {k_rules}."
+    },
+    {
+     "kind": "small",
+     "text": "Planner v2, on 62 requests written after v2 was frozen and never seen before."
+    }
+   ]
+  },
+  {
+   "id": "sedation",
+   "seconds": 12,
+   "title": "Where it did not work",
+   "items": [
+    {
+     "kind": "text",
+     "text": "Frozen group statistics only. Its two headline bars did not pass, and the write-up says so."
+    },
+    {
+     "kind": "small",
+     "text": "Sedation case study: every check pre-registered before the data was read."
+    }
+   ]
+  },
+  {
+   "id": "stack",
+   "seconds": 12,
+   "title": "Meta's models, end to end",
+   "items": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "Muse Spark 1.3",
+       "plans the study or declines it"
+      ],
+      [
+       "Muse Spark Open",
+       "second planner; edit check"
+      ],
+      [
+       "SAM 3.1",
+       "face masks for the edits"
+      ],
+      [
+       "Muse Voice Transcribe",
+       "checks speech manipulations"
+      ],
+      [
+       "Glimmer",
+       "edit check"
+      ],
+      [
+       "TRIBE v2",
+       "brain forecasts"
+      ],
+      [
+       "Muse Code",
+       "built the planner"
+      ]
+     ]
+    },
+    {
+     "kind": "small",
+     "text": "Every check's rule committed before its data was read. Nothing private leaves the laptop."
+    }
+   ]
+  },
+  {
+   "id": "close",
+   "seconds": 12,
+   "title": "StillHere",
+   "items": [
+    {
+     "kind": "small",
+     "text": "TRIBE v2 (Meta FAIR, CC BY-NC 4.0) was trained on CNeuroMod, BoldMoments, Lebel2023 and Wen2017 and tested by its authors on NNDb, LPP, Narratives and HCP (d'Ascoli et al. 2026, arXiv 2605.04326); Emo-FilM and the Blender films are new to it. SAM 3.1 via Meta's Model API, decoded with meta-sam-parser under Meta's SAM License; we acknowledge the use of SAM in this work. Data: Emo-FilM (CC0), Le Petit Prince, Narratives, LibriVox."
+    },
+    {
+     "kind": "credit"
+    }
+   ]
+  }
+ ]
+}
