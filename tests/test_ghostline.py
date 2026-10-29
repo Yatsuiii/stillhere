@@ -79,8 +79,10 @@ def test_data_file_follows_rule():
     for k in ("forecast", "group", "five", "one"):
         v = np.array(L[k]["values"])
         assert v.shape == (145,) and abs(v.mean()) < 0.01 and abs(v.std(ddof=1) - 1) < 0.01
-    log = subprocess.run(["git", "-C", str(ROOT), "log", "--format=%h", "--", "docs/rules/display_rule_ghostline.md"],
-                         capture_output=True, text=True).stdout.split()
-    assert d["rule"]["commit"] in log
+    log = subprocess.run(["git", "-C", str(ROOT), "log", "--format=%h %cI", "--", "docs/rules/display_rule_ghostline.md"],
+                         capture_output=True, text=True).stdout.split("\n")
+    rows = [r.split() for r in log if r.strip()]
+    # the product repo records its own hash; the public mirror has the same commit time under another hash
+    assert any(h == d["rule"]["commit"] or t == d["rule"]["committed"] for h, t in rows)
     at = datetime.datetime.fromisoformat(d["extracted_utc"])
     assert at >= datetime.datetime.fromisoformat("2026-10-29T16:00:00+00:00") and at > datetime.datetime.fromisoformat(d["rule"]["committed"])
