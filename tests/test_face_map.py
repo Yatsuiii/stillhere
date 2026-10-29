@@ -93,55 +93,105 @@ def test_gate0_vif():
 # ---- the runner --------------------------------------------------------------------------------------------------------------
 spec = importlib.util.spec_from_file_location("fmr", ROOT / "scripts/face_map_runner.py")
 RN = importlib.util.module_from_spec(spec); spec.loader.exec_module(RN)
+NOHOOK = ["-c", "core.hooksPath=/dev/null", "-c", "user.name=t", "-c", "user.email=t@example.invalid"]
+
+
+def git(repo, *args, env=None):
+    import os
+    import subprocess
+    return subprocess.run(["git", "-C", str(repo), *NOHOOK, *args], capture_output=True, text=True, check=True, env={**os.environ, **(env or {})})
+
+
+def rc_repo(tmp: Path) -> Path:
+    """A clone whose origin is a local bare repo, standing in for the private GitHub repo."""
+    import subprocess
+    subprocess.run(["git", "init", "-q", "--bare", "-b", "main", str(tmp / "origin.git")], check=True)
+    subprocess.run(["git", "clone", "-q", str(tmp / "origin.git"), str(tmp / "rc")], check=True, capture_output=True)
+    return tmp / "rc"
+
+
+def push_rc(repo: Path, date=None):
+    env = {"GIT_COMMITTER_DATE": date, "GIT_AUTHOR_DATE": date} if date else None
+    git(repo, "add", "results/face_map_RC.json"); git(repo, "commit", "-q", "-m", "R and C", env=env); git(repo, "push", "-q", "origin", "HEAD:main")
 
 
 def build(tmp: Path, n_view=8, n_vols=260, tr=1.3):
-    """Synthetic edits, regressors, words, intact forecast, film versions, run table and prepare cache with planted face tracking."""
+    """Synthetic edits, regressors, the intact forecast in Saturday's bridge/ layout, the two edit forecasts, run table and prepare
+    cache with planted face tracking; then maps (into a git clone, pushed) and gate 0."""
     rng = np.random.default_rng(9); (tmp / "atlas").mkdir(); atlas = write_annots(tmp / "atlas")
     parcels = FM.all_parcels(*(atlas / f"{h}.Schaefer2018_400Parcels_17Networks_order.annot" for h in ("lh", "rh")))
-    d = {k: tmp / k for k in ("fc", "vers", "rg", "cache")}
+    d = {k: tmp / k for k in ("fc", "rem", "am", "rg", "cache")}
     for p in d.values():
         p.mkdir()
+    (d["fc"] / "bridge").mkdir(); (d["am"] / "nested").mkdir()
     faces = np.repeat(np.clip(np.convolve(rng.random(190), np.ones(5) / 5, "same") - 0.4, 0, None), 24)    # per frame, 190 s
     json.dump({"window_release_s": [0.0, 190.0], "source_sha256": RN.ER.TOS_SHA, "fps": 24,
                "per_frame": [{"masked_px": [int(f * 1280 * 534)]} for f in faces]}, open(tmp / "edits.json", "w"))
     np.savez(d["rg"] / "film_regressors.npz", envelope=rng.random(190), brightness=rng.random(190), motion=rng.random(190))
-    t = np.arange(190.0); base = rng.standard_normal((190, 20484)).astype(np.float32)
-    with open(d["fc"] / "words.csv", "w") as f:
+    t = np.arange(190.0); base = rng.standard_normal((190, 20484)).astype(np.float32); fb = d["fc"] / "bridge"
+    with open(fb / "words.csv", "w") as f:
         f.write("start,duration,text\n" + "".join(f"{s:.2f},0.3,w\n" for s in np.sort(rng.uniform(0, 189, 300))))
-    np.savez(d["fc"] / "pred_full.npz", P=base, starts=t); np.savez(d["fc"] / "pred_audio.npz", P=base, starts=t)
-    json.dump({"stimulus": {"sha256": RN.ER.TOS_SHA}, "ckpt_matches_pin": True, "stages": {"video": {"ok": True}}}, open(d["fc"] / "tierD_bridge_forecast.json", "w"))
+    np.savez(fb / "pred_full.npz", P=base, starts=t); np.savez(fb / "pred_audio.npz", P=base, starts=t)
+    json.dump({"stimulus": {"sha256": RN.ER.TOS_SHA}, "ckpt_matches_pin": True, "stages": {"video": {"ok": True}}}, open(fb / "tierD_bridge_forecast.json", "w"))
     w = rng.standard_normal(400); off = np.zeros(20484, np.float32)
     for p, v in enumerate(parcels["vertices"]):
         off[v] = w[p]
-    for v, P in (("intact", base), ("faces_removed", base - off), ("area_matched", base - rng.standard_normal(20484).astype(np.float32))):
-        (d["vers"] / v).mkdir(); np.savez(d["vers"] / v / "pred_full.npz", P=P, starts=t)
+    np.savez(d["rem"] / "pred_full.npz", P=base - off, starts=t)
+    np.savez(d["am"] / "nested" / "pred_full.npz", P=base - rng.standard_normal(20484).astype(np.float32), starts=t)
     face_s = FM.face_per_s([[int(f * 1280 * 534)] for f in faces]); runs, man = [], {"runs": {}}
     for i in range(n_view):
         sub = f"sub-T{i:02d}"; onset = 94.0 + 0.1 * i; ft = np.arange(n_vols) * tr + 0.6 - onset
         F = H.hrf_regressor(face_s, ft); F = (F - F.mean()) / (F.std() + 1e-9)
-        raw = np.outer(w, F) + rng.standard_normal((400, n_vols))
-        np.savez(d["cache"] / f"{sub}_ses-1.npz", raw_ALL=raw, keep=np.ones(n_vols, bool), fd=np.zeros(0))
+        np.savez(d["cache"] / f"{sub}_ses-1.npz", raw_ALL=np.outer(w, F) + rng.standard_normal((400, n_vols)), keep=np.ones(n_vols, bool), fd=np.zeros(0))
         runs.append({"subject": sub, "session": "ses-1", "keep": True, "tr": tr, "film_onset_s": onset, "slice_offset_s": 0.6, "n_vols": n_vols})
         man["runs"][f"{sub}_ses-1"] = {"status": "prepared", "cache": f"{sub}_ses-1.npz", "cache_sha256": RN.sha(d["cache"] / f"{sub}_ses-1.npz"), "mriqc_fd_mean": 0.1}
     rt = tmp / "runs.json"; json.dump({"runs": runs}, open(rt, "w")); man["runs_table_sha256"] = RN.sha(rt)
     json.dump(man, open(d["cache"] / "prepare_manifest.json", "w"))
+    repo = rc_repo(tmp)
+    rc = RN.cmd_maps(argparse.Namespace(intact=str(d["fc"]), removed=str(d["rem"]), matched=str(d["am"]), runs=str(rt), atlas=str(atlas),
+                                        out=str(repo / "results/face_map_RC.json")))
     gate = tmp / "gate.json"
-    RN.cmd_gate(argparse.Namespace(edits=str(tmp / "edits.json"), regressors=str(d["rg"]), words=str(d["fc"] / "words.csv"), runs=str(rt), out=str(gate)))
-    return argparse.Namespace(versions=str(d["vers"]), forecast=str(d["fc"]), edits=str(tmp / "edits.json"), regressors=str(d["rg"]), runs=str(rt),
-                              atlas=str(atlas), cache=str(d["cache"]), gate=str(gate), results=str(tmp / "res.json"), now="2026-10-30T12:00:00+00:00")
+    RN.cmd_gate(argparse.Namespace(edits=str(tmp / "edits.json"), regressors=str(d["rg"]), words=str(d["fc"]), runs=str(rt), out=str(gate)))
+    a = argparse.Namespace(forecast=str(d["fc"]), edits=str(tmp / "edits.json"), regressors=str(d["rg"]), runs=str(rt), atlas=str(atlas),
+                           cache=str(d["cache"]), gate=str(gate), rc_repo=str(repo), results=str(tmp / "res.json"))
+    return a, rc, w
 
 
-def test_runner_planted_pass_not_run_paths_and_cache_refusal(tmp_path, monkeypatch):
-    monkeypatch.setattr(FM, "N_SPIN", 100); monkeypatch.setattr(FM.spin_perms, "__defaults__", (100, FM.SPIN_SEED))
-    a = build(tmp_path)
-    assert json.load(open(a.gate))["pass"]
+def test_maps_recover_the_planted_edit_and_record_hashes(tmp_path):
+    a, rc, w = build(tmp_path)
+    R = np.asarray(rc["R"]); assert R.shape == (400,) and np.allclose(R, w, atol=1e-4)      # intact - (intact - w) = w per parcel
+    assert rc["R_sha256"] == RN.map_sha(R) and set(rc["inputs_sha256"]) == {"intact", "removed", "matched"} and rc["forecasts_only"]
+    assert json.load(open(a.gate))["pass"]                                                 # gate 0 read words.csv from bridge/
+
+
+def test_score_guard_cutoff_and_refusals(tmp_path, monkeypatch):
+    monkeypatch.setattr(FM.spin_perms, "__defaults__", (100, FM.SPIN_SEED))
+    a, rc, w = build(tmp_path); repo = Path(a.rc_repo)
+    assert RN.cmd_score(a)["outcome"] == "NOT RUN"                                           # the maps are not on origin/main yet
+    push_rc(repo, date="2026-11-01T17:59:00+00:00")
     res = RN.cmd_score(a)
-    assert res["outcome"] == "PASS" and res["viewers"] == 8 and res["parcels_tested"] == 374 and "M" not in json.dumps(res)
-    assert RN.cmd_score(argparse.Namespace(**{**vars(a), "now": "2026-10-30T20:00:01+00:00"}))["outcome"] == "NOT RUN"
+    assert res["outcome"] == "PASS" and res["viewers"] == 8 and res["rc"]["R_sha256"] == rc["R_sha256"] and '"M"' not in json.dumps(res)
     g = json.load(open(a.gate)); g["pass"] = False; json.dump(g, open(a.gate, "w"))
     assert RN.cmd_score(a)["outcome"] == "NOT RUN"; g["pass"] = True; json.dump(g, open(a.gate, "w"))
-    assert RN.cmd_score(argparse.Namespace(**{**vars(a), "versions": str(tmp_path / "none")}))["outcome"] == "NOT RUN"
+    rcp = repo / "results/face_map_RC.json"; orig = rcp.read_text(); d = json.loads(orig); d["R"][0] += 1.0; rcp.write_text(json.dumps(d))
+    with pytest.raises(SystemExit):
+        RN.cmd_score(a)                                                                      # the local maps differ from origin/main's
+    rcp.write_text(orig)
     f = Path(a.cache) / "sub-T01_ses-1.npz"; z = dict(np.load(f)); z["keep"][0] = False; np.savez(f, **z)
     with pytest.raises(SystemExit):
-        RN.cmd_score(a)
+        RN.cmd_score(a)                                                                      # a cache file changed after prepare
+
+
+def test_maps_pushed_after_the_cutoff_is_not_run(tmp_path, monkeypatch):
+    a, rc, w = build(tmp_path)
+    push_rc(Path(a.rc_repo), date="2026-11-01T18:00:01+00:00")
+    assert RN.cmd_score(a)["outcome"] == "NOT RUN"
+
+
+def test_prepare_refuses_before_opening_any_file(tmp_path):
+    a, rc, w = build(tmp_path)
+    p = argparse.Namespace(data=str(tmp_path / "no_such_data"), meta=str(tmp_path / "no_such_meta"), runs=a.runs, atlas=a.atlas,
+                           cache=str(tmp_path / "pc"), gate=a.gate, rc_repo=a.rc_repo)
+    with pytest.raises(SystemExit, match="no BOLD file is opened"):
+        RN.ER.cmd_prepare(p)                                                                 # maps not on origin/main: refused first
+    assert not (tmp_path / "pc").exists()

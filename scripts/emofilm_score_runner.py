@@ -15,8 +15,12 @@ the committed functions in stillhere/emofilm_score.py (and, through them, stillh
            with viewer bootstrap CIs, TRIBE minus each baseline, ISC(k) and the volunteer-equivalent rule. Group results go to
            results/emofilm_film_score.json; per-viewer values only to CACHE/score_per_viewer.json.
 
+Read guard (ruling of Oct 29, 06:30 UTC): prepare opens no image or motion file unless gate 0 has passed and results/face_map_RC.json
+is on origin/main of RC_REPO with the same blob hash as the local copy. The Emo-FilM download (pilot/emofilm/download_tos_runs.py)
+started Oct 29 05:45 UTC; it only downloads; nothing reads it before this guard allows.
 Prints counts, shapes, pass/fail and timings only (never BOLD values or per-viewer scores).
-usage: python scripts/emofilm_score_runner.py prepare --data DIR --meta DIR --runs RUN_TABLE --atlas DIR --cache DIR
+usage: python scripts/emofilm_score_runner.py prepare --data DIR --meta DIR --runs RUN_TABLE --atlas DIR --cache DIR --gate GATE_JSON
+              --rc_repo REPO
        python scripts/emofilm_score_runner.py score --forecast DIR --regressors DIR --runs RUN_TABLE --atlas DIR --cache DIR [--results JSON]"""
 import argparse
 import csv
@@ -24,6 +28,7 @@ import gzip
 import hashlib
 import json
 import os
+import subprocess
 import sys
 import time
 
@@ -39,6 +44,32 @@ TOS_SHA = "efa9062d9cdb7a338e40ad530dfdf234806743f29ae6a1a136b97ece4e588e8f"
 NETS = ("AUD", "LANG", "VIS")
 GAUGES = ("HEARING", "LANGUAGE", "VISUAL")
 sha = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
+RC_REL = "results/face_map_RC.json"
+
+
+# ---- read guard (project-thread ruling of Oct 29, 06:30 UTC) ------------------------------------------------------------------
+def read_guard(gate_json, rc_repo) -> dict:
+    """Whether a BOLD file may be opened: gate 0 (docs/rules/face_map_rule.md) has passed AND results/face_map_RC.json is on origin/main
+    of RC_REPO (git fetch, then the local file's blob hash must equal origin/main's). Returns {ok, why, kind, rc_blob, rc_commit_utc};
+    kind is "gate", "absent", "fetch" or "differs" when not ok."""
+    if not os.path.isfile(gate_json) or json.load(open(gate_json)).get("pass") is not True:
+        return {"ok": False, "kind": "gate", "why": "gate 0 (collinearity) has not passed"}
+    if not os.path.isfile(os.path.join(rc_repo, RC_REL)):
+        return {"ok": False, "kind": "absent", "why": f"{RC_REL} is not present"}
+    g = lambda *x: subprocess.run(["git", "-C", rc_repo, *x], capture_output=True, text=True)
+    cred = ("-c", "credential.helper=", "-c", "credential.helper=!gh auth git-credential")
+    if g(*cred, "fetch", "-q", "origin", "main").returncode:
+        heads = g(*cred, "ls-remote", "--heads", "origin", "main")
+        if heads.returncode == 0 and not heads.stdout.strip():
+            return {"ok": False, "kind": "absent", "why": f"origin has no main branch, so {RC_REL} is not on origin/main"}
+        return {"ok": False, "kind": "fetch", "why": "git fetch of origin main failed"}
+    remote = g("rev-parse", f"origin/main:{RC_REL}")
+    if remote.returncode:
+        return {"ok": False, "kind": "absent", "why": f"{RC_REL} is not on origin/main"}
+    if g("hash-object", RC_REL).stdout.strip() != remote.stdout.strip():
+        return {"ok": False, "kind": "differs", "why": f"the local {RC_REL} differs from origin/main's"}
+    when = g("log", "-1", "--format=%cI", "origin/main", "--", RC_REL).stdout.strip()
+    return {"ok": True, "kind": None, "why": None, "rc_blob": remote.stdout.strip(), "rc_commit_utc": when}
 
 
 # ---- inputs -------------------------------------------------------------------------------------------------------------------
@@ -120,6 +151,9 @@ def prepare_run(img_path, motion_path, row: dict, runs: list, mriqc_fd_mean: flo
 
 
 def cmd_prepare(a):
+    guard = read_guard(a.gate, a.rc_repo)                              # before any image or motion file is opened
+    if not guard["ok"]:
+        raise SystemExit(f"refused: {guard['why']}; no BOLD file is opened")
     os.makedirs(a.cache, exist_ok=True); assert not os.path.abspath(a.cache).startswith(REPO), "CACHE must be outside the repo"
     T = json.load(open(a.runs)); mriqc = {r["bids_name"]: r for r in csv.DictReader(open(f"{a.meta}/mriqc_group_bold.tsv"), delimiter="\t")}
     sets = parcel_index(a.atlas); meshes = mid_meshes(); project = lambda img: E.project(img, meshes)
@@ -149,7 +183,13 @@ def cmd_prepare(a):
 
 
 # ---- score --------------------------------------------------------------------------------------------------------------------
+def forecast_dir(d) -> str:
+    """The folder holding the intact kernel's files: D itself, or D/bridge (the layout `kaggle kernels output` gives)."""
+    return d if os.path.isfile(f"{d}/pred_full.npz") or not os.path.isfile(f"{d}/bridge/pred_full.npz") else f"{d}/bridge"
+
+
 def load_forecast(d) -> dict:
+    d = forecast_dir(d)
     need = ("pred_full.npz", "pred_audio.npz", "words.csv", "tierD_bridge_forecast.json")
     miss = [f for f in need if not os.path.isfile(f"{d}/{f}")]
     if miss:
@@ -239,7 +279,7 @@ def cmd_score(a):
 
 def main():
     ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest="cmd", required=True)
-    p = sp.add_parser("prepare"); [p.add_argument(f"--{k}", required=True) for k in ("data", "meta", "runs", "atlas", "cache")]
+    p = sp.add_parser("prepare"); [p.add_argument(f"--{k}", required=True) for k in ("data", "meta", "runs", "atlas", "cache", "gate", "rc_repo")]
     s = sp.add_parser("score"); [s.add_argument(f"--{k}", required=True) for k in ("forecast", "regressors", "runs", "atlas", "cache")]
     s.add_argument("--results", default=f"{REPO}/results/emofilm_film_score.json")
     a = ap.parse_args()
