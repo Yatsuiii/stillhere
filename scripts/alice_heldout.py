@@ -33,6 +33,10 @@ BASE = "https://s3.amazonaws.com/openneuro.org/ds002322"
 SUBS = ("18", "22", "23", "24", "26", "28", "30", "31", "35", "36", "37", "39", "41", "42", "43", "44", "45", "47", "48", "49", "50",
         "51", "53")
 NO_DERIVATIVE = ("38", "46", "52")
+EXCLUDED = {"53": "its published derivative fails the gzip CRC check, and our MD5 matches the checksum OpenNeuro's storage reports, "
+                  "so the damage is at the source; from inside derivative volume 11, every later volume is displaced by 300 voxels, "
+                  "and no repair can be verified (rule section 2, amended by the cloud ruling of Oct 30, 19:40 UTC)"}
+SCORED = tuple(s for s in SUBS if s not in EXCLUDED)
 PROTOCOL = {s: "single-echo, 44 slices" if int(s) <= 37 else "three-echo (echo 2), 33 slices" for s in SUBS}
 STIM = "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav"
 STIM_SHA = "bb8003578d0667cd45fbce932c45dcfa3abee4be40da98c0a83dea80516aeefe"
@@ -270,17 +274,18 @@ def score(root, out_dir):
     sets = H.parcel_sets(f"{root}/atlas/lh.Schaefer2018_400Parcels_17Networks_order.annot",
                          f"{root}/atlas/rh.Schaefer2018_400Parcels_17Networks_order.annot")
     P = {k: np.load(f"{A}/forecast/out/pred_alice_{k}.npz") for k in ("full", "audio", "shuf")}
-    ev = {s: onset_of(f"{A}/bold/sub-{s}_task-alice_events.tsv") for s in SUBS}
+    ev = {s: onset_of(f"{A}/bold/sub-{s}_task-alice_events.tsv") for s in SCORED}
     vert, covs, table = {}, {}, {}
-    for s in SUBS:
+    for s in SCORED:
         vert[s] = project(f"{A}/bold/sub-{s}_task-alice_bold_preprocessed.nii.gz"); covs[s] = covered(vert[s])
         sh = area_shares(covs[s], sets)
         table[s] = {"protocol": PROTOCOL[s], "onset_s": ev[s][0], "stim_file": ev[s][1], "volumes": int(vert[s].shape[1]),
                     "covered_share": {k: round(v, 4) for k, v in sh.items()}, "language": sh["LANG"] >= COVER, "hearing": sh["AUD"] >= COVER}
         print(f"sub-{s}: {vert[s].shape[1]} volumes, covered LANG {sh['LANG']:.3f} AUD {sh['AUD']:.3f}", flush=True)
-    elig = {"LANG": [s for s in SUBS if table[s]["language"]], "AUD": [s for s in SUBS if table[s]["hearing"]]}
+    elig = {"LANG": [s for s in SCORED if table[s]["language"]], "AUD": [s for s in SCORED if table[s]["hearing"]]}
     res = {"label": "exploratory", "rule": "docs/rules/alice_heldout_rule.md", "dataset": "OpenNeuro ds002322 v1.0.4 (CC0)",
-           "listeners": table, "no_derivative": list(NO_DERIVATIVE), "tree_baselines": TREE_LABEL,
+           "listeners": table, "no_derivative": list(NO_DERIVATIVE),
+           "excluded": {f"sub-{s}": r for s, r in EXCLUDED.items()}, "tree_baselines": TREE_LABEL,
            "stim_file_note": {s: v["stim_file"] for s, v in table.items() if v["stim_file"] != STIM},
            "not_run": "section 8's M2 (hybrid) and M3 (wrong story): they need a second story's listener group and are not part of the claim",
            "inputs_sha256": {"stimulus": STIM_SHA, "annotations": ANN_SHA, **{f"pred_{k}": sha(f"{A}/forecast/out/pred_alice_{k}.npz") for k in P}}}
@@ -291,28 +296,28 @@ def score(root, out_dir):
     keep = kept_parcels(covs, sets, elig); ksets = subset(sets, keep)
     res["parcels_kept"] = {net: f"{len(idx)} of {len(sets[net])}" for net, idx in keep.items()}
     n = SKIP + min(v.shape[1] for v in vert.values())
-    bold = {s: {net: A_[:, :n] for net, A_ in to_raw(parcel_series(vert[s], covs[s], sets, keep)).items()} for s in SUBS}
+    bold = {s: {net: A_[:, :n] for net, A_ in to_raw(parcel_series(vert[s], covs[s], sets, keep)).items()} for s in SCORED}
     words = timed_words(f"{A}/annotations/annotations.tsv"); on = np.array([t for _, t, _ in words])
     n_sec = int(max(on.max(), n * H.TR)) + 40
     wps = np.bincount(on.astype(int), minlength=n_sec).astype(float)
     env = H.envelope_per_second(f"{A}/stimulus/{STIM}")
     base = baselines(words, json.load(open(f"{A}/surprisal.json")), n_sec)
-    o = {s: ev[s][0] for s in SUBS}
-    pp = {s: {k: H.pred_parcels(d["P"], d["starts"] + o[s], n, ksets) for k, d in P.items()} for s in SUBS}
-    last = min(int((float(P["full"]["starts"][-1]) + o[s] + 5) // H.TR) for s in SUBS)
+    o = {s: ev[s][0] for s in SCORED}
+    pp = {s: {k: H.pred_parcels(d["P"], d["starts"] + o[s], n, ksets) for k, d in P.items()} for s in SCORED}
+    last = min(int((float(P["full"]["starts"][-1]) + o[s] + 5) // H.TR) for s in SCORED)
     full = {"stage": {}, "cheap": {}}
     for tag, j1 in (("145", 154), ("full", min(last, n - 1))):
         aud16 = sorted(elig["AUD"])[:16]
         Lown, _ = own_best_lag_onsets([bold[s]["AUD"] for s in aud16], [o[s] for s in aud16], env, n, j1, 0.03)
         for lab, L in (("primary", DEV_LAG), ("own_lag", Lown)):
-            per = {s: H.stage_scores({s: bold[s]}, pp[s], wps, env, base, n, j1, L + o[s]) for s in SUBS}
+            per = {s: H.stage_scores({s: bold[s]}, pp[s], wps, env, base, n, j1, L + o[s]) for s in SCORED}
             full["stage"][f"{tag}_{lab}"] = group_stage(per, L, j1, sorted(elig["AUD"]), sorted(elig["LANG"]))
-        per = {s: CB.section8(H, {s: bold[s]}, pp[s], wps, env, n, j1, DEV_LAG + o[s]) for s in SUBS}
+        per = {s: CB.section8(H, {s: bold[s]}, pp[s], wps, env, n, j1, DEV_LAG + o[s]) for s in SCORED}
         full["cheap"][tag] = group_cheap(per, elig)
     T145 = 154 - H.J0 + 1
     cl = lambda X: H.clean(X, 0.03, H.J0, 154)
     ctrl = {s: {"AUD": H.zeros_control(T145), "LANG": [cl(pp[s]["audio"]["LANG"]).mean(0, keepdims=True),
-                                                       cl(H.wordrate_1hz(on + o[s], n)[None])]} for s in SUBS}
+                                                       cl(H.wordrate_1hz(on + o[s], n)[None])]} for s in SCORED}
     m1 = isc_curve_onsets(bold, ctrl, [k for k in M1_KS if k < n_lang - 1] + [n_lang - 1], M1_REPS, M1_SEED, elig)
     full["m1"] = {net: {str(k): v for k, v in r.items()} for net, r in m1.items()}
     ks = [k for k in M1_KS if k < n_lang - 1] + [n_lang - 1]

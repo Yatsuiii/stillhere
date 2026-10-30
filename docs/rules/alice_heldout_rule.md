@@ -3,8 +3,9 @@
 Cloud rulings of Oct 30, 16:05, 16:10 and 16:20 UTC (item E). Committed and pushed before any Alice BOLD is downloaded; the commit
 time is the record. Everything below is fixed by this commit; a change is a new commit that says what changed and why, made before the
 step it changes runs. The second commit, still before any BOLD, added the forecasts' and the surprisal file's SHA-256, the forecast
-runner, and the SHA-256 of every cited file kept outside the repository (cloud ruling of Oct 30, 18:20 UTC). The result is shown
-whatever it is, labelled exploratory.
+runner, and the SHA-256 of every cited file kept outside the repository (cloud ruling of Oct 30, 18:20 UTC). A third commit, after
+the download and before scoring, excludes sub-53 for a file corrupt at the source (section 2; cloud ruling of Oct 30, 19:40 UTC).
+The result is shown whatever it is, labelled exploratory.
 
 ## 1. What is tested
 
@@ -22,6 +23,12 @@ TRIBE v2 was trained on CNeuroMod, BoldMoments, Lebel2023 and Wen2017 and evalua
 - Listeners: the 23 with a preprocessed derivative: sub-18, 22, 23, 24, 26, 28, 30, 31, 35, 36, 37, 39, 41, 42, 43, 44, 45, 47, 48,
   49, 50, 51, 53. The dataset already excludes 3 of the 29 scanned (1 head motion, 2 quiz performance). sub-38, sub-46 and sub-52
   have no file in `derivatives/` (no reason documented) and are not scored.
+- Amended by the cloud ruling of Oct 30, 19:40 UTC, before scoring: sub-53 is excluded: its published derivative fails the gzip CRC
+  check, and our MD5 matches the checksum OpenNeuro's storage reports, so the damage is at the source. From inside derivative volume
+  11, every later volume is displaced by 300 voxels, and no repair can be verified. Decided from file integrity alone, before scoring:
+  the check compared volumes of sub-53 and sub-51 with each other only, and no forecast was compared with any brain data. The other 22
+  derivatives pass the same check. Listeners scored: 22 (single-echo 11, three-echo 11); {n}, n - 1 and the ISC list follow from
+  that, and nothing else changes. The results file names the exclusion and its reason.
 - sub-24's events.tsv names `wonderland_ch_01.mp3` instead of the stimulus below, with the same 748 s duration as every other
   listener; the README describes one stimulus for all, and the 748 s matches the slowed file, not the original-speed reading. sub-24
   is scored as hearing the stimulus below; the results file reports the mismatch.

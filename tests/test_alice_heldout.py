@@ -153,3 +153,12 @@ def test_timed_words_and_tree_baselines(tmp_path):
     b = AH.baselines(w, {"onsets": [20.1, 20.6, 22.4], "surprisal_bits": [5.0, 2.0, 3.0]}, 30)
     assert np.isclose(b["B_bu"][20], (2 - 2) + (1 - 2)) and np.isclose(b["B_bu"][22], 3 - 2)   # centred, summed into the onset second
     assert np.isclose(b["B_freq"].sum(), 0.0) and set(b) == {"B_freq", "B_bu", "B_td", "surprisal"}
+
+
+def test_sub53_excluded_before_scoring():
+    """Rule section 2, amended Oct 30 19:40 UTC: 22 listeners scored, 11 per protocol; the reason travels into the results file."""
+    assert "53" in AH.EXCLUDED and "53" not in AH.SCORED and len(AH.SCORED) == 22
+    proto = [AH.PROTOCOL[s] for s in AH.SCORED]
+    assert proto.count("single-echo, 44 slices") == 11 and proto.count("three-echo (echo 2), 33 slices") == 11
+    rule = " ".join((REPO / "docs/rules/alice_heldout_rule.md").read_text().split())
+    assert "sub-53 is excluded: its published derivative fails the gzip CRC check" in rule and "Listeners scored: 22" in rule
