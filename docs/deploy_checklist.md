@@ -13,6 +13,9 @@ dashboard as described; check it when you get there).
 - No rewrite (VERIFIED Oct 30): the first deploy had `"rewrites": [{"source": "/(.*)", "destination": "/api/index"}]` and answered
   every path, `/` included, with `{"error": "not_found"}`, because under this preset the runtime copies the rewrite's destination into
   the app's path (vercel/vercel packages/python/src/index.ts, the catch-all after `handle: 'rewrite'`). Check 1 confirms the fix.
+- `functions.api/index.py.includeFiles: web/public/**` (VERIFIED Oct 30): the Python builder leaves every `**/public/**` out of the
+  function (its predefined excludes, for a CDN `public/` folder), so the second preview served `/api/status` but answered `/`,
+  `/app.js` and the receipt page with 404; includeFiles is merged in after the excludes (packages/python/src/index.ts).
 - `requirements.txt` at the root holds the runtime dependencies, pinned (numpy pinned so BUILD reproduces the allowlisted builds byte
   for byte). Python: Vercel's default, 3.12 (3.13 also works; `api/index.py` refuses anything older than 3.12).
 - `.vercelignore` is an allowlist: only `api/`, `web/`, `stillhere/`, `worker/recipe.py`, `data/`, `results/`,
