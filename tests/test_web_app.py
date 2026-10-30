@@ -241,6 +241,7 @@ def stub_menu():
     plain = {**story, "id": "story_plain", "title": "A Plain Story", "screen": {**story["screen"], "notes": []}}
     m["clips"] = m["clips"] + [story, plain]
     m["screen_summary"] = {"n_on_menu": 10, "failed": [{"title": "A Two-Voice Story", "bar": "1"}, {"title": "Too Quiet", "bar": "trim"}],
+                           "held": [{"title": "A Held Story", "reason": "window is the reader's introduction, not the story"}],
                            "rule": "docs/rules/story_menu_rule.md"}
     return m
 
@@ -281,6 +282,34 @@ def test_story_card_reaches_plan_and_build_and_failures_are_title_and_bar_only(m
     b = stations.build(None, "a" * 32, "alice_ch02", "sentence_scramble", 20261028)
     assert b["story"] is None
     assert stations.menu()["failed"] == [{"title": "A Two-Voice Story", "bar": "1"}, {"title": "Too Quiet", "bar": "trim"}]
+    assert stations.menu()["held"] == [{"title": "A Held Story", "reason": "window is the reader's introduction, not the story"}]
+
+
+def test_story_card_passes_the_guard(menu_stub, monkeypatch):
+    """Item 5 of the ruling of Oct 30, 04:20 UTC: title, reader, tags and caveat go through guard.clean; a banned word anywhere in
+    them turns the whole card into the guard's template line."""
+    from web import guard
+    stations = menu_stub
+    m = stub_menu()
+    for field, value in (("title", "The Consciousness of Things"), ("reader", "A Hospital Reader")):
+        bad = json.loads(json.dumps(m)); bad["clips"][-2][field] = value
+        monkeypatch.setattr(stations, "_load", lambda rel, b=bad: b if rel == "stillhere/live_menu.json" else None)
+        c = stations.story_card("story_gift_of_the_magi")
+        assert c["text"] == guard.TEMPLATE and c["lead"] == guard.TEMPLATE and c["notes"] == [] and value not in json.dumps(c)
+
+
+def test_the_avoid_line_shows_word_for_word(web):
+    """Item 3: planner v2.1's avoid line reaches the PLAN card exactly as the planner writes it."""
+    app, jobs, ledger, stations, store = web
+    from stillhere import egress, planner, planner_v21 as P
+    assert P.AVOID_LINE == "The chosen story's card lists none of them. Not a full review; listen before you use a story."
+    ans = {"population": "healthy_adults", "language": "english", "stimulus": "librivox_audiobook", "analysis": "forecast_tribe_stock",
+           "brain_areas": ["language_network"], "conditions": ["intact", "sentence_scramble"], "decline_reason": "none",
+           "clip_id": None, "condition": "sentence_scramble", "seed": None, "avoid_tags": [P.TAG_IDS["violence"]]}
+    card = P.plan(planner.public("q_plan_6yo"), "spark-1.3", lambda req: egress.check(req) and {"content": ans})
+    view = stations.card_view(card)
+    line = next(l for l in view["lines"] if "Notes to avoid" in l)
+    assert line.endswith(P.AVOID_LINE) and line == next(l for l in card.text.split("\n") if "Notes to avoid" in l)
 
 
 def test_safe_never_appears(menu_stub):

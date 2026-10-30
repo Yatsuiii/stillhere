@@ -245,3 +245,18 @@ def test_public_write_stops_on_a_blocklisted_title_or_reader(run, monkeypatch):
     with pytest.raises(run.PublicTextHit) as e:
         run.require_public({"id": "story_x", "title": "A Title", "reader": "Hidden Name"})
     assert "Hidden Name" not in str(e.value) and "reader" in str(e.value)
+
+
+def test_committed_menu_holds_and_fails_show_title_and_reason_only():
+    """Cloud ruling of Oct 30, 04:20 UTC: The Nice People and Taming the Bicycle are held off the menu; like failed stories they show
+    only a title and a line, and their clips are not in the repository data."""
+    import scripts.story_menu_run as RUN
+    m = json.loads((REPO / "stillhere/live_menu.json").read_text()); summ = m["screen_summary"]
+    assert summ["held"] == [{"title": "The Nice People", "reason": "held under the project's wording rules"},
+                            {"title": "Taming the Bicycle", "reason": "window is the reader's introduction, not the story"}]
+    assert all(set(f) == {"title", "bar"} for f in summ["failed"]) and all(set(h) == {"title", "reason"} for h in summ["held"])
+    clips = json.loads((REPO / "data/live_clips.json").read_text())["clips"]
+    for sid in RUN.HELD:
+        assert sid not in {c["id"] for c in m["clips"]} | {c["id"] for c in clips}
+        assert not (REPO / f"data/live_clips/{sid}.wav").exists() and not (REPO / f"data/live_clips/{sid}.words.json").exists()
+    assert summ["n_on_menu"] == sum(1 for c in m["clips"] if c["id"].startswith("story_")) == 4

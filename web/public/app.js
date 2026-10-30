@@ -64,10 +64,11 @@ async function loadStatus() {
   }
   $("scoreboard").textContent = (S.menu.scoreboard || "") + (S.menu.badge ? ". " + S.menu.badge + "." : "");
   const failed = $("failed"); failed.textContent = "";
-  if ((S.menu.failed || []).length) {
-    failed.append(el("p", "small", "Screened, not on the menu (title and the bar it failed, docs/rules/story_menu_rule.md):"));
+  if ((S.menu.failed || []).length || (S.menu.held || []).length) {
+    failed.append(el("p", "small", "Screened, not on the menu (title, and the bar it failed or why it is held; docs/rules/story_menu_rule.md):"));
     const ul = el("ul", "failed");
-    for (const f of S.menu.failed) ul.append(el("li", "", f.title + " · " + f.bar));
+    for (const f of S.menu.failed || []) ul.append(el("li", "", f.title + " · " + f.bar));
+    for (const h of S.menu.held || []) ul.append(el("li", "", h.title + " · " + h.reason));
     failed.append(ul);
   }
   const live = data.live || {};

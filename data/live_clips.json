@@ -223,23 +223,6 @@
    "rule": "docs/rules/story_menu_rule.md"
   },
   {
-   "id": "story_nice_people",
-   "title": "The Nice People",
-   "licence": "public domain (LibriVox)",
-   "source": "https://archive.org/download/stories_001_librivox/nice_people_bunner_wsc_64kb.mp3",
-   "start_s": 21.0,
-   "dur_s": 38.62,
-   "seconds": 38.62,
-   "sr": 16000,
-   "wav": "data/live_clips/story_nice_people.wav",
-   "wav_sha256": "f67f3295bb25f7638237d1b5f29a50d750857db6d1e5286f33906d2d0a5c8fa4",
-   "words": "data/live_clips/story_nice_people.words.json",
-   "words_sha256": "78bbd17e3250f412e0f274addbf5c583e752870e6f2cec80a965519d34aa4db4",
-   "n_words": 79,
-   "sentences": 10,
-   "rule": "docs/rules/story_menu_rule.md"
-  },
-  {
    "id": "story_telltale_heart",
    "title": "The Tell-tale Heart",
    "reader": "Don Morgan",

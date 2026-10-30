@@ -32,7 +32,8 @@
     "frightening scenes",
     "being trapped or unable to move or speak",
     "falls or head injury"
-   ]
+   ],
+   "held_reason": null
   },
   {
    "id": "story_nice_people",
@@ -57,7 +58,8 @@
    "notes_tags": [
     "slurs or demeaning language",
     "alcohol or drugs"
-   ]
+   ],
+   "held_reason": "held under the project's wording rules"
   },
   {
    "id": "story_pigs_is_pigs",
@@ -73,7 +75,8 @@
     "failed_bar": "3"
    },
    "window": null,
-   "notes_tags": null
+   "notes_tags": null,
+   "held_reason": null
   },
   {
    "id": "story_taming_the_bicycle",
@@ -103,7 +106,8 @@
     "death or dying",
     "violence",
     "slurs or demeaning language"
-   ]
+   ],
+   "held_reason": "window is the reader's introduction, not the story"
   },
   {
    "id": "story_telltale_heart",
@@ -132,7 +136,8 @@
     "violence",
     "being trapped or unable to move or speak",
     "death or dying"
-   ]
+   ],
+   "held_reason": null
   },
   {
    "id": "story_baby_tramp",
@@ -141,7 +146,8 @@
    "trim": "failed",
    "screen": null,
    "window": null,
-   "notes_tags": null
+   "notes_tags": null,
+   "held_reason": null
   },
   {
    "id": "story_cask_of_amontillado",
@@ -157,7 +163,8 @@
     "failed_bar": "1"
    },
    "window": null,
-   "notes_tags": null
+   "notes_tags": null,
+   "held_reason": null
   },
   {
    "id": "story_diamond_necklace",
@@ -181,7 +188,8 @@
    },
    "notes_tags": [
     "grief or loss"
-   ]
+   ],
+   "held_reason": null
   },
   {
    "id": "story_esme",
@@ -197,7 +205,8 @@
     "failed_bar": "3"
    },
    "window": null,
-   "notes_tags": null
+   "notes_tags": null,
+   "held_reason": null
   },
   {
    "id": "story_last_leaf",
@@ -229,7 +238,8 @@
     "falls or head injury",
     "death or dying",
     "alcohol or drugs"
-   ]
+   ],
+   "held_reason": null
   },
   {
    "id": "story_toys_of_peace",
@@ -245,7 +255,8 @@
     "failed_bar": "3"
    },
    "window": null,
-   "notes_tags": null
+   "notes_tags": null,
+   "held_reason": null
   }
  ],
  "spend": {

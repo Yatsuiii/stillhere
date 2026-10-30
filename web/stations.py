@@ -134,14 +134,16 @@ SCOREBOARD = "Planner v2 · 62 unseen requests · 2.3% vs 7.6% / 6.8% (5% bar)"
 
 def menu() -> dict:
     """The live-menu line above the input box, the 3 example chips Fork P ran on both backends, the scoreboard with its badge, and the
-    stories the screen kept off the menu (title and failed bar only, story_menu_rule.md section 6)."""
+    stories the screen kept off the menu (title and failed bar only, story_menu_rule.md section 6) and the stories held off it (title and
+    the ruling's reason only)."""
     m = _load("stillhere/live_menu.json") or {}
     ex = _load("results/planner_v21_story_chips.json") or _load("results/planner_v21_examples.json") or {}   # stories, else Alice
     summ = m.get("screen_summary") or {}
     return {"text": P.menu_text(), "chips": [e["text"] for e in ex.get("examples", [])], "badge": P.BADGE, "scoreboard": SCOREBOARD,
             "clips": [{"id": c["id"], "title": c["title"], "seconds": c.get("dur_s")} for c in m.get("clips", [])],
             "default_seed": m.get("default_seed"), "reshuffle_seeds": list(RESHUFFLE_SEEDS),
-            "failed": [{"title": f["title"], "bar": str(f["bar"])} for f in summ.get("failed", [])]}
+            "failed": [{"title": f["title"], "bar": str(f["bar"])} for f in summ.get("failed", [])],
+            "held": [{"title": h["title"], "reason": h["reason"]} for h in summ.get("held", [])]}   # title and reason only
 
 
 # ---- the story card (docs/rules/story_menu_rule.md section 6, word for word; data in docs/story_menu_data.md) ---------------------
@@ -166,8 +168,10 @@ def story_card(clip_id: str):
     notes = sorted((x for x in sc.get("notes", []) if x.get("tag") in TAGS), key=lambda x: x["t"])
     items = [{"label": f"{x['tag']} ({_mss(x['t'])})", "href": f"{sc['archive_url']}#t={int(x['t'])}"} for x in notes]
     lead = STORY_LEAD.format(title=clip["title"], reader=clip["reader"], n=m["screen_summary"]["n_on_menu"], k=sc["sentences"])
-    return {"lead": lead, "notes": items, "none": None if items else STORY_NONE, "tail": STORY_TAIL,
-            "text": lead + (", ".join(i["label"] for i in items) if items else STORY_NONE) + STORY_TAIL}
+    text = lead + (", ".join(i["label"] for i in items) if items else STORY_NONE) + STORY_TAIL
+    if guard.clean(text) != text:                              # a cheap backstop (cloud ruling of Oct 30, 04:20 UTC, item 5): a title,
+        return {"lead": guard.TEMPLATE, "notes": [], "none": "", "tail": "", "text": guard.TEMPLATE}   # reader or tag with a banned word
+    return {"lead": lead, "notes": items, "none": None if items else STORY_NONE, "tail": STORY_TAIL, "text": text}
 
 
 def card_view(card) -> dict:

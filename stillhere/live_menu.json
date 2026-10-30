@@ -268,6 +268,16 @@
     "bar": "3"
    }
   ],
+  "held": [
+   {
+    "title": "The Nice People",
+    "reason": "held under the project's wording rules"
+   },
+   {
+    "title": "Taming the Bicycle",
+    "reason": "window is the reader's introduction, not the story"
+   }
+  ],
   "rule": "docs/rules/story_menu_rule.md"
  }
 }

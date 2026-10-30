@@ -25,8 +25,6 @@ b1aff641246044c83dd7ab345b5d9f2e4094be2badf58044bbae9c937ab80560  frame_check_re
 # story menu notes: story_black_cat
 45b692ec452dc31c56d799d4f5f2cae20efdbee2d8ab3f405c9a05bf02d4c12d  story menu transcript story_black_cat (faster-whisper, LibriVox)
 69ca381e503cbc68ab2a4dd1a21db666dc2cbe57dedb0a3a312db3a0d99011fd  story menu notes system prompt
-# story menu notes: story_nice_people
-7fd7aa3b3d76d3e589564b53ea45d4c08298248ab0aed49ce6c3a447d5c37324  story menu transcript story_nice_people (faster-whisper, LibriVox)
 # story menu notes: story_black_cat
 615bd3bf61ab2eed1f8961da459a380db1975ced9f0e3a35ded541bd8086f08a  story menu notes system prompt (amended)
 # story menu notes: story_telltale_heart

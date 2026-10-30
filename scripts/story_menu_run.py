@@ -384,6 +384,10 @@ def live_transcribe(audio):
 LIVE_CLIPS = REPO / "data/live_clips.json"
 LIVE_MENU = REPO / "stillhere/live_menu.json"
 BUILD_REPLAY = REPO / "web/replay/build.json"
+# Stories that passed the screen but are held off the menu (cloud ruling of Oct 30, 04:20 UTC), with the reason the page shows, word for
+# word; like a failed story, a held one shows only its title and this line, and its clip stays out of the repository data.
+HELD = {"story_taming_the_bicycle": "window is the reader's introduction, not the story",
+        "story_nice_people": "held under the project's wording rules"}
 RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                   # web/stations.py RESHUFFLE_SEEDS (Reshuffle is offered only these)
 
 
@@ -499,16 +503,19 @@ def menu(work: Path, skip=()):
     """Section 7: the live menu changes only once at least 3 windows are ready. The fresh stories go first in catalogue order, then
     alice_ch02, alice_ch01, alice_ch03 (their fields kept; ch02 is the backup), then any other listed clip; failed stories are listed
     by title and bar only. Every menu story's title, reader and quotes pass the blocklist gate before the file is written."""
+    skip = set(skip) | set(HELD)
     ok = [i for i in ready(work) if i not in skip]
     if len(ok) < 3:
         raise SystemExit(f"menu unchanged: {len(ok)} window(s) ready, the rule needs at least 3")
-    m = json.loads(LIVE_MENU.read_text()); idx = json.loads(LIVE_CLIPS.read_text()); failed = []; fresh = []
+    m = json.loads(LIVE_MENU.read_text()); idx = json.loads(LIVE_CLIPS.read_text()); failed = []; fresh = []; held = []
     clips = {c["id"]: c for c in idx["clips"]}
     for info, scr in screened(work):
         if info.get("failed") == "trim":
             failed.append({"title": info["title"], "bar": "trim"})
         elif scr and not scr["pass"]:
             failed.append({"title": info["title"], "bar": scr["failed_bar"] if scr["failed_bar"] in ("1", "2", "3") else "3"})
+        elif info["id"] in HELD:
+            held.append({"title": info["title"], "reason": HELD[info["id"]]})
         elif info["id"] in ok:
             c = clips[info["id"]]; d = work / c["id"]
             nt = json.loads((d / "notes.json").read_text()) if (d / "notes.json").exists() else {"notes": [], "host": None}
@@ -521,14 +528,14 @@ def menu(work: Path, skip=()):
                 if n.get("quote") is not None and not public_ok(n["quote"]):
                     n["quote"] = None                                 # withheld, tag and time kept (rule 2c)
             fresh.append(entry)
-    for f in failed:
+    for f in failed + held:
         if not public_ok(f["title"]):
-            raise PublicTextHit("STOP: a failed story's title hits the laptop blocklist; nothing was written")
+            raise PublicTextHit("STOP: a failed or held story's title hits the laptop blocklist; nothing was written")
     old = {c["id"]: c for c in m["clips"]}
     alice = [old[i] for i in ("alice_ch02", "alice_ch01", "alice_ch03") if i in old]
     rest = [c for c in m["clips"] if c["id"] not in {e["id"] for e in fresh} | {a["id"] for a in alice} and not c["id"].startswith("story_")]
     m["clips"] = fresh + alice + rest
-    m["screen_summary"] = {"n_on_menu": len(fresh), "failed": failed, "rule": "docs/rules/story_menu_rule.md"}
+    m["screen_summary"] = {"n_on_menu": len(fresh), "failed": failed, "held": held, "rule": "docs/rules/story_menu_rule.md"}
     LIVE_MENU.write_text(json.dumps(m, indent=1) + "\n")
     on = {e["id"] for e in fresh}                                        # reader names only for stories on the menu
     for c in idx["clips"]:
@@ -552,7 +559,8 @@ def summary(work: Path, ledger: Ledger) -> dict:
                         "screen": None if not scr else {"chunks": scr["chunks"], "bar1_min_share": round(scr["bar1"]["min_share"], 4),
                                                         "bar2_longest_gap_s": scr["bar2"]["longest_gap_s"], "bar3_agreement": scr["bar3"]["agreement"],
                                                         "pass": scr["pass"], "failed_bar": scr["failed_bar"]},
-                        "window": win, "notes_tags": None if not nt else [n["tag"] for n in nt["notes"]]})
+                        "window": win, "notes_tags": None if not nt else [n["tag"] for n in nt["notes"]],
+                        "held_reason": HELD.get(info["id"])})
     rows = ledger.rows(); kinds = sorted({r["kind"] for r in rows}); cost = {}
     for k in kinds:
         rs = [r for r in rows if r["kind"] == k]
