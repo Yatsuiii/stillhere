@@ -223,7 +223,7 @@ function grayLine(values, chip) {
   c.setAttribute("x", l); c.setAttribute("y", 18); c.setAttribute("font-size", "14"); c.setAttribute("font-weight", "600");
   c.textContent = chip.short; svg.append(c);
   const x = document.createElementNS(ns, "text");
-  x.setAttribute("x", l); x.setAttribute("y", H - 6); x.setAttribute("font-size", "12"); x.setAttribute("fill", "#4a5560");
+  x.setAttribute("x", l); x.setAttribute("y", H - 6); x.setAttribute("font-size", "12"); x.setAttribute("fill", "#b4b0a8");
   x.textContent = "seconds of clip (language areas, TRIBE units)"; svg.append(x);
   return svg;
 }

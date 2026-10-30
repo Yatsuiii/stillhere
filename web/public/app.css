@@ -1,33 +1,57 @@
-/* The live app's additions to the static page's CSS (/pilot.css, served from scripts/build_pilot_page.py). */
+/* The live app's additions to the static page's CSS (/pilot.css, served from scripts/build_pilot_page.py): the self-hosted fonts
+   (Noto Serif and Noto Sans Mono, Latin subsets, SIL OFL 1.1, /fonts/OFL.txt), the header picture, the stations rail and the controls,
+   in the same dark lab palette. Gray is the forecast; amber is real listeners or viewers and nothing else. */
+@font-face{font-family:"Noto Serif";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/NotoSerif-Regular.woff2) format("woff2")}
+@font-face{font-family:"Noto Serif";font-style:italic;font-weight:400;font-display:swap;src:url(/fonts/NotoSerif-Italic.woff2) format("woff2")}
+@font-face{font-family:"Noto Serif";font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/NotoSerif-Bold.woff2) format("woff2")}
+@font-face{font-family:"Noto Sans Mono";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/NotoSansMono-Regular.woff2) format("woff2")}
+@font-face{font-family:"Noto Sans Mono";font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/NotoSansMono-Medium.woff2) format("woff2")}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hero{border-bottom:1px solid #3a3835;background:#1d1d1d}
+.hero img{display:block;width:100%;max-width:1400px;height:auto;margin:0 auto}
+@media(max-width:700px){.hero img{aspect-ratio:1.36;object-fit:cover;object-position:0 50%}}         /* phones: the title half */
+.lead{color:#bdb9b1;font-style:italic;margin-top:18px}
 section{padding-top:.2em}
-.rail{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0;position:sticky;top:0;background:#fbfaf7;padding:6px 0;z-index:2}
-.rail a{font-size:.85rem;color:#1f4e79;text-decoration:none;border:1px solid #c9d3de;border-radius:999px;padding:3px 10px;background:#fff}
-.rail a.done{background:#e6f4ea;border-color:#9fd1ad}
-textarea,input,select{font:inherit;width:100%;max-width:100%;border:1px solid #c9d3de;border-radius:8px;padding:8px 10px;background:#fff}
+#plan h2{margin-top:1.8em}
+#status-line{font:400 .72rem/1.6 "Noto Sans Mono",ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;font-style:normal;color:#8c8881}
+#status-line b{font-weight:500;color:#ece9e2}
+.rail{display:grid;grid-template-columns:repeat(6,1fr);margin:6px 0 0;position:sticky;top:0;background:#1d1d1d;padding:14px 0 10px;z-index:2;
+border-bottom:1px solid #3a3835}
+.rail a{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;color:#bdb9b1;font:italic .9rem "Noto Serif",Georgia,serif;
+text-decoration:none;border:0;padding:0;min-width:0}                      /* not the static page's pill links */
+.rail a svg{width:46px;height:46px;opacity:.85} .rail a:hover{color:#ece9e2} .rail a:hover svg{opacity:1}
+.rail a:not(:last-child)::after{content:"";position:absolute;top:23px;left:calc(50% + 34px);right:calc(-50% + 34px);border-top:1px dotted #5a5650}
+.rail a.done span::after{content:" \2713";font-style:normal;color:#ece9e2}
+@media(max-width:560px){.rail a svg{width:30px;height:30px} .rail a{font-size:.68rem} .rail a:not(:last-child)::after{display:none}}
+textarea,input,select{font:inherit;width:100%;max-width:100%;border:1px solid #3a3835;border-radius:0;padding:9px 11px;background:#161616;color:#ece9e2}
+textarea:focus,input:focus,select:focus{outline:1px solid #ece9e2;outline-offset:0}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;align-items:center}
 .row select,.row input{flex:1 1 200px;width:auto}
-button{font:inherit;border:1px solid #1f4e79;background:#1f4e79;color:#fff;border-radius:8px;padding:7px 14px;cursor:pointer}
-button[disabled]{opacity:.45;cursor:default}
-#old-bug{background:#fff;color:#a8261b;border-color:#a8261b}
+button{font:500 .7rem "Noto Sans Mono",ui-monospace,monospace;letter-spacing:.18em;text-transform:uppercase;border:1px solid #ece9e2;background:none;
+color:#ece9e2;border-radius:0;padding:11px 20px;cursor:pointer}
+button:hover:not([disabled]){background:#ece9e2;color:#1d1d1d}
+button[disabled]{opacity:.32;cursor:default}
+#old-bug{color:#e39286;border-color:#e39286} #old-bug:hover:not([disabled]){background:#e39286;color:#1d1d1d}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.chips button{background:#fff;color:#1f4e79;border-color:#c9d3de;font-size:.85rem;text-align:left}
+.chips button{text-transform:none;letter-spacing:0;font:italic .95rem/1.5 "Noto Serif",Georgia,serif;color:#ece9e2;border-color:#3a3835;
+background:#232323;text-align:left;padding:10px 14px}
+.chips button:hover:not([disabled]){background:#2a2926;color:#ece9e2;border-color:#ece9e2}
 .check{list-style:none;padding:0;margin:8px 0}
-.check li{padding:6px 10px;border-radius:8px;margin:4px 0;background:#f4f6f8}
-.check li.ok{background:#e6f4ea}
-.check li.no{background:#fdecea}
+.check li{padding:7px 11px;margin:4px 0;background:#262626;font:.82rem/1.5 "Noto Sans Mono",ui-monospace,monospace}
+.check li.ok{background:#1e2a21}
+.check li.no{background:#2f1f1c}
 .flash{animation:flash 3s ease-out}
-@keyframes flash{0%,60%{box-shadow:0 0 0 3px #a8261b}100%{box-shadow:none}}
+@keyframes flash{0%,60%{box-shadow:0 0 0 2px #e39286}100%{box-shadow:none}}
 .lanes{display:grid;gap:6px;margin:8px 0}
-.lane{display:grid;grid-template-columns:minmax(0,1fr) 90px 70px;gap:8px;align-items:center;font-size:.9rem}
-.lane i{display:block;height:10px;border-radius:5px;background:#e3e0d8}
-.lane.start i{background:#7a5200}
-.lane.end i{background:#1a6b34}
-.lane.off i{background:repeating-linear-gradient(90deg,#e3e0d8 0 6px,#fff 6px 10px)}
-.lane b{font-weight:500;color:#4a5560;font-size:.8rem}
+.lane{display:grid;grid-template-columns:minmax(0,1fr) 90px 70px;gap:8px;align-items:center;font:.8rem "Noto Sans Mono",ui-monospace,monospace}
+.lane i{display:block;height:6px;background:#333}
+.lane.start i{background:#8c8881}
+.lane.end i{background:#ece9e2}
+.lane.off i{background:repeating-linear-gradient(90deg,#333 0 6px,#1d1d1d 6px 10px)}
+.lane b{font-weight:400;color:#8c8881;font-size:.75rem}
 .endscreen{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:760px){.endscreen{grid-template-columns:1fr 1fr}}
-.recorded{border-left:3px solid #7a5200;padding-left:10px}
-.frames3 img{border:1px solid #e3e0d8}
-#status-line b{font-weight:600}
-.story{background:#f4f6f8;border-radius:8px;padding:8px 10px;margin:8px 0}
-.failed{color:#9aa3ad;font-size:.85rem}
+.recorded{border-left:1px solid #d9be7c;padding-left:12px}
+.frames3 img{border:1px solid #3a3835}
+.story{background:#181818;padding:9px 11px;margin:8px 0}
+.failed{color:#6f6b64;font-size:.85rem}

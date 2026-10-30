@@ -46,40 +46,46 @@ BACKENDS = {"spark-1.3": "Muse Spark 1.3 (Meta Model API), the default planner",
             "spark-open-baseten": "Muse Spark Open (Baseten)"}
 COND_NAMES = {"intact": "Intact story", "sentence_scramble": "Sentence scramble", "word_scramble": "Word scramble", "reversed": "Reversed"}
 VERSION_NAMES = {"intact": "Intact", "faces_removed": "Faces filled", "area_matched": "Same-size control"}
-INK, MUTED, ACCENT, PASS, FAIL, WAIT = "#1b1f24", "#4a5560", "#1f4e79", "#1a6b34", "#a8261b", "#7a5200"
+# Dark lab palette. Gray is the forecast; colour (ACCENT, amber) is real listeners or viewers and nothing else (display_rule_ghostline).
+INK, MUTED, ACCENT, PASS, FAIL, WAIT = "#ece9e2", "#b4b0a8", "#e8a33d", "#9fcfab", "#e39286", "#d9be7c"
+BG, PANEL, LINE, DIM = "#1d1d1d", "#232323", "#3a3835", "#8c8881"
+SERIF, MONO = '"Noto Serif",Georgia,"Times New Roman",serif', '"Noto Sans Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace'
 CSS = f"""
 *{{box-sizing:border-box}} html{{-webkit-text-size-adjust:100%}}
-body{{margin:0;background:#fbfaf7;color:{INK};font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}}
-main{{max-width:880px;margin:0 auto;padding:20px 16px 40px}}
-h1{{font-size:1.9rem;margin:.2em 0 .1em;line-height:1.15}} h2{{font-size:1.3rem;margin:2.2em 0 .5em;padding-top:.6em;border-top:2px solid #e3e0d8}}
-h3{{font-size:1.05rem;margin:1.3em 0 .4em}} p{{margin:.5em 0}} q{{quotes:"\\201C" "\\201D"}}
-.lead{{font-size:1.06rem}} .muted,.small{{color:{MUTED}}} .small{{font-size:.88rem}}
-nav{{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}} nav a{{font-size:.85rem;color:{ACCENT};text-decoration:none;border:1px solid #c9d3de;
-border-radius:999px;padding:3px 10px;background:#fff}}
-.panel{{background:#fff;border:1px solid #e3e0d8;border-radius:12px;padding:14px 16px;margin:12px 0}}
-.nd{{font-size:.85rem;color:{MUTED};border-top:1px solid #eee;margin-top:10px;padding-top:6px}}
-.credit{{font-size:.8rem;color:{MUTED}}}
-.badge{{display:inline-block;font-size:.78rem;font-weight:600;border-radius:999px;padding:1px 9px;margin-right:6px;vertical-align:1px}}
-.b-pass{{background:#e6f4ea;color:{PASS}}} .b-fail{{background:#fdecea;color:{FAIL}}} .b-wait{{background:#fff4d6;color:{WAIT}}}
-.b-info{{background:#e8eef5;color:{ACCENT}}}
-.pending{{border:1px dashed #d9c48a;background:#fffbf0}}
-.big{{font-size:1.25rem;font-weight:650;color:{ACCENT};line-height:1.35}}
-.beat{{font-size:.9rem;color:{MUTED};border-left:3px solid #c9d3de;padding-left:10px}}
+body{{margin:0;background:{BG};color:{INK};font:16px/1.65 {SERIF}}}
+main{{max-width:920px;margin:0 auto;padding:20px 16px 40px}}
+h1{{font-size:2rem;font-weight:400;margin:.2em 0 .1em;line-height:1.15}}
+h2{{font:500 .78rem/1.4 {MONO};letter-spacing:.3em;text-transform:uppercase;margin:3.2em 0 1.1em;padding:0 0 .8em;border-bottom:1px solid {LINE}}}
+h3{{font-size:1.06rem;font-weight:700;margin:1.3em 0 .4em;line-height:1.35}} p{{margin:.5em 0}} q{{quotes:"\\201C" "\\201D"}}
+.lead{{font-size:1.06rem}} .muted,.small{{color:{MUTED}}} .small{{font-size:.88rem;font-style:italic}}
+a{{color:{INK}}}
+nav{{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}} nav a{{font:italic .9rem {SERIF};color:{MUTED};text-decoration:none;border:1px solid {LINE};
+padding:3px 10px}} nav a:hover{{color:{INK};border-color:{INK}}}
+.panel{{position:relative;background:{PANEL};border:1px solid {LINE};padding:20px 22px;margin:14px 0}}
+.panel::before,.panel::after{{content:"";position:absolute;width:10px;height:10px;border:1px solid {DIM}}}
+.panel::before{{top:-1px;left:-1px;border-right:0;border-bottom:0}} .panel::after{{bottom:-1px;right:-1px;border-left:0;border-top:0}}
+.nd{{font-size:.82rem;font-style:italic;color:{DIM};border-top:1px solid {LINE};margin-top:12px;padding-top:6px}}
+.credit{{font-size:.8rem;color:{DIM}}}
+.badge{{display:inline-block;font:500 .64rem {MONO};letter-spacing:.16em;text-transform:uppercase;border:1px solid currentColor;padding:2px 8px;
+margin-right:8px;vertical-align:2px}}
+.b-pass{{color:{PASS}}} .b-fail{{color:{FAIL}}} .b-wait{{color:{WAIT}}} .b-info{{color:{MUTED}}}
+.pending{{border:1px dashed #5d574b;background:#211f1b}}
+.big{{font-size:1.42rem;font-weight:400;color:#f6f3ec;line-height:1.38}}
+.beat{{font-size:.9rem;color:{MUTED};border-left:1px solid {LINE};padding-left:12px}}
 .picker{{display:flex;flex-direction:column;gap:8px}} .picker input{{position:absolute;opacity:0;pointer-events:none}}
-.picker label{{display:block;cursor:pointer;background:#fff;border:1px solid #c9d3de;border-radius:10px;padding:9px 12px}}
-.picker label:hover{{border-color:{ACCENT}}} .plan{{display:none}}
-.card{{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f4f6f8;
-border-radius:8px;padding:10px 12px;margin:6px 0}}
+.picker label{{display:block;cursor:pointer;background:{PANEL};border:1px solid {LINE};padding:10px 14px;font-style:italic}}
+.picker label:hover{{border-color:{INK}}} .plan{{display:none}}
+.card{{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.55 {MONO};background:#181818;color:#d9d5cc;padding:10px 12px;margin:6px 0}}
 .conds{{display:grid;grid-template-columns:1fr;gap:10px}} @media(min-width:700px){{.conds{{grid-template-columns:1fr 1fr}}}}
-.cond h3{{margin:.1em 0 .3em}} audio{{width:100%;height:40px}}
-.caught{{border:2px solid {FAIL}}}
+.cond h3{{margin:.1em 0 .3em}} audio{{width:100%;height:40px;color-scheme:dark}}
+.caught{{border:1px solid {FAIL}}}
 .frames{{display:grid;grid-template-columns:1fr;gap:8px}} @media(min-width:640px){{.frames{{grid-template-columns:repeat(3,1fr)}}}}
-figure{{margin:0}} img{{width:100%;height:auto;display:block;border-radius:6px}} figcaption{{font-size:.85rem;color:{MUTED};margin-top:3px}}
-.tbl{{overflow-x:auto}} table{{border-collapse:collapse;width:100%;font-size:.9rem}} th,td{{text-align:left;padding:5px 8px;border-bottom:1px solid #eee;
-vertical-align:top}} th{{color:{MUTED};font-weight:600}}
-details{{margin:12px 0}} summary{{cursor:pointer;font-weight:600;color:{ACCENT}}}
-footer{{margin-top:2.5em;border-top:2px solid #e3e0d8;padding-top:10px;font-size:.85rem;color:{MUTED}}} footer li{{margin:.3em 0}}
-svg{{max-width:100%;height:auto}} code{{overflow-wrap:anywhere;font-size:.92em}}
+figure{{margin:0}} img{{width:100%;height:auto;display:block}} figcaption{{font-size:.85rem;font-style:italic;color:{MUTED};margin-top:4px}}
+.tbl{{overflow-x:auto}} table{{border-collapse:collapse;width:100%;font-size:.9rem}} th,td{{text-align:left;padding:6px 8px;border-bottom:1px solid {LINE};
+vertical-align:top}} th{{font:500 .7rem {MONO};letter-spacing:.14em;text-transform:uppercase;color:{MUTED}}}
+details{{margin:12px 0}} summary{{cursor:pointer;font:500 .72rem {MONO};letter-spacing:.14em;text-transform:uppercase;color:{MUTED}}}
+footer{{margin-top:3em;border-top:1px solid {LINE};padding-top:12px;font-size:.85rem;color:{DIM}}} footer li{{margin:.3em 0;color:{MUTED}}}
+svg{{max-width:100%;height:auto}} code{{overflow-wrap:anywhere;font:.82em {MONO};color:#d6d1c7}}
 """
 
 
@@ -253,7 +259,7 @@ def picker_html(sts: list, runs_doc) -> tuple:
     for i, st in enumerate(sts):
         shows = f'<br><span class="small">Shows: {E(st["shows"])}</span>' if st.get("shows") else ""
         P.append(f'<input type="radio" name="study" id="st{i}"{" checked" if i == 0 else ""}><label for="st{i}"><q>{E(st["text"])}</q>{shows}</label>')
-        css.append(f"#st{i}:checked~.plans #plan{i}{{display:block}}#st{i}:checked+label{{border:2px solid {ACCENT};background:#eef2f7}}")
+        css.append(f"#st{i}:checked~.plans #plan{i}{{display:block}}#st{i}:checked+label{{border:1px solid {INK};background:#2a2926}}")
     P.append('<div class="plans" id="plan">')
     for i, st in enumerate(sts):
         first = cards_for(runs, st)
@@ -357,7 +363,7 @@ def film_html(media: dict, spark: dict, glimmer) -> str:
 
 
 # ---- 5: the forecast --------------------------------------------------------------------------------------------------------------
-COND_COLOURS = {"intact": ACCENT, "sentence_scramble": "#b4501a"}                   # both >= 4.5:1 on white
+COND_COLOURS = {"intact": INK, "sentence_scramble": "#7fb8c9"}                      # forecasts, not people: no amber; both >= 4.5:1 on BG
 
 
 def timecourse_svg(lc: dict) -> str:
@@ -377,11 +383,11 @@ def timecourse_svg(lc: dict) -> str:
     for tick in range(0, int(tmax) + 1, 15):
         P.append(f'<text x="{X(tick):.1f}" y="{H - B + 24}" font-size="17" fill="{MUTED}" text-anchor="{'end' if tick + 15 > tmax else 'middle'}">{tick} s</text>')
     for v in (0.0,) if lo < 0 < hi else ():
-        P.append(f'<line x1="{L}" y1="{Y(v):.1f}" x2="{W - R}" y2="{Y(v):.1f}" stroke="#d5d9de" stroke-dasharray="3 3"/>'
+        P.append(f'<line x1="{L}" y1="{Y(v):.1f}" x2="{W - R}" y2="{Y(v):.1f}" stroke="{LINE}" stroke-dasharray="3 3"/>'
                  f'<text x="{L - 6}" y="{Y(v) + 4:.1f}" font-size="17" fill="{MUTED}" text-anchor="end">0</text>')
     for k in range(1, len(series[next(iter(series))])):
         x = X(k * tmax / len(series[next(iter(series))]))
-        P.append(f'<line x1="{x:.1f}" y1="{T}" x2="{x:.1f}" y2="{H - B}" stroke="#eceef1"/>')
+        P.append(f'<line x1="{x:.1f}" y1="{T}" x2="{x:.1f}" y2="{H - B}" stroke="#2c2b29"/>')
     for c, segs in series.items():
         for seg in segs:
             P.append(f'<polyline fill="none" stroke="{COND_COLOURS.get(c, INK)}" stroke-width="2.5" points="'
@@ -419,7 +425,7 @@ def dots_svg(point: float, claim: int, n: int = 15) -> str:
     """One dot per volunteer scan, 1..n: solid up to the claim, lighter up to the point estimate."""
     c = []
     for i in range(1, n + 1):
-        fill = ACCENT if i <= claim else "#8fb0d0" if i <= round(point) else "none"
+        fill = ACCENT if i <= claim else "#7a5a26" if i <= round(point) else "none"
         c.append(f'<circle cx="{i * 22 - 8}" cy="14" r="8" fill="{fill}" stroke="{ACCENT}" stroke-width="1.5"/>')
     return (f'<svg viewBox="0 0 {n * 22 + 4} 28" width="{n * 22 + 4}" height="28" role="img" aria-label="about {round(point)} of {n} '
             f'volunteer scans, at least {claim}">{"".join(c)}</svg>')
@@ -515,7 +521,7 @@ def d20_html(d) -> str:
 FILM_FOOT = "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
 FILM_GHOST_CAPTION = "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"          # ruling of Oct 29, 18:15 IST, item 4
 GHOST_CHIPS = {"d20": {"short": "notthefall: rule 340b74b", "long": "scoring rule committed before these scans were read · 340b74b"}}
-GHOST_COLOURS = {"group": ACCENT, "five": "#b4501a", "one": "#3d6b2e"}
+GHOST_COLOURS = {"group": ACCENT, "five": "#f2c27a", "one": "#a8752b"}             # real people: amber tones only
 
 
 def ghost_svg(doc: dict, keys=("group", "one"), title: str = "") -> str:

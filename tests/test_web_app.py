@@ -17,7 +17,15 @@ import httpx
 import pytest
 
 REPO = Path(__file__).resolve().parents[1]
-SECRETS = {"MODEL_API_KEY": "meta-SECRET-0123456789abcdef", "FIREWORKS_API_KEY": "fw-SECRET-0123456789abcdef",
+
+
+def public_files(text_only=False):
+    """Every file the page serves from web/public, subfolders included (fonts/); text_only: the ones that hold wording."""
+    return [f for f in sorted((REPO / "web/public").rglob("*"))
+            if f.is_file() and (not text_only or f.suffix in (".html", ".js", ".css", ".txt"))]
+
+
+SECRETS ={"MODEL_API_KEY": "meta-SECRET-0123456789abcdef", "FIREWORKS_API_KEY": "fw-SECRET-0123456789abcdef",
            "STILLHERE_WORKER_TOKEN": "worker-SECRET-0123456789abcdef", "UPSTASH_REDIS_REST_TOKEN": "upstash-SECRET-0123456789"}
 
 
@@ -68,7 +76,7 @@ def test_no_key_reaches_the_browser(web, monkeypatch):
         code, h, out = call(app, "POST", p, b); seen += out + json.dumps(h).encode()
     for v in SECRETS.values():
         assert v.encode() not in seen
-    for f in (REPO / "web/public").iterdir():
+    for f in public_files():
         assert not re.search(rb"(api[_-]?key|Bearer|SECRET|fw_[A-Za-z0-9]{8})", f.read_bytes()), f.name
 
 
@@ -121,7 +129,7 @@ def test_guard_replaces_banned_model_lines(web):
 
 def test_page_files_and_recorded_runs_hold_no_banned_wording(web):
     from web import guard
-    for f in list((REPO / "web/public").iterdir()) + list((REPO / "web/replay").glob("*.json")):
+    for f in public_files(text_only=True) + list((REPO / "web/replay").glob("*.json")):
         txt = f.read_text(errors="ignore")
         if f.suffix == ".json":
             txt = " ".join(str(v) for v in _strings(json.loads(txt)) if not str(v).startswith("data:"))
@@ -359,7 +367,7 @@ def test_without_any_question_list_typed_text_is_refused_before_any_call(web, mo
 
 def test_safe_never_appears(menu_stub):
     texts = [menu_stub.story_card(c)["text"] for c in ("story_gift_of_the_magi", "story_plain")]
-    texts += [f.read_text() for f in (REPO / "web/public").iterdir()] + [menu_stub.STORY_LEAD, menu_stub.STORY_TAIL, menu_stub.STORY_NONE]
+    texts += [f.read_text() for f in public_files(text_only=True)] + [menu_stub.STORY_LEAD, menu_stub.STORY_TAIL, menu_stub.STORY_NONE]
     for t in texts:
         assert not re.search(r"\bsafe(ly|ty)?\b", t, re.I)
 

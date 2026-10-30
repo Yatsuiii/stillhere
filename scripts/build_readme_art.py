@@ -1,5 +1,5 @@
-"""Builds the README's two images, docs/assets/stillhere-hero.png and docs/assets/stillhere-architecture.png, in the page's dark
-line-art style. Display only: no statistic, no new number.
+"""Builds the README's two images, docs/assets/stillhere-hero.png (also the hosted page's header, web/public/hero.png) and
+docs/assets/stillhere-architecture.png, in the page's dark line-art style. Display only: no statistic, no new number.
 
 - Hero, panel A: the menu's two brain areas on a contour-line left cortex (nilearn's bundled fsaverage5 pial surface, sulcal-depth
   isolines). Areas exactly as stillhere/heldout.py parcel_sets defines them (Schaefer-400, 17 networks): HEARING = SomMotB_Aud,
@@ -300,5 +300,7 @@ if __name__ == "__main__":
     a = ap.parse_args()
     a.out.mkdir(parents=True, exist_ok=True)
     ghost = json.loads((REPO / "results/ghostline_lpp_s8.json").read_text())
-    render(hero_svg(ghost, brain_png(a.atlas)), a.out / "stillhere-hero.png", 1800)
+    hero = hero_svg(ghost, brain_png(a.atlas))
+    render(hero, a.out / "stillhere-hero.png", 1800)
+    render(hero, REPO / "web/public/hero.png", 1800)                       # the hosted page's header, the same picture
     render(architecture_svg(), a.out / "stillhere-architecture.png", 1800)
