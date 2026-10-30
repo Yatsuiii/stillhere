@@ -64,8 +64,8 @@ the confidential clip and never leaves the laptop, and the server holds nothing 
 ## Deploy
 
 Yatsu's steps, every environment variable name, and the preview smoke list: `docs/deploy_checklist.md`. The layout follows Vercel's
-current Python runtime docs (checked Oct 30): a file-based function at the repository root, `api/index.py`, exporting the WSGI `app`;
-`vercel.json` rewrites every path to it; dependencies in the root `requirements.txt`; `.vercelignore` uploads only what the app reads.
+current Python runtime (checked Oct 30): `vercel.json` pins the Python framework preset, whose one entrypoint is `api/index.py`
+exporting the WSGI `app`, and every path reaches it unchanged (no rewrite: under this preset a rewrite becomes the app's path); dependencies in the root `requirements.txt`; `.vercelignore` uploads only what the app reads.
 Before any deploy, `python web/smoke_local.py` serves that same upload set in production mode with no account (keys absent, then dummy
 keys with the model APIs blocked and a local stand-in for Upstash).
 

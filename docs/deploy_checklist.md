@@ -7,10 +7,12 @@ dashboard as described; check it when you get there).
 
 ## Layout (checked against Vercel's Python runtime docs on Oct 30)
 
-- `api/index.py` at the repository root: a file-based Python function exporting the WSGI `app` (the docs' "Python functions in the
-  /api directory": a top-level `app` for an ASGI or WSGI application). `vercel.json` rewrites every path to it; the app routes on the
-  original path (ASSUMPTION: Vercel passes the original path to a rewritten Python function, as its Flask examples rely on; preview
-  check 1 confirms it).
+- `api/index.py` at the repository root exports the WSGI `app`. `vercel.json` pins Vercel's Python framework preset (`"framework":
+  "python"`, what `vercel link` detects), which finds `api/index.py` as its one entrypoint (candidates: app, index, server, main, wsgi,
+  asgi in the root, src/, app/, api/; only api/index.py is uploaded) and sends every path to it unchanged.
+- No rewrite (VERIFIED Oct 30): the first deploy had `"rewrites": [{"source": "/(.*)", "destination": "/api/index"}]` and answered
+  every path, `/` included, with `{"error": "not_found"}`, because under this preset the runtime copies the rewrite's destination into
+  the app's path (vercel/vercel packages/python/src/index.ts, the catch-all after `handle: 'rewrite'`). Check 1 confirms the fix.
 - `requirements.txt` at the root holds the runtime dependencies, pinned (numpy pinned so BUILD reproduces the allowlisted builds byte
   for byte). Python: Vercel's default, 3.12 (3.13 also works; `api/index.py` refuses anything older than 3.12).
 - `.vercelignore` is an allowlist: only `api/`, `web/`, `stillhere/`, `worker/recipe.py`, `data/`, `results/`,
@@ -70,7 +72,8 @@ Without the Upstash variables on Vercel, every station shows its recorded run: s
    (VERIFIED Oct 30): `sudo npm install -g vercel@latest`, then `vercel --version`.
 2. A clean clone of the public repository at the pushed commit, so nothing untracked can be uploaded:
    `git clone https://github.com/Yatsuiii/stillhere.git stillhere-deploy && cd stillhere-deploy`
-3. `vercel login` (Hobby account), then `vercel link` in the clone: a new project, framework "Other", root directory `./`.
+3. `vercel login` (Hobby account), then `vercel link` in the clone: a new project, root directory `./`, no Git connection (pushes
+   must not deploy production; `vercel git disconnect` if it was connected), settings not customized (it detects Python).
 4. Upstash: Vercel dashboard, the project, Storage, create an Upstash Redis database on the free plan, connect it to Production and
    Preview. Then Settings, Environment Variables must list `KV_REST_API_URL` and `KV_REST_API_TOKEN` (ASSUMPTION about the exact names:
    if it lists `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` instead, that also works). Set the database's spending limit
@@ -156,4 +159,6 @@ video or any post before then; every response is `noindex`. Repeat checks 1, 2, 
 - The laptop's Vercel CLI 65.4.0 crashes; update it (8b.1).
 - Function time: Hobby functions stop at 300 s. FILM makes three SAM calls in one request; if SAM is slow the request ends in a 504
   and the page says so (its reservation stays counted).
-- The rewrite and original-path assumption, and the Upstash variable names: preview check 1 and 8b.4.
+- A new project's first `vercel deploy` goes to production, not a preview (Vercel's rule; on Oct 30 that deploy served only
+  `not_found`, see Layout). Later ones are previews unless `--prod`.
+- The Upstash variable names: 8b.4 (VERIFIED Oct 30 with the prefix `KV`: `KV_REST_API_URL`, `KV_REST_API_TOKEN`).

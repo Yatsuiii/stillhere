@@ -1,5 +1,5 @@
-"""Vercel entry point for the hosted Pilot app (Vercel's Python runtime, file-based function in /api, top-level WSGI `app`; vercel.json
-rewrites every path here and the app routes on the original path). The same `app` runs locally with `python web/serve.py`."""
+"""Vercel entry point for the hosted Pilot app (Vercel's Python framework preset, pinned in vercel.json: this is the one entrypoint it
+finds, top-level WSGI `app`, and it sends every path here unchanged). The same `app` runs locally with `python web/serve.py`."""
 import sys
 from pathlib import Path
 
