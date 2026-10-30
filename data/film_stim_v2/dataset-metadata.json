@@ -1,0 +1,2 @@
+{"title": "stillhere-film-stimuli", "id": "redlotusthepotus/stillhere-film-stimuli", "licenses": [{"name": "other"}],
+ "description": "StillHere film stimuli v2 (exploratory): Tears of Steel (Blender Foundation 2012, CC BY 3.0, mango.blender.org), release 0-190 s. seg_intact.mp4 is the intact segment the forecast reads; faces_removed_v2.mp4 and area_matched_v2.mp4 are lossless edits of it (SAM 3.1 masks through Meta's Model API, local-mean fill), audio copied unchanged."}
