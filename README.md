@@ -29,11 +29,11 @@ was worth **about 5 real volunteers, and at least 2** (49 listeners), and its pr
 Built during the Meta Global AI Developer Hackathon (building period Oct 27 to Nov 4, 2026): Indie developer track, theme Push the
 Frontier. MIT licence for our code; TRIBE v2 is CC BY-NC 4.0 and is not included.
 
-[The problem](#the-problem) · [Who it's for](#who-its-for) ·
+[The problem](#the-problem) · [Results at a glance](#results-at-a-glance) · [Who it's for](#who-its-for) ·
 [A worked example](#a-worked-example) · [What it does](#what-it-does) · [Results so far](#results-so-far) · [Key features](#key-features) ·
-[Architecture](#architecture) · [Meta models](#meta-models-and-the-job-of-each) · [Keeping our own rules](#keeping-our-own-rules) ·
-[Quickstart](#quickstart) · [Deployment](#deployment) · [Limitations](#limitations) · [Project layout](#project-layout) ·
-[Documentation](#documentation)
+[Meta models](#meta-models-and-the-job-of-each) · [Limitations](#limitations) · [Built during the event](#built-during-the-event) ·
+[Architecture](#architecture) · [Keeping our own rules](#keeping-our-own-rules) · [Quickstart](#quickstart) · [Deployment](#deployment) ·
+[Project layout](#project-layout) · [Documentation](#documentation)
 
 ---
 
@@ -64,6 +64,37 @@ So far: one held-out audiobook (about 5 real volunteers' worth, at least 2) and 
 pre-registered secondary did not pass. The story wall and the film face test are scored once, from Sat Oct 31.
 
 A first healthy reference for a new story, before any scans, and evidence for how far to trust it.
+
+## Results at a glance
+
+Not a diagnosis or medical advice.
+
+| Test | In plain words | Number | Scope / limits | Status |
+|---|---|---|---|---|
+| Held-out audiobook · Le Petit Prince, section 8 · 49 listeners | TRIBE's forecast predicted each listener's language-area response about as well as averaging **5 other real listeners' scans** (at least 2). | volunteer-equivalent 5.0, lower bound 2.58; language result 1.76 z | one of TRIBE v2's own evaluation sets | Held out |
+| Intact vs sentence-shuffled · Narratives notthefall · 22 listeners | TRIBE's forecast matched real listeners' language areas more closely when the story was intact than when its sentences were shuffled. | HL 0.0356 [95% CI 0.0125, 0.0588], p = 0.00516 | each version had its own TRIBE forecast; run order not public | **Pass** · pre-registered (D20, words from D27) |
+| Intact vs the coarser scramble · the same story · 21 listeners | The same comparison against a coarser scramble did not pass. | HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735; did not reach p < 0.05 | each version had its own TRIBE forecast; run order not public | Fail · the pre-registered secondary, the result of record |
+| Cheap baselines · notthefall and Le Petit Prince, section 8 | On the intact-vs-shuffled test, simple stand-ins (how fast the words come, how loud the sound is) did not show the effect; TRIBE did. | p = 0.0037 for TRIBE, 0.61 for word rate, 0.93 for the sound envelope; 8 of 8 comparisons on section 8 | every predictor scored the same way; TRIBE unpartialled | Exploratory |
+| Planner v2 · 62 held-out requests | Asked 62 requests it had never seen, three times each, planner v2 wrongly accepted 3 of the 132 answers that should have been declines (2.3%), under the 5% bar set before the run. | 2.3% false accepts (3 of 132; exact 95% upper bound 6.5%) | the live v2.1 is not re-measured | Bar met, set before the run |
+| Stimulus check · Voice Transcribe | Our first word-shuffled control kept only 16% of the story's words; Voice Transcribe caught it before it was used. | 16% of words heard (intact 99%) | LibriVox Alice chapter 1, 75 s | Caught before scanning, not used |
+| Film edit check · Tears of Steel · 62 frames per version | If the edit check fails, the film test does not run. | faces filled: no face seen in 62 of 62 (Spark Open) | the 51 largest close-ups have no control | Pending · Glimmer decides, Sat Oct 31 |
+| Order map go/no-go · 3 LibriVox Alice clips | The order map did not pass its own rule, so it is not shown. | 1 of 3 clips (bar: 3 of 3) | forecast only, no brain data | No-go · bar set before any forecast |
+| Story wall and story picker · Narratives and Le Petit Prince · 42 stories | Every story we scored stays on the wall, weak ones too. | | 41 of the 42 stories were used before the rule | Pending · pre-registered (D19), scored once from Sat Oct 31 |
+| Film face test · Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read. | | runs only if the edit check passes | Pending |
+| Sedation case study · OpenNeuro ds003171 | No sedation stage line: two of the three co-primary bars did not pass. | language fell in 9 of 12 (needed 10) | a case study, not a headline | Pre-registered; exploratory variants in the [write-up](docs/writeup_sedation.md) |
+
+### Reading the results
+
+| Term | What it means |
+|---|---|
+| fMRI | a brain scan that tracks blood-oxygen changes, a slow stand-in for brain activity; one brain volume every second or two |
+| TRIBE v2 | Meta FAIR's model that forecasts the fMRI response of a healthy adult brain to a film, a sound or a story |
+| Held out | brain data the forecast was not tuned on |
+| Pre-registered | the test, its bar and its scoring code were committed before the brain data was read; scored once, pass or fail |
+| "Worth about 5 real volunteers" | the forecast predicted each listener about as well as averaging 5 other real listeners' scans |
+| p | how likely a difference at least this large would be if there were no real difference; our pre-registered bar is p < 0.05 |
+| HL | the typical size of the difference between the two versions, with its 95% interval |
+| Gray and colour | on every chart, gray dashed is TRIBE's forecast; colour is real people |
 
 ## Who it's for
 
@@ -117,19 +148,6 @@ review; listen before you use a story.
 
 Not a diagnosis or medical advice. Exploratory unless pre-registered; reported as it came. Each table names the committed file its
 numbers come from.
-
-### Reading the results
-
-| Term | What it means |
-|---|---|
-| fMRI | a brain scan that tracks blood-oxygen changes, a slow stand-in for brain activity; one brain volume every second or two |
-| TRIBE v2 | Meta FAIR's model that forecasts the fMRI response of a healthy adult brain to a film, a sound or a story |
-| Held out | brain data the forecast was not tuned on |
-| Pre-registered | the test, its bar and its scoring code were committed before the brain data was read; scored once, pass or fail |
-| "Worth about 5 real volunteers" | the forecast predicted each listener about as well as averaging 5 other real listeners' scans |
-| p | how likely a difference at least this large would be if there were no real difference; our pre-registered bar is p < 0.05 |
-| HL | the typical size of the difference between the two versions, with its 95% interval |
-| Gray and colour | on every chart, gray dashed is TRIBE's forecast; colour is real people |
 
 ### Forecasts against real brains
 
@@ -254,6 +272,55 @@ Frozen group statistics, with exploratory variants labelled: [docs/writeup_sedat
 - **Nothing private leaves.** One typed egress layer, keys on the server, receipts with no request text, a hygiene scan before every
   push.
 
+## Meta models and the job of each
+
+| Model | Where it runs | Its job |
+|---|---|---|
+| Muse Spark 1.3 | Meta Model API | The default study planner. Plans the study, or declines with the reason. |
+| Muse Spark Open | Fireworks and Baseten (reported as two hosted versions, not one model) | Private planner mode, the advisory check, and the content notes on the screened stories; its edit-check counts are shown beside Glimmer's. |
+| Muse Voice Transcribe | Meta Model API | Reads every built condition back before anyone is scanned, and screens the live menu's stories. |
+| SAM 3.1 | Meta Model API | Masks the faces in the film, for the face edits and their equal-area controls. |
+| Muse Glimmer 30B | open weights, Kaggle GPU | The deciding edit check. |
+| TRIBE v2 (Meta FAIR), with V-JEPA 2, w2v-BERT and Llama 3.2 inside | laptop GPU (live) and Kaggle GPUs | Forecasts the brain response, for stories and film. |
+| Muse Code | the developer's machine | Built the planner (standard model only); runs the pre-registration guard as a Stop hook. |
+
+What we learned about them:
+
+- A strict schema and a tested menu let the model make the decision. In Planner v0 our fixed rules did most of the declining (107 of
+  114 for Spark 1.3); in v2 the model did (136 of 139 declines for Spark 1.3).
+- Two hosts of the same open model are two models for evaluation: Spark Open's false-accept rate was 7.6% on Fireworks and 6.8% on
+  Baseten, so each is reported on its own.
+- Cheap baselines carry much of what a forecast seems to capture, so every result is shown beside them.
+
+## Limitations
+
+- Research use only. Healthy volunteers and public data only. Not a diagnosis or medical advice.
+- Every live run is a forecast, not a scan: the end screen draws no real line.
+- The held-out audiobook (Le Petit Prince, section 8) was first measured Oct 22-23, before this repository began, and LPP is one of
+  TRIBE v2's own evaluation sets. The word-rate comparison is exploratory: its rule was written after section 8 was first measured.
+- Intact vs sentence-shuffled: each version also had its own TRIBE forecast, so a pass does not separate a change in the listeners'
+  brains from a change in TRIBE's forecast, and the run order is not public, so it cannot be separated from an order or
+  repeat-listening effect. The secondary comparison did not reach p < 0.05.
+- The private-mode planner (Spark Open) is over its 5% false-accept bar on both hosts; Planner v2.1 is not re-measured.
+- Close-up faces leave no room for an equal-area control: the 51 largest close-ups have none, so the controls cover 88.9% of in-view
+  face pixels.
+- Content notes are not a full review; listen before you use a story.
+- A 6 GB laptop GPU runs the live forecast, during set hours only (10:00-14:00 ET, Nov 4-9); outside them a saved forecast is shown
+  when one exists.
+- GPU time: if all 42 picker stories are not ready by Sun Nov 1, 18:00 UTC, the picker and the wall are reported "pre-registered, not
+  run", with no partial scoring.
+
+## Built during the event
+
+The product repository started on 2026-10-27, inside the building period (Oct 27 to Nov 4); this public repository was cut from it
+on 2026-10-28 (first commit 340b74b). Built during the event: the typed egress layer,
+the Meta Model API client, the planner (v0, v2 and v2.1) and its evaluation, the Voice Transcribe checks, the live laptop forecast,
+the held-out section scorer, the film edits and edit check, the face-map test, the cheap-baseline scoring, the order-map go/no-go, the
+pre-registration guard and its Muse Code hook, the Pilot page and the video. Before the event: the pre-registration (Oct 21-26), the
+Le Petit Prince calibration and timing harness (Oct 21-23), and the TRIBE tuning pipeline code (Oct 24-25; run Oct 26). The held-out
+audiobook result was first measured Oct 22-23 and is recomputed with code built during the event; `stillhere/heldout.py`: 12 of 215
+lines follow pre-event code (language-area parcel list, lag and resampling, one alignment call); the rest was written from Oct 27.
+
 ## Architecture
 
 <p align="center">
@@ -282,26 +349,6 @@ Frozen group statistics, with exploratory variants labelled: [docs/writeup_sedat
   of Steel through Meta's Model API, decoded with meta-sam-parser; faces filled with the surrounding colour; an equal-area control
   with the same fill inside the 470 x 470 part of the frame TRIBE's video model sees; every version checked through TRIBE's own video
   reader. Muse Glimmer 30B (open weights, on a Kaggle GPU) decides the edit check; Spark Open's counts are shown beside it.
-
-## Meta models and the job of each
-
-| Model | Where it runs | Its job |
-|---|---|---|
-| Muse Spark 1.3 | Meta Model API | The default study planner. Plans the study, or declines with the reason. |
-| Muse Spark Open | Fireworks and Baseten (reported as two hosted versions, not one model) | Private planner mode, the advisory check, and the content notes on the screened stories; its edit-check counts are shown beside Glimmer's. |
-| Muse Voice Transcribe | Meta Model API | Reads every built condition back before anyone is scanned, and screens the live menu's stories. |
-| SAM 3.1 | Meta Model API | Masks the faces in the film, for the face edits and their equal-area controls. |
-| Muse Glimmer 30B | open weights, Kaggle GPU | The deciding edit check. |
-| TRIBE v2 (Meta FAIR), with V-JEPA 2, w2v-BERT and Llama 3.2 inside | laptop GPU (live) and Kaggle GPUs | Forecasts the brain response, for stories and film. |
-| Muse Code | the developer's machine | Built the planner (standard model only); runs the pre-registration guard as a Stop hook. |
-
-What we learned about them:
-
-- A strict schema and a tested menu let the model make the decision. In Planner v0 our fixed rules did most of the declining (107 of
-  114 for Spark 1.3); in v2 the model did (136 of 139 declines for Spark 1.3).
-- Two hosts of the same open model are two models for evaluation: Spark Open's false-accept rate was 7.6% on Fireworks and 6.8% on
-  Baseten, so each is reported on its own.
-- Cheap baselines carry much of what a forecast seems to capture, so every result is shown beside them.
 
 ## Keeping our own rules
 
@@ -386,24 +433,6 @@ preview first, checked, then promoted. Every step, the environment variables and
 **Try it:** the hosted page's address is listed here on Nov 3. Until then, open `demo/index.html` from a clone: the static,
 replay-only Pilot page, no script and no network.
 
-## Limitations
-
-- Research use only. Healthy volunteers and public data only. Not a diagnosis or medical advice.
-- Every live run is a forecast, not a scan: the end screen draws no real line.
-- The held-out audiobook (Le Petit Prince, section 8) was first measured Oct 22-23, before this repository began, and LPP is one of
-  TRIBE v2's own evaluation sets. The word-rate comparison is exploratory: its rule was written after section 8 was first measured.
-- Intact vs sentence-shuffled: each version also had its own TRIBE forecast, so a pass does not separate a change in the listeners'
-  brains from a change in TRIBE's forecast, and the run order is not public, so it cannot be separated from an order or
-  repeat-listening effect. The secondary comparison did not reach p < 0.05.
-- The private-mode planner (Spark Open) is over its 5% false-accept bar on both hosts; Planner v2.1 is not re-measured.
-- Close-up faces leave no room for an equal-area control: the 51 largest close-ups have none, so the controls cover 88.9% of in-view
-  face pixels.
-- Content notes are not a full review; listen before you use a story.
-- A 6 GB laptop GPU runs the live forecast, during set hours only (10:00-14:00 ET, Nov 4-9); outside them a saved forecast is shown
-  when one exists.
-- GPU time: if all 42 picker stories are not ready by Sun Nov 1, 18:00 UTC, the picker and the wall are reported "pre-registered, not
-  run", with no partial scoring.
-
 ## Project layout
 
 ```text
@@ -447,17 +476,6 @@ prereg_registry.json   SHA-256 of every entry point that scores a registered tes
 | [docs/writeup_sedation.md](docs/writeup_sedation.md) | The sedation case study: frozen group statistics |
 | [docs/BINARY_PROVENANCE.md](docs/BINARY_PROVENANCE.md) | Every binary file and what built it |
 | [web/README.md](web/README.md) | The hosted app: stations, caps, fallbacks, how it is built |
-
-## Built during the event
-
-The product repository started on 2026-10-27, inside the building period (Oct 27 to Nov 4); this public repository was cut from it
-on 2026-10-28 (first commit 340b74b). Built during the event: the typed egress layer,
-the Meta Model API client, the planner (v0, v2 and v2.1) and its evaluation, the Voice Transcribe checks, the live laptop forecast,
-the held-out section scorer, the film edits and edit check, the face-map test, the cheap-baseline scoring, the order-map go/no-go, the
-pre-registration guard and its Muse Code hook, the Pilot page and the video. Before the event: the pre-registration (Oct 21-26), the
-Le Petit Prince calibration and timing harness (Oct 21-23), and the TRIBE tuning pipeline code (Oct 24-25; run Oct 26). The held-out
-audiobook result was first measured Oct 22-23 and is recomputed with code built during the event; `stillhere/heldout.py`: 12 of 215
-lines follow pre-event code (language-area parcel list, lag and resampling, one alignment call); the rest was written from Oct 27.
 
 ## What's next
 
