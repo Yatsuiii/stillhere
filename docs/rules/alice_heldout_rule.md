@@ -2,8 +2,9 @@
 
 Cloud rulings of Oct 30, 16:05, 16:10 and 16:20 UTC (item E). Committed and pushed before any Alice BOLD is downloaded; the commit
 time is the record. Everything below is fixed by this commit; a change is a new commit that says what changed and why, made before the
-step it changes runs. The forecasts' and the surprisal file's SHA-256 are added by the next commit, still before any BOLD. The result
-is shown whatever it is, labelled exploratory.
+step it changes runs. The second commit, still before any BOLD, added the forecasts' and the surprisal file's SHA-256, the forecast
+runner, and the SHA-256 of every cited file kept outside the repository (cloud ruling of Oct 30, 18:20 UTC). The result is shown
+whatever it is, labelled exploratory.
 
 ## 1. What is tested
 
@@ -44,10 +45,19 @@ TRIBE v2 was trained on CNeuroMod, BoldMoments, Lebel2023 and Wen2017 and evalua
   full, and full with the word texts shuffled across their onsets, seed 7; stitched 50 s windows; text lane in fp16 through
   accelerate), run by `alice/forecast/run_alice_forecast.py` on the laptop GPU (RTX 4050, 6 GB). Placement only, as the live worker
   does on the same GPU (`worker/engine.py`): the sound extractor and TRIBE's brain model run on the CPU, and Llama 3.2's layers get a
-  fixed 3 GiB GPU budget with the rest on the CPU (the worker's pinned loader), recorded with each run. The three outputs' SHA-256 are
-  added by the next commit.
-- Surprisal: GPT-2 small by `p1/surprisal8.py`'s method on the timed words (`scripts/alice_heldout.py surprisal`); its file's SHA-256
-  is added by the next commit.
+  fixed 3 GiB GPU budget with the rest on the CPU (the worker's pinned loader), recorded with each run. The runner is in the repository;
+  its launcher `alice/forecast/run_all.sh` (offline flags, the tribe environment) is kept outside the repository, SHA-256
+  e3574a28679a139fd1de4b0b55e027e266ac73af6ee9f53cfef7fdc46298ccdf.
+- Forecasts (`alice/forecast/out/pred_alice_{audio,full,shuf}.npz`, kept outside the repository; each 744 by 20,484, finite, made
+  on Oct 30 by the committed runner), SHA-256: audio d747d74f16231b249e1288da14f48ed0b57e434bd356edfb2836cdc7f166859b, full
+  0a47d825a521f643fc5b298942fde7049679b070381bc97330ffd11a25d30ae3, shuffled
+  7c4ba627bc0b6d801e263fa17d887f18a4028dec84fbec9850c750a4d66f41bf. The first full and shuffled processes wrote all 2,101 words'
+  Llama features to the text extractor's cache with the pinned loader, then were stopped when the laptop ran out of system memory
+  while loading the sound extractor; the reruns read those features from the cache, as each stage file records ("read from the
+  infra cache"). Nothing else changed; the audio run reproduced its earlier output byte for byte.
+- Surprisal: GPT-2 small by `p1/surprisal8.py`'s method on the timed words (`scripts/alice_heldout.py surprisal`):
+  `alice/surprisal.json`, 2,101 words, kept outside the repository, SHA-256
+  ad737833b56128cb1b7963b76fdfd458639922717ba05f14158b449644f80366.
 
 ## 4. Volumes, surface and coverage
 
@@ -116,7 +126,15 @@ the cloud has said go), `surprisal`, and `score` (one run). `score` writes the p
 `results/alice_heldout.json` with the group numbers, the outcome line, the stimulus-file note, and per listener only the protocol,
 onset and covered shares. `tests/test_alice_heldout.py` checks the indexing, the onset shift, the coverage rule and its exclusions,
 the outcome lines, and the one-listener-at-a-time group step against section 8's functions, on synthetic data only; no Alice BOLD is
-read by any test.
+read by any test. `alice/forecast/run_alice_forecast.py`, the forecast runner, was added by the second commit.
+
+Cited files kept outside the repository, SHA-256 pinned by the second commit:
+
+- `k2/tribe_common.py` 5029b14736b31dd652f9f37ac0b25bc72e9cf978c4e1d6958f6847e4dd459a34
+- `p1/hearing.py` 54459cc322c1505a1adcc1a73b95af72bf3ed68edc2ff651a455509e1bff73b6
+- `p1/surprisal8.py` e69f6d842131483263bc54370ef5fb20acaba967e9e0f44fa420277875ad0543
+- `HELDOUT.md` c88d68ead0e66f2c51f5479630478ee9a339cbce9a81b5ed04f780751588a40b
+- `alice/forecast/run_all.sh` e3574a28679a139fd1de4b0b55e027e266ac73af6ee9f53cfef7fdc46298ccdf
 
 ## 9. Order and cutoff
 
