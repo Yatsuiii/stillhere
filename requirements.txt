@@ -1,0 +1,8 @@
+# The hosted app's runtime dependencies (Vercel's Python runtime installs these; docs/deploy_checklist.md), pinned to the versions it
+# was tested with. numpy is pinned so BUILD reproduces the allowlisted builds byte for byte. meta-sam-parser: Meta's package, SAM
+# License, a dependency, not included here.
+httpx==0.28.1
+pydantic==2.14.1
+numpy==2.2.6
+opencv-python-headless==4.11.0.86
+meta-sam-parser==0.1.0

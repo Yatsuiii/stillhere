@@ -312,6 +312,51 @@ def test_the_avoid_line_shows_word_for_word(web):
     assert line.endswith(P.AVOID_LINE) and line == next(l for l in card.text.split("\n") if "Notes to avoid" in l)
 
 
+def test_an_unexpected_error_logs_its_type_never_the_request(web, monkeypatch, capsys):
+    app, jobs, ledger, stations, store = web
+    secret_text = "my patient Jane Roe, scan of 12 March"
+    def boom(text, backend, sid):
+        raise ValueError(f"input_value={text!r}")                                      # pydantic-style message that quotes the input
+    monkeypatch.setattr(stations, "plan", boom)
+    code, h, out = call(app, "POST", "/api/plan", {"text": secret_text, "backend": "spark-1.3"})
+    err = capsys.readouterr()
+    assert code == 500 and json.loads(out) == {"error": "server_error"} and secret_text.encode() not in out
+    assert "ValueError" in err.err and secret_text not in err.err + err.out
+
+
+def test_on_vercel_live_calls_need_the_shared_store(web, monkeypatch):
+    app, jobs, ledger, stations, store = web
+    assert stations.live_ok("meta")                                                     # local: keys set, in-memory store
+    monkeypatch.setenv("VERCEL", "1")
+    assert not stations.live_ok("meta") and not stations.live_ok("fireworks")          # serverless without Upstash: no spend
+    monkeypatch.setattr(stations, "store_shared", lambda: True)
+    assert stations.live_ok("meta")
+
+
+def test_a_call_that_never_answers_is_not_counted(web, monkeypatch):
+    app, jobs, ledger, stations, store = web
+    def down(*a, **k):
+        raise httpx.ConnectError("down")
+    monkeypatch.setattr(stations.meta_client, "transcribe", down)
+    run = ledger.start_run("a" * 32)
+    d = stations.build(run, "a" * 32, "alice_ch02", "sentence_scramble", 20261028)
+    assert d["mode"] == "recorded" and d["why"] == "The live call failed, so this station shows its recorded run."
+    assert float(store.get_store().get("spend:meta:total")) == pytest.approx(0.0)
+
+
+def test_without_any_question_list_typed_text_is_refused_before_any_call(web, monkeypatch, tmp_path):
+    """On a server where STILLHERE_QUESTION_BLOCKLIST names no file, egress fails closed: PLAN and FILM refuse typed text before any
+    model call; the other stations and the recorded runs are unaffected."""
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setattr(stations.egress, "BLOCKLIST", tmp_path / "missing.txt")
+    monkeypatch.setattr(stations.P, "plan", lambda *a: pytest.fail("no model call"))
+    d = stations.plan("Plan a story test on The Black Cat.", "spark-1.3", "h" * 32)
+    assert d["mode"] == "refused" and d["line"].startswith("This request can't be sent to the planner.")
+    assert stations.film(None, "h" * 32, "face")["mode"] == "refused"
+    monkeypatch.setattr(stations.egress, "BLOCKLIST", REPO / "web/server_question_blocklist.txt")      # the committed server list
+    assert stations.egress.PublicQuestion(text="Plan a story test on The Black Cat.").text
+
+
 def test_safe_never_appears(menu_stub):
     texts = [menu_stub.story_card(c)["text"] for c in ("story_gift_of_the_magi", "story_plain")]
     texts += [f.read_text() for f in (REPO / "web/public").iterdir()] + [menu_stub.STORY_LEAD, menu_stub.STORY_TAIL, menu_stub.STORY_NONE]

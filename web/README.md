@@ -18,7 +18,7 @@ STILLHERE_LIVE=0 python web/serve.py      # every station shows its recorded run
 ```
 
 Live calls happen only where keys are in the environment: `MODEL_API_KEY` (or the laptop's Muse config) for Spark 1.3, Voice
-Transcribe and SAM 3.1; `FIREWORKS_API_KEY` for Spark Open. FILM also needs opencv and meta-sam-parser (`web/api/requirements.txt`).
+Transcribe and SAM 3.1; `FIREWORKS_API_KEY` for Spark Open. FILM also needs opencv and meta-sam-parser (the root `requirements.txt`).
 Tests: `pytest tests/test_web_app.py` (no key ever reaches the browser, fallbacks with the APIs blocked, guard, caps and limits, a
 fake worker through the jobs API, the evidence endings, 360 px).
 
@@ -31,7 +31,8 @@ fake worker through the jobs API, the evidence endings, 360 px).
 | `ledger.py` | Spend reservations and caps, 5 runs per hour per visitor, one use of each station per run |
 | `guard.py` | Every model-written line passes the banned-word list or becomes a template line |
 | `jobs.py` | The jobs table and worker API (`docs/jobs_api.md`); recipes and cache keys come from `worker/recipe.py` |
-| `store.py` | Upstash Redis over REST when its env vars are set; an in-memory stand-in otherwise |
+| `store.py` | Upstash Redis over REST when its env vars are set; an in-memory stand-in otherwise (on Vercel, live calls need Upstash) |
+| `smoke_local.py` | The local production-mode smoke test (`docs/deploy_checklist.md`, 8a) |
 | `sam.py` | SAM 3.1 on one allowlisted one-frame clip (`film/frames.json`) |
 | `replay/` | The recorded runs (`record_replays.py`, from real live calls) every station falls back to, labelled "recorded run" |
 | `public/` | The page, `receipt.html`, and their scripts (no inline script; the CSS is the static page's, served as `/pilot.css`) |
@@ -60,14 +61,13 @@ the confidential clip and never leaves the laptop, and the server holds nothing 
 - Provider alerts Yatsu should set: Meta Model API "Spend Limit" notification on the Billing page (the event page names it); Fireworks
   spend limit or alert at $50; Baseten usage alert at $50; Upstash max monthly budget (free tier). Vercel Hobby has no paid overage.
 
-## Deploy (Yatsu's steps; nothing here has been run)
+## Deploy
 
-1. Vercel (Hobby) account; Upstash Redis from the Vercel Marketplace (sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`).
-2. Server secrets, entered by Yatsu: `MODEL_API_KEY`, `FIREWORKS_API_KEY`, `BASETEN_API_KEY`, `STILLHERE_WORKER_TOKEN`; plus
-   `STILLHERE_QUESTION_BLOCKLIST=web/server_question_blocklist.txt`, `STILLHERE_USAGE_LOG=/tmp/usage.jsonl`, `WORKER_HOURS_ET`.
-3. From the repository root: `vercel deploy -A web/vercel.json` (ASSUMPTION: the Python builder serves the WSGI `app` and takes the
-   `includeFiles` list; check on the first preview deploy). Keep the URL unlisted until Nov 3.
-4. The worker on the laptop gets the same `STILLHERE_WORKER_TOKEN` and the page's URL (worker fork).
+Yatsu's steps, every environment variable name, and the preview smoke list: `docs/deploy_checklist.md`. The layout follows Vercel's
+current Python runtime docs (checked Oct 30): a file-based function at the repository root, `api/index.py`, exporting the WSGI `app`;
+`vercel.json` rewrites every path to it; dependencies in the root `requirements.txt`; `.vercelignore` uploads only what the app reads.
+Before any deploy, `python web/smoke_local.py` serves that same upload set in production mode with no account (keys absent, then dummy
+keys with the model APIs blocked and a local stand-in for Upstash).
 
 ## Worker hours
 

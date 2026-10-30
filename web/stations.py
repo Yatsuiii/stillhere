@@ -21,7 +21,7 @@ import httpx
 from stillhere import egress, manipulation_check as MC, meta_client, planner, planner_eval as PE, planner_v21 as P
 from stillhere.story_tags import TAGS
 from web import guard, jobs, ledger
-from web.store import get_store
+from web.store import get_store, shared as store_shared
 
 REPO = Path(__file__).resolve().parents[1]
 REPLAY = REPO / "web/replay"
@@ -83,6 +83,8 @@ META_CREDIT_END_UTC = ledger.META_CREDIT_END_UTC
 
 def live_ok(provider: str) -> bool:
     if os.environ.get("STILLHERE_LIVE", "1") == "0":
+        return False
+    if os.environ.get("VERCEL") and not store_shared():        # serverless instances do not share memory: no shared ledger, no spend
         return False
     try:
         return bool(meta_client._key()) if provider == "meta" else bool(os.environ.get(KEY_ENV.get(provider, "")))
@@ -355,12 +357,13 @@ def build(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> dic
         except ValueError:
             return {"mode": "refused", "line": "This build differs from the listed public builds, so it was not sent."}
         try:
-            ledger.reserve("meta", RESERVE["transcribe"])            # no published price: the reservation stands
+            res = ledger.reserve("meta", RESERVE["transcribe"])      # no published price: the reservation stands once the call answers
         except ledger.Refused as e:
             return recorded(e.code)
         try:
             out = meta_client.transcribe(audio, mode="DIARIZATION")
         except Exception:
+            ledger.settle(res, 0.0)                              # a call that never answered is not counted
             return recorded("api_error")
     chk = MC.check_condition(condition, out.get("transcript") or "", [w["word"] for w in built.words], [w["word"] for w in orig.words])
     items = checklist(condition, chk)
@@ -454,11 +457,13 @@ def film(run_id: str, sid: str, concept: str) -> dict:
     frames, t0, spent = [], time.time(), 0.0
     for f in json.loads(FILM_FRAMES.read_text())["frames"][:3]:
         try:
-            ledger.reserve("meta", RESERVE["sam"]); spent += RESERVE["sam"]        # no published price: the reservation stands
-            seg = sam.segment(str(REPO / f["clip"]), q)
+            res = ledger.reserve("meta", RESERVE["sam"])         # no published price: the reservation stands once the call answers
         except ledger.Refused as e:
             return recorded(e.code)
+        try:
+            seg = sam.segment(str(REPO / f["clip"]), q); spent += RESERVE["sam"]
         except Exception:
+            ledger.settle(res, 0.0)
             return recorded("api_error")
         frame = cv2.cvtColor(cv2.imread(str(REPO / f["release_jpg"])), cv2.COLOR_BGR2RGB)
         if not seg["objects"]:

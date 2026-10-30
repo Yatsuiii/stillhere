@@ -121,6 +121,11 @@ def get_store():
     return _store
 
 
+def shared() -> bool:
+    """True when the store is shared across instances (Upstash): caps, limits and the jobs table only hold then."""
+    return isinstance(get_store(), UpstashStore)
+
+
 def set_store(s):
     """Tests and the local runner swap the store."""
     global _store

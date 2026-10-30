@@ -1,0 +1,24 @@
+# Upload only what the hosted app reads (docs/deploy_checklist.md). Everything else in the repository, and anything untracked, stays
+# on the laptop. The laptop-only question blocklist lives outside the repository and is never uploaded.
+/*
+!api
+!web
+!stillhere
+!worker
+/worker/*
+!worker/recipe.py
+!data
+!results
+!scripts
+/scripts/*
+!scripts/build_pilot_page.py
+!assets
+/assets/*
+!assets/conditions
+/assets/conditions/*
+!assets/conditions/alice_ch01_75s_word_scramble.wav
+!requirements.txt
+!vercel.json
+web/smoke_local.py
+web/record_replays.py
+**/__pycache__

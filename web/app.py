@@ -1,9 +1,10 @@
 """The hosted Pilot app as one WSGI callable (`app`), standard library only around the repo's own modules: the stations rail page
 (web/public), the station API, receipts, and the jobs API for the laptop worker (docs/jobs_api.md). Local: `python web/serve.py`.
-Vercel: api/index.py exports the same `app`. Keys stay in the server's environment; no response carries one, and request bodies are
-never logged."""
+Vercel: the repository root's api/index.py exports the same `app` (docs/deploy_checklist.md). Keys stay in the server's environment; no
+response carries one, and request bodies are never logged: an unexpected error logs only its type and the path."""
 import json
 import mimetypes
+import os
 import re
 import secrets
 import sys
@@ -12,6 +13,11 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
+_bl = os.environ.get("STILLHERE_QUESTION_BLOCKLIST")      # read by stillhere/egress.py at import: a relative path is the repository's
+if _bl and not os.path.isabs(_bl):
+    os.environ["STILLHERE_QUESTION_BLOCKLIST"] = str(REPO / _bl)
+if os.environ.get("VERCEL"):                               # only /tmp is writable there; the usage log holds counts and times, no text
+    os.environ.setdefault("STILLHERE_USAGE_LOG", "/tmp/stillhere_usage.jsonl")
 
 from web import guard, jobs, ledger, stations  # noqa: E402
 
@@ -52,7 +58,8 @@ class Req:
 
 def respond(start, status: int, body=None, ctype="application/json", req: Req = None, extra=()):
     text = {200: "OK", 202: "Accepted", 204: "No Content", 400: "Bad Request", 401: "Unauthorized", 404: "Not Found",
-            405: "Method Not Allowed", 409: "Conflict", 422: "Unprocessable Entity", 429: "Too Many Requests", 503: "Service Unavailable"}
+            405: "Method Not Allowed", 409: "Conflict", 422: "Unprocessable Entity", 429: "Too Many Requests", 500: "Internal Server Error",
+            503: "Service Unavailable"}
     data = b"" if body is None else body if isinstance(body, bytes) else json.dumps(body).encode()
     hdrs = [("Content-Type", ctype), ("Content-Length", str(len(data))), ("X-Content-Type-Options", "nosniff"),
             ("Referrer-Policy", "no-referrer"), ("X-Robots-Tag", "noindex")] + list(extra)
@@ -178,6 +185,9 @@ def app(env, start):
                 code, body = fn(req, m)
             except stations.Bad as e:
                 code, body = 400, {"error": str(e)}
+            except Exception as e:                         # never the message: it may quote the request (pydantic errors do)
+                print(f"stillhere: {type(e).__name__} on {req.method} {rx.pattern}", file=sys.stderr, flush=True)
+                code, body = 500, {"error": "server_error"}
             return respond(start, code, body, req=req)
     if req.path.startswith("/api/"):
         return respond(start, 404 if not any(rx.match(req.path) for _, rx, _ in ROUTES) else 405, {"error": "not_found"}, req=req)

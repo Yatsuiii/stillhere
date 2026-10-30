@@ -1,6 +1,0 @@
-{
-  "builds": [{"src": "web/api/index.py", "use": "@vercel/python",
-              "config": {"includeFiles": ["web/**", "stillhere/**", "worker/recipe.py", "data/**", "results/**", "scripts/build_pilot_page.py",
-                                          "assets/conditions/alice_ch01_75s_word_scramble.wav"]}}],
-  "routes": [{"src": "/(.*)", "dest": "web/api/index.py"}]
-}
