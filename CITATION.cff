@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the repository and the exact commit used."
+title: "StillHere: pilot the story before booking the scanner"
+abstract: "A first healthy reference for a new story, before any scans, and evidence for how far to trust it. StillHere plans a listening study from a tested menu with Muse Spark 1.3, builds and checks the stimulus with Muse Voice Transcribe, forecasts the healthy-adult brain response with Meta's TRIBE v2, and shows how forecasts did on real public scans. Research use; healthy volunteers and public data only; not a diagnosis or medical advice."
+type: software
+authors:
+  - family-names: Aryen
+    given-names: Raghav
+repository-code: "https://github.com/Yatsuiii/stillhere"
+license: MIT
+version: 0.1.0
+keywords:
+  - functional MRI
+  - naturalistic stimuli
+  - brain encoding model
+  - TRIBE v2
+  - pre-registration
+  - stimulus checks

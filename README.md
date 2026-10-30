@@ -6,20 +6,74 @@
 
 ### Pilot the story before booking the scanner
 
+[![tests](https://github.com/Yatsuiii/stillhere/actions/workflows/tests.yml/badge.svg)](https://github.com/Yatsuiii/stillhere/actions/workflows/tests.yml)
+[![licence: MIT](https://img.shields.io/badge/licence-MIT-lightgrey.svg)](LICENSE)
+[![pre-registered: D0-D27](https://img.shields.io/badge/pre--registered-D0--D27-lightgrey.svg)](PREREG.md)
+[![forecast card](https://img.shields.io/badge/forecast%20card-TRIBE%20v2-lightgrey.svg)](docs/MODEL_CARD.md)
+
 > Labs study people who can't respond after brain injury by playing them stories in the scanner. But every new story needs its own
 > 12-15 healthy volunteers scanned first, in that language. For a new story, StillHere gives labs a first reading with zero volunteer
 > scans, measured against each listener's own brain. It has been tested only in healthy volunteers.
 
+StillHere is a research tool for brain-imaging labs. It plans a listening study from a tested menu, builds and checks the stimulus
+before anyone is scanned, and forecasts the healthy-adult brain response with Meta's TRIBE v2. On a held-out audiobook, the forecast
+was worth **about 5 real volunteers, and at least 2** (49 listeners), and its pre-registered intact-versus-shuffled test **passed on
+22 real listeners** (p = 0.00516).
+
 **Research use. Healthy volunteers and public data only. Not a diagnosis or medical advice.**
+
+| 12-15 | $5-15k | 0 | about 5 |
+|:---:|:---:|:---:|:---:|
+| healthy volunteers scanned before a new story can be used | of scanner time per stimulus, per language | volunteer scans for StillHere's first reading | real volunteers' worth, on a held-out audiobook (at least 2) |
 
 Built during the Meta Global AI Developer Hackathon (building period Oct 27 to Nov 4, 2026): Indie developer track, theme Push the
 Frontier. MIT licence for our code; TRIBE v2 is CC BY-NC 4.0 and is not included.
 
-[The problem](#the-problem) · [What it does](#what-it-does) · [Results so far](#results-so-far) · [Key features](#key-features) · [Architecture](#architecture) ·
-[Meta models](#meta-models-and-the-job-of-each) · [Keeping our own rules](#keeping-our-own-rules) · [Quickstart](#quickstart) ·
-[Deployment](#deployment) · [Limitations](#limitations) · [Project layout](#project-layout) · [Documentation](#documentation)
+[Research question](#research-question) · [Who it's for](#who-its-for) · [A worked example](#a-worked-example) ·
+[The problem](#the-problem) · [What it does](#what-it-does) · [Results so far](#results-so-far) · [Key features](#key-features) ·
+[Architecture](#architecture) · [Meta models](#meta-models-and-the-job-of-each) · [Keeping our own rules](#keeping-our-own-rules) ·
+[Quickstart](#quickstart) · [Deployment](#deployment) · [Limitations](#limitations) · [Project layout](#project-layout) ·
+[Documentation](#documentation)
 
 ---
+
+## Research question
+
+**Can a brain-response forecast give a lab its first healthy reference for a new story, before any volunteer is scanned, and how far
+can it be trusted?**
+
+StillHere answers the second half with evidence, not a claim. Held-out forecasts are drawn against real public scans, beside cheap
+baselines. Pre-registered tests are scored once, by rules committed before their brain data was read, and misses stay on the page.
+So far: one held-out audiobook (about 5 real volunteers' worth, at least 2) and one pre-registered pass (Narratives notthefall); its
+pre-registered secondary did not pass. The story wall and the film face test are scored once, from Sat Oct 31.
+
+## Who it's for
+
+| Who | What they do | What they get |
+|---|---|---|
+| A lab adding a new story to a listening study | types the study; Muse Spark 1.3 plans it from the tested menu | a forecast of the healthy response before booking scanner time, and the evidence for how far to trust it |
+| A researcher building a control condition | builds the sentence shuffle; Muse Voice Transcribe reads it back | a control that is what it claims to be, or a blocked build (the check caught our own broken word scramble) |
+| A reviewer deciding whether to trust a forecast | opens Evidence | how forecasts held up on real public scans, beside cheap baselines, misses included |
+
+Not for: anything about one patient's scan. The planner declines it, with the reason.
+
+## A worked example
+
+The first story on the live menu, as the page runs it:
+
+1. **Plan.** The researcher picks or types: *"Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: The Black
+   Cat, intact versus sentences shuffled, in the language network."* Muse Spark 1.3 returns the plan card:
+   *"Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network;
+   analysis: stock TRIBE v2 forecast."* The story card beside it lists what is in the story, each note timed and linked to the audio:
+   *"The Black Cat, read by Tom Yates: one of 4 screened public stories · 1 voice heard · 6 sentences · notes: death or dying (0:43),
+   alcohol or drugs (5:08), injury or illness (5:37), violence (6:04), ... Not a full review; listen before you use a story."*
+2. **Build and check.** StillHere cuts the clip at sentence boundaries and shuffles the sentences; Muse Voice Transcribe reads the
+   built audio back and fills the checklist (words kept, order changed). A failed check blocks the build.
+3. **Audit.** Muse Spark Open reads the plan and leaves notes. Advisory: it never blocks anything.
+4. **Forecast.** The laptop worker runs TRIBE v2 stage by stage (w2v-BERT for sound, Llama 3.2 for words in context) and the page
+   shows each lane as it runs. It ends on the gray forecast alone: "No public scan of this clip. Forecast, not a scan."
+5. **Evidence.** Below it, held-out forecasts are drawn against real listeners, beside cheap baselines, so the researcher can see how
+   such forecasts held up on real scans.
 
 ## The problem
 
@@ -249,7 +303,7 @@ Python 3.12.
 ```sh
 git clone https://github.com/Yatsuiii/stillhere.git && cd stillhere
 python -m venv .venv && . .venv/bin/activate
-pip install -r requirements.txt pytest
+pip install -r requirements-dev.txt           # the app's runtime, pytest and scipy
 git config core.hooksPath scripts/hooks      # the pre-registration guard and the pre-push hygiene scan
 ```
 
@@ -353,6 +407,8 @@ prereg_registry.json   SHA-256 of every entry point that scores a registered tes
 | Document | What it is |
 |---|---|
 | [PREREG.md](PREREG.md) | The frozen pre-registration (D0-D27) |
+| [docs/MODEL_CARD.md](docs/MODEL_CARD.md) | The forecast card: TRIBE v2 as StillHere uses it, intended use, configuration, data, limits |
+| [CITATION.cff](CITATION.cff) | How to cite this repository |
 | [docs/rules/](docs/rules/) | One rule per test, each committed before its data was read: cheap baselines, the ghost-line display, the edit check, Emo-FilM, the face map, the film stimuli, Glimmer's face-edit check, the order-map go/no-go, the planner evaluations, Spark Open's face check, the story menu |
 | [docs/frozen_code_changes.md](docs/frozen_code_changes.md) | Every change to frozen code, with its timing and why |
 | [docs/deploy_checklist.md](docs/deploy_checklist.md) | Deploying the hosted Pilot app: accounts, environment variables, smoke checks, redeploys |
