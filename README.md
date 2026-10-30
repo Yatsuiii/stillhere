@@ -15,7 +15,7 @@
 Built during the Meta Global AI Developer Hackathon (building period Oct 27 to Nov 4, 2026): Indie developer track, theme Push the
 Frontier. MIT licence for our code; TRIBE v2 is CC BY-NC 4.0 and is not included.
 
-[The problem](#the-problem) · [What it does](#what-it-does) · [Results so far](#results-so-far) · [Architecture](#architecture) ·
+[The problem](#the-problem) · [What it does](#what-it-does) · [Results so far](#results-so-far) · [Key features](#key-features) · [Architecture](#architecture) ·
 [Meta models](#meta-models-and-the-job-of-each) · [Keeping our own rules](#keeping-our-own-rules) · [Quickstart](#quickstart) ·
 [Deployment](#deployment) · [Limitations](#limitations) · [Project layout](#project-layout) · [Documentation](#documentation)
 
@@ -43,15 +43,15 @@ A first healthy reference for a new story, before any scans, and evidence for ho
 
 ## What it does
 
-The Pilot page is a rail of six stations. Each one calls a Meta model live, or shows its recorded run, labelled so, when live calls
-are off or a budget is spent.
+The Pilot page is a rail of six stations. Five of them call a Meta model live; Evidence replays committed results. A live station
+shows its recorded run, labelled so, when live calls are off or a budget is spent.
 
 | | Station | What happens | Meta model |
 |---|---|---|---|
 | 1 | **Plan** | The researcher types a study. The planner turns it into a strict study spec from a tested menu (a JSON schema built from the stimuli, controls and analyses we have evidence for), or declines with a reason code and the nearest tested option. Ask about one patient's scan, and it declines, with the reason. A request can name content notes to avoid; code, not the model, filters the menu on the story cards. | Muse Spark 1.3 (default); Muse Spark Open on Fireworks or Baseten (private mode) |
 | 2 | **Build and check** | StillHere cuts the story at sentence boundaries with short crossfades. Muse Voice Transcribe reads the built audio back and fills the checklist: words kept and word order decide whether a control is what it claims to be. A failed check blocks the build. "Rebuild with the old bug" replays the broken word scramble the check caught. | Muse Voice Transcribe |
 | 3 | **Audit** | Spark Open reads the plan and leaves notes. Advisory check, not measured: it never blocks anything. | Muse Spark Open |
-| 4 | **Forecast** | A judge picks one of 4 screened public stories, a condition and a seed. TRIBE v2 forecasts the brain response, stage by stage, on the laptop GPU, with its Llama 3.2 text lane on (fp16). A saved forecast is shown whenever one exists for your choice. New seeds run live on the laptop, 10:00-14:00 ET, Nov 4-9. Every live run ends on the gray forecast, with no real line drawn over it. No one has scanned this yet. | TRIBE v2 (V-JEPA 2, w2v-BERT, Llama 3.2 inside) |
+| 4 | **Forecast** | A judge picks one of 4 screened public stories, a condition and a seed. TRIBE v2 forecasts the brain response, stage by stage, on the laptop GPU, with its Llama 3.2 text lane on (fp16). A saved forecast is shown whenever one exists for your choice. New seeds run live on the laptop, 10:00-14:00 ET, Nov 4-9. Every live run ends on the gray forecast, with no real line drawn over it. We found no public scan of the 4 screened stories; Alice chapter 1 has one (OpenNeuro ds002322), and its end line says so. | TRIBE v2 (V-JEPA 2, w2v-BERT, Llama 3.2 inside) |
 | 5 | **Evidence** | Did the forecasts hold up? Each forecast against real public scans it never saw. These panels replay committed results files, each beside its cheap baselines. | TRIBE v2 |
 | 6 | **Film** | The same loop on video. SAM 3.1 masked the faces in the first 190 s of Tears of Steel; StillHere filled them with the surrounding colour, and filled a same-size patch elsewhere in each frame as a control. Type "face", or another word, to make the same edit on three frames. | SAM 3.1, Muse Glimmer 30B, Muse Spark Open |
 
@@ -63,22 +63,114 @@ review; listen before you use a story.
 
 ## Results so far
 
-Not a diagnosis or medical advice. Exploratory unless pre-registered; reported as it came. Each row names the committed file its
+Not a diagnosis or medical advice. Exploratory unless pre-registered; reported as it came. Each table names the committed file its
 numbers come from.
 
-| Test | Data | Result | Status | File |
-|---|---|---|---|---|
-| Held-out audiobook | Le Petit Prince, section 8, 49 listeners (OpenNeuro ds003643) | The forecast was worth about 5 real volunteers, and at least 2 (volunteer-equivalent 5.0, lower bound 2.58). Language result 1.76 z with word rate and sound partialled out. | Held out; first measured Oct 22-23, recomputed with code built during the event. LPP is one of TRIBE v2's own evaluation sets. | `results/section8.json` |
-| Cheap baselines, same section | the same 49 listeners | Beaten in 8 of 8 comparisons (word rate and the sound envelope). In language areas it beat a simple word-rate model in 43 of 49 listeners; the forecast scored unpartialled, 1.65 z over the same 145 time points. | Exploratory: the word-rate rule was written after section 8 was first measured. | `results/section8_baselines.json` |
-| Intact vs sentence-shuffled | Narratives notthefall, 22 listeners (OpenNeuro ds002345) | Stock TRIBE v2's language readout was stronger when the same healthy listeners heard the story intact than shuffled: HL 0.0356 [95% CI 0.0125, 0.0588], one-sided Wilcoxon p = 0.00516. | **Pre-registered (PREREG D20, words from D27): pass.** | `results/d20_notthefall.json` |
-| Intact vs the coarser scramble | the same story, 21 listeners | HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735; did not reach p < 0.05. | Pre-registered secondary: the result of record, a fail. | `results/d20_notthefall.json` |
-| Planner v2 | 62 held-out requests, bars set before the run | Muse Spark 1.3: decision accuracy 93.0% (pass); false accepts 3 of 132 (2.3%, exact 95% upper bound 6.5%; pass); first-answer validity 83.3% against a bar of 85% (missed). Muse Spark Open: false accepts 7.6% (Fireworks) and 6.8% (Baseten) against a bar of 5% (missed). | Exploratory rule, `docs/rules/planner_v2_eval_rule.md`. v2.1 adds clip, condition, seed and story tags; not re-measured. | `results/planner_v2_eval.json` |
-| Stimulus check | Voice Transcribe on the built conditions | The sentence scramble: 98% of the words heard, reordered. Our first word scramble kept only 16% of its words, so it was caught as broken before scanning and is not used. | | `results/conditions_manipulation_check.json` |
-| Order map go/no-go | 3 LibriVox Alice clips, forecast only, no brain data | A new sentence order changed the language-area forecast more than the hearing-area forecast on 1 of 3 clips, short of the 3 of 3 set before any forecast. So no order map is shown. | Exploratory; no-go. | `results/order_map_gonogo.json` |
-| Film edit check, Spark Open | 62 frames per version, Tears of Steel | Spark Open (Baseten): face seen in 54 of 62 intact frames, no face seen in 62 of 62 filled frames, face seen in 51 of 62 control frames. | Exploratory; Muse Glimmer 30B decides (Sat Oct 31 run). | `results/edit_check_spark_open.json` |
-| Story wall and story picker | Narratives and Le Petit Prince, 42 stories | Every story we scored stays on the wall, weak ones too. | Pre-registered (D19); scored once, from Sat Oct 31. Scoring rule committed Oct 28, 340b74b; 41 of the 42 stories were used before then, for development or to tune a second model. | `results/story_wall.json`, when it lands |
-| Film face test | Emo-FilM, 28 viewers of the intact film | Does TRIBE's forecast of the face edit land where viewers' brains follow faces? | Scored once by a rule committed before any viewer's brain data was read (`docs/rules/face_map_rule.md`). | `results/face_map.json`, when it lands |
-| Sedation case study | frozen group statistics | The write-up, with exploratory variants labelled. | Frozen fail format. | [docs/writeup_sedation.md](docs/writeup_sedation.md) |
+### Forecasts against real brains
+
+| Test | Data | Result | Status |
+|---|---|---|---|
+| Held-out audiobook | Le Petit Prince, section 8 · 49 listeners | Worth about **5 real volunteers**, and at least 2 (volunteer-equivalent 5.0, lower bound 2.58); language result 1.76 z | Held out; first measured Oct 22-23 |
+| Intact vs sentence-shuffled | Narratives notthefall · 22 listeners | Language readout stronger intact: HL 0.0356 [95% CI 0.0125, 0.0588], p = 0.00516 | **Pass** · pre-registered (D20, words from D27) |
+| Intact vs the coarser scramble | the same story · 21 listeners | HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735; did not reach p < 0.05 | Fail · the pre-registered secondary, the result of record |
+| Story wall and story picker | Narratives and Le Petit Prince · 42 stories | Every story we scored stays on the wall, weak ones too | Pending · pre-registered (D19), scored once from Sat Oct 31 |
+| Film face test | Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read | Pending |
+
+Files: `results/section8.json` · `results/d20_notthefall.json` · `results/story_wall.json` and `results/face_map.json` when they
+land. LPP is one of TRIBE v2's own evaluation sets. For notthefall, each version also had its own TRIBE forecast, so a pass does not
+separate a change in the listeners' brains from a change in TRIBE's forecast, and the run order is not public, so it cannot be
+separated from an order or repeat-listening effect. The story wall's scoring rule was committed Oct 28 (340b74b); 41 of the 42
+stories were used before then, for development or to tune a second model.
+
+### Cheap baselines beside every result
+
+Every predictor is scored the same way, so TRIBE is unpartialled here (exploratory; `docs/rules/cheap_baselines_rule.md`, committed
+Oct 28, before the notthefall BOLD was read). One-sided p per comparison:
+
+| notthefall comparison | TRIBE v2 | Word rate alone | Sound envelope alone |
+|---|---|---|---|
+| Language areas, vs sentence-shuffled | **0.0037** | 0.61 | 0.93 |
+| Language areas, vs the coarser scramble | 0.0071 | 0.041 | 0.99 |
+| Hearing areas, vs sentence-shuffled | 0.9998 | 0.9958 | 0.9171 |
+
+Against the coarser scramble, word rate alone also reached p = 0.041, so this cannot stand in for the failed secondary; p = 0.0735 is
+the result of record. On Le Petit Prince, section 8, the forecast beat word rate and the sound envelope in 8 of 8 comparisons, and in
+language areas it beat a simple word-rate model in 43 of 49 listeners (exploratory: that rule was written after section 8 was first
+measured). Files: `results/d20_notthefall.json` · `results/section8_baselines.json`.
+
+### Planner v2 on 62 held-out requests
+
+Bars set before the run (`docs/rules/planner_v2_eval_rule.md`); a missed bar is reported as missed.
+
+| Metric (bar) | Muse Spark 1.3 | Spark Open, Fireworks | Spark Open, Baseten |
+|---|---|---|---|
+| Decision accuracy (at least 90%) | 93.0% | 90.9% | 92.5% |
+| False accepts (at most 5%) | **2.3%** (3 of 132; exact 95% upper bound 6.5%) | 7.6% · missed | 6.8% · missed |
+| Decline-reason accuracy (at least 80%) | 99.2% | 93.4% | 95.9% |
+| First-answer validity (at least 85%) | 83.3% · missed | 100% | 100% |
+
+Spark Open on its two hosts is reported as two hosted versions, not one model. v2.1 adds clip, condition, seed and story tags; not
+re-measured. File: `results/planner_v2_eval.json`.
+
+### Planner v0 against v2, the same 62 requests
+
+| Host | Decision accuracy, v0 → v2 | False accepts of 132, v0 → v2 |
+|---|---|---|
+| Muse Spark 1.3 | 32.8% → 93.0% | 18 → 3 |
+| Spark Open, Fireworks | 40.9% → 90.9% | 29 → 10 |
+| Spark Open, Baseten | 41.4% → 92.5% | 31 → 9 |
+
+In v0 our fixed rules did most of the declining (107 of 114 for Spark 1.3); in v2 the model did (136 of 139). Files:
+`results/planner_v0_heldout.json` · `results/planner_v2_eval.json`.
+
+### Stimulus check: Voice Transcribe reads every condition back
+
+LibriVox *Alice's Adventures in Wonderland*, chapter 1, 75 s, before anyone is scanned:
+
+| Condition | Words heard | In the expected order | Check |
+|---|---|---|---|
+| Intact | 99% | 99% | pass |
+| Sentence scramble | 98% | 98% (59% in the original order) | pass |
+| Word scramble, our first version | 16% | 12% | **fail: caught before scanning, not used** |
+| Reversed | 0% | | played backwards, no words reach the text lane |
+
+File: `results/conditions_manipulation_check.json`.
+
+### Film edit check, 62 frames per version
+
+| Version | Spark Open (Baseten) | Muse Glimmer 30B, which decides |
+|---|---|---|
+| Intact: a face seen | 54 of 62 | runs Sat Oct 31 |
+| Faces filled: no face seen | 62 of 62 | runs Sat Oct 31 |
+| Same-size control: a face seen | 51 of 62 | runs Sat Oct 31 |
+
+The same-size control patch covers 89% of face area; the 51 largest close-ups have none. If the edit check fails, the film test does
+not run. File: `results/edit_check_spark_open.json`.
+
+### Order map go/no-go
+
+| Clips | Language-area forecast changed more than hearing-area | Set before any forecast | Verdict |
+|---|---|---|---|
+| 3 LibriVox Alice clips, forecast only, no brain data | 1 of 3 | 3 of 3 | no-go: no order map is shown |
+
+File: `results/order_map_gonogo.json`.
+
+### Sedation case study
+
+Frozen group statistics, with exploratory variants labelled: [docs/writeup_sedation.md](docs/writeup_sedation.md).
+
+## Key features
+
+- **A planner that can say no.** Muse Spark 1.3 plans from a tested menu or declines with the reason: 2.3% false accepts on 62
+  unseen requests.
+- **Stimuli checked before anyone is scanned.** Voice Transcribe reads every condition back; it caught our own broken word scramble.
+- **A live forecast on a laptop.** TRIBE v2 with its Llama 3.2 text lane, stage by stage, on a 6 GB GPU.
+- **Gray is the forecast; colour is real listeners.** Every forecast that can be checked is drawn against real public scans, beside
+  cheap baselines.
+- **Rules first.** Pre-registered tests are scored once by rules committed before their brain data was read; misses stay on the page.
+- **The same loop on film.** SAM 3.1 masks the faces, Glimmer decides the edit check, and 28 real viewers are the test.
+- **Nothing private leaves.** One typed egress layer, keys on the server, receipts with no request text, a hygiene scan before every
+  push.
 
 ## Architecture
 
@@ -131,8 +223,9 @@ What we learned about them:
 
 ## Keeping our own rules
 
-- **Rules first.** Every rule and its scoring code is committed and hash-pinned before any brain data it scores is read
-  (`docs/rules/`, [PREREG.md](PREREG.md)). The commit time is the record. [PREREG.md](PREREG.md) is the frozen pre-registration
+- **Rules first.** Every pre-registered test's rule and scoring code is committed before any brain data it scores is read; the
+  commit time is the record. A result whose rule came after its data is labelled exploratory, with when and why (`docs/rules/`,
+  [PREREG.md](PREREG.md)). [PREREG.md](PREREG.md) is the frozen pre-registration
   (D0-D27). Lines it quotes in its Never lists, and lines replaced by D18 and D23, are not claims.
 - **Frozen code stays frozen.** `prereg_registry.json` pins the SHA-256 of every entry point that scores a registered test. A git
   pre-commit hook and a Muse Code Stop hook (`muse-plugin/prereg-guard/`) run `stillhere/prereg_check.py` and block changes to frozen
@@ -142,7 +235,7 @@ What we learned about them:
   pass its own rule, so it is not shown.
 - **Captions before results.** Every caption, for every ending, was written before the result was known (`docs/captions.md`).
 - **Nothing private leaves.** A pre-push hygiene scan (`scripts/hygiene_scan.py`) fails closed on keys and tokens, agent-session
-  links, absolute paths that name the laptop user, subject IDs in the private sedation dataset's format, em dashes and files over
+  links, absolute paths that name the laptop user, subject IDs in the sedation dataset's format, em dashes and files over
   10 MB, across every file and every commit message in the history. It reads a laptop-only word list kept outside the repository and
   refuses to push without it. Binary files are listed with what built them in `docs/BINARY_PROVENANCE.md`.
 
@@ -214,7 +307,7 @@ replay-only Pilot page, no script and no network.
 ## Limitations
 
 - Research use only. Healthy volunteers and public data only. Not a diagnosis or medical advice.
-- Every live run is a forecast, not a scan: the end screen draws no real line, because no one has scanned that story yet.
+- Every live run is a forecast, not a scan: the end screen draws no real line.
 - The held-out audiobook (Le Petit Prince, section 8) was first measured Oct 22-23, before this repository began, and LPP is one of
   TRIBE v2's own evaluation sets. The word-rate comparison is exploratory: its rule was written after section 8 was first measured.
 - Intact vs sentence-shuffled: each version also had its own TRIBE forecast, so a pass does not separate a change in the listeners'

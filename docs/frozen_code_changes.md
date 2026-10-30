@@ -174,3 +174,22 @@ Check (Kaggle CPU kernel stillhere-segcompare: the release downloaded and SHA-25
 pixel difference per frame median 1.14 and at most 2.85 (of 255), PSNR median 42.9 dB and at least 35.7 dB; the audio has the same
 sample count and differs by 4.2% RMS (a different AAC encoder build). Same frame count, size, frame rate and duration. Kaggle decodes
 `seg_intact.mp4` frame for frame exactly as the laptop does (4,560 of 4,560), so the file the forecast reads is what the checks saw.
+
+## Saturday chain: wait limits and failed-push handling (Oct 30, before the chain's only run)
+
+Ruling of Oct 30, 10:20 UTC (option 1), committed and pushed at 11:19:58 UTC (b0fae29), before the chain's one run at Sat Oct 31
+00:00:30 UTC. `d22/picker_pred/saturday_chain.sh`: SHA-256 b345ca9634f14b4f... before, bbe2563408e2512c... after; the registry keeps
+the history line. Waiting only: no input, order, bar, output or file name changed.
+
+- A just-pushed kernel whose status cannot be read for 15 minutes is logged "push failed: {slug}". Every wait also ends at the earlier
+  of Kaggle's 12-hour session limit plus 30 minutes after the push and Sun Nov 1, 18:00 UTC, logged "timed out: {slug}". Both take the
+  existing failed-run path, and no output is fetched after either, so an older run's files are never read.
+- Step 4 asks whether 42/42 was verified before the cutoff, so a face-test or Glimmer wait that runs to the cutoff never blocks the
+  scoring call and never writes `PICKER_NOT_RUN.txt`; that file keeps its own reason only.
+- Dry test (a stand-in Kaggle CLI and a fake clock; `test_saturday_chain.py` SHA-256 a78adb2a921f...): the seven earlier paths and
+  seven new ones (a failed push, a kernel that never finishes, a wait that runs to the cutoff, a kernel error, picker-pred never
+  finishing, a part whose push fails twice) all reach step 4 with the right log lines.
+- The cancelled picker-pred run left no output files (`kaggle kernels files`, checked Oct 30), so a failed picker-pred push leaves
+  nothing that could pass the 42/42 check.
+- The script and its dry test stay in the analysis root, hash-only in the registry like every earlier version (ruling of Oct 30,
+  12:40 UTC); disclosure 18 in the submission covers the change.

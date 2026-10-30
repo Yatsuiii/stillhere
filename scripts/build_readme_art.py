@@ -213,9 +213,34 @@ def hero_svg(ghost: dict, brain: bytes) -> str:
 
 
 # ---- the architecture ----------------------------------------------------------------------------------------------------------
-def node(x, y, kind, title, lines, num=None):
-    return "".join([glyph(kind, x, y), T(x, y + 64, 16.5, (f"{num} · " if num else "") + title, f'{SERIF} font-weight="700" fill="{INK}" text-anchor="middle"')]
-                   + [T(x, y + 86 + i * 19, 13.5, s, f'{SERIF} font-style="italic" fill="{MUTE}" text-anchor="middle"') for i, s in enumerate(lines)])
+XS = (130, 400, 670, 940, 1210)                                            # five columns
+
+
+def chip(x, y, text):
+    """A model label in a box, as on an instrument panel."""
+    w = 7.6 * len(text) + 16
+    return (f'<rect x="{x - w / 2:.0f}" y="{y - 13}" width="{w:.0f}" height="19" fill="none" stroke="{DIM}" stroke-width="1"/>'
+            + T(x, y + 1, 10.5, text, f'{MONO} letter-spacing="1.2" fill="{INK}" text-anchor="middle"'))
+
+
+def node(x, y, kind, title, lines, num=None, model=None):
+    """Glyph, title, an optional model chip, then the italic lines; returns (svg, y of the last line)."""
+    g = [glyph(kind, x, y), T(x, y + 64, 16.5, (f"{num} · " if num else "") + title, f'{SERIF} font-weight="700" fill="{INK}" text-anchor="middle"')]
+    y0 = y + 86
+    if model:
+        g.append(chip(x, y0 + 2, model)); y0 += 28
+    g += [T(x, y0 + i * 19, 13.5, s, f'{SERIF} font-style="italic" fill="{MUTE}" text-anchor="middle"') for i, s in enumerate(lines)]
+    return "".join(g), y0 + (len(lines) - 1) * 19
+
+
+def check(x, y, question, outcome, branch="NO"):
+    """A diamond under a node: the question above it, and where the branch goes (on NO the path stops there and says why)."""
+    g = [T(x, y - 24, 12.5, question, f'{SERIF} font-style="italic" fill="{INK}" text-anchor="middle"'),
+         f'<path fill="{BG}" stroke="{INK}" stroke-width="1.4" d="M{x},{y - 12} L{x + 12},{y} L{x},{y + 12} L{x - 12},{y} z"/>',
+         f'<path fill="none" stroke="{DIM}" stroke-width="1" marker-end="url(#ahd)" d="M{x + 14},{y} H{x + 44}"/>',
+         T(x + 50, y - 8, 10.5, branch, f'{MONO} letter-spacing="1.2" fill="{DIM}"')]
+    g += [T(x + 50, y + 8 + i * 16, 12.5, s, f'{SERIF} font-style="italic" fill="{MUTE}"') for i, s in enumerate(outcome)]
+    return "".join(g)
 
 
 def arrow(d, dash=False):
@@ -227,65 +252,141 @@ def section(y, label):
     return T(46, y, 12.5, label, f'{MONO} letter-spacing="3" fill="{INK}"') + f'<path stroke="{LINE}" stroke-width="1" d="M46,{y + 12} H1354"/>'
 
 
-def architecture_svg() -> str:
-    W, H = 1400, 1640
-    xs = [130, 400, 670, 940, 1210]
-    row = lambda y, *a: [node(x, y, *n) for x, n in zip(xs, a)]
-    chain = lambda y, dashed=(): [arrow(f"M{a + 48},{y} L{b - 48},{y}", b in dashed) for a, b in zip(xs, xs[1:])]
+def chain(y, dashed_into=()):
+    return [arrow(f"M{a + 50},{y} L{b - 50},{y}", b in dashed_into) for a, b in zip(XS, XS[1:])]
+
+
+def ghost_band(ghost, y):
+    """The ghost line between the stations and the evidence, in display_rule_ghostline's order: the gray dashed forecast in full,
+    then the short chip, then the coloured 49-listener line; the file's labels and title; x in seconds of the section's scan."""
+    t, L = ghost["time_s"], ghost["lines"]
+    X0, X1, top, bot = 330, 1340, y + 34, y + 104
+    vals = [v for k in ("forecast", "group") for v in L[k]["values"] if v is not None]
+    lo, hi = min(vals), max(vals)
+    X = lambda s: X0 + (X1 - X0) * (s - t[0]) / (t[-1] - t[0])
+    Y = lambda v: bot - (bot - top) * (v - lo) / (hi - lo)
+    seg = lambda k: [" ".join(f"{X(s):.1f},{Y(v):.1f}" for s, v in run) for run in _runs(t, L[k]["values"])]
+    g = [T(46, y + 14, 12.5, "THE GHOST LINE", f'{MONO} letter-spacing="3" fill="{INK}"'),
+         T(46, y + 44, 14, "“Gray is the forecast;", f'{SERIF} font-style="italic" fill="{MUTE}"'),
+         T(46, y + 64, 14, "colour is real listeners.”", f'{SERIF} font-style="italic" fill="{MUTE}"'),
+         T(46, y + 96, 12.5, "how station 5 shows every", f'{SERIF} font-style="italic" fill="{DIM}"'),
+         T(46, y + 114, 12.5, "forecast it can check", f'{SERIF} font-style="italic" fill="{DIM}"'),
+         T(X1, y + 14, 12.5, ghost["title"], f'{SERIF} font-style="italic" fill="{DIM}" text-anchor="end"')]
+    g += [f'<polyline fill="none" stroke="{DIM}" stroke-width="1.5" stroke-dasharray="5 4" points="{p}"/>' for p in seg("forecast")]
+    g.append(T(X0, y + 14, 11, ghost["chip"]["short"].upper(), f'{MONO} letter-spacing="1.8" fill="{MUTE}"'))
+    g += [f'<polyline fill="none" stroke="{AMB}" stroke-width="1.8" stroke-linejoin="round" points="{p}"/>' for p in seg("group")]
+    g += [f'<path stroke="{DIM}" stroke-width="1" d="M{X0},{bot + 10} H{X1}"/>',
+          f'<path fill="none" stroke="{DIM}" stroke-width="1.5" stroke-dasharray="5 4" d="M{X0},{bot + 50} h28"/>',
+          T(X0 + 36, bot + 54, 12.5, L["forecast"]["label"], f'{SERIF} font-style="italic" fill="{MUTE}"'),
+          f'<path fill="none" stroke="{AMB}" stroke-width="1.8" d="M{X0 + 200},{bot + 50} h28"/>',
+          T(X0 + 236, bot + 54, 12.5, L["group"]["label"], f'{SERIF} font-style="italic" fill="{MUTE}"'),
+          T(X1, bot + 54, 10.5, "seconds of scan", f'{MONO} fill="{DIM}" text-anchor="end"')]
+    for s in range(60, int(t[-1]) + 1, 60):
+        g += [f'<path stroke="{DIM}" stroke-width="1" d="M{X(s):.1f},{bot + 10} v5"/>', T(round(X(s), 1), bot + 26, 10, str(s), f'{MONO} fill="{DIM}" text-anchor="middle"')]
+    return "".join(g)
+
+
+def _runs(t, values):                                                      # gaps (null) stay gaps
+    out, cur = [], []
+    for s, v in zip(t, values):
+        if v is None:
+            out.append(cur); cur = []
+        else:
+            cur.append((s, v))
+    return [c for c in out + [cur] if len(c) > 1]
+
+
+def architecture_svg(ghost: dict) -> str:
+    W, H = 1400, 2140
     P = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" role="img" aria-label="StillHere architecture">',
          f'<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">'
-         f'<path d="M0,0 L10,5 L0,10" fill="none" stroke="{INK}" stroke-width="1.5"/></marker></defs>',
+         f'<path d="M0,0 L10,5 L0,10" fill="none" stroke="{INK}" stroke-width="1.5"/></marker>'
+         f'<marker id="ahd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">'
+         f'<path d="M0,0 L10,5 L0,10" fill="none" stroke="{DIM}" stroke-width="1.5"/></marker></defs>',
          f'<rect width="{W}" height="{H}" fill="{BG}"/>', crop_marks(W, H),
          T(700, 54, 15, "“Gray is the forecast; colour is real listeners.”", f'{SERIF} font-style="italic" fill="{MUTE}" text-anchor="middle"'),
          T(700, 118, 52, "STILLHERE", f'{SERIF} font-style="italic" font-weight="700" letter-spacing="5" fill="none" stroke="{INK}" stroke-width="1.3" text-anchor="middle"'),
          T(700, 156, 15, "ARCHITECTURE · FROM A TYPED REQUEST TO A CHECKED FORECAST", f'{SERIF} letter-spacing="3" fill="{INK}" text-anchor="middle"'),
-         T(700, 184, 14.5, "Every model call passes one typed egress layer; every result is scored by a rule committed before its brain data was read",
+         T(700, 184, 14.5, "Every model call passes one typed egress layer; every pre-registered test is scored by a rule committed before its brain data was read",
            f'{SERIF} font-style="italic" fill="{MUTE}" text-anchor="middle"'),
          section(236, "I · THE STATIONS · HOSTED PAGE, KEYS ON THE SERVER ONLY")]
-    y1, y2, y3, y4 = 316, 566, 880, 1230
-    P += row(y1, ("request", "Request", ["a researcher types", "the study they want", "never stored or logged"]),
-             ("egress", "Typed egress", ["the only way to a model API:", "public text, scanned requests,", "allowlisted audio and frames", "3 hosts"]),
-             ("plan", "Plan", ["Muse Spark 1.3, the default;", "Spark Open on Fireworks or", "Baseten as a private mode", "a spec from the tested menu,",
-                               "or a decline with the reason"], 1),
-             ("build", "Build and check", ["cut at sentence boundaries;", "Muse Voice Transcribe reads", "each condition back;", "a failed check blocks the build"], 2),
-             ("audit", "Audit", ["Muse Spark Open", "leaves notes on the plan", "advisory: it never blocks"], 3))
-    P += chain(y1, dashed=(xs[4],))
-    P.append(arrow(f"M{xs[3]},{y1 + 172} V{y1 + 196} H{xs[1]} V{y2 - 44}"))
-    P += [node(xs[1], y2, "forecast", "Forecast", ["jobs API to a sandboxed worker", "TRIBE v2: w2v-BERT sound,", "Llama 3.2 text in fp16;", "V-JEPA 2 off for audio"], 4),
-          node(xs[2], y2, "laptop", "Laptop GPU", ["RTX 4050, 6 GB", "new seeds run live,", "10:00-14:00 ET, Nov 4-9", "a saved forecast otherwise"]),
-          node(xs[3], y2, "screen", "End screen", ["the gray forecast,", "no real line drawn over it:", "no one has scanned this yet"]),
-          node(xs[4], y2, "receipt", "Receipts and caps", ["a receipt for every call:", "no request text, no key", "spend caps per provider;", "5 live runs an hour per visitor"]),
-          arrow(f"M{xs[1] + 48},{y2} L{xs[2] - 48},{y2}"), arrow(f"M{xs[2] + 48},{y2} L{xs[3] - 48},{y2}"),
-          f'<path stroke="{DIM}" stroke-width="1" stroke-dasharray="2 4" d="M{xs[4] - 60},{y2} H{xs[3] + 60}"/>',
-          section(800, "II · EVIDENCE · OFFLINE, SCORED ONCE BY RULES WRITTEN FIRST")]
-    P += row(y3, ("rules", "Rules first", ["PREREG.md (D0-D27),", "docs/rules: committed and", "hash-pinned before any", "brain data is read"]),
-             ("gpu", "Kaggle GPUs", ["TRIBE v2 forecasts", "of public stimuli,", "in private notebooks"]),
-             ("scans", "Public scans", ["OpenNeuro: Le Petit Prince,", "Narratives, Emo-FilM", "ds003643 · ds002345 ·", "ds004892 · ds004872"]),
-             ("evidence", "Scoring", ["each listener’s own brain,", "a shuffled null, and cheap", "baselines: word rate, sound;", "brightness, motion for film"]),
-             ("results", "results/*.json", ["committed files the", "Evidence station replays,", "each beside its baselines"], 5))
-    P += chain(y3)
-    P += [f'<path fill="none" stroke="{DIM}" stroke-width="1" stroke-dasharray="2 4" d="M{xs[0]},{y3 + 160} V{y3 + 186} H{xs[3]} V{y3 + 168}"/>',
-          T((xs[0] + xs[3]) / 2, y3 + 204, 13, "a git hook and a Muse Code Stop hook block changes to frozen code", f'{SERIF} font-style="italic" fill="{DIM}" text-anchor="middle"'),
-          section(1150, "III · FILM · THE SAME LOOP ON VIDEO")]
-    P += row(y4, ("reel", "Tears of Steel", ["release 0-190 s,", "CC BY 3.0, Blender Foundation"], 6),
-             ("mask", "SAM 3.1 masks", ["face masks over 4,560 frames,", "through Meta’s Model API"]),
-             ("film", "Fill and control", ["faces filled with the", "surrounding colour; an", "equal-area control inside", "TRIBE’s 470 x 470 view"]),
-             ("audit", "Edit check", ["Muse Glimmer 30B decides;", "Spark Open’s counts", "are shown beside it"]),
-             ("scans", "Face test", ["TRIBE forecasts intact, filled", "and control; 28 viewers of", "the intact film, scored once"]))
-    P += chain(y4)
-    yk = 1478
+    # I, row 1: request, egress, plan, build, audit
+    y = 320
+    parts = [node(XS[0], y, "request", "Request", ["a researcher types", "the study they want,", "never stored or logged"]),
+             node(XS[1], y, "egress", "Typed egress", ["the only way to a model API:", "public text, scanned requests,", "allowlisted audio and frames"]),
+             node(XS[2], y, "plan", "Plan", ["a strict study spec", "from the tested menu"], 1, "MUSE SPARK 1.3 · OPEN"),
+             node(XS[3], y, "build", "Build and check", ["cut at sentence boundaries,", "each condition read back"], 2, "MUSE VOICE TRANSCRIBE"),
+             node(XS[4], y, "audit", "Audit", ["notes on the plan;", "advisory, never blocks"], 3, "MUSE SPARK OPEN")]
+    P += [p for p, _ in parts] + chain(y, dashed_into=(XS[4],))
+    yc = max(e for _, e in parts) + 56
+    P += [check(XS[1], yc, "allowlisted?", ["refused before", "any call"]),
+          check(XS[2], yc, "on the tested menu?", ["a decline: the reason", "and the nearest", "tested option"]),
+          check(XS[3], yc, "words kept, order right?", ["the build is blocked"])]
+    # I, row 2: forecast, laptop, end screen, receipts
+    y2 = yc + 150
+    P.append(arrow(f"M{XS[3]},{yc + 44} V{yc + 76} H{XS[1]} V{y2 - 44}"))
+    T_ = lambda x, yy, s: T(x, yy, 10.5, s, f'{MONO} letter-spacing="1.2" fill="{DIM}"')
+    P.append(T_(XS[3] + 8, yc + 66, "YES"))
+    parts2 = [node(XS[1], y2, "forecast", "Forecast", ["a recipe: story, condition", "and seed, by the jobs API"], 4, "TRIBE V2"),
+              node(XS[2], y2, "laptop", "Laptop GPU", ["sandboxed worker, RTX 4050;", "w2v-BERT sound, Llama 3.2", "text in fp16, V-JEPA 2 off"]),
+              node(XS[3], y2, "screen", "End screen", ["the gray forecast alone:", "Forecast, not a scan."]),
+              node(XS[4], y2, "receipt", "Receipts and caps", ["a receipt for every call,", "no request text, no key;", "spend caps per provider,", "5 live runs an hour per visitor"])]
+    P += [p for p, _ in parts2]
+    P += [arrow(f"M{XS[1] + 50},{y2} L{XS[2] - 50},{y2}"), arrow(f"M{XS[2] + 50},{y2} L{XS[3] - 50},{y2}"),
+          f'<path stroke="{DIM}" stroke-width="1" stroke-dasharray="2 4" d="M{XS[4] - 64},{y2} H{XS[3] + 64}"/>']
+    yc2 = max(e for _, e in parts2[:3]) + 56
+    P += [check(XS[1], yc2, "a saved forecast for this choice?", ["shown, labelled so; otherwise", "it runs live on the laptop,", "10:00-14:00 ET, Nov 4-9"], "YES")]
+    # the ghost line, between the stations and the evidence
+    yg = yc2 + 110
+    P += [f'<path stroke="{LINE}" stroke-width="1" d="M46,{yg - 24} H1354"/>', ghost_band(ghost, yg)]
+    # II. evidence
+    y3s = yg + 220
+    P.append(section(y3s, "II · EVIDENCE · OFFLINE, AGAINST PUBLIC SCANS"))
+    y3 = y3s + 84
+    parts3 = [node(XS[0], y3, "rules", "Rules first", ["PREREG.md (D0-D27), docs/rules:", "each pre-registered test’s rule", "before its brain data"]),
+              node(XS[1], y3, "gpu", "Kaggle GPUs", ["forecasts of public stimuli,", "in private notebooks"], None, "TRIBE V2"),
+              node(XS[2], y3, "scans", "Public scans", ["OpenNeuro: Le Petit Prince,", "Narratives, Emo-FilM"]),
+              node(XS[3], y3, "evidence", "Scoring", ["each listener’s own brain, a", "shuffled null, cheap baselines"]),
+              node(XS[4], y3, "results", "results/*.json", ["the files station 5 replays,", "each beside its baselines"], 5)]
+    P += [p for p, _ in parts3] + chain(y3)
+    yc3 = max(e for _, e in parts3) + 56
+    P += [T(XS[3], yc3 - 12, 12.5, "scored once; pass, fail or not run,", f'{SERIF} font-style="italic" fill="{INK}" text-anchor="middle"'),
+          T(XS[3], yc3 + 6, 12.5, "reported as it came", f'{SERIF} font-style="italic" fill="{INK}" text-anchor="middle"'),
+          f'<path fill="none" stroke="{DIM}" stroke-width="1" stroke-dasharray="2 4" d="M{XS[0]},{yc3 - 30} V{yc3}"/>',
+          T(XS[0], yc3 + 20, 12.5, "a git hook and a Muse Code", f'{SERIF} font-style="italic" fill="{DIM}" text-anchor="middle"'),
+          T(XS[0], yc3 + 38, 12.5, "Stop hook block changes", f'{SERIF} font-style="italic" fill="{DIM}" text-anchor="middle"'),
+          T(XS[0], yc3 + 56, 12.5, "to frozen code", f'{SERIF} font-style="italic" fill="{DIM}" text-anchor="middle"')]
+    # III. film
+    y4s = yc3 + 110
+    P.append(section(y4s, "III · FILM · THE SAME LOOP ON VIDEO"))
+    y4 = y4s + 84
+    parts4 = [node(XS[0], y4, "reel", "Tears of Steel", ["release 0-190 s,", "CC BY 3.0, Blender Foundation"], 6),
+              node(XS[1], y4, "mask", "Face masks", ["4,560 frames, through", "Meta’s Model API"], None, "SAM 3.1"),
+              node(XS[2], y4, "film", "Fill and control", ["faces filled with the surrounding", "colour; an equal-area control", "inside TRIBE’s 470 x 470 view"]),
+              node(XS[3], y4, "audit", "Edit check", ["Spark Open’s counts", "shown beside"], None, "MUSE GLIMMER 30B"),
+              node(XS[4], y4, "scans", "Face test", ["forecasts of intact, filled", "and control; 28 viewers of", "the intact film, scored once"], None, "TRIBE V2")]
+    P += [p for p, _ in parts4] + chain(y4)
+    yc4 = max(e for _, e in parts4) + 56
+    P += [check(XS[3], yc4, "did the edits work?", ["the film test", "does not run"]),
+          check(XS[4], yc4, "gate 0: VIF at most 5?", ["NOT RUN,", "with its reason"])]
+    # key and footer
+    yk = yc4 + 120
     P += [f'<path stroke="{LINE}" stroke-width="1" d="M46,{yk - 30} H1354"/>', T(46, yk + 4, 11, "KEY", f'{MONO} letter-spacing="2" fill="{MUTE}"')]
-    for i, (lab, mark) in enumerate((("solid arrow · every run", f'<path fill="none" stroke="{INK}" stroke-width="1.3" marker-end="url(#ah)" d="M-16,0 h30"/>'),
-                                     ("dashed · advisory, never blocks", f'<path fill="none" stroke="{INK}" stroke-width="1.3" stroke-dasharray="5 4" d="M-16,0 h30"/>'),
-                                     ("colour · real listeners or viewers", f'<path fill="none" stroke="{AMB}" stroke-width="2" d="M-16,0 h30"/>'),
-                                     ("n · station on the page", T(0, 5, 13, "1", f'{SERIF} font-weight="700" fill="{INK}" text-anchor="middle"')))):
-        x = 170 + i * 300
+    key = (("every run", f'<path fill="none" stroke="{INK}" stroke-width="1.3" marker-end="url(#ah)" d="M-16,0 h30"/>'),
+           ("advisory, never blocks", f'<path fill="none" stroke="{INK}" stroke-width="1.3" stroke-dasharray="5 4" d="M-16,0 h30"/>'),
+           ("a check: on no, the path stops and says why", f'<path fill="{BG}" stroke="{INK}" stroke-width="1.4" d="M0,-10 L10,0 L0,10 L-10,0 z"/>'),
+           ("a Meta model", f'<rect x="-20" y="-9" width="40" height="17" fill="none" stroke="{DIM}"/>'),
+           ("real listeners or viewers", f'<path fill="none" stroke="{AMB}" stroke-width="2" d="M-16,0 h30"/>'))
+    for i, (lab, mark) in enumerate(key):
+        x = 120 + (0, 180, 420, 790, 960)[i]
         P += [f'<g transform="translate({x},{yk})">{mark}</g>', T(x + 26, yk + 5, 13.5, lab, f'{SERIF} font-style="italic" fill="{MUTE}"')]
     P += [T(700, yk + 62, 13, "Keys stay in server environment variables. A hygiene scan runs before every push. TRIBE v2 is CC BY-NC 4.0 and is not included.",
             f'{SERIF} font-style="italic" fill="{DIM}" text-anchor="middle"'),
-          T(700, yk + 96, 13, "Research use. Healthy volunteers and public data only. Not a diagnosis or medical advice.",
+          T(700, yk + 92, 13, "Research use. Healthy volunteers and public data only. Not a diagnosis or medical advice.",
             f'{SERIF} font-style="italic" fill="{DIM}" text-anchor="middle"'), "</svg>"]
-    return "".join(P)
+    svg = "".join(P)
+    return svg.replace(f'viewBox="0 0 {W} {H}"', f'viewBox="0 0 {W} {yk + 130}"', 1).replace(f'height="{H}" fill="{BG}"', f'height="{yk + 130}" fill="{BG}"', 1) \
+        .replace(crop_marks(W, H), crop_marks(W, yk + 130), 1)
 
 
 def render(svg: str, out: Path, width: int):
@@ -303,4 +404,4 @@ if __name__ == "__main__":
     hero = hero_svg(ghost, brain_png(a.atlas))
     render(hero, a.out / "stillhere-hero.png", 1800)
     render(hero, REPO / "web/public/hero.png", 1800)                       # the hosted page's header, the same picture
-    render(architecture_svg(), a.out / "stillhere-architecture.png", 1800)
+    render(architecture_svg(ghost), a.out / "stillhere-architecture.png", 1800)

@@ -168,7 +168,8 @@ included: `results/story_wall.json`, `results/face_map.json`, `results/emofilm_f
 1. Make the repository public (Yatsu): GitHub, Yatsuiii/stillhere, Settings, Danger Zone, Change visibility, Public.
 2. Open every github.com link on the hosted page (the PREREG.md link in Evidence, the write-up link) logged out, in a private
    window: each must load. `tests/test_pilot_page.py` checks that every repository path the page links to exists at HEAD.
-3. Then list the URL: the README, the submission, the video's end card.
+3. Then list the URL: the README (its "Try it" line), the submission, the video's end card, and the repository's About website
+   (`gh repo edit Yatsuiii/stillhere --homepage <url>`; the description and topics were set Oct 30).
 
 ## What can block a deploy
 
