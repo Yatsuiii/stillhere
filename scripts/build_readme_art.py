@@ -269,8 +269,8 @@ def ghost_band(ghost, y):
     g = [T(46, y + 14, 12.5, "THE GHOST LINE", f'{MONO} letter-spacing="3" fill="{INK}"'),
          T(46, y + 44, 14, "“Gray is the forecast;", f'{SERIF} font-style="italic" fill="{MUTE}"'),
          T(46, y + 64, 14, "colour is real listeners.”", f'{SERIF} font-style="italic" fill="{MUTE}"'),
-         T(46, y + 96, 12.5, "how station 5 shows every", f'{SERIF} font-style="italic" fill="{DIM}"'),
-         T(46, y + 114, 12.5, "forecast it can check", f'{SERIF} font-style="italic" fill="{DIM}"'),
+         T(46, y + 96, 12.5, "how station 5 shows a forecast", f'{SERIF} font-style="italic" fill="{DIM}"'),
+         T(46, y + 114, 12.5, "against real listeners", f'{SERIF} font-style="italic" fill="{DIM}"'),
          T(X1, y + 14, 12.5, ghost["title"], f'{SERIF} font-style="italic" fill="{DIM}" text-anchor="end"')]
     g += [f'<polyline fill="none" stroke="{DIM}" stroke-width="1.5" stroke-dasharray="5 4" points="{p}"/>' for p in seg("forecast")]
     g.append(T(X0, y + 14, 11, ghost["chip"]["short"].upper(), f'{MONO} letter-spacing="1.8" fill="{MUTE}"'))

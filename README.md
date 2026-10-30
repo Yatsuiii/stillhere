@@ -162,13 +162,14 @@ Frozen group statistics, with exploratory variants labelled: [docs/writeup_sedat
 ## Key features
 
 - **A planner that can say no.** Muse Spark 1.3 plans from a tested menu or declines with the reason: 2.3% false accepts on 62
-  unseen requests.
+  unseen requests (planner v2; the live v2.1 is not re-measured).
 - **Stimuli checked before anyone is scanned.** Voice Transcribe reads every condition back; it caught our own broken word scramble.
 - **A live forecast on a laptop.** TRIBE v2 with its Llama 3.2 text lane, stage by stage, on a 6 GB GPU.
-- **Gray is the forecast; colour is real listeners.** Every forecast that can be checked is drawn against real public scans, beside
-  cheap baselines.
+- **Gray is the forecast; colour is real listeners.** Held-out forecasts are drawn against real public scans, beside cheap
+  baselines.
 - **Rules first.** Pre-registered tests are scored once by rules committed before their brain data was read; misses stay on the page.
-- **The same loop on film.** SAM 3.1 masks the faces, Glimmer decides the edit check, and 28 real viewers are the test.
+- **The same loop on film.** SAM 3.1 masks the faces, Glimmer decides the edit check, and the scans of 28 real viewers are the
+  test.
 - **Nothing private leaves.** One typed egress layer, keys on the server, receipts with no request text, a hygiene scan before every
   push.
 
