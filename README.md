@@ -82,6 +82,10 @@ Not a diagnosis or medical advice.
 | Story wall and story picker · Narratives and Le Petit Prince · 42 stories | Every story we scored stays on the wall, weak ones too. | | 41 of the 42 stories were used before the rule | Pending · pre-registered (D19), scored once from Sat Oct 31 |
 | Film face test · Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read. | | runs only if the edit check passes | Pending |
 | Sedation case study · OpenNeuro ds003171 | No sedation stage line: two of the three co-primary bars did not pass. | language fell in 9 of 12 (needed 10) | a case study, not a headline | Pre-registered; exploratory variants in the [write-up](docs/writeup_sedation.md) |
+| Held-out audiobook · the Alice Datasets, chapter 1 · 22 listeners | On a different public audiobook, outside TRIBE v2's training and evaluation sets (the Alice Datasets, 22 listeners), the forecast tracked the listeners' language areas (z 1.42, p = 6e-05), but at its lower bound it was worth less than one real volunteer (about 2 at the point estimate).<br>What it had to beat: word rate and the sound envelope (beaten in 8 of 8 comparisons). | volunteer-equivalent 1.6, lower bound 0; language result 1.42 z | one chapter; the dataset's own preprocessing; 1 listener's file corrupt at the source, excluded | Exploratory · volume mapping corrected after the first run; both runs in the repository <sup>4</sup> |
+
+<sup>4</sup> A first run used the dataset README's 10-volume offset, which the files do not follow; it is kept in
+`results/alice_heldout_first_run.json`.
 
 ### Reading the results
 
