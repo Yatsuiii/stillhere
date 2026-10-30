@@ -292,6 +292,11 @@ async function loadEvidence() {
   const box = $("evidence-out");
   box.innerHTML = data.html || "";                                              // rendered by the server from committed results files
   if (data.order_map && data.order_map.verdict) box.append(el("p", "small", "Order map: " + data.order_map.verdict + ". " + (data.order_map.consequence || "")));
+  const fs = data.film_status, st = $("film-status");                             // the face-test slot, read by the server
+  if (fs && st) {
+    st.textContent = "";
+    if (fs.href) { const a = el("a", "", fs.text); a.href = fs.href; st.append(a); } else st.textContent = fs.text;
+  }
 }
 async function doFilm() {
   const concept = $("concept").value.trim();

@@ -29,6 +29,8 @@ PROVIDER = {"spark-1.3": "meta", "spark-open": "fireworks"}
 HOSTS = {"spark-1.3": (("meta", "spark-1.3"),),                            # (provider, planner backend) in the order tried: Baseten is
          "spark-open": (("fireworks", "spark-open"), ("baseten", "spark-open-baseten"))}   # Spark Open's fallback host (plan of 19:20 UTC, 1c)
 KEY_ENV = {"fireworks": "FIREWORKS_API_KEY", "baseten": "BASETEN_API_KEY"}
+TIMEOUT_S = {"meta": 60.0, "fireworks": 25.0, "baseten": 60.0}   # the page's plan and audit calls: a stalled Fireworks call settles as
+                                                                  # api_error and falls through to Baseten (ruling of Oct 30, 07:40 UTC, e)
 RESERVE = {"plan": 0.05, "audit": 0.03, "transcribe": 0.10, "sam": 0.50}   # worst case $ per call; Voice Transcribe and SAM publish no
 RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # price here, so they keep their reservation (never settled);
                                                                            # 7 is the third example chip's seed
@@ -121,7 +123,7 @@ def _load(rel: str):
 
 
 def why_line(code: str) -> str:
-    return {"session_limit": "This session has used its 5 live runs for this hour.", "spend_cap": "Today's live budget is used up.",
+    return {"session_limit": "This session has used its 5 live runs for this hour.", "spend_cap": "The daily live budget is used up.",
             "no_key": "Live calls are off on this server.", "api_error": "The live call failed, so this station shows its recorded run.", "no_run": "Start with a plan first.",
             "station_used": "This run already used this station.", "provider_not_offered": "That model is not offered live.",
             "recorded_plan": "This plan is a recorded run, so this station shows its recording.",
@@ -224,7 +226,7 @@ def plan(text: str, backend: str, sid: str) -> dict:
         usage = []
         try:
             with capture() as usage:
-                c = P.plan(q, b, planner.live_client())
+                c = P.plan(q, b, planner.live_client(TIMEOUT_S[prov]))
         except Exception:
             c = None
         usd = chat_cost(usage); ledger.settle(res, usd)
@@ -276,7 +278,7 @@ def audit(run_id: str, sid: str) -> dict:
             with capture() as usage:
                 out = meta_client.chat(egress.Request(model=model, system=[planner.public("audit_system")],
                                                       user=[egress.TableEnums(enums=enums)], schema_name="audit_notes",
-                                                      json_schema=AUDIT_SCHEMA))
+                                                      json_schema=AUDIT_SCHEMA), timeout=TIMEOUT_S[prov])
         except Exception:
             out, why = None, "api_error"
         usd = chat_cost(usage); ledger.settle(res, usd)
@@ -496,6 +498,6 @@ def evidence() -> dict:
     return {"html": html, "lpp_ghost": _load("results/ghostline_lpp_s8.json"), "film_ghost": _load("results/ghostline_film.json"),
             "d20": d20, "pair": "d20" if d20["status"] == "pass" else "lpp",
             "pair_label": "Real listeners, different story." if d20["status"] == "pass" else "Real listeners, held-out story",
-            "order_map": {"verdict": om.get("verdict"), "consequence": om.get("consequence")},
+            "order_map": {"verdict": om.get("verdict"), "consequence": om.get("consequence")}, "film_status": bp.film_status(sl["face_map"]),
             "d20_chip": f'{bp.GHOST_CHIPS["d20"]["short"]}: {bp.GHOST_CHIPS["d20"]["long"]}', "prereg_url": bp.PREREG_URL,
             "prereg_note": bp.PREREG_NOTE}

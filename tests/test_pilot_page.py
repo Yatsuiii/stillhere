@@ -4,6 +4,7 @@ numbers come from their JSON; each slot shows a labelled pending panel without i
 ending, Glimmer pass and fail, the story wall, notthefall pass and not-pass, recorded plans, shown in plain words); the sedation case
 study is one link to its write-up and no sedation number is on the page; the media match demo/media/MEDIA.json; and at phone width (390 px) headless Chrome renders it with no horizontal overflow."""
 import copy
+import datetime
 import hashlib
 import html
 import importlib.util
@@ -295,3 +296,40 @@ def test_no_horizontal_overflow_at_phone_and_desktop_width(tmp_path, width):
     r = render(tmp_path, width, out / f"page_{width}.png")
     assert r["scroll_width"] <= width, r
     assert (out / f"page_{width}.png").stat().st_size > 50_000
+
+
+def test_every_repository_path_the_page_links_to_exists_at_head():
+    """Ruling of Oct 30, 07:40 UTC, a: the page's github.com links go live when the repository turns public on Nov 3, so each path
+    they name must exist at HEAD: the static page, the hosted page's files and its evidence panels."""
+    texts = [BP.build()] + [f.read_text() for f in sorted((REPO / "web/public").iterdir()) if f.suffix in (".html", ".js")]
+    texts.append(BP.d20_html(BP.load(BP.SLOTS["d20"])))
+    paths = sorted({m.group(1) for t in texts for m in re.finditer(re.escape(BP.REPO_URL) + r"/(?:blob|tree)/main/([^\"'#?<\s]+)", t)})
+    assert "PREREG.md" in paths
+    missing = [p for p in paths if subprocess.run(["git", "cat-file", "-e", f"HEAD:{p}"], cwd=REPO, capture_output=True).returncode]
+    assert missing == []
+
+
+def test_story_wall_is_pending_until_its_frozen_cutoff_then_not_run():
+    """Ruling of Oct 30, 07:40 UTC, b: no relative days; after Sun Nov 1, 18:00 UTC with no result, the chain's frozen not-run wording."""
+    before = BP.wall_html(None, now=BP.WALL_CUTOFF_UTC - datetime.timedelta(minutes=1))
+    after = BP.wall_html(None, now=BP.WALL_CUTOFF_UTC)
+    assert "Not scored yet; scored once, as pre-registered (D19)." in before and "pending" in before
+    assert "Story wall: pre-registered, not run (GPU time ran out); no partial scoring." in after and "not run" in after
+    assert BP.WALL_CUTOFF_UTC.isoformat() == "2026-11-01T18:00:00+00:00"
+
+
+def test_film_station_says_why_and_reads_the_face_test_slot():
+    """Ruling of Oct 30, 07:40 UTC, c: the purpose line word for word, and one status line per state of results/face_map.json."""
+    page = " ".join((REPO / "web/public/index.html").read_text().split())
+    assert ("Why this station: the face test in Evidence asks how TRIBE's forecast changes when the faces in a film are filled in. SAM 3.1 "
+            "masked the faces in the first 190 s of Tears of Steel; StillHere filled them with the surrounding colour, and filled a same-size "
+            "patch elsewhere in each frame as a control. TRIBE forecasts all three versions, and the face test compares the forecast's face "
+            "map with face maps from the scans of 28 people who watched the film. Type \"face\", or another word, to make the same edit on "
+            "three frames here.") in page
+    assert 'id="film-status"' in page
+    assert BP.film_status(None) == {"text": "Face test: not scored yet.", "href": None}
+    for o in ("PASS", "FAIL", "FAIL not face-specific", "UNINFORMATIVE"):
+        assert BP.film_status({"outcome": o}) == {"text": f"Face test: {o}.", "href": "#face-test"}
+    assert BP.film_status({"outcome": "NOT RUN", "why": "gate 0 failed"}) == {
+        "text": "The face test did not run: gate 0 failed. This station shows the edit it would have used.", "href": None}
+    assert 'id="face-test"' in BP.film_result_html({"outcome": "NOT RUN", "why": "gate 0 failed"}, None)

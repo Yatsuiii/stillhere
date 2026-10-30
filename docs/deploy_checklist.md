@@ -157,6 +157,19 @@ video or any post before then; every response is `noindex`. Repeat checks 1, 2, 
    with no saved run, FORECAST: the lane bars move on the worker's events and the forecast lands with its receipt. Then
    `sudo systemctl stop stillhere-worker` and `sudo rm /etc/stillhere-worker/worker.env`.
 
+## Redeploys
+
+Git is not connected, so nothing deploys on a push. After any commit the hosted app needs (a results file from the Saturday chain
+included: `results/story_wall.json`, `results/face_map.json`, `results/emofilm_film_score.json`), in `~/stillhere-deploy`:
+`git pull --ff-only`, `vercel deploy` (a preview; check what changed through `vercel curl`), then `vercel deploy --prod`.
+
+## Nov 3: listing the URL (ruling of Oct 30, 07:40 UTC, a), in this order
+
+1. Make the repository public (Yatsu): GitHub, Yatsuiii/stillhere, Settings, Danger Zone, Change visibility, Public.
+2. Open every github.com link on the hosted page (the PREREG.md link in Evidence, the write-up link) logged out, in a private
+   window: each must load. `tests/test_pilot_page.py` checks that every repository path the page links to exists at HEAD.
+3. Then list the URL: the README, the submission, the video's end card.
+
 ## What can block a deploy
 
 - The laptop's Vercel CLI 65.4.0 crashes; update it (8b.1).

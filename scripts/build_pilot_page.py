@@ -18,6 +18,7 @@ Standard library only, so a clean clone builds it. The build refuses banned word
 usage: python scripts/build_pilot_page.py [--single OUT.html]   (--single also writes a copy with the media inlined, for hosting)"""
 import argparse
 import base64
+import datetime
 import html
 import json
 import math
@@ -99,9 +100,10 @@ def badge(kind: str, text: str) -> str:
     return f'<span class="badge b-{kind}">{E(text)}</span>'
 
 
-def panel(body: str, cls: str = "", nd: bool = True, credit: bool = False) -> str:
+def panel(body: str, cls: str = "", nd: bool = True, credit: bool = False, id: str = "") -> str:
     tail = (f'<p class="credit">{E(CREDIT)}</p>' if credit else "") + (f'<p class="nd">{E(ND)}</p>' if nd else "")
-    return f'<div class="panel {cls}">{body}{tail}</div>'
+    attr = f' id="{id}"' if id else ""
+    return f'<div class="panel {cls}"{attr}>{body}{tail}</div>'
 
 
 def pending(title: str, when: str, rel: str, note: str = "") -> str:
@@ -447,9 +449,16 @@ def lpp_html(s8: dict, b: dict, ghost: dict = None) -> str:
                  '<code>results/section8.json</code>, <code>results/section8_baselines.json</code>.</p>')
 
 
-def wall_html(d) -> str:
+WALL_CUTOFF_UTC = datetime.datetime(2026, 11, 1, 18, 0, tzinfo=datetime.timezone.utc)   # saturday_chain.sh: 42/42 predictions by then
+WALL_NOT_RUN = "pre-registered, not run (GPU time ran out); no partial scoring"        # the chain's frozen not-run wording
+
+
+def wall_html(d, now: datetime.datetime = None) -> str:
+    """No relative days (ruling of Oct 30, 07:40 UTC, b): pending until the wall's frozen cutoff, then the frozen not-run wording."""
     if d is None:
-        return pending("Story wall, Narratives and LPP", "Manifest tonight; scored Saturday, once.", SLOTS["story_wall"])
+        if (now or datetime.datetime.now(datetime.timezone.utc)) < WALL_CUTOFF_UTC:
+            return pending("Story wall, Narratives and LPP", "Not scored yet; scored once, as pre-registered (D19).", SLOTS["story_wall"])
+        return panel(f'<h3>{badge("info", "not run")}Story wall, Narratives and LPP</h3><p>Story wall: {E(WALL_NOT_RUN)}.</p>')
     w = d.get("wall", d); ln = (d.get("lines") or {}).get("line") or d.get("line")
     ok = bool(w.get("bar_pass"))
     guards = (d.get("lines") or {}).get("guards") or []
@@ -605,7 +614,16 @@ def film_result_html(fm, fs, ghost: dict = None) -> str:
                  f'{E(ghost["chip"]["short"])}: {E(ghost["chip"]["long"])}.</p>')
     if N:
         body += f'<p class="small">{E(FILM_FOOT.format(N=N))}</p>'
-    return panel(body)
+    return panel(body, id="face-test")
+
+
+def film_status(fm) -> dict:
+    """The Film station's one status line, read from the face-test result slot (ruling of Oct 30, 07:40 UTC, c)."""
+    if fm is None:
+        return {"text": "Face test: not scored yet.", "href": None}
+    if fm["outcome"] == "NOT RUN":
+        return {"text": f"The face test did not run: {fm['why']}. This station shows the edit it would have used.", "href": None}
+    return {"text": f"Face test: {fm['outcome']}.", "href": "#face-test"}
 
 
 # ---- page -------------------------------------------------------------------------------------------------------------------------

@@ -194,7 +194,7 @@ def test_spark_open_falls_back_to_baseten_on_stubs(web, monkeypatch):
     d = stations.plan("Plan a story test on chapter 2.", "spark-open", "f" * 32)
     assert d["mode"] == "live" and calls == ["spark-open-baseten"]
     chats = []
-    monkeypatch.setattr(stations.meta_client, "chat", lambda req: chats.append(req.model) or {"notes": ["Check the control."]})
+    monkeypatch.setattr(stations.meta_client, "chat", lambda req, **kw: chats.append(req.model) or {"notes": ["Check the control."]})
     a = stations.audit(d["run_id"], "f" * 32)
     assert a["mode"] == "live" and chats == ["baseten/muse-spark-open-1026"] and a["notes"] == ["Check the control."]
     monkeypatch.delenv("BASETEN_API_KEY"); calls.clear()
@@ -599,3 +599,63 @@ def test_page_lays_out_at_360_px(web, tmp_path, monkeypatch):
         srv.shutdown()
     m = re.search(r'data-sw="(\d+)"', out)
     assert m and int(m.group(1)) <= 360, out[-300:]
+
+
+def test_a_hanging_fireworks_call_times_out_and_baseten_answers(web, monkeypatch):
+    """Ruling of Oct 30, 07:40 UTC, e: Spark Open on Fireworks gets 25 s on the page's plan and audit calls, Baseten 60 s, Spark 1.3
+    unchanged; a timeout settles as api_error and falls through to Baseten. The Fireworks stub is a real socket that accepts and never
+    answers, reached by the real httpx client with the station's timeout (shortened to 0.5 s here)."""
+    app, jobs, ledger, stations, store = web
+    assert stations.TIMEOUT_S == {"meta": 60.0, "fireworks": 25.0, "baseten": 60.0}
+    monkeypatch.setenv("BASETEN_API_KEY", "bt-SECRET-0123456789abcdef")
+    plan_timeouts = []
+    monkeypatch.setattr(stations.planner, "live_client", lambda timeout=60.0: plan_timeouts.append(timeout) or (lambda req: None))
+    monkeypatch.setattr(stations.P, "plan", lambda q, b, client: _Card(b == "spark-open-baseten"))
+    run = stations.plan("Plan a story test on chapter 2.", "spark-open", "f" * 32)["run_id"]
+    stations.plan("Plan a story test on chapter 2.", "spark-1.3", "f" * 32)
+    assert plan_timeouts == [25.0, 60.0, 60.0]                                        # Fireworks, then Baseten; then Spark 1.3 on Meta
+    srv = socket.socket(); srv.bind(("127.0.0.1", 0)); srv.listen(4)                   # the kernel completes the handshake; nothing answers
+    real_post, seen = httpx.post, []
+
+    def post(url, **kw):
+        seen.append((url.split("/")[2], kw["timeout"]))
+        if "api.fireworks.ai" in url:
+            return real_post(f"http://127.0.0.1:{srv.getsockname()[1]}/chat/completions", **kw)
+        return httpx.Response(200, request=httpx.Request("POST", url), json={"usage": {}, "choices": [
+            {"message": {"content": json.dumps({"notes": ["Check the control."]})}}]})
+    monkeypatch.setattr(httpx, "post", post)
+    monkeypatch.setitem(stations.TIMEOUT_S, "fireworks", 0.5)
+    t0 = datetime.datetime.now()
+    try:
+        a = stations.audit(run, "f" * 32)
+    finally:
+        srv.close()
+    assert (datetime.datetime.now() - t0).total_seconds() < 10
+    assert seen == [("api.fireworks.ai", 0.5), ("inference.baseten.co", 60.0)]
+    assert a["mode"] == "live" and a["notes"] == ["Check the control."]
+    assert stations.get_receipt(a["receipt_id"])["model"] == "baseten/muse-spark-open-1026"
+
+
+RELATIVE_DAYS = re.compile(r"\b(tonight|today|tomorrow|yesterday|this week)\b", re.I)
+
+
+def test_no_page_or_card_text_names_a_relative_day(web, monkeypatch):
+    """Ruling of Oct 30, 07:40 UTC, b: the page is read for days after it is written, so no text it can show says tonight, today,
+    tomorrow, yesterday or this week: the static files, the evidence panels on both sides of the wall's cutoff, every reason line, every
+    story card, the recorded runs and the Film station's status in each state."""
+    app, jobs, ledger, stations, store = web
+    bp = stations.guard._bp
+    texts = [f.read_text() for f in sorted((REPO / "web/public").iterdir()) if f.suffix in (".html", ".js")]
+    texts += [f.read_text() for f in sorted((REPO / "web/replay").glob("*.json"))]
+    texts += [bp.build(), json.dumps(stations.evidence())]
+    for now in (bp.WALL_CUTOFF_UTC - datetime.timedelta(seconds=1), bp.WALL_CUTOFF_UTC):
+        texts.append(bp.wall_html(None, now=now))
+    texts += [stations.why_line(c) for c in ("session_limit", "spend_cap", "no_key", "api_error", "no_run", "station_used",
+                                              "provider_not_offered", "recorded_plan", "post_credit_cap", "other")]
+    menu = json.loads((REPO / "stillhere/live_menu.json").read_text())
+    clips = [c["id"] for c in menu.get("clips", [])]
+    assert clips
+    texts += [json.dumps(stations.story_card(c)) for c in clips]
+    texts += [bp.film_status(fm)["text"] for fm in (None, {"outcome": "PASS"}, {"outcome": "NOT RUN", "why": "gate 0 failed"})]
+    hits = sorted({m.group(0) for t in texts for m in RELATIVE_DAYS.finditer(t)})
+    assert hits == []
