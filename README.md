@@ -29,13 +29,33 @@ was worth **about 5 real volunteers, and at least 2** (49 listeners), and its pr
 Built during the Meta Global AI Developer Hackathon (building period Oct 27 to Nov 4, 2026): Indie developer track, theme Push the
 Frontier. MIT licence for our code; TRIBE v2 is CC BY-NC 4.0 and is not included.
 
-[Research question](#research-question) · [Who it's for](#who-its-for) · [A worked example](#a-worked-example) ·
-[The problem](#the-problem) · [What it does](#what-it-does) · [Results so far](#results-so-far) · [Key features](#key-features) ·
+[The problem](#the-problem) · [Research question](#research-question) · [Who it's for](#who-its-for) ·
+[A worked example](#a-worked-example) · [What it does](#what-it-does) · [Results so far](#results-so-far) · [Key features](#key-features) ·
 [Architecture](#architecture) · [Meta models](#meta-models-and-the-job-of-each) · [Keeping our own rules](#keeping-our-own-rules) ·
 [Quickstart](#quickstart) · [Deployment](#deployment) · [Limitations](#limitations) · [Project layout](#project-layout) ·
 [Documentation](#documentation)
 
 ---
+
+## The problem
+
+Passive tests play a story or a film to a person in the scanner and look for the brain response a healthy listener would have. They
+matter most for people who cannot answer: 1 in 4 brain-injured patients who could not follow commands at the bedside showed brain
+activity on command-following tasks, on fMRI or EEG (Bodien et al., NEJM 2024; 60 of 241). That figure comes from command-following
+tests, not passive listening. Passive tests with a story or a film are the other half of the toolkit (Naci et al., PNAS 2014, used a
+film).
+
+Every new story or film needs its own healthy reference first. Each story needs 12-15 volunteers: $5-15k of scanner time per
+stimulus, per language, at university scanner rates of $450-700 an hour (Michigan $620, Kentucky up to $625, Yale $696), before
+recruitment. So a new story, or the same story in a new language, starts with a scanner booking before anyone knows whether it will
+work.
+
+**StillHere Pilot lets a lab pilot the story before booking the scanner.** A researcher types the study they want; Muse Spark 1.3
+turns it into a plan from a tested menu, or declines with the reason. StillHere builds the conditions, and Muse Voice Transcribe reads
+every one back before anyone is scanned. TRIBE v2 forecasts the brain response, live on a laptop. Gray is the forecast; colour is
+real listeners: on a held-out audiobook, the forecast was worth about 5 real volunteers, and at least 2.
+
+A first healthy reference for a new story, before any scans, and evidence for how far to trust it.
 
 ## Research question
 
@@ -74,26 +94,6 @@ The first story on the live menu, as the page runs it:
    shows each lane as it runs. It ends on the gray forecast alone: "No public scan of this clip. Forecast, not a scan."
 5. **Evidence.** Below it, held-out forecasts are drawn against real listeners, beside cheap baselines, so the researcher can see how
    such forecasts held up on real scans.
-
-## The problem
-
-Passive tests play a story or a film to a person in the scanner and look for the brain response a healthy listener would have. They
-matter most for people who cannot answer: 1 in 4 brain-injured patients who could not follow commands at the bedside showed brain
-activity on command-following tasks, on fMRI or EEG (Bodien et al., NEJM 2024; 60 of 241). That figure comes from command-following
-tests, not passive listening. Passive tests with a story or a film are the other half of the toolkit (Naci et al., PNAS 2014, used a
-film).
-
-Every new story or film needs its own healthy reference first. Each story needs 12-15 volunteers: $5-15k of scanner time per
-stimulus, per language, at university scanner rates of $450-700 an hour (Michigan $620, Kentucky up to $625, Yale $696), before
-recruitment. So a new story, or the same story in a new language, starts with a scanner booking before anyone knows whether it will
-work.
-
-**StillHere Pilot lets a lab pilot the story before booking the scanner.** A researcher types the study they want; Muse Spark 1.3
-turns it into a plan from a tested menu, or declines with the reason. StillHere builds the conditions, and Muse Voice Transcribe reads
-every one back before anyone is scanned. TRIBE v2 forecasts the brain response, live on a laptop. Gray is the forecast; colour is
-real listeners: on a held-out audiobook, the forecast was worth about 5 real volunteers, and at least 2.
-
-A first healthy reference for a new story, before any scans, and evidence for how far to trust it.
 
 ## What it does
 
