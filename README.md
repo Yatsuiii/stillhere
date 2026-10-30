@@ -22,9 +22,9 @@ was worth **about 5 real volunteers, and at least 2** (49 listeners), and its pr
 
 **Research use. Healthy volunteers and public data only. Not a diagnosis or medical advice.**
 
-| 12-15 | $5-15k | 0 | about 5 |
+| 12-15 | $5-15k | about 5 | p = 0.00516 |
 |:---:|:---:|:---:|:---:|
-| healthy volunteers scanned before a new story can be used | of scanner time per stimulus, per language | volunteer scans for StillHere's first reading | real volunteers' worth, on a held-out audiobook (at least 2) |
+| healthy volunteers scanned before a new story can be used | of scanner time per stimulus, per language | real volunteers' worth from the forecast, on a held-out audiobook (at least 2) | pre-registered pass, intact vs shuffled, 22 real listeners |
 
 Built during the Meta Global AI Developer Hackathon (building period Oct 27 to Nov 4, 2026): Indie developer track, theme Push the
 Frontier. MIT licence for our code; TRIBE v2 is CC BY-NC 4.0 and is not included.
