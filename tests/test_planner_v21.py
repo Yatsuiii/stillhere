@@ -207,7 +207,8 @@ def test_default_clip_is_the_first_that_passes_and_the_card_never_says_free_of()
     card = P.plan(Q, "spark-1.3", Fake({"content": spec(clip_id=None, avoid_tags=["violence"])}))
     assert card.route["kind"] == "live" and card.route["clip_id"] == want[0] and card.route["avoid_tags"] == ["violence"]
     assert "violence" not in (enums["clip_tags"][want[0]] or [])
-    assert "Notes to avoid: violence." in card.text and "not a full review" in card.text and not NOT_FREE.search(card.text)
+    assert ("Notes to avoid: violence. The chosen story's card lists none of them. Not a full review; listen before you use a story."
+            in card.text.split("\n")) and not NOT_FREE.search(card.text)
 
 
 def test_a_clip_with_an_avoided_tag_gets_one_reprompt_then_the_rule_made_decline():
@@ -221,7 +222,8 @@ def test_a_clip_with_an_avoided_tag_gets_one_reprompt_then_the_rule_made_decline
     assert sent["rejected"] == ["clip_has_avoided_tag"]
     near = P.passing_clips(enums, ["violence"])[0]
     assert card.text.startswith("Declined: the story chosen carries a note you asked to avoid. Nearest tested option: story: "
-                                + P.plain_id(near)) and "fixed rules" in card.text and not NOT_FREE.search(card.text)
+                                + P.plain_id(near) + ". Its story card lists none of the notes you asked to avoid. Not a full review; "
+                                "listen before you use a story. ") and "fixed rules" in card.text and not NOT_FREE.search(card.text)
     ok = Fake(bad, {"content": spec(clip_id=near, avoid_tags=["violence"])})                # the re-prompt fixes it
     card = P.plan(Q, "spark-1.3", ok)
     assert card.route["kind"] == "live" and card.route["clip_id"] == near and not card.declined
@@ -250,4 +252,5 @@ def test_recorded_avoid_tags_run():
     assert d["label"] == "demo, not scored" and d["badge"] == P.BADGE and r["backend"] == "spark-1.3"
     assert r["spec"]["avoid_tags"] and r["route"]["kind"] == "live" and len(r["calls"]) == 1
     assert P.passes(r["route"]["clip_id"], r["route"]["avoid_tags"], P.clip_tags())        # still true on today's menu
-    assert not BANNED.search(r["card"]) and not NOT_FREE.search(r["card"]) and "not a full review" in r["card"]
+    assert not BANNED.search(r["card"]) and not NOT_FREE.search(r["card"]) and P.AVOID_LINE in r["card"]
+    assert r["card"] == P.card_text(r["spec"], r["route"], P.run_stations(r["route"]), P.load_enums())     # today's wording, same plan

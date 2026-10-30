@@ -60,7 +60,7 @@
    "seed": null,
    "stimulus": "librivox_audiobook"
   },
-  "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: The Diamond Necklace, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nNotes to avoid: violence. The chosen story's card lists none of them; the card is not a full review.\nBuild: pending.\nCheck: pending.\nForecast: pending.",
+  "card": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: The Diamond Necklace, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nNotes to avoid: violence. The chosen story's card lists none of them. Not a full review; listen before you use a story.\nBuild: pending.\nCheck: pending.\nForecast: pending.",
   "trace": [
    "plan:ok",
    "route:live"
@@ -73,6 +73,8 @@
     "tools_offered": false
    }
   ],
-  "cost_usd": 0.00504
- }
+  "cost_usd": 0.00504,
+  "card_as_recorded": "Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network; analysis: stock TRIBE v2 forecast.\nLive run: The Diamond Necklace, intact against sentences shuffled, seed 20261028 (no seed named, so the default seed is used).\nNotes to avoid: violence. The chosen story's card lists none of them; the card is not a full review.\nBuild: pending.\nCheck: pending.\nForecast: pending."
+ },
+ "card_note": "card rebuilt by the planner's own card_text from the recorded spec and route on Oct 30 after the avoid line moved to the story rule's words (cloud approval 04:20 UTC); no new model call; the card as first recorded is in run.card_as_recorded"
 }

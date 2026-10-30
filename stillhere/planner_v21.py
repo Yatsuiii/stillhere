@@ -37,6 +37,8 @@ FIELDS = ("population", "language", "stimulus", "analysis", "brain_areas", "cond
           "avoid_tags")
 TAG_WORDS = {i: t for t, i in TAG_IDS.items()}
 AVOID_REASONS = ("clip_has_avoided_tag", "no_story_without_avoided_notes")    # code-made declines; never in the model's schema
+NOT_FULL_REVIEW = "Not a full review; listen before you use a story."             # docs/rules/story_menu_rule.md section 6, its words
+AVOID_LINE = "The chosen story's card lists none of them. " + NOT_FULL_REVIEW     # approved by the cloud, Oct 30 04:20 UTC
 SEED_MAX = 2 ** 31 - 1
 STATIONS = ("build", "check", "forecast")
 MODELS = v2.MODELS
@@ -77,7 +79,7 @@ def plain_id(i) -> str:
 def nearest_words(reason: str, enums: dict, avoid=()) -> str:
     if reason in AVOID_REASONS:                                   # from code: the first live clip whose card lists none of the notes
         ok = passing_clips(enums, avoid)
-        return (f"story: {plain_id(ok[0])} (its story card lists none of the notes you asked to avoid; the card is not a full review)"
+        return (f"story: {plain_id(ok[0])}. Its story card lists none of the notes you asked to avoid. {NOT_FULL_REVIEW.rstrip('.')}"
                 if ok else "story: none offered")
     axis, _, opt = v2.nearest_option(reason, enums).partition(" ")
     return f"{AXIS_WORDS.get(axis, axis)}: {plain_id(opt) if opt and not opt.startswith('(') else 'none offered'}"
@@ -256,8 +258,7 @@ def card_text(spec: dict, rt: dict, stations: list, enums: dict) -> str:
     lines.append(f"Live run: {plain_id(rt['clip_id'])}, intact against {plain_id(rt['condition'])}, seed {rt['seed']}"
                  + (f" ({'; '.join(said[d] for d in rt['defaults'])})" if rt["defaults"] else "") + ".")
     if avoid:
-        lines.append(f"Notes to avoid: {', '.join(plain_id(t) for t in avoid)}. The chosen story's card lists none of them; the card is "
-                     f"not a full review.")
+        lines.append(f"Notes to avoid: {', '.join(plain_id(t) for t in avoid)}. {AVOID_LINE}")
     for s in stations:
         o = s["output"]
         if o.get("status") in ("pending", "refused"):
