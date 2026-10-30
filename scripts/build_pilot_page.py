@@ -47,7 +47,7 @@ BACKENDS = {"spark-1.3": "Muse Spark 1.3 (Meta Model API), the default planner",
 COND_NAMES = {"intact": "Intact story", "sentence_scramble": "Sentence scramble", "word_scramble": "Word scramble", "reversed": "Reversed"}
 VERSION_NAMES = {"intact": "Intact", "faces_removed": "Faces filled", "area_matched": "Same-size control"}
 # Dark lab palette. Gray is the forecast; colour (ACCENT, amber) is real listeners or viewers and nothing else (display_rule_ghostline).
-INK, MUTED, ACCENT, PASS, FAIL, WAIT = "#ece9e2", "#b4b0a8", "#e8a33d", "#9fcfab", "#e39286", "#d9be7c"
+INK, MUTED, ACCENT, PASS, FAIL, WAIT = "#ece9e2", "#b4b0a8", "#e8a33d", "#9fcfab", "#e39286", "#cfc9bd"   # WAIT: no amber
 BG, PANEL, LINE, DIM = "#1d1d1d", "#232323", "#3a3835", "#8c8881"
 SERIF, MONO = '"Noto Serif",Georgia,"Times New Roman",serif', '"Noto Sans Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace'
 CSS = f"""
@@ -69,7 +69,7 @@ padding:3px 10px}} nav a:hover{{color:{INK};border-color:{INK}}}
 .badge{{display:inline-block;font:500 .64rem {MONO};letter-spacing:.16em;text-transform:uppercase;border:1px solid currentColor;padding:2px 8px;
 margin-right:8px;vertical-align:2px}}
 .b-pass{{color:{PASS}}} .b-fail{{color:{FAIL}}} .b-wait{{color:{WAIT}}} .b-info{{color:{MUTED}}}
-.pending{{border:1px dashed #5d574b;background:#211f1b}}
+.pending{{border:1px dashed #5a5650;background:#202020}}
 .big{{font-size:1.42rem;font-weight:400;color:#f6f3ec;line-height:1.38}}
 .beat{{font-size:.9rem;color:{MUTED};border-left:1px solid {LINE};padding-left:12px}}
 .picker{{display:flex;flex-direction:column;gap:8px}} .picker input{{position:absolute;opacity:0;pointer-events:none}}

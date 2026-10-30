@@ -51,7 +51,7 @@ background:#232323;text-align:left;padding:10px 14px}
 .lane b{font-weight:400;color:#8c8881;font-size:.75rem}
 .endscreen{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:760px){.endscreen{grid-template-columns:1fr 1fr}}
-.recorded{border-left:1px solid #d9be7c;padding-left:12px}
+.recorded{border-left:1px solid #8c8881;padding-left:12px}
 .frames3 img{border:1px solid #3a3835}
 .story{background:#181818;padding:9px 11px;margin:8px 0}
 .failed{color:#6f6b64;font-size:.85rem}

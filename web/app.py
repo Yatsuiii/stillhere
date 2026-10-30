@@ -22,6 +22,7 @@ if os.environ.get("VERCEL"):                               # only /tmp is writab
 from web import guard, jobs, ledger, stations  # noqa: E402
 
 PUBLIC = REPO / "web/public"
+mimetypes.add_type("font/woff2", ".woff2")                     # not in every runtime's table (Vercel's sends octet-stream)
 MEDIA = {"/media/old_bug.wav": REPO / stations.OLD_BUG["audio"]}
 MAX_BODY = 8192
 ROUTES = []
