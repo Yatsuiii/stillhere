@@ -170,6 +170,10 @@ included: `results/story_wall.json`, `results/face_map.json`, `results/emofilm_f
    window: each must load. `tests/test_pilot_page.py` checks that every repository path the page links to exists at HEAD.
 3. Then list the URL: the README (its "Try it" line), the submission, the video's end card, and the repository's About website
    (`gh repo edit Yatsuiii/stillhere --homepage <url>`; the description and topics were set Oct 30).
+4. The README's first-click links, in the badge row right after the tests badge: a "live demo" badge to the URL and a "video"
+   badge to the uploaded video (add the video badge once it is uploaded). Judges landing on the repository click these first.
+5. A picture of the page running at "A worked example": a screenshot (or a short GIF) of the stations from the production page,
+   made after Sunday's filmed run; listed in `docs/BINARY_PROVENANCE.md`. Its caption is new wording: send it for review.
 
 ## What can block a deploy
 
