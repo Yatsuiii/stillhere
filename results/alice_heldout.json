@@ -1,0 +1,604 @@
+{
+ "label": "exploratory",
+ "rule": "docs/rules/alice_heldout_rule.md",
+ "dataset": "OpenNeuro ds002322 v1.0.4 (CC0)",
+ "listeners": {
+  "18": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.657,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "22": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.427,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "23": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.282,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "24": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.802,
+   "stim_file": "wonderland_ch_01.mp3",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "26": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.837,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "28": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.665,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "30": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.291,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "31": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.255,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "35": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.802,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "36": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.348,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "37": {
+   "protocol": "single-echo, 44 slices",
+   "onset_s": 0.661,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "39": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.0166,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "41": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.0139,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "42": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.0033,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "43": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.0176,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "44": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.0068,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "45": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.0107,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "47": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.0123,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "48": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.017,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "49": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.0103,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "50": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.0036,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  },
+  "51": {
+   "protocol": "three-echo (echo 2), 33 slices",
+   "onset_s": 0.0047,
+   "stim_file": "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav",
+   "volumes": 372,
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0
+   },
+   "language": true,
+   "hearing": true
+  }
+ },
+ "no_derivative": [
+  "38",
+  "46",
+  "52"
+ ],
+ "excluded": {
+  "sub-53": "its published derivative fails the gzip CRC check, and our MD5 matches the checksum OpenNeuro's storage reports, so the damage is at the source; from inside derivative volume 11, every later volume is displaced by 300 voxels, and no repair can be verified (rule section 2, amended by the cloud ruling of Oct 30, 19:40 UTC)"
+ },
+ "tree_baselines": "parse from the dataset's annotations, not LPP's",
+ "stim_file_note": {
+  "24": "wonderland_ch_01.mp3"
+ },
+ "not_run": "section 8's M2 (hybrid) and M3 (wrong story): they need a second story's listener group and are not part of the claim",
+ "inputs_sha256": {
+  "stimulus": "bb8003578d0667cd45fbce932c45dcfa3abee4be40da98c0a83dea80516aeefe",
+  "annotations": "6e25b0d85a1457a75c608f2a298dbef97172f83270eb35a82b43c92229d0e46c",
+  "pred_full": "0a47d825a521f643fc5b298942fde7049679b070381bc97330ffd11a25d30ae3",
+  "pred_audio": "d747d74f16231b249e1288da14f48ed0b57e434bd356edfb2836cdc7f166859b",
+  "pred_shuf": "7c4ba627bc0b6d801e263fa17d887f18a4028dec84fbec9850c750a4d66f41bf"
+ },
+ "parcels_kept": {
+  "AUD": "7 of 7",
+  "LANG": "19 of 19"
+ },
+ "volunteer_equivalent_language": {
+  "z": 0.14647025577172734,
+  "ci95": [
+   0.08120746344615325,
+   0.2143667507331475
+  ],
+  "point_k": 0.0,
+  "lower_k": 0.0,
+  "claim_k": 0
+ },
+ "stage": {
+  "145_primary": {
+   "L": -1.25,
+   "volumes": [
+    10,
+    154
+   ],
+   "n": 22,
+   "n_hearing": 22,
+   "hearing": {
+    "z": -5.947443719127273,
+    "detect_pct": 0.0
+   },
+   "envelope": {
+    "z": -1.7158666860436016,
+    "detect_pct": 0.0,
+    "p_tribe_gt_envelope": 1.0
+   },
+   "language": {
+    "z": 0.14647025577172734,
+    "detect_pct": 0.0,
+    "p": 0.00034689903259277344,
+    "pass": false
+   },
+   "shuffled": {
+    "z": 0.8285223359550824,
+    "p_real_gt_shuffled": 1.0,
+    "pass": false
+   },
+   "baselines": {
+    "B_freq": 0.3210019153310068,
+    "B_bu": -0.17844758123533902,
+    "B_td": 0.874780620499116,
+    "surprisal": -0.3410554933030012
+   },
+   "best_baseline": "B_td",
+   "p_tribe_gt_best": 1.0,
+   "tribe_beats_best": false
+  },
+  "145_own_lag": {
+   "L": 1.0,
+   "volumes": [
+    10,
+    154
+   ],
+   "n": 22,
+   "n_hearing": 22,
+   "hearing": {
+    "z": -5.947443719127273,
+    "detect_pct": 0.0
+   },
+   "envelope": {
+    "z": 0.43978037037533757,
+    "detect_pct": 0.0,
+    "p_tribe_gt_envelope": 1.0
+   },
+   "language": {
+    "z": 0.14089534410575058,
+    "detect_pct": 0.0,
+    "p": 0.00034689903259277344,
+    "pass": false
+   },
+   "shuffled": {
+    "z": 0.9242185656043074,
+    "p_real_gt_shuffled": 1.0,
+    "pass": false
+   },
+   "baselines": {
+    "B_freq": 0.5253993522715251,
+    "B_bu": 0.4986127445751348,
+    "B_td": 0.7894543325109751,
+    "surprisal": 0.6999486529547636
+   },
+   "best_baseline": "B_td",
+   "p_tribe_gt_best": 1.0,
+   "tribe_beats_best": false
+  },
+  "full_primary": {
+   "L": -1.25,
+   "volumes": [
+    10,
+    374
+   ],
+   "n": 22,
+   "n_hearing": 22,
+   "hearing": {
+    "z": -5.044902255311664,
+    "detect_pct": 0.0
+   },
+   "envelope": {
+    "z": -1.6923985970378894,
+    "detect_pct": 0.0,
+    "p_tribe_gt_envelope": 1.0
+   },
+   "language": {
+    "z": 0.10674696685352832,
+    "detect_pct": 0.0,
+    "p": 0.025036334991455078,
+    "pass": false
+   },
+   "shuffled": {
+    "z": 0.8390001103941686,
+    "p_real_gt_shuffled": 1.0,
+    "pass": false
+   },
+   "baselines": {
+    "B_freq": 0.4684806214527304,
+    "B_bu": 0.36916521364495336,
+    "B_td": 1.1092687499342848,
+    "surprisal": -0.583747331110493
+   },
+   "best_baseline": "B_td",
+   "p_tribe_gt_best": 1.0,
+   "tribe_beats_best": false
+  },
+  "full_own_lag": {
+   "L": 1.0,
+   "volumes": [
+    10,
+    374
+   ],
+   "n": 22,
+   "n_hearing": 22,
+   "hearing": {
+    "z": -5.044902255311664,
+    "detect_pct": 0.0
+   },
+   "envelope": {
+    "z": 0.4072711378569748,
+    "detect_pct": 0.0,
+    "p_tribe_gt_envelope": 1.0
+   },
+   "language": {
+    "z": -0.0010553014725845633,
+    "detect_pct": 0.0,
+    "p": 0.5253651142120361,
+    "pass": false
+   },
+   "shuffled": {
+    "z": 0.9840446719804848,
+    "p_real_gt_shuffled": 1.0,
+    "pass": false
+   },
+   "baselines": {
+    "B_freq": 0.08669626335789506,
+    "B_bu": 0.8110264985856911,
+    "B_td": 0.9926692664506924,
+    "surprisal": 0.5917238620282235
+   },
+   "best_baseline": "B_td",
+   "p_tribe_gt_best": 1.0,
+   "tribe_beats_best": false
+  }
+ },
+ "cheap_baselines": {
+  "145": {
+   "LANG": {
+    "mean_z": {
+     "tribe": -0.07519555162405034,
+     "word_rate": -0.32869083087648926,
+     "envelope": -1.6986569706720678
+    },
+    "tribe_vs": {
+     "word_rate": {
+      "n": 22,
+      "k_tribe_higher": 16,
+      "hl": 0.27010649757149885,
+      "hl_ci95": [
+       0.08402915486981974,
+       0.48102865536759065
+      ],
+      "p_two_sided": 0.009274482727050781,
+      "verdict": "TRIBE beats"
+     },
+     "envelope": {
+      "n": 22,
+      "k_tribe_higher": 22,
+      "hl": 1.6570852283587838,
+      "hl_ci95": [
+       1.492681101282725,
+       1.8051586204484042
+      ],
+      "p_two_sided": 4.76837158203125e-07,
+      "verdict": "TRIBE beats"
+     }
+    }
+   },
+   "AUD": {
+    "mean_z": {
+     "tribe": -5.947443719127273,
+     "word_rate": -0.3617848920218765,
+     "envelope": -1.7158666860436016
+    },
+    "tribe_vs": {
+     "word_rate": {
+      "n": 22,
+      "k_tribe_higher": 0,
+      "hl": -5.563121199555239,
+      "hl_ci95": [
+       -5.871949001444313,
+       -5.338577943994946
+      ],
+      "p_two_sided": 4.76837158203125e-07,
+      "verdict": "baseline beats"
+     },
+     "envelope": {
+      "n": 22,
+      "k_tribe_higher": 0,
+      "hl": -4.230342994811233,
+      "hl_ci95": [
+       -4.539054590334188,
+       -3.9637528983179364
+      ],
+      "p_two_sided": 4.76837158203125e-07,
+      "verdict": "baseline beats"
+     }
+    }
+   }
+  },
+  "full": {
+   "LANG": {
+    "mean_z": {
+     "tribe": -0.08593937396926327,
+     "word_rate": -0.3038492518396456,
+     "envelope": -1.7394143751400366
+    },
+    "tribe_vs": {
+     "word_rate": {
+      "n": 22,
+      "k_tribe_higher": 14,
+      "hl": 0.2247611791624307,
+      "hl_ci95": [
+       0.06933430842967311,
+       0.36804329989434187
+      ],
+      "p_two_sided": 0.010324478149414062,
+      "verdict": "TRIBE beats"
+     },
+     "envelope": {
+      "n": 22,
+      "k_tribe_higher": 22,
+      "hl": 1.6727700512299508,
+      "hl_ci95": [
+       1.5258312309614102,
+       1.7989675355419197
+      ],
+      "p_two_sided": 4.76837158203125e-07,
+      "verdict": "TRIBE beats"
+     }
+    }
+   },
+   "AUD": {
+    "mean_z": {
+     "tribe": -5.044902255311664,
+     "word_rate": -0.2960842414805614,
+     "envelope": -1.6923985970378894
+    },
+    "tribe_vs": {
+     "word_rate": {
+      "n": 22,
+      "k_tribe_higher": 0,
+      "hl": -4.757941390352884,
+      "hl_ci95": [
+       -5.018254798665189,
+       -4.506007256079325
+      ],
+      "p_two_sided": 4.76837158203125e-07,
+      "verdict": "baseline beats"
+     },
+     "envelope": {
+      "n": 22,
+      "k_tribe_higher": 0,
+      "hl": -3.3610416819293607,
+      "hl_ci95": [
+       -3.584377636649137,
+       -3.119307767908958
+      ],
+      "p_two_sided": 4.76837158203125e-07,
+      "verdict": "baseline beats"
+     }
+    }
+   }
+  }
+ },
+ "m1_language_curve": {
+  "1": 57.20917002339445,
+  "2": 61.12848057469153,
+  "3": 62.87391926216856,
+  "4": 63.76464972298367,
+  "6": 64.75060890012594,
+  "8": 65.33536448159047,
+  "12": 65.97799664953787,
+  "15": 66.1733582094755,
+  "21": 66.44048514245175
+ },
+ "lines": [
+  "On a different public audiobook, outside TRIBE v2's training and evaluation sets (the Alice Datasets, 22 listeners), the forecast tracked the listeners' language areas (z 0.15, p = 0.00035), but at its lower bound it was worth less than one real volunteer (about 0 at the point estimate).",
+  "What it had to beat: word rate and the sound envelope (beaten in 4 of 8 comparisons)."
+ ]
+}
