@@ -19,3 +19,5 @@ showed its frozen group statistics, were retired on Oct 29 and are in history on
 | `web/film/{bridge_t032.5,f1237,f2453}.jpg` | 0.2 MB each | Tears of Steel (Blender Foundation, CC BY 3.0): intact frames of the edit check's frame set (1280x534 release frames), the hosted page's FILM station |
 | `web/film/{bridge_t032.5,f1237,f2453}_cut.mp4` | 20 KB each | the same frames as one-frame H.264 clips at the bridge cut's 640x360 letterbox, by ffmpeg, for SAM 3.1 (SHA-256 on `stillhere/public_frame_allowlist.txt`) |
 | `web/replay/film.json` | 0.5 MB | one recorded FILM run (SAM 3.1 masks of "face" on those frames, filled; JPEG data inside), by `web/record_replays.py` |
+| `docs/assets/stillhere-hero.png` | 0.4 MB | `scripts/build_readme_art.py`: panel A, the menu's two brain areas (as `stillhere/heldout.py` `parcel_sets` defines them, Schaefer-400 annotation) on nilearn's bundled fsaverage5 pial surface, no data values; panel B, the LPP ghost line from `results/ghostline_lpp_s8.json` under `docs/rules/display_rule_ghostline.md` |
+| `docs/assets/stillhere-architecture.png` | 0.6 MB | `scripts/build_readme_art.py`: drawn shapes and the submission's wording only |

@@ -8,7 +8,7 @@ ends on the gray forecast line alone, with the clip's own end line from `stillhe
 scan of this clip. Forecast, not a scan." for a clip no public dataset played, else for example "A public scan of this chapter exists
 (Alice Datasets, OpenNeuro ds002322); not compared here. Forecast, not a scan."
 
-Nothing is deployed. Deploying, the accounts and the keys are Yatsu's steps (below).
+Deployed on Vercel (`docs/deploy_checklist.md`); its address is listed from Nov 3. The accounts and the keys are Yatsu's steps (below).
 
 ## Run it locally (no account)
 
