@@ -447,7 +447,7 @@
   },
   {
    "path": "d22/picker_pred/saturday_chain.sh",
-   "sha256": "b345ca9634f14b4ffc1d44b6bca28b79519c2f3180d967021e3f70275f4bc140",
+   "sha256": "bbe2563408e2512cf143baab07d36c85f54de6138ebcee6e93ae03454702b102",
    "role": "runner",
    "implements": [
     "§9",
@@ -466,6 +466,10 @@
     {
      "old_sha256": "b2d9ed0f62df503b5c24c71df6ffb2cf99440bf219084d7843739369ae79a811",
      "why": "ruling of Oct 29 06:50 UTC: gate 0 runs on CPU right after the intact film forecast; film-rem and film-am are pushed only if it passes, then face_map_runner.py maps and results/face_map_RC.json is committed and pushed to the private repo; if the gate fails, face_map_runner.py not-run and results/face_map.json is committed and pushed instead; a forecast failure or a gate refusal publishes nothing and logs that a decision is needed"
+    },
+    {
+     "old_sha256": "b345ca9634f14b4ffc1d44b6bca28b79519c2f3180d967021e3f70275f4bc140",
+     "why": "ruling of Oct 30 10:20 UTC, waiting only: a pushed kernel whose status cannot be read for 15 min is logged \"push failed\", and every wait ends at the earlier of Kaggle's 12 h session limit + 30 min after the push and Sun Nov 1 18:00 UTC (\"timed out\"); both take the failed-run path, and no output is fetched after either; step 4 asks whether 42/42 was verified before the cutoff, so a face-test or Glimmer timeout never blocks scoring or writes PICKER_NOT_RUN.txt. No input, order, bar, output or file name changed. Dry test (test_saturday_chain.py sha256 a78adb2a921f...): A to N pass"
     }
    ]
   },
