@@ -11,8 +11,9 @@ script) that walks one demo study through StillHere, with wording from docs/capt
   5. The laptop TRIBE forecast for the story study's two versions (results/demo_live_tribe_conditions.json, with the first live run
      in results/live_tribe_librivox.json): a forecast, not checked against scans.
   6. Did the forecasts hold up? LPP section 8 (results/section8.json) with its "what it had to beat" row (results/
-     section8_baselines.json); slots for the story wall (results/story_wall.json), notthefall (results/d20_notthefall.json) and the film
-     (results/face_map.json, results/emofilm_film_score.json). A missing file is a labelled pending slot.
+     section8_baselines.json); the Alice Datasets (results/alice_heldout.json; no file, no panel); slots for the story wall
+     (results/story_wall.json), notthefall (results/d20_notthefall.json) and the film (results/face_map.json,
+     results/emofilm_film_score.json). A missing file is a labelled pending slot.
   The sedation case study is one link to docs/writeup_sedation.md. Stored card wording is shown in plain words (DISPLAY). Media come from demo/media/ (scripts/build_pilot_media.py, built once).
 Standard library only, so a clean clone builds it. The build refuses banned wording.
 usage: python scripts/build_pilot_page.py [--single OUT.html]   (--single also writes a copy with the media inlined, for hosting)"""
@@ -455,6 +456,26 @@ def lpp_html(s8: dict, b: dict, ghost: dict = None) -> str:
                  '<code>results/section8.json</code>, <code>results/section8_baselines.json</code>.</p>')
 
 
+ALICE = ("results/alice_heldout.json", "results/alice_heldout_first_run.json")
+ALICE_CITE = "Bhattasali, Brennan, Luh, Franzluebbers and Hale, LREC 2020, CC0, DOI 10.18112/openneuro.ds002322.v1.0.4."
+
+
+def alice_html(d) -> str:
+    """The Alice Datasets panel (docs/rules/alice_heldout_rule.md; cloud ruling of Oct 30, 21:05 UTC): the rule's two lines from the
+    results file, byte for byte (text nodes escape &, < and > only), then the numbers; no dots and no chart. No file, no panel."""
+    if not d:
+        return ""
+    ve, n = d["volunteer_equivalent_language"], d["stage"]["145_primary"]["n"]
+    lower = f'{ve["lower_k"]:.2f}'.rstrip("0").rstrip(".")
+    small = (f'Volunteer-equivalent {ve["point_k"]:.1f}, lower bound {lower}, {n} listeners. The rule was committed before the brain data '
+             'was downloaded; the volume mapping was corrected after a first run, and both runs are in the repository. One listener\'s '
+             f'published file is corrupt at the source and is excluded. {ALICE_CITE}')
+    return panel(f'<h3>{badge("info", "exploratory")}The Alice Datasets, chapter 1</h3>'
+                 f'<p class="big">{E(d["lines"][0], quote=False)}</p><p>{E(d["lines"][1], quote=False)}</p>'
+                 f'<p class="small">{E(small)}</p>'
+                 f'<p class="small"><code>{ALICE[0]}</code>, <code>{ALICE[1]}</code>.</p>')
+
+
 WALL_CUTOFF_UTC = datetime.datetime(2026, 11, 1, 18, 0, tzinfo=datetime.timezone.utc)   # saturday_chain.sh: 42/42 predictions by then
 WALL_NOT_RUN = "pre-registered, not run (GPU time ran out); no partial scoring"        # the chain's frozen not-run wording
 
@@ -661,6 +682,7 @@ def build(inline: bool = False) -> str:
     P.append('<h2 id="held">6. Did the forecasts hold up?</h2><p class="muted">Each forecast against real scans it never saw. Results land one '
              'at a time; a slot without its file says so.</p>')
     P.append(lpp_html(load("results/section8.json"), load("results/section8_baselines.json"), load("results/ghostline_lpp_s8.json")))
+    P.append(alice_html(load(ALICE[0])))
     P.append(wall_html(sl["story_wall"]) + d20_html(sl["d20"])
              + film_result_html(sl["face_map"], sl["film_score"], load("results/ghostline_film.json")))
     P.append(f'<p class="small" id="sedation">Sedation case study (not in the video): <a href="{SEDATION_URL}">the write-up, '

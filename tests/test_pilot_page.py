@@ -76,7 +76,7 @@ def test_no_banned_wording_em_dash_scripts_or_remote_resources():
 def test_results_panels_carry_the_footer_and_film_frames_the_credit():
     results = PAGE[PAGE.index('id="check"'):PAGE.index("<footer")]
     ps = panels(results)
-    assert len(ps) == 8                                                               # check, film, Glimmer, forecast, LPP, wall, D20, film
+    assert len(ps) == 9                                                               # check, film, Glimmer, forecast, LPP, Alice, wall, D20, film
     for p in ps:
         assert p.rstrip().endswith(f'<p class="nd">{html.escape(BP.ND)}</p></div>'), re.sub(r"<[^>]+>", " ", p)[:120]
     for p in panels(PAGE):
@@ -333,3 +333,17 @@ def test_film_station_says_why_and_reads_the_face_test_slot():
     assert BP.film_status({"outcome": "NOT RUN", "why": "gate 0 failed"}) == {
         "text": "The face test did not run: gate 0 failed. This station shows the edit it would have used.", "href": None}
     assert 'id="face-test"' in BP.film_result_html({"outcome": "NOT RUN", "why": "gate 0 failed"}, None)
+
+
+def test_alice_panel_carries_both_lines_byte_for_byte(monkeypatch):
+    """Cloud ruling of Oct 30, 21:05 UTC: right after section 8; the results file's two lines exactly; no dots and no chart; no file,
+    no panel."""
+    d = json.loads((REPO / BP.ALICE[0]).read_text())
+    ps = [p for p in panels(PAGE) if "The Alice Datasets, chapter 1" in p]
+    assert len(ps) == 1 and d["lines"][0] in ps[0] and d["lines"][1] in ps[0]
+    assert PAGE.index("Le Petit Prince, section 8</h3>") < PAGE.index("The Alice Datasets, chapter 1</h3>")
+    assert "<svg" not in ps[0] and "dots" not in ps[0] and "b-info" in ps[0] and ">exploratory<" in ps[0]
+    assert "Volunteer-equivalent 1.6, lower bound 0, 22 listeners." in text(ps[0]) and BP.ALICE[1] in ps[0]
+    real = BP.load
+    monkeypatch.setattr(BP, "load", lambda rel: None if rel == BP.ALICE[0] else real(rel))
+    assert "The Alice Datasets, chapter 1" not in BP.build()

@@ -667,3 +667,11 @@ def test_no_page_or_card_text_names_a_relative_day(web, monkeypatch):
     texts += [bp.film_status(fm)["text"] for fm in (None, {"outcome": "PASS"}, {"outcome": "NOT RUN", "why": "gate 0 failed"})]
     hits = sorted({m.group(0) for t in texts for m in RELATIVE_DAYS.finditer(t)})
     assert hits == []
+
+
+def test_evidence_carries_the_alice_panel_after_section8(web):
+    app, jobs, ledger, stations, store = web
+    d = json.loads((REPO / "results/alice_heldout.json").read_text())
+    h = stations.evidence()["html"]
+    assert d["lines"][0] in h and d["lines"][1] in h
+    assert h.index("Le Petit Prince, section 8</h3>") < h.index("The Alice Datasets, chapter 1</h3>")
