@@ -118,23 +118,47 @@ review; listen before you use a story.
 Not a diagnosis or medical advice. Exploratory unless pre-registered; reported as it came. Each table names the committed file its
 numbers come from.
 
+### Reading the results
+
+| Term | What it means |
+|---|---|
+| fMRI | a brain scan that tracks blood-oxygen changes, a slow stand-in for brain activity; one brain volume every second or two |
+| TRIBE v2 | Meta FAIR's model that forecasts the fMRI response of a healthy adult brain to a film, a sound or a story |
+| Held out | brain data the forecast was not tuned on |
+| Pre-registered | the test, its bar and its scoring code were committed before the brain data was read; scored once, pass or fail |
+| "Worth about 5 real volunteers" | the forecast predicted each listener about as well as averaging 5 other real listeners' scans |
+| p | how likely a difference at least this large would be if there were no real difference; our pre-registered bar is p < 0.05 |
+| HL | the typical size of the difference between the two versions, with its 95% interval |
+| Gray and colour | on every chart, gray dashed is TRIBE's forecast; colour is real people |
+
 ### Forecasts against real brains
 
-| Test | Data | Result | Status |
+| Test | In plain words | Numbers | Status |
 |---|---|---|---|
-| Held-out audiobook | Le Petit Prince, section 8 · 49 listeners | Worth about **5 real volunteers**, and at least 2 (volunteer-equivalent 5.0, lower bound 2.58); language result 1.76 z | Held out; first measured Oct 22-23 |
-| Intact vs sentence-shuffled | Narratives notthefall · 22 listeners | Language readout stronger intact: HL 0.0356 [95% CI 0.0125, 0.0588], p = 0.00516 | **Pass** · pre-registered (D20, words from D27) |
-| Intact vs the coarser scramble | the same story · 21 listeners | HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735; did not reach p < 0.05 | Fail · the pre-registered secondary, the result of record |
-| Story wall and story picker | Narratives and Le Petit Prince · 42 stories | Every story we scored stays on the wall, weak ones too | Pending · pre-registered (D19), scored once from Sat Oct 31 |
-| Film face test | Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read | Pending |
+| Held-out audiobook · Le Petit Prince, section 8 · 49 listeners | TRIBE's forecast predicted each listener's language-area response about as well as averaging **5 other real listeners' scans** (at least 2). | volunteer-equivalent 5.0, lower bound 2.58; language result 1.76 z | Held out <sup>1</sup> |
+| Intact vs sentence-shuffled · Narratives notthefall · 22 listeners | TRIBE's forecast matched real listeners' language areas more closely when the story was intact than when its sentences were shuffled. | HL 0.0356 [95% CI 0.0125, 0.0588], p = 0.00516 | **Pass** · pre-registered (D20, words from D27) <sup>2</sup> |
+| Intact vs the coarser scramble · the same story · 21 listeners | The same comparison against a coarser scramble did not pass. | HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735; did not reach p < 0.05 | Fail · the pre-registered secondary, the result of record |
+| Story wall and story picker · Narratives and Le Petit Prince · 42 stories | Every story we scored stays on the wall, weak ones too. | | Pending · pre-registered (D19), scored once from Sat Oct 31 <sup>3</sup> |
+| Film face test · Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read. | | Pending |
+
+<sup>1</sup> Held out; first measured Oct 22-23. LPP is one of TRIBE v2's own evaluation sets. TRIBE v2 was not trained on Le Petit
+Prince or Narratives; its authors used both as held-out test sets, scored on group averages (d'Ascoli et al. 2026, Table 1). Our tests
+score each listener. Emo-FilM is in neither list.<br>
+<sup>2</sup> PREREG D20: "With zero same-clip controls, stock TRIBE v2's language readout was stronger when the same healthy listeners
+heard a public story intact than when they heard its sentences shuffled (Narratives notthefall, 22 listeners, 9.1 minutes = 365 TRs
+per version; the order of their two runs is not public)." For notthefall, each version also had its own TRIBE forecast, so a pass does
+not separate a change in the listeners' brains from a change in TRIBE's forecast, and the run order is not public, so it cannot be
+separated from an order or repeat-listening effect.<br>
+<sup>3</sup> The story wall's scoring rule was committed Oct 28 (340b74b); 41 of the 42 stories were used before then, for development
+or to tune a second model.
 
 Files: `results/section8.json` · `results/d20_notthefall.json` · `results/story_wall.json` and `results/face_map.json` when they
-land. LPP is one of TRIBE v2's own evaluation sets. For notthefall, each version also had its own TRIBE forecast, so a pass does not
-separate a change in the listeners' brains from a change in TRIBE's forecast, and the run order is not public, so it cannot be
-separated from an order or repeat-listening effect. The story wall's scoring rule was committed Oct 28 (340b74b); 41 of the 42
-stories were used before then, for development or to tune a second model.
+land.
 
 ### Cheap baselines beside every result
+
+On the intact-vs-shuffled test, simple stand-ins (how fast the words come, how loud the sound is) did not show the effect; TRIBE did.
+Exploratory.
 
 Every predictor is scored the same way, so TRIBE is unpartialled here (exploratory; `docs/rules/cheap_baselines_rule.md`, committed
 Oct 28, before the notthefall BOLD was read). One-sided p per comparison:
@@ -151,6 +175,9 @@ language areas it beat a simple word-rate model in 43 of 49 listeners (explorato
 measured). Files: `results/d20_notthefall.json` · `results/section8_baselines.json`.
 
 ### Planner v2 on 62 held-out requests
+
+Asked 62 requests it had never seen, three times each, planner v2 wrongly accepted 3 of the 132 answers that should have been
+declines (2.3%), under the 5% bar set before the run.
 
 Bars set before the run (`docs/rules/planner_v2_eval_rule.md`); a missed bar is reported as missed.
 
@@ -176,6 +203,8 @@ In v0 our fixed rules did most of the declining (107 of 114 for Spark 1.3); in v
 `results/planner_v0_heldout.json` · `results/planner_v2_eval.json`.
 
 ### Stimulus check: Voice Transcribe reads every condition back
+
+Our first word-shuffled control kept only 16% of the story's words; Voice Transcribe caught it before it was used.
 
 LibriVox *Alice's Adventures in Wonderland*, chapter 1, 75 s, before anyone is scanned:
 
