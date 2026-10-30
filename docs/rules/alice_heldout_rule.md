@@ -5,7 +5,9 @@ time is the record. Everything below is fixed by this commit; a change is a new 
 step it changes runs. The second commit, still before any BOLD, added the forecasts' and the surprisal file's SHA-256, the forecast
 runner, and the SHA-256 of every cited file kept outside the repository (cloud ruling of Oct 30, 18:20 UTC). A third commit, after
 the download and before scoring, excludes sub-53 for a file corrupt at the source (section 2; cloud ruling of Oct 30, 19:40 UTC).
-The result is shown whatever it is, labelled exploratory.
+A fourth commit, after the first scoring run and before one corrected run, corrects the volume mapping (sections 2 and 4; cloud
+ruling of Oct 30, 20:20 UTC); the first run is kept, unchanged, in `results/alice_heldout_first_run.json`. The result is shown
+whatever it is, labelled exploratory.
 
 ## 1. What is tested
 
@@ -34,7 +36,8 @@ TRIBE v2 was trained on CNeuroMod, BoldMoments, Lebel2023 and Wen2017 and evalua
   is scored as hearing the stimulus below; the results file reports the mismatch.
 - BOLD: `derivatives/sub-XX/sub-XX_task-alice_bold_preprocessed.nii.gz` as published (SPM8: realigned, coregistered, smoothed 3 mm,
   normalised to MNI with the ICBM template, high-pass 1/128 Hz, first 10 volumes discarded). TR 2.0 s. No other preprocessing; section
-  8's cleaning applies on top, as it did for LPP.
+  8's cleaning applies on top, as it did for LPP. Amended Oct 30, 20:20 UTC: the dataset README's "first 10 volumes discarded" does
+  not hold for these files; derivative volume i is raw volume i (section 4).
 - Protocol, reported as a column, pooled, no extra analysis: single-echo EPI, 44 slices, TE 27 ms (11: sub-18 to sub-37); three-echo
   EPI, second echo, 33 slices, TE 27.5 ms (12: sub-39 to sub-53).
 
@@ -76,8 +79,14 @@ TRIBE v2 was trained on CNeuroMod, BoldMoments, Lebel2023 and Wen2017 and evalua
   only if every listener scored for its area has at least one covered vertex in it; a parcel's series is the mean over its covered
   vertices. Each listener's covered share per area, and the parcels kept, are reported.
 - Floor: if fewer than 10 listeners remain for LANGUAGE, nothing is scored and the result is "rule committed, not run (coverage)".
-- Indexing: derivative volume i is raw volume i + 10. Series are placed in raw-volume indexing (volumes 0 to 9 empty and never read),
-  so section 8's skip and windows are unchanged.
+- Indexing, amended by the cloud ruling of Oct 30, 20:20 UTC, after the first scoring run and before one corrected run: derivative
+  volume i is raw volume i. The dataset README's "first 10 volumes discarded" does not hold for these files: the raw runs have 374
+  volumes (single-echo) and 390 (three-echo), every derivative has 372, and the derivative's global signal matches the raw scan's at
+  offset 0 (r 0.99 for sub-18, 0.985 for sub-39; at most 0.24 at offsets 1 to 18). Scans were compared with scans only; no forecast
+  was involved. `heldout.clean` takes volumes 10 to 154 before cleaning (`stillhere/heldout.py:185`), so the start-of-run volume
+  enters no step, as in section 8; section 5's windows are unchanged, and volumes 0 to 9 are kept in the file but read by no step.
+  The first run used derivative volume i = raw volume i + 10, which put the forecast 20 s out of step with the scans and the
+  start-of-run volume inside the claim window; it is kept, unchanged, in `results/alice_heldout_first_run.json`.
 
 ## 5. Timing
 

@@ -41,7 +41,7 @@ PROTOCOL = {s: "single-echo, 44 slices" if int(s) <= 37 else "three-echo (echo 2
 STIM = "DownTheRabbitHoleFinal_mono_exp120_NR16_pad.wav"
 STIM_SHA = "bb8003578d0667cd45fbce932c45dcfa3abee4be40da98c0a83dea80516aeefe"
 ANN_SHA = "6e25b0d85a1457a75c608f2a298dbef97172f83270eb35a82b43c92229d0e46c"
-SKIP = 10                    # the dataset dropped raw volumes 0-9: derivative volume i is raw volume i + 10
+SKIP = 0                     # derivative volume i is raw volume i (rule section 4, amended Oct 30, 20:20 UTC)
 COVER, MIN_N = 0.90, 10      # an area counts for a listener only with >= 90% of its vertices covered; < 10 listeners: not scored
 DEV_LAG, M1_KS, M1_REPS, M1_SEED = -1.25, (1, 2, 3, 4, 6, 8, 12, 15), 20, 11
 TREE_LABEL = "parse from the dataset's annotations, not LPP's"

@@ -54,11 +54,10 @@ def close(a, b):
         assert a == b, (a, b)
 
 
-def test_derivative_volume_i_sits_at_raw_volume_i_plus_10():
+def test_derivative_volume_i_is_raw_volume_i():
     r = AH.to_raw({"LANG": np.arange(12, dtype=float).reshape(2, 6)})
-    assert r["LANG"].shape == (2, 16) and np.isnan(r["LANG"][:, :10]).all()
-    assert np.array_equal(r["LANG"][:, 10:], np.arange(12, dtype=float).reshape(2, 6))
-    assert AH.SKIP == H.J0 == 10                                           # the first kept volume is section 8's skip point
+    assert AH.SKIP == 0 and np.array_equal(r["LANG"], np.arange(12, dtype=float).reshape(2, 6))
+    assert H.J0 == 10                                                      # section 8's windows start at volume 10: volumes 0-9 enter no step
 
 
 def test_each_listener_is_shifted_by_its_own_onset():
