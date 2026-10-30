@@ -29,7 +29,7 @@ was worth **about 5 real volunteers, and at least 2** (49 listeners), and its pr
 Built during the Meta Global AI Developer Hackathon (building period Oct 27 to Nov 4, 2026): Indie developer track, theme Push the
 Frontier. MIT licence for our code; TRIBE v2 is CC BY-NC 4.0 and is not included.
 
-[The problem](#the-problem) · [Research question](#research-question) · [Who it's for](#who-its-for) ·
+[The problem](#the-problem) · [Who it's for](#who-its-for) ·
 [A worked example](#a-worked-example) · [What it does](#what-it-does) · [Results so far](#results-so-far) · [Key features](#key-features) ·
 [Architecture](#architecture) · [Meta models](#meta-models-and-the-job-of-each) · [Keeping our own rules](#keeping-our-own-rules) ·
 [Quickstart](#quickstart) · [Deployment](#deployment) · [Limitations](#limitations) · [Project layout](#project-layout) ·
@@ -50,22 +50,20 @@ stimulus, per language, at university scanner rates of $450-700 an hour (Michiga
 recruitment. So a new story, or the same story in a new language, starts with a scanner booking before anyone knows whether it will
 work.
 
+**Can a brain-response forecast give a lab its first healthy reference for a new story, before any volunteer is scanned, and how far
+can it be trusted?**
+
 **StillHere Pilot lets a lab pilot the story before booking the scanner.** A researcher types the study they want; Muse Spark 1.3
 turns it into a plan from a tested menu, or declines with the reason. StillHere builds the conditions, and Muse Voice Transcribe reads
 every one back before anyone is scanned. TRIBE v2 forecasts the brain response, live on a laptop. Gray is the forecast; colour is
 real listeners: on a held-out audiobook, the forecast was worth about 5 real volunteers, and at least 2.
 
-A first healthy reference for a new story, before any scans, and evidence for how far to trust it.
-
-## Research question
-
-**Can a brain-response forecast give a lab its first healthy reference for a new story, before any volunteer is scanned, and how far
-can it be trusted?**
-
 StillHere answers the second half with evidence, not a claim. Held-out forecasts are drawn against real public scans, beside cheap
 baselines. Pre-registered tests are scored once, by rules committed before their brain data was read, and misses stay on the page.
 So far: one held-out audiobook (about 5 real volunteers' worth, at least 2) and one pre-registered pass (Narratives notthefall); its
 pre-registered secondary did not pass. The story wall and the film face test are scored once, from Sat Oct 31.
+
+A first healthy reference for a new story, before any scans, and evidence for how far to trust it.
 
 ## Who it's for
 
