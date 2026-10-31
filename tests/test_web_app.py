@@ -47,6 +47,7 @@ def web(monkeypatch, tmp_path):
     store.get_store().set("visitor:" + "a" * 32, "1")                                # call()'s default cookie, as if a page issued it
     if hasattr(app, "TokenBucket"):                                                  # its own test sets the real one
         monkeypatch.setattr(app, "BUCKET", app.TokenBucket(10 ** 9, 1e-6))
+        monkeypatch.setattr(app, "GET_BUCKET", app.TokenBucket(10 ** 9, 1e-6))
     return app, jobs, ledger, stations, store
 
 
@@ -1891,3 +1892,24 @@ def test_the_worker_stays_online_through_a_job(web, monkeypatch):
         assert call(app, "POST", f"/api/worker/jobs/{j['id']}/{kind}", body, auth=W)[0] in (204, 409)
         assert jobs.worker_online() and S._exp["worker:last_seen"] == pytest.approx(clock[0] + jobs.JOB_EXPIRY_S), kind
     clock[0] += jobs.JOB_EXPIRY_S + 1; assert not jobs.worker_online()             # silent for the expiry: offline
+
+
+def test_receipt_and_job_polls_pass_their_own_bucket_before_the_store(web, monkeypatch):
+    """Item 5: GET /api/receipt/<id> and GET /api/forecast/<id> (no-store, so no CDN in front) pass a second per-address bucket
+    before any store command: 60 at once, then one a second; the 61st rapid GET is 429 with no store command, the page's 1.5 s poll
+    is never refused however long it runs, and another address is untouched."""
+    app, jobs, ledger, stations, store = web
+    now = [1000.0]
+    monkeypatch.setattr(app, "GET_BUCKET", app.TokenBucket(*app.GET_LIMIT, clock=lambda: now[0]))
+    assert app.GET_LIMIT == (60, 1.0)
+    sent = upstash(monkeypatch, store)
+    env = {"HTTP_X_REAL_IP": "203.0.113.98"}
+    ids = [f"{i:016x}" for i in range(61)]
+    codes = [call(app, "GET", ("/api/receipt/" if i % 2 else "/api/forecast/") + x, env=env)[0] for i, x in enumerate(ids[:60])]
+    before = len(sent)
+    assert set(codes) == {404} and before == 60
+    assert [call(app, "GET", p + ids[60], env=env)[0] for p in ("/api/receipt/", "/api/forecast/")] == [429, 429] and len(sent) == before
+    assert call(app, "GET", "/api/receipt/" + ids[60], env={"HTTP_X_REAL_IP": "198.51.100.98"})[0] == 404 and len(sent) == before + 1
+    for _ in range(400):                                                             # ten minutes of the page's poll, from the drained address
+        now[0] += 1.5; assert call(app, "GET", "/api/forecast/" + ids[0], env=env)[0] == 404
+    assert call(app, "GET", "/api/status", env=env)[0] == 200                        # status and the static files are not in it

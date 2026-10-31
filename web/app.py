@@ -58,6 +58,19 @@ class TokenBucket:
 POST_LIMIT = (20, 10.0)
 BUCKET = TokenBucket(*POST_LIMIT)
 LIMITED = {"/api/visitor", "/api/plan", "/api/audit", "/api/build", "/api/forecast", "/api/film"}   # the page's POSTs, not the worker's
+# The GETs that reach the store with no CDN in front (no-store): a receipt and a job's poll get their own bucket per address, 60 at
+# once, then one a second, above the page's 1.5 s poll, so a loop of random ids cannot spend the store's budget (cloud review of
+# Oct 31, 12:20 UTC, item 5)
+GET_LIMIT = (60, 1.0)
+GET_BUCKET = TokenBucket(*GET_LIMIT)
+POLLED = re.compile(r"/api/(?:receipt|forecast)/[0-9a-f]{16}")
+
+
+def bucket(req):
+    """The token bucket a page request passes before its route runs, so before any store command; None for the rest."""
+    if req.method == "POST" and req.path in LIMITED:
+        return BUCKET
+    return GET_BUCKET if req.method == "GET" and POLLED.fullmatch(req.path) else None
 
 
 def route(method: str, pattern: str, cache: str = None):
@@ -300,10 +313,9 @@ def app(env, start):
         for method, rx, fn, cache in ROUTES:
             m = rx.match(req.path)
             if m and req.method == method:
-                where = rx.pattern
+                where, b = rx.pattern, bucket(req)
                 code, body = (method == "POST" and refused_post(req)) or (
-                    (429, {"error": "slow_down"}) if method == "POST" and req.path in LIMITED and not BUCKET.take(ledger._address(req.ip))
-                    else fn(req, m))
+                    (429, {"error": "slow_down"}) if b and not b.take(ledger._address(req.ip)) else fn(req, m))
                 return respond(start, code, body, req=req, cache=cache)
         if req.path.startswith("/api/"):
             return respond(start, 404 if not any(rx.match(req.path) for _, rx, _, _ in ROUTES) else 405, {"error": "not_found"}, req=req)
