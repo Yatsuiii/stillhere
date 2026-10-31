@@ -52,6 +52,13 @@ are scored as in the stock run.
   chosen by any comparison with it.
 - The second commit pins the three forecasts' SHA-256 here and in `scripts/alice_finetuned.py` (`FORECAST_PINS`); the scorer
   refuses any other file and refuses to run before the pins exist.
+- Second commit, Oct 31, after the forecasts (made 10:47 UTC by `run_all_tuned.sh`, all three runs on the first try) and before
+  scoring. `alice/forecast/out_tuned/pred_alice_{full,audio,shuf}.npz`, each 744 by 20,484, finite, one row per second, 105 of 108
+  tensors changed from stock, eval mode, every sound and Llama feature read from the stock cache with the work folders unchanged;
+  correlation with the stock forecast of the same mode 0.870, 0.846 and 0.717. SHA-256: full
+  dbdf2ee7558f195d3d1488791d1ac3c5c0ebb4faee798357a170ff8d682a7194, audio
+  5593dd410b871671c8046e2af620d76333dfb02d408706ecaa4bf0cf8b24ec2e, shuffled
+  fdbfa5b03f27cbf34eaeb57f4864936b295c65a848a3781eab5b1e68745322ec.
 
 ## 4. Scoring: the stock rule's, unchanged
 

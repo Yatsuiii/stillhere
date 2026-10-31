@@ -26,7 +26,9 @@ MODEL = {"name": "fine-tuned TRIBE v2", "weights_sha256": "96923860eb47ee8e8f65e
          "frozen": "2026-10-26 (D3)"}
 PREFIX = "Fine-tuned TRIBE v2: "
 MODES = ("full", "audio", "shuf")
-FORECAST_PINS = None   # {mode: SHA-256}, set by the rule's second commit, after the forecasts and before scoring
+FORECAST_PINS = {"full": "dbdf2ee7558f195d3d1488791d1ac3c5c0ebb4faee798357a170ff8d682a7194",   # the rule's second commit, after the
+                 "audio": "5593dd410b871671c8046e2af620d76333dfb02d408706ecaa4bf0cf8b24ec2e",  # forecasts and before scoring
+                 "shuf": "fdbfa5b03f27cbf34eaeb57f4864936b295c65a848a3781eab5b1e68745322ec"}
 STOCK_PINS = {"full": "0a47d825a521f643fc5b298942fde7049679b070381bc97330ffd11a25d30ae3",     # docs/rules/alice_heldout_rule.md
               "audio": "d747d74f16231b249e1288da14f48ed0b57e434bd356edfb2836cdc7f166859b",    # section 3: the stock run's forecasts
               "shuf": "7c4ba627bc0b6d801e263fa17d887f18a4028dec84fbec9850c750a4d66f41bf"}
