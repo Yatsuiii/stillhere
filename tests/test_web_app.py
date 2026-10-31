@@ -2479,3 +2479,38 @@ def test_refused_tries_never_keep_a_leaked_waiting_count_alive(web, monkeypatch)
         clock[0] += 300; call(app, "POST", "/api/worker/claim", {}, auth=W)
         states.append(wait_forecast(ledger, stations, store, f"{100 + i:032x}", (1, 4, 7)[i])["state"])
     assert states == ["busy", "queued", "queued"], states                            # lapsed at 600 s, then counted as usual
+
+
+def test_a_job_a_failed_claim_strands_expires_after_twelve_minutes(web, monkeypatch):
+    """Second refuter item C: a claim whose LPOP answer is lost, or whose write of the running record fails, leaves the job off the
+    queue but "queued", and status() expired queued jobs only with the worker offline, so the page polled "Queued" for the record's
+    6 h. A queued job older than QUEUED_MAX_S (720 s) now expires whatever the worker's state, with the usual line, and its waiting
+    count is given back once."""
+    app, jobs, ledger, stations, store = web
+    clock = fake_clock(monkeypatch, store, jobs, ledger)
+
+    class Flaky(store.MemoryStore):
+        lose_pop = fail_running = False
+
+        def lpop(self, k):
+            v = super().lpop(k)
+            if self.lose_pop:
+                self.lose_pop = False; raise store.StoreError("ReadTimeout")         # popped, the answer lost
+            return v
+
+        def set(self, k, v, ttl=None, nx=False):
+            if self.fail_running and k.startswith("job:") and '"running"' in v:
+                self.fail_running = False; raise store.StoreError("ReadTimeout")
+            return super().set(k, v, ttl=ttl, nx=nx)
+    S = Flaky(); store.set_store(S); call(app, "POST", "/api/worker/claim", {}, auth=W)
+    a, b = (wait_forecast(ledger, stations, store, f"{i:032x}", s)["job_id"] for i, s in ((1, 2), (2, 3)))
+    S.lose_pop = True; assert call(app, "POST", "/api/worker/claim", {}, auth=W)[0] == 500
+    S.fail_running = True; assert call(app, "POST", "/api/worker/claim", {}, auth=W)[0] == 500
+    assert S.lrange("jobs:queue") == [] and jobs.QUEUED_MAX_S == 720
+    poll = lambda jid: J(call(app, "GET", f"/api/forecast/{jid}"))
+    clock[0] += 700; call(app, "POST", "/api/worker/claim", {}, auth=W)             # the worker online and idle throughout
+    assert [poll(a)["status"], poll(b)["status"]] == ["queued", "queued"]
+    clock[0] += 21; call(app, "POST", "/api/worker/claim", {}, auth=W)
+    got = [poll(a), poll(b)]
+    assert [g["status"] for g in got] == ["expired", "expired"] and {g["why"] for g in got} == {jobs.FAILED_LINE}
+    assert waiting_count(ledger, store) == 0

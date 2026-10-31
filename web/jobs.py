@@ -27,6 +27,9 @@ STATUSES = ("start", "end", "off")
 FAIL_CODES = ("timeout", "oom", "model_error", "bad_recipe", "cache_key_mismatch", "busy")
 MAX_POINTS = 60
 QUEUE_MAX = 6                                               # jobs waiting at most: about five minutes of the laptop's work
+QUEUED_MAX_S = 720                                          # a queued job this old expires even with the worker online: a claim whose
+                                                            # LPOP answer was lost, or whose running write failed, leaves it off the
+                                                            # queue but "queued" (second refuter's review of Oct 31, item C)
 ADDRESS_WAITING = 2                                         # of them, from one network address at most (fourth review, item 1)
 WAITING_TTL_S = 600                                         # an address's waiting count ends 10 minutes after its latest queued job
                                                             # (each queued job sets it again, a refused try never: the refuters' items
@@ -176,10 +179,10 @@ def status(job_id: str):
     s = get_store(); raw = s.get(f"job:{job_id}")
     if not raw:
         return None
-    j = json.loads(raw)
+    j = json.loads(raw); age = time.time() - j.get("created_t", 0)
     stale = (j["status"] == "running" and time.time() - j["claimed_t"] > JOB_EXPIRY_S) or \
-        (j["status"] == "queued" and not worker_online() and time.time() - j.get("created_t", 0) > JOB_EXPIRY_S)
-    if stale:                                              # a running job past its time, or a queued one with no worker online
+        (j["status"] == "queued" and (age > QUEUED_MAX_S or (age > JOB_EXPIRY_S and not worker_online())))
+    if stale:                                              # a running job past its time, or a queued one with no worker online or stranded
         was = j["status"]; j["status"] = "expired"; s.set(f"job:{job_id}", json.dumps(j), ttl=6 * 3600)
         if was == "queued":
             _unwait(j.get("addr"), job_id)

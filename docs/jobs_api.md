@@ -83,7 +83,8 @@ the result (`upload` is the server's side).
 
 - A claimed job with no result `JOB_EXPIRY_S` = 120 s after its claim is `expired` (measured on the 4050 with a warm engine: reversed
   about 39 s, intact or scrambled 47 to 56 s; the audio lane runs on CPU while Llama 3.2 stays on the GPU). A queued job also expires
-  after `JOB_EXPIRY_S` when no worker is online.
+  after `JOB_EXPIRY_S` when no worker is online, and after 720 s (`QUEUED_MAX_S`) whatever the worker's state, so a job a failed claim
+  left off the queue still ends (second refuter's review of Oct 31, item C).
 - Every fallback (offline, failed, expired) is the saved run for that clip and condition at seed 20261028, labelled "Cached forecast,
   computed <UTC>"; when the visitor asked for another seed it adds "No saved run for seed {seed}; shown: the saved run at seed 20261028."
 - Results are kept by `cache_key` (no TTL). `data/forecast_cache.json` (committed by the worker fork) holds the 12 clips x 4 conditions
