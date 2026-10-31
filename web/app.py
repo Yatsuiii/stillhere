@@ -56,21 +56,12 @@ class TokenBucket:
 # 20 at once covers one ordinary walk's POSTs (the visitor call, PLAN, seven BUILDs, AUDIT, up to four FORECASTs, FILM); then one
 # every 10 s (360 an hour) is over three times what RUNS_PER_HOUR runs can use (fifth review, item 7)
 POST_LIMIT = (20, 10.0)
-BUCKET = TokenBucket(*POST_LIMIT)
-LIMITED = {"/api/visitor", "/api/plan", "/api/audit", "/api/build", "/api/forecast", "/api/film"}   # the page's POSTs, not the worker's
+BUCKET = TokenBucket(*POST_LIMIT)                                  # the page's POSTs, not the worker's
 # The GETs that reach the store with no CDN in front (no-store): a receipt and a job's poll get their own bucket per address, 60 at
 # once, then one a second, above the page's 1.5 s poll, so a loop of random ids cannot spend the store's budget (cloud review of
 # Oct 31, 12:20 UTC, item 5)
 GET_LIMIT = (60, 1.0)
 GET_BUCKET = TokenBucket(*GET_LIMIT)
-POLLED = re.compile(r"/api/(?:receipt|forecast)/[0-9a-f]{16}")
-
-
-def bucket(req):
-    """The token bucket a page request passes before its route runs, so before any store command; None for the rest."""
-    if req.method == "POST" and req.path in LIMITED:
-        return BUCKET
-    return GET_BUCKET if req.method == "GET" and POLLED.fullmatch(req.path) else None
 
 
 def slowed(req) -> dict:
@@ -80,10 +71,13 @@ def slowed(req) -> dict:
     return stations.slowed(name, req.json()) if req.method == "POST" and name != "visitor" else {"error": "slow_down"}
 
 
-def route(method: str, pattern: str, cache: str = None):
-    """`cache`: a Cache-Control for an answer that is the same for every visitor (see respond)."""
+def route(method: str, pattern: str, cache: str = None, bucket: str = None):
+    """`pattern` matches the whole path (fullmatch: "$" also matched before a trailing newline, so "/api/plan" and a newline reached
+    the route and missed its bucket; refuter's review of Oct 31, item 1). `cache`: a Cache-Control for an answer that is the same for
+    every visitor (see respond). `bucket`: the name of the token bucket the request passes before the route runs, so before any store
+    command ("BUCKET" or "GET_BUCKET"), read per request so a test can swap it."""
     def deco(fn):
-        ROUTES.append((method, re.compile(f"^{pattern}$"), fn, cache)); return fn
+        ROUTES.append((method, re.compile(pattern), fn, cache, bucket)); return fn
     return deco
 
 
@@ -152,7 +146,7 @@ def respond(start, status: int, body=None, ctype="application/json", req: Req = 
 
 
 # ---- page API -------------------------------------------------------------------------------------------------------------------
-@route("POST", "/api/visitor")
+@route("POST", "/api/visitor", bucket="BUCKET")
 def visitor(req, m):
     """The page's first call (third review, item 5): the visitor id, issued only here, so crawlers and anything else that never runs
     the page's script spend none, and no page load reaches the store."""
@@ -176,17 +170,17 @@ def status(req, m):
         hours=stations.hours_et()), "live": live, "runs_per_hour": ledger.RUNS_PER_HOUR, "menu": stations.menu()}
 
 
-@route("POST", "/api/plan")
+@route("POST", "/api/plan", bucket="BUCKET")
 def plan(req, m):
     b = req.json(); return 200, stations.plan(b.get("text"), b.get("backend", "spark-1.3"), req.sid, ip=req.ip)
 
 
-@route("POST", "/api/audit")
+@route("POST", "/api/audit", bucket="BUCKET")
 def audit(req, m):
     return 200, stations.audit(req.json().get("run_id"), req.sid)
 
 
-@route("POST", "/api/build")
+@route("POST", "/api/build", bucket="BUCKET")
 def build(req, m):
     b = req.json()
     if b.get("old_bug"):
@@ -194,13 +188,13 @@ def build(req, m):
     return 200, stations.build(b.get("run_id"), req.sid, b.get("clip_id"), b.get("condition"), b.get("seed"))
 
 
-@route("POST", "/api/forecast")
+@route("POST", "/api/forecast", bucket="BUCKET")
 def forecast(req, m):
     b = req.json(); out = stations.forecast(b.get("run_id"), req.sid, b.get("clip_id"), b.get("condition"), b.get("seed"))
     return (202 if out.get("state") == "queued" else 200), out
 
 
-@route("GET", "/api/forecast/([0-9a-f]{16})")
+@route("GET", "/api/forecast/([0-9a-f]{16})", bucket="GET_BUCKET")
 def forecast_status(req, m):
     try:
         out = jobs.status(m.group(1))
@@ -231,12 +225,12 @@ def evidence(req, m):
     return 200, stations.evidence()
 
 
-@route("POST", "/api/film")
+@route("POST", "/api/film", bucket="BUCKET")
 def film(req, m):
     b = req.json(); return 200, stations.film(b.get("run_id"), req.sid, b.get("concept"), ip=req.ip)
 
 
-@route("GET", "/api/receipt/([0-9a-f]{16})")
+@route("GET", "/api/receipt/([0-9a-f]{16})", bucket="GET_BUCKET")
 def receipt(req, m):
     r = stations.get_receipt(m.group(1))
     return (200, r) if r else (404, {"error": "no_receipt"})
@@ -317,15 +311,15 @@ def refused_post(req):
 def app(env, start):
     req, where = Req(env), "static"
     try:
-        for method, rx, fn, cache in ROUTES:
-            m = rx.match(req.path)
+        for method, rx, fn, cache, limit in ROUTES:
+            m = rx.fullmatch(req.path)
             if m and req.method == method:
-                where, b = rx.pattern, bucket(req)
+                where, b = rx.pattern, globals()[limit] if limit else None
                 code, body = (method == "POST" and refused_post(req)) or (
                     (429, slowed(req)) if b and not b.take(ledger._address(req.ip)) else fn(req, m))
                 return respond(start, code, body, req=req, cache=cache)
         if req.path.startswith("/api/"):
-            return respond(start, 404 if not any(rx.match(req.path) for _, rx, _, _ in ROUTES) else 405, {"error": "not_found"}, req=req)
+            return respond(start, 404 if not any(rx.fullmatch(req.path) for _, rx, *_ in ROUTES) else 405, {"error": "not_found"}, req=req)
         if req.method != "GET":
             return respond(start, 405, {"error": "method"}, req=req)
         s = static(req.path)                                   # no store call: a page loads whatever the store's state

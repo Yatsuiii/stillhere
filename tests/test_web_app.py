@@ -721,7 +721,6 @@ def live(web, monkeypatch):
     """Every paid station goes live on stubs: the planner, the audit chat, Voice Transcribe and SAM (with opencv, face_edit and
     meta-sam-parser stood in); the real egress is blocked underneath. Returns the web tuple and the count of each paid call."""
     app, jobs, ledger, stations, store = web
-    import numpy as np
     import stillhere
     from web import sam
     block_apis(monkeypatch, stations)
@@ -1029,7 +1028,6 @@ def test_film_settles_each_completed_frame_to_sams_price(web, monkeypatch):
     """Item 4, on stubs (opencv, face_edit, meta-sam-parser and SAM itself): each frame reserves first; a completed frame settles to
     SAM_USD_PER_FRAME; a frame whose response did not complete keeps its reservation; the receipt says which is which."""
     app, jobs, ledger, stations, store = web
-    import numpy as np
     import stillhere
     from web import sam
     fe = types.ModuleType("stillhere.face_edit")
@@ -2203,3 +2201,29 @@ def test_live_film_images_fit_well_under_a_megabyte(web):
     urls = [stations._b64jpg(cv2.cvtColor(cv2.imread(str(REPO / f["release_jpg"])), cv2.COLOR_BGR2RGB)) for f in frames]
     assert len(urls) == 3 and all(u.startswith("data:image/jpeg;base64,/9j/") for u in urls)
     assert 3 * sum(map(len, urls)) < 0.8e6, 3 * sum(map(len, urls))
+
+
+# ---- the refuter's review of the sixth-review branch (Oct 31) --------------------------------------------------------------------
+def test_a_path_with_a_trailing_newline_matches_no_route(web, monkeypatch):
+    """Refuter item 1: a route matches the whole path, so "/api/plan" plus a newline, or a receipt or job id plus one (a %0A that
+    wsgiref decodes into PATH_INFO), is a 404 before any store command. A "$" route matched before the newline while the buckets,
+    decided by a separate path test, let the request through to the store; the buckets now follow the matched route."""
+    import http.client
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setattr(app, "BUCKET", app.TokenBucket(0, 1e9)); monkeypatch.setattr(app, "GET_BUCKET", app.TokenBucket(0, 1e9))
+    sent, env = upstash(monkeypatch, store), {"HTTP_X_REAL_IP": "203.0.113.97"}
+    assert call(app, "POST", "/api/plan\n", PLAN_BODY, env=env)[0] == 404 and sent == []
+    assert call(app, "POST", "/api/plan", PLAN_BODY, env=env)[0] == 429 and sent == []          # the bucket, from the route
+
+    class Quiet(WSGIRequestHandler):
+        def log_message(self, *a):
+            pass
+    srv = make_server("127.0.0.1", 0, app.app, handler_class=Quiet)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    got = []
+    try:
+        for path in ("/api/receipt/" + "a" * 16, "/api/receipt/" + "a" * 16 + "%0A", "/api/forecast/" + "a" * 16 + "%0A"):
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_port); c.request("GET", path); got.append(c.getresponse().status)
+    finally:
+        srv.shutdown()
+    assert got == [429, 404, 404] and sent == []
