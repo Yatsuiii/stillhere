@@ -1,0 +1,625 @@
+{
+ "label": "exploratory",
+ "rule": "docs/rules/cheap_baselines_rule.md",
+ "manifest_sha256": "b5fdba4a64b2566724f3ee4bb7189d218c7bec275db8742058bf06dc02390dce",
+ "regressors": [
+  "tribe",
+  "word_rate",
+  "envelope"
+ ],
+ "pooled_counted_eligible": {
+  "LANG": {
+   "mean": {
+    "tribe": 0.11434428575155596,
+    "word_rate": 0.03849856368359427,
+    "envelope": 0.0382240635811369
+   },
+   "tribe_vs": {
+    "word_rate": {
+     "n": 1210,
+     "k_tribe_higher": 936,
+     "hl": 0.07395307212415865,
+     "hl_ci95": [
+      0.06833321282239795,
+      0.07969012867673002
+     ],
+     "p_two_sided": 4.868989997558736e-106,
+     "verdict": "TRIBE beats"
+    },
+    "envelope": {
+     "n": 1210,
+     "k_tribe_higher": 912,
+     "hl": 0.07464501652978021,
+     "hl_ci95": [
+      0.06886168875527292,
+      0.08036449331930842
+     ],
+     "p_two_sided": 1.4762142730777237e-105,
+     "verdict": "TRIBE beats"
+    }
+   }
+  },
+  "AUD": {
+   "mean": {
+    "tribe": 0.18085872114987403,
+    "word_rate": 0.05885454230292405,
+    "envelope": 0.11023100651206487
+   },
+   "tribe_vs": {
+    "word_rate": {
+     "n": 1210,
+     "k_tribe_higher": 971,
+     "hl": 0.1335074879118504,
+     "hl_ci95": [
+      0.12433038366611165,
+      0.1427365432568155
+     ],
+     "p_two_sided": 6.992728080153561e-99,
+     "verdict": "TRIBE beats"
+    },
+    "envelope": {
+     "n": 1210,
+     "k_tribe_higher": 881,
+     "hl": 0.08021503139188928,
+     "hl_ci95": [
+      0.07125636837235941,
+      0.08909050210753264
+     ],
+     "p_two_sided": 5.029273704731559e-49,
+     "verdict": "TRIBE beats"
+    }
+   }
+  }
+ },
+ "per_clip": {
+  "LPP|EN|unknown/lppEN_section1": {
+   "LANG": {
+    "tribe": 0.1045392288735784,
+    "word_rate": -0.014054677635898872,
+    "envelope": 0.004076227890944276
+   },
+   "AUD": {
+    "tribe": 0.18209793151772874,
+    "word_rate": -0.02053134763879301,
+    "envelope": 0.06125978510815748
+   }
+  },
+  "LPP|EN|unknown/lppEN_section2": {
+   "LANG": {
+    "tribe": 0.11586421148784125,
+    "word_rate": 0.054060571260328275,
+    "envelope": -0.0354008889573565
+   },
+   "AUD": {
+    "tribe": 0.08571778521046688,
+    "word_rate": 0.04437206706503003,
+    "envelope": 0.026579064630870196
+   }
+  },
+  "LPP|EN|unknown/lppEN_section3": {
+   "LANG": {
+    "tribe": 0.10948754524003607,
+    "word_rate": 0.03824180600762356,
+    "envelope": -0.026699963643867692
+   },
+   "AUD": {
+    "tribe": 0.07251669503298622,
+    "word_rate": 0.02614731119414685,
+    "envelope": 0.008428650169542955
+   }
+  },
+  "LPP|EN|unknown/lppEN_section4": {
+   "LANG": {
+    "tribe": 0.16162304730675436,
+    "word_rate": 0.0016366511317421793,
+    "envelope": 0.02645843022952946
+   },
+   "AUD": {
+    "tribe": 0.16805651544482564,
+    "word_rate": -0.03732334679207518,
+    "envelope": 0.05925379290326577
+   }
+  },
+  "LPP|EN|unknown/lppEN_section5": {
+   "LANG": {
+    "tribe": 0.1349251016157282,
+    "word_rate": 0.060292585010313836,
+    "envelope": -0.005851778157013006
+   },
+   "AUD": {
+    "tribe": 0.21055947964630542,
+    "word_rate": 0.048707171596108004,
+    "envelope": 0.061903344947033936
+   }
+  },
+  "LPP|EN|unknown/lppEN_section6": {
+   "LANG": {
+    "tribe": 0.12289341526735262,
+    "word_rate": 0.0235985125736896,
+    "envelope": 0.016597727397946765
+   },
+   "AUD": {
+    "tribe": 0.12054302905454915,
+    "word_rate": -0.024574995303040484,
+    "envelope": 0.04426026443786369
+   }
+  },
+  "LPP|EN|unknown/lppEN_section7": {
+   "LANG": {
+    "tribe": 0.1300029916799997,
+    "word_rate": 0.04391506860445901,
+    "envelope": 0.021957950800718357
+   },
+   "AUD": {
+    "tribe": 0.2247151256158994,
+    "word_rate": 0.08049757252700639,
+    "envelope": 0.08966328977475849
+   }
+  },
+  "LPP|EN|unknown/lppEN_section9": {
+   "LANG": {
+    "tribe": 0.1647279621365692,
+    "word_rate": 0.08936998071993353,
+    "envelope": 0.05879598795570338
+   },
+   "AUD": {
+    "tribe": 0.24043955426984018,
+    "word_rate": 0.02223205667053125,
+    "envelope": 0.061660888435156255
+   }
+  },
+  "LPP|FR|Prisma/lppFR_section1": {
+   "LANG": {
+    "tribe": 0.12217368669884934,
+    "word_rate": 0.008553237427601624,
+    "envelope": 0.02541860865801605
+   },
+   "AUD": {
+    "tribe": 0.20765023258115528,
+    "word_rate": 0.06801230546745328,
+    "envelope": 0.0979908101432336
+   }
+  },
+  "LPP|FR|Prisma/lppFR_section2": {
+   "LANG": {
+    "tribe": 0.08679571727790789,
+    "word_rate": 0.027827808638770633,
+    "envelope": 0.017649209887162197
+   },
+   "AUD": {
+    "tribe": 0.20028144130164766,
+    "word_rate": 0.01847970555292539,
+    "envelope": 0.03690320819771707
+   }
+  },
+  "LPP|FR|Prisma/lppFR_section3": {
+   "LANG": {
+    "tribe": 0.13336252764562065,
+    "word_rate": 0.1310899132080106,
+    "envelope": 0.09476833483928308
+   },
+   "AUD": {
+    "tribe": 0.23866930427021923,
+    "word_rate": 0.12244971225639653,
+    "envelope": 0.14132613675217226
+   }
+  },
+  "LPP|FR|Prisma/lppFR_section4": {
+   "LANG": {
+    "tribe": 0.2029901728311138,
+    "word_rate": 0.03089692086597173,
+    "envelope": 0.1338341484513017
+   },
+   "AUD": {
+    "tribe": 0.31483815314050806,
+    "word_rate": 0.04273927820062297,
+    "envelope": 0.18796301080534414
+   }
+  },
+  "LPP|FR|Prisma/lppFR_section5": {
+   "LANG": {
+    "tribe": 0.12230441031871489,
+    "word_rate": 0.07169704865438674,
+    "envelope": 0.06468707666415963
+   },
+   "AUD": {
+    "tribe": 0.3201318169401989,
+    "word_rate": 0.06435821963366029,
+    "envelope": 0.0828535769171229
+   }
+  },
+  "LPP|FR|Prisma/lppFR_section6": {
+   "LANG": {
+    "tribe": 0.16741516848746452,
+    "word_rate": 0.07641848018469453,
+    "envelope": 0.07733839084679636
+   },
+   "AUD": {
+    "tribe": 0.2649117716459008,
+    "word_rate": 0.0720332156378705,
+    "envelope": 0.12621568474504483
+   }
+  },
+  "LPP|FR|Prisma/lppFR_section7": {
+   "LANG": {
+    "tribe": 0.11002832267480403,
+    "word_rate": 0.11274504451557565,
+    "envelope": 0.11012045932048613
+   },
+   "AUD": {
+    "tribe": 0.2112193131706324,
+    "word_rate": 0.13048863481033132,
+    "envelope": 0.13379382308645787
+   }
+  },
+  "LPP|FR|Prisma/lppFR_section8": {
+   "LANG": {
+    "tribe": 0.11963965218095851,
+    "word_rate": 0.08007198598807144,
+    "envelope": 0.063499046748946
+   },
+   "AUD": {
+    "tribe": 0.22160117410953623,
+    "word_rate": 0.059261084010215195,
+    "envelope": 0.07429298694053307
+   }
+  },
+  "LPP|FR|Prisma/lppFR_section9": {
+   "LANG": {
+    "tribe": 0.14881595489569582,
+    "word_rate": 0.09290559513665828,
+    "envelope": 0.10453345614107698
+   },
+   "AUD": {
+    "tribe": 0.32230500430299946,
+    "word_rate": 0.07001041088266159,
+    "envelope": 0.14164077093190933
+   }
+  },
+  "Narratives|EN|Prisma/black": {
+   "LANG": {
+    "tribe": 0.22649785968404573,
+    "word_rate": 0.08888609867427726,
+    "envelope": 0.04965142962234271
+   },
+   "AUD": {
+    "tribe": 0.37757923391647014,
+    "word_rate": 0.17591473876317418,
+    "envelope": 0.12256558050247958
+   }
+  },
+  "Narratives|EN|Prisma/bronx": {
+   "LANG": {
+    "tribe": -0.03477861354582542,
+    "word_rate": 0.0013538028443789002,
+    "envelope": -0.02291411390174099
+   },
+   "AUD": {
+    "tribe": 0.014550887292689645,
+    "word_rate": -0.010367289691064948,
+    "envelope": -0.05305102587462295
+   }
+  },
+  "Narratives|EN|Prisma/forgot": {
+   "LANG": {
+    "tribe": 0.17214214009387901,
+    "word_rate": 0.06803416467178158,
+    "envelope": 0.04725170444051172
+   },
+   "AUD": {
+    "tribe": 0.3833932572409271,
+    "word_rate": 0.15582964224848847,
+    "envelope": 0.15626186195834818
+   }
+  },
+  "Narratives|EN|Prisma/piemanpni": {
+   "LANG": {
+    "tribe": -0.10205247714478992,
+    "word_rate": -0.03933998062802617,
+    "envelope": -0.06759117080065322
+   },
+   "AUD": {
+    "tribe": -0.0786791848187574,
+    "word_rate": -0.09836675792423218,
+    "envelope": -0.08142648431486767
+   }
+  },
+  "Narratives|EN|Prisma/schema-bigbang": {
+   "LANG": {
+    "tribe": 0.14385706240929397,
+    "word_rate": 0.02431550390655815,
+    "envelope": 0.08638016985722144
+   },
+   "AUD": {
+    "tribe": 0.26684981333892954,
+    "word_rate": 0.12802755540813657,
+    "envelope": 0.23012468656744384
+   }
+  },
+  "Narratives|EN|Prisma/schema-friends": {
+   "LANG": {
+    "tribe": 0.12673106691638128,
+    "word_rate": -0.0066021309260581385,
+    "envelope": 0.08073741753017809
+   },
+   "AUD": {
+    "tribe": 0.23611087799708405,
+    "word_rate": -0.01370185597796252,
+    "envelope": 0.2451875926270029
+   }
+  },
+  "Narratives|EN|Prisma/schema-himym": {
+   "LANG": {
+    "tribe": 0.09481550723063509,
+    "word_rate": -0.00425126299205123,
+    "envelope": -0.013374690361764256
+   },
+   "AUD": {
+    "tribe": 0.11666803118917107,
+    "word_rate": 0.04766647613149155,
+    "envelope": 0.10683393362766264
+   }
+  },
+  "Narratives|EN|Prisma/schema-santa": {
+   "LANG": {
+    "tribe": 0.12335190777689437,
+    "word_rate": -0.02575405489888982,
+    "envelope": 0.050256073883316016
+   },
+   "AUD": {
+    "tribe": 0.14525790265546265,
+    "word_rate": 0.03234544499574261,
+    "envelope": 0.16364739845200404
+   }
+  },
+  "Narratives|EN|Prisma/schema-seinfeld": {
+   "LANG": {
+    "tribe": 0.16871587619574507,
+    "word_rate": -0.006608529889505924,
+    "envelope": 0.1522332014271475
+   },
+   "AUD": {
+    "tribe": 0.21158207449933888,
+    "word_rate": 0.028842526227282516,
+    "envelope": 0.2143903004741448
+   }
+  },
+  "Narratives|EN|Prisma/schema-shame": {
+   "LANG": {
+    "tribe": 0.09250976798854622,
+    "word_rate": 0.014063674213840083,
+    "envelope": 0.02035046388942551
+   },
+   "AUD": {
+    "tribe": 0.21487114670866847,
+    "word_rate": -0.013555823195750159,
+    "envelope": 0.09176672935095276
+   }
+  },
+  "Narratives|EN|Prisma/schema-upintheair": {
+   "LANG": {
+    "tribe": 0.08926874589599834,
+    "word_rate": 0.007784515083558934,
+    "envelope": 0.07181739163384955
+   },
+   "AUD": {
+    "tribe": 0.1419671227513719,
+    "word_rate": 0.014092944965459753,
+    "envelope": 0.14862542043537663
+   }
+  },
+  "Narratives|EN|Prisma/schema-vinny": {
+   "LANG": {
+    "tribe": 0.14402745499442396,
+    "word_rate": -0.03981782702921559,
+    "envelope": 0.09333350290981146
+   },
+   "AUD": {
+    "tribe": 0.23838938834486004,
+    "word_rate": 0.01663539755522295,
+    "envelope": 0.23185398435473284
+   }
+  },
+  "Narratives|EN|Prisma/shapesphysical": {
+   "LANG": {
+    "tribe": 0.16824154989941936,
+    "word_rate": 0.08762443154817733,
+    "envelope": 0.08124861091294662
+   },
+   "AUD": {
+    "tribe": 0.6718172809696364,
+    "word_rate": 0.23941508263911102,
+    "envelope": 0.24156070780687472
+   }
+  },
+  "Narratives|EN|Prisma/shapessocial": {
+   "LANG": {
+    "tribe": 0.2076633451572803,
+    "word_rate": 0.13422751943296002,
+    "envelope": 0.1374321484623083
+   },
+   "AUD": {
+    "tribe": 0.7443851438156379,
+    "word_rate": 0.33429505567915485,
+    "envelope": 0.3458703136754975
+   }
+  },
+  "Narratives|EN|Skyra/21styear": {
+   "LANG": {
+    "tribe": -0.06045939362483354,
+    "word_rate": -0.011622530975252381,
+    "envelope": -0.03889742335654547
+   },
+   "AUD": {
+    "tribe": -0.036846314382150525,
+    "word_rate": 0.2919921111838649,
+    "envelope": 0.22187170395643518
+   }
+  },
+  "Narratives|EN|Skyra/merlin": {
+   "LANG": {
+    "tribe": 0.18263627624697867,
+    "word_rate": 0.1297890637382955,
+    "envelope": 0.0686969778526781
+   },
+   "AUD": {
+    "tribe": 0.2864014572922053,
+    "word_rate": 0.04503343500951947,
+    "envelope": 0.09656419258293213
+   }
+  },
+  "Narratives|EN|Skyra/milkyway-original": {
+   "LANG": {
+    "tribe": -0.04705237541324867,
+    "word_rate": -0.015535749038715893,
+    "envelope": -0.02241854386644668
+   },
+   "AUD": {
+    "tribe": -0.10871060978078842,
+    "word_rate": 0.10489512520582087,
+    "envelope": 0.05410469917351717
+   }
+  },
+  "Narratives|EN|Skyra/milkyway-synonyms": {
+   "LANG": {
+    "tribe": 0.08624631729194125,
+    "word_rate": -0.03456028019123949,
+    "envelope": 0.016187441213640352
+   },
+   "AUD": {
+    "tribe": 0.11631236099636603,
+    "word_rate": 0.04804451126649108,
+    "envelope": 0.18249829991997693
+   }
+  },
+  "Narratives|EN|Skyra/milkyway-vodka": {
+   "LANG": {
+    "tribe": -0.0410211985445002,
+    "word_rate": 0.009298516669505956,
+    "envelope": -0.032351543723845945
+   },
+   "AUD": {
+    "tribe": -0.08928424728423981,
+    "word_rate": 0.06714328558483629,
+    "envelope": 0.04168950991854805
+   }
+  },
+  "Narratives|EN|Skyra/pieman": {
+   "LANG": {
+    "tribe": 0.07196331651000708,
+    "word_rate": 0.03111720218539187,
+    "envelope": 0.05494566513357218
+   },
+   "AUD": {
+    "tribe": 0.119639768507931,
+    "word_rate": 0.09067799914803318,
+    "envelope": 0.18795774503250884
+   }
+  },
+  "Narratives|EN|Skyra/prettymouth": {
+   "LANG": {
+    "tribe": -0.029197457080805858,
+    "word_rate": -0.003461868103250764,
+    "envelope": 0.020104099231826107
+   },
+   "AUD": {
+    "tribe": -0.08540656676071338,
+    "word_rate": 0.13104680476063313,
+    "envelope": 0.2343177310974042
+   }
+  },
+  "Narratives|EN|Skyra/slumlordreach": {
+   "LANG": {
+    "tribe": 0.20559864742940298,
+    "word_rate": 0.07587807560935003,
+    "envelope": 0.05244488062604813
+   },
+   "AUD": {
+    "tribe": 0.332333651850454,
+    "word_rate": 0.10748235877081616,
+    "envelope": 0.17349330796255608
+   }
+  },
+  "Narratives|EN|Skyra/tunnel": {
+   "LANG": {
+    "tribe": 0.1254259799980509,
+    "word_rate": 0.028753598744045615,
+    "envelope": -0.0760405383845687
+   },
+   "AUD": {
+    "tribe": 0.12621944279607175,
+    "word_rate": -0.05415425752410406,
+    "envelope": -0.15137664433181952
+   }
+  }
+ },
+ "walls_raw": {
+  "tribe": {
+   "N": 29,
+   "M": 33,
+   "F": 4,
+   "F_rate": 0.12121212121212122,
+   "counted_blocks": [
+    "LPP|EN|unknown",
+    "LPP|FR|Prisma",
+    "Narratives|EN|Prisma",
+    "Narratives|EN|Skyra"
+   ],
+   "families_per_block": {
+    "LPP|FR|Prisma": 8,
+    "LPP|EN|unknown": 7,
+    "Narratives|EN|Skyra": 7,
+    "Narratives|EN|Prisma": 11
+   },
+   "floor_ok": true,
+   "bar_pass": true,
+   "wrong_label_ok": false,
+   "stage_line": false
+  },
+  "word_rate": {
+   "N": 15,
+   "M": 33,
+   "F": 1,
+   "F_rate": 0.030303030303030304,
+   "counted_blocks": [
+    "LPP|EN|unknown",
+    "LPP|FR|Prisma",
+    "Narratives|EN|Prisma",
+    "Narratives|EN|Skyra"
+   ],
+   "families_per_block": {
+    "LPP|FR|Prisma": 8,
+    "LPP|EN|unknown": 7,
+    "Narratives|EN|Skyra": 7,
+    "Narratives|EN|Prisma": 11
+   },
+   "floor_ok": true,
+   "bar_pass": false,
+   "wrong_label_ok": true,
+   "stage_line": false
+  },
+  "envelope": {
+   "N": 17,
+   "M": 33,
+   "F": 5,
+   "F_rate": 0.15151515151515152,
+   "counted_blocks": [
+    "LPP|EN|unknown",
+    "LPP|FR|Prisma",
+    "Narratives|EN|Prisma",
+    "Narratives|EN|Skyra"
+   ],
+   "families_per_block": {
+    "LPP|FR|Prisma": 8,
+    "LPP|EN|unknown": 7,
+    "Narratives|EN|Skyra": 7,
+    "Narratives|EN|Prisma": 11
+   },
+   "floor_ok": true,
+   "bar_pass": false,
+   "wrong_label_ok": false,
+   "stage_line": false
+  }
+ },
+ "seconds": 986
+}

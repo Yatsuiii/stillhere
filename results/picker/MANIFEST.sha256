@@ -1,0 +1,9 @@
+# SHA-256 of every file in d22/picker/scored/ as the single scoring call wrote it (Oct 31 2026, manifest b5fdba4a...);
+# all but tierD_picker_targets.json are copied here byte for byte; that one holds per-listener values and stays outside.
+89eef5a71e3ba5e676709b6d467c55b62a7df4ff4e2ca1b12e689fa7a1519781  SCORED.lock
+a4bde3ea4aab015314a4ec548f62aadd8ec466f7d759e6a28cc82f848ed92412  tierD_picker_bars.json
+f3b0afe46c258b5dadcf2c33213d9e94d5f85e9aa17451078bd7bd3753e55be8  tierD_picker_predictors.json
+6bdb625976c59c36f37542428331e55b08b3dfe1cd03f7a70cd5de0502950219  tierD_picker_summary.json
+97c3215dccc2187cb6ad7890200007c7e5dd5231728efbb6c52805a8cc0a973d  tierD_picker_targets.json
+2384613c2c89d2c5d64f4b4226ea2b1e9c31038b60602503386138b886b17693  tierD_picker_wall.json
+0f6ed8ae5f0fc0d3425741a970ec1f9d2692a4cd3a932da8b2934d83b5b97108  tierD_wall_baselines.json

@@ -1,0 +1,11 @@
+{
+ "manifest_sha256": "b5fdba4a64b2566724f3ee4bb7189d218c7bec275db8742058bf06dc02390dce",
+ "lines": [
+  "picker scoring call on manifest b5fdba4a64b2566724f3ee4bb7189d218c7bec275db8742058bf06dc02390dce: status bars, 40 rows",
+  "gate 2 re-check (before any target): {\"multiple_R_fisher_mean\": 0.48128038629558706, \"S3_testable\": true, \"r_pula_sdpf_fisher_mean\": 0.6264346946360525}",
+  "S1 rho 0.5366795366795367 p 0.0006999300069993001 -> PASS | S3 0.631024441418623 p 0.0004999500049995 -> PASS | S3b pre-registered, not run (the cache does not allow the exact control) | S2 rho 0.32619047619047625 p 0.0313968603139686 -> PASS | S4 0.3094774666447218 CI [-0.06560064676231495, 0.5762856922144698] -> FAIL | S1 without section 1 rho 0.5836734693877551 | status bars, headline True",
+  "D19 wall: N 29 of M 33 (bar PASS), wrong-label F 6 of 33, floor met -> write-up only | Part C merged: 22 of 26",
+  "With zero same-clip controls, stock TRIBE v2's language readout followed the story each healthy listener group heard, more than other stories from the same dataset, on 29 of 33 story families not individually scored before this test (English and French; LPP sections counted once per language; 2 public datasets, 4 blocks, 1210 listeners, 2.7-55.6 minutes = 106-2222 TRs per story; wrong-label check 6 of 33).",
+  "seconds 529"
+ ]
+}

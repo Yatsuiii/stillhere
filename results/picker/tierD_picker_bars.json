@@ -1,0 +1,151 @@
+{
+ "manifest_sha256": "b5fdba4a64b2566724f3ee4bb7189d218c7bec275db8742058bf06dc02390dce",
+ "status": "bars",
+ "S1": {
+  "rho": 0.5366795366795367,
+  "p": 0.0006999300069993001,
+  "blocks": 4,
+  "families": 37,
+  "per_block": {
+   "LPP|EN|unknown": 0.6428571428571429,
+   "LPP|FR|Prisma": 0.6666666666666667,
+   "Narratives|EN|Prisma": 0.7472527472527472,
+   "Narratives|EN|Skyra": -0.14285714285714288
+  },
+  "pass_": true
+ },
+ "S3": {
+  "rho": 0.631024441418623,
+  "p": 0.0004999500049995,
+  "blocks": 4,
+  "families": 37,
+  "per_block": {
+   "LPP|EN|unknown": 0.7026831458488949,
+   "LPP|FR|Prisma": 0.6800219945511752,
+   "Narratives|EN|Prisma": 0.7816682911441241,
+   "Narratives|EN|Skyra": 0.20636477569481484
+  },
+  "pass_": true
+ },
+ "S3b": {
+  "status": "pre-registered, not run (the cache does not allow the exact control)"
+ },
+ "S2": {
+  "rho": 0.32619047619047625,
+  "p": 0.0313968603139686,
+  "blocks": 4,
+  "families": 37,
+  "per_block": {
+   "LPP|EN|unknown": 0.5952380952380953,
+   "LPP|FR|Prisma": 0.38333333333333336,
+   "Narratives|EN|Prisma": 0.1043956043956044,
+   "Narratives|EN|Skyra": 0.3571428571428572
+  },
+  "pass_": true
+ },
+ "S4": {
+  "diff": 0.3094774666447218,
+  "ci95": [
+   -0.06560064676231495,
+   0.5762856922144698
+  ],
+  "z_top": 1.6690098013233077,
+  "z_all": 1.359532334678586,
+  "blocks": 4,
+  "families": 29,
+  "listening_min_for_equal_z": 3.317655690085254,
+  "pass_": false
+ },
+ "S1_without_section1": {
+  "rho": 0.5836734693877551,
+  "p": 0.00029997000299970003,
+  "blocks": 4,
+  "families": 35,
+  "per_block": {
+   "LPP|EN|unknown": 0.8571428571428573,
+   "LPP|FR|Prisma": 0.7142857142857144,
+   "Narratives|EN|Prisma": 0.7472527472527472,
+   "Narratives|EN|Skyra": -0.14285714285714288
+  },
+  "pass_": true
+ },
+ "S1_without_clips_seen_before_hash": {
+  "rho": 0.5640692640692642,
+  "p": 0.0008999100089991,
+  "blocks": 4,
+  "families": 33,
+  "per_block": {
+   "LPP|EN|unknown": 0.8571428571428573,
+   "LPP|FR|Prisma": 0.7142857142857144,
+   "Narratives|EN|Prisma": 0.7181818181818183,
+   "Narratives|EN|Skyra": -0.14285714285714288
+  },
+  "pass_": true
+ },
+ "descriptive": {
+  "hearing_PH_T3": {
+   "rho": 0.587966537966538,
+   "p": 9.999000099990002e-05,
+   "blocks": 4,
+   "families": 37,
+   "per_block": {
+    "LPP|EN|unknown": 0.8095238095238096,
+    "LPP|FR|Prisma": 0.65,
+    "Narratives|EN|Prisma": 0.7637362637362637,
+    "Narratives|EN|Skyra": -0.07142857142857144
+   },
+   "pass_": true
+  },
+  "hearing_PH_T4": {
+   "rho": 0.697940797940798,
+   "p": 9.999000099990002e-05,
+   "blocks": 4,
+   "families": 37,
+   "per_block": {
+    "LPP|EN|unknown": 0.9047619047619048,
+    "LPP|FR|Prisma": 0.7,
+    "Narratives|EN|Prisma": 0.6373626373626374,
+    "Narratives|EN|Skyra": 0.5714285714285715
+   },
+   "pass_": true
+  },
+  "S1_PAMP": {
+   "rho": 0.5085585585585586,
+   "p": 0.0014998500149985001,
+   "blocks": 4,
+   "families": 37,
+   "per_block": {
+    "LPP|EN|unknown": 0.9047619047619048,
+    "LPP|FR|Prisma": 0.35,
+    "Narratives|EN|Prisma": 0.5714285714285714,
+    "Narratives|EN|Skyra": 0.14285714285714288
+   },
+   "pass_": true
+  },
+  "calibration_slope": 0.46066660551272676,
+  "split_half_T1": {
+   "rho_half": 0.812033462033462,
+   "spearman_brown": 0.8962676231400263
+  },
+  "PULA_timing_approx_partial": {
+   "rho": 0.5610159706393718,
+   "p": 0.0011998800119988001,
+   "blocks": 4,
+   "families": 37,
+   "per_block": {
+    "LPP|EN|unknown": 0.6226312858493156,
+    "LPP|FR|Prisma": 0.8576952343061373,
+    "Narratives|EN|Prisma": 0.7526749074109257,
+    "Narratives|EN|Skyra": -0.24678432546214848
+   },
+   "pass_": true,
+   "label": "approximate, descriptive only (frame-level PULA_timing, D26 (c)); not S3b, never on stage"
+  }
+ },
+ "headline": true,
+ "real_brains_licensed": true,
+ "content_not_timing": null,
+ "name": "TRIBE's predicted response strength",
+ "stage_line": true,
+ "prewritten": []
+}
