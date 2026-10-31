@@ -97,3 +97,17 @@ reads only `p1/cache_en` and `p1/cache` (parcel series), never `p1/vcache`. Orde
 forecasts on the laptop (never during a chain step that uses the laptop, never during Sunday's filming); the second commit with
 their pins; one scoring run (`score_variants.py --out`, from the analysis tree's `p1/`), which writes `results/r3_variants.json` and
 the per-listener numbers outside the repository; the results commit; then R2's rule.
+
+
+## Dated note, Oct 31, after the result (cloud ruling of Oct 31, 21:30 UTC, items 7-8; the text above is unchanged)
+
+- Every bare "section 3" above means PREREG section 3.
+- French section 1 is PREREG's development set (line 101), already scored for stock before this rule (chk8's 1.11), and 19 of its 28
+  listeners' other sections were in the fine-tune's training targets; the 9 who were not are reported on their own
+  (`results/r3_variants.json`, fr_holdout9). "Confirm" here means PREREG line 38's other-language check, not a test on unseen data.
+- Candidate (a) is the raw average of the stock and fine-tuned forecasts, second by second (no weighting, no rescaling). Each
+  forecast's spread, forecast only (`lpp_variants/forecast_sd.py`, `results/r3_forecast_sd.json`; the mean over vertices of the SD over
+  time, LANG / AUD vertices): EN full: stock 0.172 / 0.139, fine-tuned 0.050 / 0.046, average 0.110 / 0.090; EN audio: stock 0.087 / 0.108, fine-tuned 0.022 / 0.037, average 0.054 / 0.072; FR full: stock 0.173 / 0.179, fine-tuned 0.048 / 0.057, average 0.109 / 0.117; FR audio: stock 0.092 / 0.138, fine-tuned 0.025 / 0.050, average 0.057 / 0.093. Descriptive: the
+  fine-tuned forecasts vary about a third as much as stock, so the average mostly follows stock.
+- Candidate (b) is forecast-only surface smoothing with k chosen on English (k = 3), not smoothing "matched to the data's smoothing"
+  (section 5 says why that could not be measured).

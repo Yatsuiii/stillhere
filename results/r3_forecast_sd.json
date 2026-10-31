@@ -1,0 +1,65 @@
+{
+ "label": "descriptive, forecast only; decides nothing",
+ "rule": "docs/rules/r3_variants_rule.md",
+ "unit": "mean over vertices of the SD over time",
+ "EN": {
+  "full": {
+   "stock": {
+    "LANG": 0.17172,
+    "AUD": 0.13933
+   },
+   "tuned": {
+    "LANG": 0.05013,
+    "AUD": 0.04579
+   },
+   "average": {
+    "LANG": 0.10956,
+    "AUD": 0.09034
+   }
+  },
+  "audio": {
+   "stock": {
+    "LANG": 0.08739,
+    "AUD": 0.10767
+   },
+   "tuned": {
+    "LANG": 0.02238,
+    "AUD": 0.03718
+   },
+   "average": {
+    "LANG": 0.05405,
+    "AUD": 0.0716
+   }
+  }
+ },
+ "FR": {
+  "full": {
+   "stock": {
+    "LANG": 0.17288,
+    "AUD": 0.1795
+   },
+   "tuned": {
+    "LANG": 0.04812,
+    "AUD": 0.05695
+   },
+   "average": {
+    "LANG": 0.10916,
+    "AUD": 0.11656
+   }
+  },
+  "audio": {
+   "stock": {
+    "LANG": 0.09164,
+    "AUD": 0.13813
+   },
+   "tuned": {
+    "LANG": 0.0248,
+    "AUD": 0.0497
+   },
+   "average": {
+    "LANG": 0.05742,
+    "AUD": 0.09317
+   }
+  }
+ }
+}
