@@ -80,6 +80,14 @@ def block_apis(monkeypatch, stations):
     monkeypatch.setattr(stations.meta_client, "transcribe", refuse)
 
 
+def cv2_stub():
+    """opencv as FILM uses it, on a 4x4 black frame: read, colour order (unchanged), and a JPEG encode that returns a JPEG's start."""
+    import numpy as np
+    return types.SimpleNamespace(imread=lambda p: np.zeros((4, 4, 3), np.uint8), cvtColor=lambda a, c: a, COLOR_BGR2RGB=4,
+                                 COLOR_RGB2BGR=4, IMWRITE_JPEG_QUALITY=1,
+                                 imencode=lambda ext, img, params=None: (True, np.frombuffer(b"\xff\xd8\xff\xe0", np.uint8)))
+
+
 # ---- keys and fallbacks -----------------------------------------------------------------------------------------------------------
 def test_no_key_reaches_the_browser(web, monkeypatch):
     app, jobs, ledger, stations, store = web
@@ -722,8 +730,7 @@ def live(web, monkeypatch):
     monkeypatch.setattr(stations.meta_client, "chat", lambda req, **kw: paid.__setitem__("audit", paid["audit"] + 1) or {"notes": []})
     monkeypatch.setattr(stations.meta_client, "transcribe", lambda a, **k: paid.__setitem__("transcribe", paid["transcribe"] + 1) or {"transcript": ""})
     fe = types.ModuleType("stillhere.face_edit")
-    monkeypatch.setitem(sys.modules, "cv2", types.SimpleNamespace(imread=lambda p: np.zeros((4, 4, 3), np.uint8), cvtColor=lambda a, c: a,
-                                                                  COLOR_BGR2RGB=4))
+    monkeypatch.setitem(sys.modules, "cv2", cv2_stub())
     monkeypatch.setitem(sys.modules, "meta_sam_parser", types.ModuleType("meta_sam_parser"))
     monkeypatch.setitem(sys.modules, "stillhere.face_edit", fe); monkeypatch.setattr(stillhere, "face_edit", fe, raising=False)
     monkeypatch.setattr(sam, "segment", lambda clip, q, **k: paid.__setitem__("sam", paid["sam"] + 1) or {"objects": [], "usage": {},
@@ -1026,8 +1033,7 @@ def test_film_settles_each_completed_frame_to_sams_price(web, monkeypatch):
     import stillhere
     from web import sam
     fe = types.ModuleType("stillhere.face_edit")
-    monkeypatch.setitem(sys.modules, "cv2", types.SimpleNamespace(imread=lambda p: np.zeros((4, 4, 3), np.uint8), cvtColor=lambda a, c: a,
-                                                                  COLOR_BGR2RGB=4))
+    monkeypatch.setitem(sys.modules, "cv2", cv2_stub())
     monkeypatch.setitem(sys.modules, "meta_sam_parser", types.ModuleType("meta_sam_parser"))
     monkeypatch.setitem(sys.modules, "stillhere.face_edit", fe); monkeypatch.setattr(stillhere, "face_edit", fe, raising=False)
     status = iter(["response.completed", "response.completed", "response.failed"])
@@ -2172,3 +2178,28 @@ def test_reserve_and_settle_move_every_bound_or_none(web, monkeypatch):
         except store.StoreError:
             failed["settle"] += 1; assert have() == before, ("settle", n)
     assert failed["reserve"] >= 1 and failed["settle"] >= 1
+
+
+def test_live_film_images_are_jpeg_data_urls(live, monkeypatch):
+    """Optional item: live FILM sends each image as a JPEG data URL (q90, at the size it sent as PNG: half the release frame), as
+    the recorded run does; the page sets img.src to either and the CSP allows data: images."""
+    (app, jobs, ledger, stations, store), paid = live
+    import numpy as np
+    seen = []
+    monkeypatch.setattr(sys.modules["cv2"], "imencode", lambda ext, img, params: seen.append((ext, img.shape, params)) or (
+        True, np.frombuffer(b"\xff\xd8\xff\xe0", np.uint8)))
+    d = J(call(app, "POST", "/api/film", {"concept": "face"}, cookie=page_cookie(app, "203.0.113.31"), env={"HTTP_X_REAL_IP": "203.0.113.31"}))
+    assert d["mode"] == "live" and [f["intact"] for f in d["frames"]] == ["data:image/jpeg;base64,/9j/4A=="] * 3
+    q = sys.modules["cv2"].IMWRITE_JPEG_QUALITY
+    assert seen == [(".jpg", (2, 2, 3), [q, 90])] * 3                              # the 4x4 stand-in frame, halved as before
+
+
+def test_live_film_images_fit_well_under_a_megabyte(web):
+    """Optional item, with real opencv (skipped where it is not installed): the three release frames as FILM sends them (640x267,
+    three versions each) are under 0.8 MB as JPEG q90 (0.57 MB measured), where the PNG was 4.7 MB."""
+    cv2 = pytest.importorskip("cv2")
+    app, jobs, ledger, stations, store = web
+    frames = json.loads((REPO / "web/film/frames.json").read_text())["frames"]
+    urls = [stations._b64jpg(cv2.cvtColor(cv2.imread(str(REPO / f["release_jpg"])), cv2.COLOR_BGR2RGB)) for f in frames]
+    assert len(urls) == 3 and all(u.startswith("data:image/jpeg;base64,/9j/") for u in urls)
+    assert 3 * sum(map(len, urls)) < 0.8e6, 3 * sum(map(len, urls))

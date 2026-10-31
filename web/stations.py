@@ -10,12 +10,10 @@ import hashlib
 import json
 import os
 import secrets
-import struct
 import sys
 import tempfile
 import threading
 import time
-import zlib
 from pathlib import Path
 
 import httpx
@@ -601,13 +599,18 @@ SAVED_LINE = "A saved forecast is shown whenever one exists for your choice. New
 
 
 # ---- FILM -----------------------------------------------------------------------------------------------------------------------
-def png(rgb) -> bytes:
-    """A minimal RGB PNG (standard library zlib), so the server needs no imaging library to send an image."""
-    h, w, _ = rgb.shape
-    raw = b"".join(b"\x00" + rgb[y].tobytes() for y in range(h))
-    chunk = lambda t, d: struct.pack(">I", len(d)) + t + d + struct.pack(">I", zlib.crc32(t + d) & 0xFFFFFFFF)
-    return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)) + chunk(b"IDAT", zlib.compress(raw, 6)) \
-        + chunk(b"IEND", b"")
+JPEG_QUALITY = 90
+
+
+def _b64jpg(rgb) -> str:
+    """One FILM image as the page shows it: half the release frame (640x267), JPEG at quality 90 through opencv, which live FILM
+    already needs. About 0.6 MB for a run's nine images where PNG sent 4.7 MB (cloud review of Oct 31, 12:20 UTC, optional item); the
+    recorded run's images are JPEG too."""
+    import cv2
+    ok, buf = cv2.imencode(".jpg", cv2.cvtColor(rgb[::2, ::2].copy(), cv2.COLOR_RGB2BGR), [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
+    if not ok:
+        raise ValueError("the frame could not be encoded")
+    return "data:image/jpeg;base64," + base64.b64encode(buf.tobytes()).decode()
 
 
 CREDIT = "Tears of Steel (CC) Blender Foundation | mango.blender.org, CC BY 3.0. Edited for this study."
@@ -667,12 +670,12 @@ def film(run_id: str, sid: str, concept: str, ip: str = None) -> dict:
                 frame = cv2.cvtColor(cv2.imread(str(REPO / f["release_jpg"])), cv2.COLOR_BGR2RGB)   # any other error editing a
                 masks = [m for m in FE.masks_for({"objects": seg["objects"]}) if m.any()] if seg["objects"] else []   # frame gives
                 if not masks:                                  # the recorded run, never a 500 (fifth review, item 4)
-                    frames.append({"id": f["id"], "found": False, "line": "no mask found", "intact": _b64png(frame)}); continue
+                    frames.append({"id": f["id"], "found": False, "line": "no mask found", "intact": _b64jpg(frame)}); continue
                 img, px, offs = FE.edit(frame, masks, skip_unplaceable=True)
+                shown = {v: _b64jpg(img[v]) for v in FE.VERSIONS}   # encoded inside the try: a failed encode is the recorded run too
             except Exception:
                 return recorded_film("api_error")
-            frames.append({"id": f["id"], "found": True, "n_masks": len(masks), "controls": sum(o is not None for o in offs),
-                           **{v: _b64png(img[v]) for v in FE.VERSIONS}})
+            frames.append({"id": f["id"], "found": True, "n_masks": len(masks), "controls": sum(o is not None for o in offs), **shown})
     finally:                                                   # on every way out: each frame called at its price or reservation,
         ledger.settle(res, sum(priced) + held)                 # the frames not called freed
     rid = receipt({"station": "film", "model": "sam-3.1", "frames": [f["id"] for f in frames], "seconds": round(time.time() - t0, 2),
@@ -680,10 +683,6 @@ def film(run_id: str, sid: str, concept: str, ip: str = None) -> dict:
     return {"mode": "live", "frames": frames, "credit": CREDIT, "receipt_id": rid,
             "caption": "SAM 3.1 masked what you typed; StillHere filled it with the surrounding colour, and filled a same-size patch "
                        "elsewhere in the frame the same way as a control."}
-
-
-def _b64png(rgb) -> str:
-    return "data:image/png;base64," + base64.b64encode(png(rgb[::2, ::2].copy())).decode()
 
 
 # ---- EVIDENCE -------------------------------------------------------------------------------------------------------------------
