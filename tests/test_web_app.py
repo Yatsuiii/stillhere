@@ -2252,3 +2252,80 @@ def test_a_poll_past_the_bucket_slows_down_and_goes_on(web, monkeypatch, tmp_pat
     box = section(out, "forecast-out")
     assert len(polls) == 4 and "Forecast, live" in box and "did not finish" not in box, (len(polls), box[:300])
     assert not re.search(r'<button id="forecast-go"[^>]*disabled', out)
+
+
+def sam_stand_in(monkeypatch, events, delete_s=0.0):
+    """Meta's API for one SAM call on a local port, slow on purpose: the stream sends an event every 0.5 s for `events` events (never
+    a 1 s gap, so no read timeout of 1 s or more fires), then completes; the file delete answers after `delete_s` seconds. Returns the
+    server and the list of deletes it received."""
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from stillhere import meta_client as M
+    deleted = []
+
+    class H(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers.get("Content-Length") or 0))
+            if self.path.endswith("/files"):
+                b = json.dumps({"id": "f1"}).encode()
+                self.send_response(200); self.send_header("Content-Length", str(len(b))); self.end_headers(); self.wfile.write(b); return
+            self.send_response(200); self.send_header("Content-Type", "text/event-stream"); self.end_headers()
+            try:
+                for _ in range(events):
+                    self.wfile.write(b'data: {"type": "response.in_progress"}\n\n'); self.wfile.flush(); time.sleep(0.5)
+                self.wfile.write(b'data: {"type": "response.completed", "response": {"usage": {}}}\n\n'); self.wfile.flush()
+            except OSError:                                                          # the client stopped reading
+                pass
+            self.close_connection = True
+
+        def do_DELETE(self):
+            deleted.append(self.path); time.sleep(delete_s)
+            self.send_response(200); self.send_header("Content-Length", "0"); self.end_headers()
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), H); srv.daemon_threads = True
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(M, "API", f"http://127.0.0.1:{srv.server_port}/v1"); monkeypatch.setattr(M, "HOSTS", frozenset({"127.0.0.1"}))
+    monkeypatch.setattr(M, "_key", lambda: "k")
+    return srv, deleted
+
+
+def test_one_sam_call_ends_by_its_wall_clock_deadline(web, monkeypatch):
+    """Refuter item 3: httpx's timeouts are per phase and per read, so a stream that sends a byte inside each read timeout kept one
+    SAM call running past it. segment(deadline=) is an absolute end: the stream is checked on every line and stops (TimeoutError)
+    DELETE_S before the deadline, and the file delete, best effort, gets what is left, at most DELETE_S (it had its own 60 s)."""
+    from stillhere import egress
+    from web import sam
+    clip = str(REPO / json.loads((REPO / "web/film/frames.json").read_text())["frames"][0]["clip"])
+    assert sam.DELETE_S == 10.0
+    monkeypatch.setattr(sam, "DELETE_S", 0.5)
+    srv, deleted = sam_stand_in(monkeypatch, events=8)                               # 4 s of events
+    try:
+        t0 = time.time()
+        with pytest.raises(TimeoutError):
+            sam.segment(clip, egress.PublicQuestion(text="face"), timeout=60.0, deadline=t0 + 2.0)
+        took = time.time() - t0
+    finally:
+        srv.shutdown()
+    assert 1.4 < took < 2.2 and deleted == ["/v1/files/f1"], took
+    monkeypatch.setattr(sam, "DELETE_S", 1.0)
+    srv, deleted = sam_stand_in(monkeypatch, events=0, delete_s=5.0)                # a delete that hangs for 5 s
+    try:
+        t0 = time.time(); out = sam.segment(clip, egress.PublicQuestion(text="face"), timeout=60.0, deadline=t0 + 30.0)
+        took = time.time() - t0
+    finally:
+        srv.shutdown()
+    assert out["status"] == "response.completed" and deleted and took < 2.0, took   # cut at DELETE_S, the answer kept
+
+
+def test_film_gives_every_sam_call_its_end(live, monkeypatch):
+    """Refuter item 3: FILM passes each SAM call its end, FILM_END_S after its first frame starts, so with the 60 s read timeout the
+    finally settles by about 230 s at worst, well before Vercel's 300 s; no frame starts after FILM_DEADLINE_S."""
+    (app, jobs, ledger, stations, store), paid = live
+    from web import sam
+    clock = [7_000_000.0]; monkeypatch.setattr(stations, "time", types.SimpleNamespace(time=lambda: clock[0]))
+    got = []
+    monkeypatch.setattr(sam, "segment", lambda clip, q, **k: got.append(k) or {"objects": [], "usage": {}, "status": "response.completed"})
+    assert stations.film(None, "a" * 32, "face", ip="203.0.113.79")["mode"] == "live"
+    assert got == [{"timeout": 60.0, "deadline": 7_000_000.0 + stations.FILM_END_S}] * 3
+    assert stations.FILM_DEADLINE_S == 150 < stations.FILM_END_S == 180
