@@ -36,7 +36,10 @@ PINS = {"../d22/d3/out_stock/d3_out/pred_en_full.npz": "925ac173683ac8fe49674b84
         "../d22/d3/out_tuned/d3_out/pred_en_audio.npz": "006072d9e4836f09721de6c7303717879b8d07f8801e0508fce562ca0a1aacbf",
         "../k2/out/k2_out/pred_fr_full.npz": "b9268ee548718e2e966cd128d6d4ab22bca04f471c487620d57c08143cd5158f",            # section 3
         "../k2/out/k2_out/pred_fr_audio.npz": "83c7e967f332bce85ea485ecbd0f74ec671f334091188c17a0fd32885b922793"}
-FR_PINS = None   # {path: SHA-256} of the four laptop French forecasts, set by the rule's second commit, before the one scoring run
+FR_PINS = {"../lpp_variants/forecast/out/pred_fr_stock_full.npz": "f61ce1b83965b71f48038d8aa214d1711a7788c52b33661e5da8cd5541a3718c",   # the
+           "../lpp_variants/forecast/out/pred_fr_stock_audio.npz": "bdadf0885afd16002df944be9bc4bb2c27a16d13e6671566ee2205f2ac4eaec4",  # rule's
+           "../lpp_variants/forecast/out/pred_fr_tuned_full.npz": "805f404f8a2031db872c0d4282239952952983c3ab67a15d0476a532c74154e0",   # second
+           "../lpp_variants/forecast/out/pred_fr_tuned_audio.npz": "d4d1ed6b06e19043108294758df1e1d0e07708f6a11fe0ed48954b08e3b2ea2e"}  # commit
 CFG = {"EN": dict(cache="cache_en", tg="data/lppEN_section1.TextGrid", l_env=-1.25, n=49,
                   stock=("../d22/d3/out_stock/d3_out/pred_en_full.npz", "../d22/d3/out_stock/d3_out/pred_en_audio.npz"),
                   tuned=("../d22/d3/out_tuned/d3_out/pred_en_full.npz", "../d22/d3/out_tuned/d3_out/pred_en_audio.npz")),

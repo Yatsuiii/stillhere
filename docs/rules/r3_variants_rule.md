@@ -36,6 +36,18 @@ Wilcoxon p < 0.05 and +0.2 z) before use." Here: chosen on English, confirmed on
   of the same mode; each fine-tuned forecast must differ from the stock one. A run that fails technically is fixed and rerun; no
   French forecast is compared with brain data before the one scoring run.
 
+- Second commit, Oct 31, after the four French forecasts and before scoring. Made by `run_all_fr.sh` on the laptop: stock audio
+  11:02-11:07 UTC; stock full first started 11:07 and was stopped at 11:33 by Claude Code for low system memory (nothing written;
+  the Llama features it had cached were kept, and features do not depend on the brain model), then rerun 13:11-13:17 UTC as a
+  systemd unit; fine-tuned audio and full 13:17-13:18 UTC. Each 614 by 20,484, finite, one row per second, 13 windows. Stock against
+  section 3's Kaggle forecasts: audio correlation 1.000000, largest difference 2.3e-6; full correlation 1.000000, largest
+  difference 7.4e-4 (fp16 text lane, the size D3 saw). Fine-tuned: 105 of 108 tensors changed, eval mode, every feature read from
+  the stock stages' cache entries (no file added, work folders unchanged); correlation with stock 0.806 (audio) and 0.870 (full).
+  SHA-256: stock full f61ce1b83965b71f48038d8aa214d1711a7788c52b33661e5da8cd5541a3718c, stock audio
+  bdadf0885afd16002df944be9bc4bb2c27a16d13e6671566ee2205f2ac4eaec4, fine-tuned full
+  805f404f8a2031db872c0d4282239952952983c3ab67a15d0476a532c74154e0, fine-tuned audio
+  d4d1ed6b06e19043108294758df1e1d0e07708f6a11fe0ed48954b08e3b2ea2e. No variant has been scored on either language.
+
 ## 4. The default and the harness
 
 The stock forecast through D3's harness (`d22/d3/d3_table.py`, which is `timing/chk8.py`'s computation), unchanged: per listener,
