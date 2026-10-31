@@ -48,7 +48,7 @@ the confidential clip and never leaves the laptop, and the server holds nothing 
   worst case first; chat calls settle to their token cost at the planner rule's prices. Voice Transcribe ($0.10 reserved) keeps its
   reservation. SAM 3.1 settles each completed frame to `SAM_USD_PER_FRAME`, set to $0.01: Meta lists video at $0.20 per 1,000
   frames and a one-frame call bills a 50-frame minimum (`docs/deploy_checklist.md`); with it set, a frame reserves twice it ($0.06 a
-  run), and unset, $0.50 a frame that it keeps ($1.50 a run; cloud review of Oct 31, 12:20 UTC, item 1). FILM reserves its three frames before the first call, gives each SAM call 60 s a phase and an end 180 s after its first frame (upload, stream and a 10 s best-effort file delete), and starts no frame after 150 s, so it settles by about 230 s at worst, inside the function's 300 s (item 7, and the refuter's item 3); each chat
+  run), and unset, $0.50 a frame that it keeps ($1.50 a run; cloud review of Oct 31, 12:20 UTC, item 1). FILM reserves its three frames before the first call, gives each SAM call 60 s a phase and an end 180 s after its first frame (upload, stream and a 10 s best-effort file delete), waits for a call only until that end (the call runs in a thread), and starts no frame after 150 s, so it settles by about 180 s plus one frame's edit, inside the function's 300 s (item 7, and the refuters' items 3 and A); each chat
   call carries `max_tokens` so it cannot cost more than its reservation, and `settle` holds an over-run at the cap.
 - Spark Open runs on Fireworks; Baseten (`BASETEN_API_KEY`) is its fallback host when Fireworks has no key, is capped, or fails. The
   receipt names the host that answered.

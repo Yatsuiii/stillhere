@@ -61,7 +61,8 @@ FILM_N = 3                                                                 # fra
 # starts once 150 s have passed, so the run ends with the api_error line well inside Vercel Hobby's 300 s and its finally always
 # settles (a platform kill at 300 s would leave the whole reservation booked). The 60 s bounds each phase and read, not a call, so
 # every SAM call also gets FILM's end, FILM_END_S after the first frame starts (sam.segment's deadline; refuter's review of Oct 31,
-# item 3): with a read stalled just before it, the finally settles by about 230 s at worst.
+# item 3), and FILM waits for a call only until that end (_sam_frame: second refuter's review, item A), so the finally settles by
+# about 180 s plus one frame's edit (a few seconds), whatever the stream does.
 SAM_TIMEOUT_S, FILM_DEADLINE_S, FILM_END_S = 60.0, 150, 180
 TRANSCRIBE_TIMEOUT_S = 60.0   # BUILD's Voice Transcribe call: the menu's clips are 40 s at most; the client's 300 s default is Vercel
                               # Hobby's whole function limit, so a stall would end in a platform 504 instead of the recorded run
@@ -621,6 +622,27 @@ SAVED_LINE = "A saved forecast is shown whenever one exists for your choice. New
 JPEG_QUALITY = 90
 
 
+def _sam_frame(sam, clip: str, q, end: float):
+    """One SAM call, waited for at most until `end` (time.time() seconds): (answer or None, its error or None, whether it reached the
+    provider), or TimeoutError while it still runs. httpx fixes a stream's read timeout when the body starts, so bytes trickled within
+    one line each get a full read timeout and sam.segment's per-line check cannot end the call; it runs in a daemon thread, which ends
+    on its own, and FILM stops waiting at its end (second refuter's review of Oct 31, item A). capture() is per thread, so it runs in
+    there."""
+    box = {}
+
+    def run():
+        with capture():
+            try:
+                box["seg"] = sam.segment(clip, q, timeout=SAM_TIMEOUT_S, deadline=end)
+            except Exception as e:
+                box["err"] = e
+            box["hit"] = reached()
+    t = threading.Thread(target=run, name="stillhere-sam", daemon=True); t.start(); t.join(max(end - time.time(), 0.0))
+    if t.is_alive():
+        raise TimeoutError("the SAM call is still running at FILM's end")
+    return box.get("seg"), box.get("err"), box.get("hit", True)
+
+
 def _b64jpg(rgb) -> str:
     """One FILM image as the page shows it: half the release frame (640x267), JPEG at quality 90 through opencv, which live FILM
     already needs. About 0.6 MB for a run's nine images where PNG sent 4.7 MB (cloud review of Oct 31, 12:20 UTC, optional item); the
@@ -676,10 +698,11 @@ def film(run_id: str, sid: str, concept: str, ip: str = None) -> dict:
             if time.time() - t0 >= FILM_DEADLINE_S:            # out of time: this frame and the rest are freed below
                 return recorded_film("api_error")
             try:
-                with capture():
-                    seg = sam.segment(str(REPO / f["clip"]), q, timeout=SAM_TIMEOUT_S, deadline=t0 + FILM_END_S)
-            except Exception:                                  # this frame failed; later ones are not called. Never connected: not
-                held += per if reached() else 0.0              # counted; reached the provider (a parse error after it answered): kept
+                seg, err, hit = _sam_frame(sam, str(REPO / f["clip"]), q, t0 + FILM_END_S)
+            except TimeoutError:                               # still running at FILM's end: it may be billed, so it stands
+                held += per; return recorded_film("api_error")
+            if err is not None:                                # this frame failed; later ones are not called. Never connected: not
+                held += per if hit else 0.0                    # counted; reached the provider (a parse error after it answered): kept
                 return recorded_film("api_error")
             if seg.get("status") == "response.completed" and SAM_USD_PER_FRAME is not None:
                 priced.append(SAM_USD_PER_FRAME)

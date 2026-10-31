@@ -2319,8 +2319,9 @@ def test_one_sam_call_ends_by_its_wall_clock_deadline(web, monkeypatch):
 
 
 def test_film_gives_every_sam_call_its_end(live, monkeypatch):
-    """Refuter item 3: FILM passes each SAM call its end, FILM_END_S after its first frame starts, so with the 60 s read timeout the
-    finally settles by about 230 s at worst, well before Vercel's 300 s; no frame starts after FILM_DEADLINE_S."""
+    """Refuter item 3: FILM passes each SAM call its end, FILM_END_S after its first frame starts, and (item A) waits for it only
+    until then, so the finally settles by about 180 s plus one frame's edit, well before Vercel's 300 s; no frame starts after
+    FILM_DEADLINE_S."""
     (app, jobs, ledger, stations, store), paid = live
     from web import sam
     clock = [7_000_000.0]; monkeypatch.setattr(stations, "time", types.SimpleNamespace(time=lambda: clock[0]))
@@ -2389,3 +2390,66 @@ def test_a_sam_price_that_is_not_a_positive_number_counts_as_unset(live, monkeyp
                                                                                                "status": "response.completed"})
     assert stations.film(None, "a" * 32, "face", ip="203.0.113.80")["mode"] == "live" and held[0] == pytest.approx(1.50)
     assert total() - before == pytest.approx(1.50)                                     # unpriced: every frame keeps its $0.50
+
+
+# ---- the second refuter's review (Oct 31) ----------------------------------------------------------------------------------------
+def raw_sam_stand_in(monkeypatch, script):
+    """Meta's API on a local port at the socket level (the second refuter's probe): the upload answers at once, the stream sends
+    `script`, a list of (sleep_s, bytes) sent raw from the status line on, so one line can arrive in pieces; deletes are counted."""
+    import socketserver
+    from stillhere import meta_client as M
+    deleted = []
+
+    class H(socketserver.BaseRequestHandler):
+        def handle(self):
+            f = self.request.makefile("rb"); line = f.readline().decode(); n = 0
+            while (h := f.readline()) not in (b"\r\n", b"\n", b""):
+                k, v = h.decode().split(":", 1); n = int(v) if k.strip().lower() == "content-length" else n
+            f.read(n); meth, path = line.split()[:2]
+            try:
+                if meth == "DELETE":
+                    deleted.append(path); self.request.sendall(b"HTTP/1.1 200 OK\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
+                elif path.endswith("/files"):
+                    self.request.sendall(b'HTTP/1.1 200 OK\r\nContent-Length: 11\r\nConnection: close\r\n\r\n{"id":"f1"}')
+                else:
+                    for s, b in script:
+                        time.sleep(s); self.request.sendall(b)
+            except OSError:
+                pass
+
+    class S(socketserver.ThreadingTCPServer):
+        daemon_threads, allow_reuse_address = True, True
+    srv = S(("127.0.0.1", 0), H); threading.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(M, "API", f"http://127.0.0.1:{srv.server_address[1]}/v1"); monkeypatch.setattr(M, "HOSTS", frozenset({"127.0.0.1"}))
+    monkeypatch.setattr(M, "_key", lambda: "k")
+    return srv, deleted
+
+
+def test_film_waits_for_a_sam_call_only_until_its_end(web, monkeypatch, capsys):
+    """Second refuter item A: httpx fixes a stream's read timeout when the body starts, so bytes trickled within one line each get a
+    full read timeout and sam.segment's per-line check never fires (at full scale, three pieces ran past Vercel's 300 s and the
+    finally never settled). FILM runs each SAM call in a thread and waits only until its end: here (scaled: read timeout 2 s, end
+    4 s) a line in 1.5 s pieces gives the api_error line at the end, and the frame's reservation stands, as for any frame that
+    reached the provider; the frames not called are freed."""
+    app, jobs, ledger, stations, store = web
+    import stillhere
+    from web import sam
+    fe = types.ModuleType("stillhere.face_edit")
+    monkeypatch.setitem(sys.modules, "cv2", cv2_stub()); monkeypatch.setitem(sys.modules, "meta_sam_parser", types.ModuleType("m"))
+    monkeypatch.setitem(sys.modules, "stillhere.face_edit", fe); monkeypatch.setattr(stillhere, "face_edit", fe, raising=False)
+    for k, v in (("SAM_USD_PER_FRAME", None), ("SAM_TIMEOUT_S", 2.0), ("FILM_END_S", 4.0), ("FILM_DEADLINE_S", 3.0)):
+        monkeypatch.setattr(stations, k, v)
+    monkeypatch.setattr(sam, "DELETE_S", 0.5)
+    hdr = b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nConnection: close\r\n\r\n"
+    piece = [(1.5, b'data: {"type": '), (1.5, b'"response.'), (1.5, b'in_progress"}'), (1.5, b"\n\n")]
+    srv, deleted = raw_sam_stand_in(monkeypatch, [(0, hdr)] + piece)
+    S = store.get_store(); total = lambda: float(S.get("spend:meta:total") or 0)
+    try:
+        t0 = time.time(); d = stations.film(None, "a" * 32, "face", ip="203.0.113.82"); took = time.time() - t0
+    finally:
+        for t in threading.enumerate():                                              # the abandoned call ends on its own; wait for it
+            if t.name == "stillhere-sam":
+                t.join(10)
+        srv.shutdown()
+    assert d["why"] == stations.why_line("api_error") and 3.9 < took < 4.8, took
+    assert total() == pytest.approx(0.50)                                            # frame 1 stands, frames 2 and 3 freed

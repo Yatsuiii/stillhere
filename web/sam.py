@@ -45,8 +45,9 @@ def segment(clip_path: str, concept: egress.PublicQuestion, timeout: float = 120
     """{"objects": [...], "usage": {...}, "status": str} for frame 0 of an allowlisted one-frame clip. `timeout` bounds each phase
     and each read, not the call: a stream that sends a byte inside each read timeout runs on. `deadline` (time.time() seconds) bounds
     the call (refuter's review of Oct 31, item 3): the upload and the stream end DELETE_S before it, the stream checked on every line
-    (TimeoutError), and the file delete gets what is left, at most DELETE_S. A read that stalls just before the end can still wait
-    its read timeout, at most min(timeout, the time left when the stream opened)."""
+    (TimeoutError), and the file delete gets what is left, at most DELETE_S. Not a hard bound: httpx fixes the read timeout when the
+    body starts, so bytes trickled within one line each get a full read timeout; stations.film runs the call in a thread and stops
+    waiting at its end (second refuter's review of Oct 31, item A)."""
     path = egress.PublicFrame(path=clip_path).path
     if not isinstance(concept, egress.PublicQuestion):
         raise egress.EgressRefused("the SAM concept must be a scanned egress.PublicQuestion")
