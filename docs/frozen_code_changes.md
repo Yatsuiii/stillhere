@@ -193,3 +193,212 @@ the history line. Waiting only: no input, order, bar, output or file name change
   nothing that could pass the 42/42 check.
 - The script and its dry test stay in the analysis root, hash-only in the registry like every earlier version (ruling of Oct 30,
   12:40 UTC); disclosure 18 in the submission covers the change.
+
+## picker-pred D26 parts: prediction step through the full harness (Oct 31, before any picker BOLD was read)
+
+Cloud ruling of Oct 31, 04:30 UTC. The three D26 fallback parts now predict through the full prediction harness instead of pred_stage's
+cached-input route. Feature stage, stock checkpoint, clips, self-check, merge, 42/42 check, scorer and every threshold are unchanged.
+
+- Why: the picker-pred rerun (1a9f1812, Sat Oct 31, 00:00 to 01:38 UTC) predicted all 42 clips, passed D26 condition 1 and failed
+  condition 3 on both self-check clips. Full mode: median vertex r 0.9998 on both (bar 0.999), max |difference| 0.686 SD on LPP-FR
+  section 8 and 0.629 SD on pieman (bar 0.05). Audio mode passed on both (0.0016 and 0.0008 SD). LPP-FR section 8 was extracted fresh in
+  that kernel, and its harness reference took 30 s against 1,632 s for its feature stage, so both routes read the same extractor outputs:
+  the gap is in pred_stage's prediction step (100 s fp16 model inputs, re-windowed at a 50 s stride), not in the cache. The parts as
+  frozen ran every clip through that same step against the same reference, so they would have failed condition 3 again.
+- What changed, in each part kernel only: `harness_pred.py` is embedded (`HARNESS_STAGE`) and written to `/tmp`; every clip keeps the stim
+  folder (`/tmp/conf_{clip}`) its feature stage made, instead of all but the self-check clips deleting theirs; the prediction step runs
+  `harness_pred.py` instead of `pred_stage.py predict`. `harness_pred.py` calls tribe_common's own `load_model`, `apply_weights` and
+  `stitched_predict`, byte for byte the self-check's reference (`ref_stage`) and section 8's harness, on the events built from that stim
+  folder and the extractor features the feature stage left in the shared cache. It writes pred_stage's layout and lines
+  (`PRED_PENDING/<clip>/pred_{full,audio,timing}.npz`, `provenance.json`, `ckpt` and `predict:` lines), so the self-check, merge, 42/42
+  check and scorer read it unchanged.
+- The self-check still runs in each part and is reported, but it now compares the harness with itself: a pass is a consistency check
+  (the part ran the harness the way its reference does), not independent evidence that the predictions are right. The record of the
+  v2 rerun, whose self-check failed (LPP-FR section 8 0.686 SD, pieman 0.629 SD, bar 0.05), stays as the reason for the change
+  (`d22/picker_pred/out_v2/picker_pred_out/`: `tierD_picker_pred.json`, `equivalence_*.json`, `driver.log`); the picker results
+  file says the same.
+- Timing mode (descriptive only under D26 (c), never S3b): full, with every word-bearing 2 Hz text frame of each harness window set to the
+  clip-mean word-frame vector, using pred_stage's `timing_text` rule on the stitched text input. Frames that two windows share are
+  counted, with how many differ, on a `predict:` line per clip.
+- Made before any picker BOLD was read. The picker's BOLD-derived series exist only from the frozen download pass (Thu Oct 29); the
+  manifest job reads tier-D files only (`build_manifest.py`: nothing there reads BOLD); the scoring call, the only step that reads them,
+  last ran Oct 28 at 16:49 and 21:17 UTC and refused both times (no posted hash), and has not run since; no scored output exists.
+- The Saturday chain was stopped by hand at 05:08 UTC while it waited on the film-rem and film-am forecasts (cloud ruling of
+  Oct 31, 05:15 UTC on the film forecasts, its own entry), before its Glimmer and parts steps, so no part ran on the old route. The
+  parts, the merge and the scoring call run by hand in the chain's order and are logged in the chain's log. GPU: no re-push after a
+  self-check failure; a re-push after an infrastructure failure only if the weekly quota still covers it. Latest start for the parts,
+  as ruled at 04:30 UTC: Sat Oct 31, 16:00 UTC; the film rerun and Glimmer take the GPU first (ruling of 05:15 UTC); the picker
+  cutoff stays Sun Nov 1, 18:00 UTC. If the parts cannot run in time, or anything fails for good, the picker and the wall are
+  "pre-registered, not run" with the true reason (for a self-check failure: the prediction route failed its D26 self-check), never
+  "GPU time ran out" unless that is what happened; the page shows the reason the not-run record states (`results/story_wall.json`).
+- Not changed: picker-pred 1a9f1812 itself, `pred_stage.py`, `merge_picker_parts.py` (its record still says the parts are "clip-list input
+  only"; each part's kernel SHA-256 in that record identifies the new kernels), `check_pred_inputs.py`, `score_picker.py`, the split.
+
+| File (analysis root) | SHA-256 before | SHA-256 after |
+|---|---|---|
+| `d22/picker_pred/kernels/picker_pred_part1/stillhere_picker_pred_part1.py` | `57d1cdada46769fd...` | `1bf1377f24a3060f...` |
+| `d22/picker_pred/kernels/picker_pred_part2/stillhere_picker_pred_part2.py` | `435edc5744f5dbbe...` | `542cf68e2d151617...` |
+| `d22/picker_pred/kernels/picker_pred_part3/stillhere_picker_pred_part3.py` | `45a7b03ffc5d7d60...` | `518eb0eb02842079...` |
+| `d22/picker_pred/make_picker_pred_parts.py` | `ec370c63c53cf592...` | `0cf765d48d88746a...` |
+| `d22/picker_pred/harness_pred.py` (new, embedded in each part) | | `ed51d980eb436c1d...` |
+| `d22/picker_pred/parts.json` (same split; adds `prediction_step`, `harness_pred_sha256`) | | `ab9086dfcf47d51a...` |
+
+The registry keeps the before hashes as history lines.
+
+- Dry test on CPU (no GPU, no network, no BOLD, no TRIBE weights): `test_harness_pred.py` (SHA-256 `9b22ea1af6d4bef1...`, new) runs the
+  kernel's embedded tribe_common as is, with stand-ins for load_model, apply_weights and build_events, a toy loader (100 s windows at a 50 s
+  stride, batches of 3) and a toy model: pred_stage's layout, provenance and lines; full and audio equal `stitched_predict`'s own output
+  bit for bit, so pred_stage's compare passes on both self-check clips; timing equals pred_stage's definition computed independently on
+  the clip's series (a version that skips the frame replacement fails this check); windows that disagree on a shared frame are counted; a
+  failing clip leaves the others complete. `test_picker_pred_parts.py` (SHA-256 `c8da72dc391df2c1...` -> `fb586ccde5b71aa9...`): each part
+  is 1a9f1812 plus exactly these lines (8 added, 3 removed) with `HARNESS_STAGE` equal to `harness_pred.py`; the split, the kernel's own
+  routing, the merge and the 42/42 check pass as before.
+
+```diff
+--- a/stillhere_picker_pred_part1.py
++++ b/stillhere_picker_pred_part1.py
+@@ -27,2 +27,3 @@
+ SELF_NARR = ['pieman', 'bronx', 'piemanpni', 'shapesphysical', 'shapessocial', '21styear', 'merlin', 'milkywayoriginal', 'milkywaysynonyms', 'milkywayvodka', 'prettymouth', 'sherlock', 'slumlordreach
++HARNESS_STAGE = <harness_pred.py below, byte for byte, as a Python string literal>
+ PART = ['lppEN_section1', 'lppEN_section2', 'lppEN_section3', 'lppEN_section4', 'lppEN_section5', 'lppEN_section6', 'lppEN_section7', 'lppEN_section9', 'lppFR_section1', 'lppFR_section2', 'lppFR_sect
+@@ -139,2 +140,3 @@
+     Path("/tmp/feat_stage.py").write_text(FEAT_STAGE); Path("/tmp/pred_stage.py").write_text(PRED_STAGE)
++    Path("/tmp/harness_pred.py").write_text(HARNESS_STAGE)       # the prediction step (cloud ruling of Oct 31, 04:30 UTC)
+     stems = NARR + [f"lpp{lg}_section{k}" for lg, ks in LPP.items() for k in ks]
+@@ -200,4 +202,3 @@
+             log("feature stage failed for", st, type(e).__name__)
+-        if st not in keep_conf:
+-            shutil.rmtree(f"/tmp/conf_{st}", ignore_errors=True)
++        # every clip keeps /tmp/conf_{st}: the harness prediction step builds its events there (cloud ruling of Oct 31, 04:30 UTC)
+         log(f"{st} wall {time.time() - t0:.0f}s")
+@@ -241,3 +242,4 @@
+         if p.stem not in checks: p.unlink()
+-    sh(f"{PY} /tmp/pred_stage.py predict /tmp/jobs.json {W}/PRED_PENDING", ENVV, 6 * 3600, keep=("ckpt ", "predict:"))
++    json.dump({s: SRC[s]["lang"] for s in have}, open("/tmp/langs.json", "w"))   # full harness, not pred_stage's re-windowed fp16 inputs
++    sh(f"{PY} /tmp/harness_pred.py /tmp/jobs.json /tmp/langs.json {W}/PRED_PENDING", ENVV, 6 * 3600, keep=("ckpt ", "predict:"))
+     prov = [json.load(open(p)) for p in glob.glob(f"{W}/PRED_PENDING/*/provenance.json")]
+```
+
+<details><summary><code>harness_pred.py</code> (embedded as <code>HARNESS_STAGE</code>)</summary>
+
+```python
+"""Picker-clip predictions through the full prediction harness (D26 fallback parts; cloud ruling of Oct 31, 04:30 UTC, item 2). Replaces
+pred_stage's predict step only: tribe_common's own load_model, apply_weights and stitched_predict, byte for byte the D26 self-check's
+reference (ref_stage) and section 8's harness, on the events feat_stage built (/tmp/conf_{stem}/stim.wav and stim.tsv) and the extractor
+features it left in the shared cache (/tmp/cache). Why: in the v2 rerun the self-check failed on LPP-FR section 8 extracted fresh in that
+kernel (max |diff| 0.686 SD against 0.05), so the gap is in pred_stage's prediction step (100 s fp16 model inputs, re-windowed), not in
+the cache. Modes as pred_stage: full, audio, and timing (full, with every word-bearing 2 Hz text frame of each window set to the clip-mean
+word-frame vector, pred_stage.timing_text's rule on the stitched text input): descriptive only under D26 (c), never S3b. Writes
+pred_stage's layout (OUT_DIR/<stem>/pred_{mode}.npz, provenance.json, picker_pred_out/predict_summary.json) and its stdout lines ("ckpt",
+"predict:"), so the self-check, merge, 42/42 check and scorer read it unchanged. torch is imported only inside run().
+
+usage (inside the kernel's venv): python harness_pred.py JOB_JSON LANGS_JSON OUT_DIR
+  JOB_JSON: pred_stage's job list; LANGS_JSON: {stem: language} for build_events"""
+import json, os, sys, time, types
+import numpy as np
+
+HZ = 2                                                                  # the loader's text and audio frame rate
+
+
+def with_batches(m, fn):
+    """What stitched_predict reads from a TribeModel (data.get_loaders, _model), with every batch passed through fn first."""
+    def get_loaders(**kw):
+        return {k: (fn(b) for b in L) for k, L in m.data.get_loaders(**kw).items()}
+    return types.SimpleNamespace(data=types.SimpleNamespace(get_loaders=get_loaders), _model=m._model)
+
+
+def stitched_text(windows):
+    """[(segment start s, text (2, D, T))] -> the text input the stitched prediction reads, one series (2, D, n) at 2 Hz: per frame, the
+    window where it is closest to the centre (stitched_predict's rule at the input rate, first window on a tie). Also returns how many
+    frames two windows share and how many of those differ (counts only)."""
+    best, shared, differ = {}, 0, 0
+    for s, t in windows:
+        T = t.shape[-1]
+        for k in range(T):
+            a = int(round(s * HZ)) + k; d = abs(k + 0.5 - T / 2)
+            if a in best:
+                shared += 1; differ += int(not np.array_equal(best[a][1], t[..., k]))
+            if a not in best or d < best[a][0]:
+                best[a] = (d, t[..., k])
+    idx = sorted(best); assert idx == list(range(idx[0], idx[-1] + 1)), "gap between the harness windows"
+    return np.stack([best[a][1] for a in idx], -1), shared, differ
+
+
+def clip_mean(G, timing_text):
+    """The clip-mean word-frame vector (2, D) timing_text assigns to every word frame of series G; None if no frame bears a word."""
+    out, n = timing_text(G); word = np.any(G != 0, axis=(0, 1))
+    return (out[..., int(np.argmax(word))], n) if word.any() else (None, 0)
+
+
+def set_word_frames(batch, v):
+    """Every word-bearing frame (any non-zero value) of the batch's text input set to v (2, D); other frames untouched."""
+    import torch
+    t = batch.data["text"].clone(); vv = torch.as_tensor(v, dtype=t.dtype, device=t.device)
+    word = (t != 0).any(dim=2).any(dim=1)                               # (B, T)
+    for b in range(t.shape[0]):
+        n = int(word[b].sum())
+        if n:
+            t[b][:, :, word[b]] = vv[:, :, None].expand(-1, -1, n)
+    batch.data["text"] = t
+    return batch
+
+
+def run(job_json, langs_json, out_dir):
+    import torch
+    sys.path[:0] = ["/tmp/k2code", "/tmp"]; import tribe_common as C, pred_stage as S   # the embedded harness and pred_stage, byte for byte
+    jobs = json.load(open(job_json)); langs = json.load(open(langs_json)); os.makedirs(out_dir, exist_ok=True)
+    res = {"clips": {}, "modes": {}, "method": "harness"}
+    for mode, feats in S.MODES.items():
+        t0m = time.time(); m = C.load_model(feats, "/tmp/cache", text_device="accelerate"); info = C.apply_weights(m, "stock")
+        assert info["stock_ckpt_sha256"] == S.STOCK_PIN
+        res["modes"][mode] = {"ckpt_sha256": info["stock_ckpt_sha256"], "training_mode": info["training_mode"], "features_to_use": feats}
+        for j in jobs:
+            stem = j["stem"]; r = res["clips"].setdefault(stem, {})
+            try:
+                ev = C.build_events(f"/tmp/conf_{stem}/stim.wav", langs[stem], with_text=("text" in feats))
+                end = float(ev[ev.type == "Audio"].stop.max()); r["harness_audio_end_s"] = end
+                if mode == "timing":
+                    wins = [(float(seg.start), b.data["text"][i].float().cpu().numpy()) for b in m.data.get_loaders(events=ev, split_to_build="all")["all"]
+                            for i, seg in enumerate(b.segments)]
+                    G, r["timing_frames_shared"], r["timing_frames_shared_differ"] = stitched_text(wins); del wins
+                    v, r["timing_words"] = clip_mean(G, S.timing_text); del G
+                    st, P, nw = C.stitched_predict(m if v is None else with_batches(m, lambda b, v=v: set_word_frames(b, v)), ev, end)
+                else:
+                    st, P, nw = C.stitched_predict(m, ev, end)
+                d = f"{out_dir}/{stem}"; os.makedirs(d, exist_ok=True)
+                np.savez(f"{d}/pred_{mode}.npz", P=P.astype("float32"), starts=st)
+                r.update({f"{mode}_shape": list(P.shape), f"{mode}_finite": bool(np.isfinite(P).all()), "n_windows": nw,
+                          "contiguous_seconds": bool((np.diff(st) == 1).all() and st[0] == 0), f"{mode}_ckpt_sha256": info["stock_ckpt_sha256"]})
+                print(f"ckpt {stem} {mode} {info['stock_ckpt_sha256']}", flush=True)
+            except Exception as e:
+                r[f"{mode}_error"] = type(e).__name__
+        res["modes"][mode]["seconds"] = round(time.time() - t0m); del m; torch.cuda.empty_cache()
+    for j in jobs:                                                      # provenance once every mode is done: the checkpoint of each prediction
+        stem = j["stem"]; r = res["clips"].get(stem, {})
+        if not all(f"{k}_shape" in r for k in S.MODES):
+            continue
+        by_mode = {k: r[f"{k}_ckpt_sha256"] for k in S.MODES}
+        json.dump({"stem": stem, "ckpt_sha256": S.STOCK_PIN if all(v == S.STOCK_PIN for v in by_mode.values()) else None, "ckpt_sha256_by_mode": by_mode,
+                   "model": "stock TRIBE v2 (facebook/tribev2 best.ckpt, tribev2 af58661)",
+                   "method": "full harness: tribe_common load_model (overlap_trs_train 50) and stitched_predict on the stock loader, extractor "
+                             "features from the cache feat_stage filled (cloud ruling of Oct 31, 04:30 UTC)",
+                   "features_route": j.get("route"), "features_sha256": j["feats_sha256"], "features_source": j["feats_source"],
+                   "features_file_read": False, "source_check": j.get("source_check"), "audio_end_s": r["harness_audio_end_s"],
+                   "timing_mode": "approximate, descriptive only (D26 (c)), never S3b: every word-bearing 2 Hz frame of each harness window gets "
+                                  "the clip-mean word-frame vector of the stitched text input",
+                   "subject": "average subject (subject_id 0, as in the D22 stock forward)",
+                   "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}, open(f"{out_dir}/{stem}/provenance.json", "w"), indent=1)
+    json.dump(res, open(f"{out_dir}/../picker_pred_out/predict_summary.json", "w"), indent=1)
+    for stem, r in res["clips"].items():
+        if "timing_frames_shared" in r:
+            print(f"predict: {stem} harness text frames shared by two windows {r['timing_frames_shared']}, differing {r['timing_frames_shared_differ']}", flush=True)
+    ok = sum(all(f"{k}_shape" in r for k in S.MODES) for r in res["clips"].values())
+    print(f"predict: {ok} of {len(jobs)} clips have full, audio and timing (full harness); modes " +
+          ", ".join(f"{k} {v['seconds']} s (training_mode {v['training_mode']})" for k, v in res["modes"].items()), flush=True)
+
+
+if __name__ == "__main__":
+    run(*sys.argv[1:4])
+```
+
+</details>

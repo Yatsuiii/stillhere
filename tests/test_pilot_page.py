@@ -310,11 +310,16 @@ def test_every_repository_path_the_page_links_to_exists_at_head():
 
 
 def test_story_wall_is_pending_until_its_frozen_cutoff_then_not_run():
-    """Ruling of Oct 30, 07:40 UTC, b: no relative days; after Sun Nov 1, 18:00 UTC with no result, the chain's frozen not-run wording."""
+    """Ruling of Oct 30, 07:40 UTC, b: no relative days; after Sun Nov 1, 18:00 UTC with no result, not run. Cloud ruling of Oct 31,
+    04:30 UTC: the reason shown is the one the not-run record states (any time), never "GPU time ran out" unless the record says so."""
     before = BP.wall_html(None, now=BP.WALL_CUTOFF_UTC - datetime.timedelta(minutes=1))
     after = BP.wall_html(None, now=BP.WALL_CUTOFF_UTC)
+    why = "the prediction route failed its D26 self-check"
+    recorded = BP.wall_html({"not_run": True, "why": why}, now=BP.WALL_CUTOFF_UTC - datetime.timedelta(hours=30))
     assert "Not scored yet; scored once, as pre-registered (D19)." in before and "pending" in before
-    assert "Story wall: pre-registered, not run (GPU time ran out); no partial scoring." in after and "not run" in after
+    assert "Story wall: pre-registered, not run; no partial scoring." in after and "not run" in after
+    assert f"Story wall: pre-registered, not run ({why}); no partial scoring." in recorded and "pending" not in recorded
+    assert "GPU time" not in before + after + recorded
     assert BP.WALL_CUTOFF_UTC.isoformat() == "2026-11-01T18:00:00+00:00"
 
 

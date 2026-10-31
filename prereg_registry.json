@@ -384,36 +384,54 @@
   },
   {
    "path": "d22/picker_pred/kernels/picker_pred_part1/stillhere_picker_pred_part1.py",
-   "sha256": "57d1cdada46769fd942ba2ebcaa2495a194de6319a26a2e2675869ba70198c42",
+   "sha256": "1bf1377f24a3060fffc12d227adf3710a272a208c35dc4174c077bf4d3755679",
    "role": "analysis",
    "implements": [
     "§9",
     "D19",
     "D26"
    ],
-   "what": "D26 fallback part 1 of 3 (used only if the rerun's self-check fails): picker-pred 1a9f1812 plus a clip-list input (13 clips in Part E row order, plus self-check clips ['lppFR_section8', 'pieman']); no feature outputs attached, so every clip is extracted fresh"
+   "what": "D26 fallback part 1 of 3 (used only if the rerun's self-check fails): picker-pred 1a9f1812 plus a clip-list input and, since Oct 31, the harness prediction step (harness_pred.py) (13 clips in Part E row order, plus self-check clips ['lppFR_section8', 'pieman']); no feature outputs attached, so every clip is extracted fresh",
+   "history": [
+    {
+     "old_sha256": "57d1cdada46769fd942ba2ebcaa2495a194de6319a26a2e2675869ba70198c42",
+     "why": "cloud ruling of Oct 31, 04:30 UTC: the prediction step only, through the full harness (harness_pred.py, tribe_common stitched_predict, the D26 self-check's reference) in place of pred_stage predict, since the v2 rerun failed condition 3 with LPP-FR section 8 extracted fresh (0.686 SD, pieman 0.629, bar 0.05); feature stage, checkpoint, clips, self-check, merge and 42/42 check unchanged; made before any picker BOLD was read"
+    }
+   ]
   },
   {
    "path": "d22/picker_pred/kernels/picker_pred_part2/stillhere_picker_pred_part2.py",
-   "sha256": "435edc5744f5dbbe75e034f65ad1ae3029b53d7506815a4a91a97d6584cbcee1",
+   "sha256": "542cf68e2d151617c63e152c1eed42a909fb8e410e258f7a7195a152ef2a75b1",
    "role": "analysis",
    "implements": [
     "§9",
     "D19",
     "D26"
    ],
-   "what": "D26 fallback part 2 of 3 (used only if the rerun's self-check fails): picker-pred 1a9f1812 plus a clip-list input (19 clips in Part E row order, plus self-check clips ['pieman']); no feature outputs attached, so every clip is extracted fresh"
+   "what": "D26 fallback part 2 of 3 (used only if the rerun's self-check fails): picker-pred 1a9f1812 plus a clip-list input and, since Oct 31, the harness prediction step (harness_pred.py) (19 clips in Part E row order, plus self-check clips ['pieman']); no feature outputs attached, so every clip is extracted fresh",
+   "history": [
+    {
+     "old_sha256": "435edc5744f5dbbe75e034f65ad1ae3029b53d7506815a4a91a97d6584cbcee1",
+     "why": "cloud ruling of Oct 31, 04:30 UTC: the prediction step only, through the full harness (harness_pred.py, tribe_common stitched_predict, the D26 self-check's reference) in place of pred_stage predict, since the v2 rerun failed condition 3 with LPP-FR section 8 extracted fresh (0.686 SD, pieman 0.629, bar 0.05); feature stage, checkpoint, clips, self-check, merge and 42/42 check unchanged; made before any picker BOLD was read"
+    }
+   ]
   },
   {
    "path": "d22/picker_pred/kernels/picker_pred_part3/stillhere_picker_pred_part3.py",
-   "sha256": "45a7b03ffc5d7d603b2544e0006a40a62ed7b201a4600cf2223c5b5baf843221",
+   "sha256": "518eb0eb028420793168742db518c915d6c934d98235221554d086e1ef36b8ab",
    "role": "analysis",
    "implements": [
     "§9",
     "D19",
     "D26"
    ],
-   "what": "D26 fallback part 3 of 3 (used only if the rerun's self-check fails): picker-pred 1a9f1812 plus a clip-list input (10 clips in Part E row order, plus self-check clips ['lppFR_section8']); no feature outputs attached, so every clip is extracted fresh"
+   "what": "D26 fallback part 3 of 3 (used only if the rerun's self-check fails): picker-pred 1a9f1812 plus a clip-list input and, since Oct 31, the harness prediction step (harness_pred.py) (10 clips in Part E row order, plus self-check clips ['lppFR_section8']); no feature outputs attached, so every clip is extracted fresh",
+   "history": [
+    {
+     "old_sha256": "45a7b03ffc5d7d603b2544e0006a40a62ed7b201a4600cf2223c5b5baf843221",
+     "why": "cloud ruling of Oct 31, 04:30 UTC: the prediction step only, through the full harness (harness_pred.py, tribe_common stitched_predict, the D26 self-check's reference) in place of pred_stage predict, since the v2 rerun failed condition 3 with LPP-FR section 8 extracted fresh (0.686 SD, pieman 0.629, bar 0.05); feature stage, checkpoint, clips, self-check, merge and 42/42 check unchanged; made before any picker BOLD was read"
+    }
+   ]
   },
   {
    "path": "d22/picker_pred/merge_picker_parts.py",
@@ -437,13 +455,19 @@
   },
   {
    "path": "d22/picker_pred/make_picker_pred_parts.py",
-   "sha256": "ec370c63c53cf5929b4b91b4430d87eb5f021eac86adabbde105ebf48be981c6",
+   "sha256": "0cf765d48d88746a232bffa26a178d4f5e8becd0cc49b78e2f65485caed6d3af",
    "role": "runner",
    "implements": [
     "§9",
     "D26"
    ],
-   "what": "D26 fallback: builds the three part kernels from picker-pred 1a9f1812 (clip-list input only)"
+   "what": "D26 fallback: builds the three part kernels from picker-pred 1a9f1812 (clip-list input; harness prediction step since Oct 31)",
+   "history": [
+    {
+     "old_sha256": "ec370c63c53cf5929b4b91b4430d87eb5f021eac86adabbde105ebf48be981c6",
+     "why": "cloud ruling of Oct 31, 04:30 UTC: the prediction step only, through the full harness (harness_pred.py, tribe_common stitched_predict, the D26 self-check's reference) in place of pred_stage predict, since the v2 rerun failed condition 3 with LPP-FR section 8 extracted fresh (0.686 SD, pieman 0.629, bar 0.05); feature stage, checkpoint, clips, self-check, merge and 42/42 check unchanged; made before any picker BOLD was read"
+    }
+   ]
   },
   {
    "path": "d22/picker_pred/saturday_chain.sh",

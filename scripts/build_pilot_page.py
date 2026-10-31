@@ -477,15 +477,21 @@ def alice_html(d) -> str:
 
 
 WALL_CUTOFF_UTC = datetime.datetime(2026, 11, 1, 18, 0, tzinfo=datetime.timezone.utc)   # saturday_chain.sh: 42/42 predictions by then
-WALL_NOT_RUN = "pre-registered, not run (GPU time ran out); no partial scoring"        # the chain's frozen not-run wording
+
+
+def wall_not_run(why=None) -> str:
+    """PICKER_NOT_RUN.txt's wording. The reason is the one the not-run record states, never a guessed one (cloud ruling of Oct 31,
+    04:30 UTC); with no record, no reason is given."""
+    return f"pre-registered, not run{f' ({why})' if why else ''}; no partial scoring"
 
 
 def wall_html(d, now: datetime.datetime = None) -> str:
-    """No relative days (ruling of Oct 30, 07:40 UTC, b): pending until the wall's frozen cutoff, then the frozen not-run wording."""
-    if d is None:
-        if (now or datetime.datetime.now(datetime.timezone.utc)) < WALL_CUTOFF_UTC:
+    """No relative days (ruling of Oct 30, 07:40 UTC, b): pending until the wall's frozen cutoff; not run as soon as the slot holds a
+    not-run record ({"not_run": true, "why": ...}), or once the cutoff passes with nothing in the slot."""
+    if d is None or d.get("not_run"):
+        if d is None and (now or datetime.datetime.now(datetime.timezone.utc)) < WALL_CUTOFF_UTC:
             return pending("Story wall, Narratives and LPP", "Not scored yet; scored once, as pre-registered (D19).", SLOTS["story_wall"])
-        return panel(f'<h3>{badge("info", "not run")}Story wall, Narratives and LPP</h3><p>Story wall: {E(WALL_NOT_RUN)}.</p>')
+        return panel(f'<h3>{badge("info", "not run")}Story wall, Narratives and LPP</h3><p>Story wall: {E(wall_not_run((d or {}).get("why")))}.</p>')
     w = d.get("wall", d); ln = (d.get("lines") or {}).get("line") or d.get("line")
     ok = bool(w.get("bar_pass"))
     guards = (d.get("lines") or {}).get("guards") or []
