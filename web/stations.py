@@ -8,6 +8,7 @@ import datetime
 import functools
 import hashlib
 import json
+import math
 import os
 import secrets
 import sys
@@ -38,7 +39,23 @@ RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # res
 # $0.01): FILM settles each completed frame to it. Set, a frame reserves twice its price ($0.06 a run at $0.01), so FILM fits a share
 # with little left (cloud review of Oct 31, 12:20 UTC, item 1: $0.50 a frame sent FILM to its recorded run with $1 of a share left);
 # unset, each frame reserves and keeps $0.50.
-SAM_USD_PER_FRAME = float(os.environ["SAM_USD_PER_FRAME"]) if os.environ.get("SAM_USD_PER_FRAME") else None
+def sam_price(raw):
+    """SAM_USD_PER_FRAME as a price: a positive finite number, else None (unset). A value set by mistake (0, negative, not a number)
+    would make FILM reserve $0 and pass spent caps, so it counts as unset, FILM reserves and keeps $0.50 a frame, and the log says so
+    (refuter's review of Oct 31, item 8)."""
+    if not raw:
+        return None
+    try:
+        v = float(raw)
+    except ValueError:
+        v = None
+    if v is None or not math.isfinite(v) or v <= 0:
+        print("stillhere: SAM_USD_PER_FRAME is not a positive number, so FILM reserves $0.50 a frame", file=sys.stderr, flush=True)
+        return None
+    return v
+
+
+SAM_USD_PER_FRAME = sam_price(os.environ.get("SAM_USD_PER_FRAME"))
 FILM_N = 3                                                                 # frames per FILM run
 # FILM's clock (cloud review of Oct 31, 12:20 UTC, item 7): each SAM call gets 60 s, not sam.segment's 120 s default, and no frame
 # starts once 150 s have passed, so the run ends with the api_error line well inside Vercel Hobby's 300 s and its finally always

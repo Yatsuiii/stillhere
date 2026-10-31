@@ -2369,3 +2369,23 @@ def test_every_new_waiting_job_restarts_the_counts_ten_minutes(web, monkeypatch)
     assert d["state"] == "busy" and d["why"] == jobs.ADDRESS_BUSY_LINE and len(S.lrange("jobs:queue")) == 2
     sent = upstash(monkeypatch, store); store.get_store().incrbyfloat("waiting:x", 1, ttl=600, extend=True)
     assert sent == [[["INCRBYFLOAT", "waiting:x", "1"], ["EXPIRE", "waiting:x", "600"]]]          # on Upstash: plain EXPIRE, no NX
+
+
+def test_a_sam_price_that_is_not_a_positive_number_counts_as_unset(live, monkeypatch, capsys):
+    """Refuter item 8: SAM_USD_PER_FRAME set by mistake to 0, a negative number or not a number made FILM reserve $0 and pass spent
+    caps. A set price must be a positive number, else it counts as unset (FILM reserves and keeps $0.50 a frame) and the log says the
+    variable was refused."""
+    (app, jobs, ledger, stations, store), paid = live
+    from web import sam
+    capsys.readouterr()
+    assert [stations.sam_price(raw) for raw in ("0", "-1", "abc", "nan", "inf")] == [None] * 5
+    assert capsys.readouterr().err.count("stillhere: SAM_USD_PER_FRAME is not a positive number") == 5
+    assert (stations.sam_price("0.01"), stations.sam_price(""), stations.sam_price(None)) == (0.01, None, None)
+    assert capsys.readouterr().err == ""
+    monkeypatch.setattr(stations, "SAM_USD_PER_FRAME", stations.sam_price("0"))
+    S, held = store.get_store(), []
+    total = lambda: float(S.get("spend:meta:total") or 0); before = total()
+    monkeypatch.setattr(sam, "segment", lambda clip, q, **k: held.append(total() - before) or {"objects": [], "usage": {},
+                                                                                               "status": "response.completed"})
+    assert stations.film(None, "a" * 32, "face", ip="203.0.113.80")["mode"] == "live" and held[0] == pytest.approx(1.50)
+    assert total() - before == pytest.approx(1.50)                                     # unpriced: every frame keeps its $0.50
