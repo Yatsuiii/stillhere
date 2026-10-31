@@ -45,9 +45,9 @@ the confidential clip and never leaves the laptop, and the server holds nothing 
 
 - Hard stops kept in the store, so they hold across restarts and instances (cloud plan of Oct 29, 19:20 UTC, 1c): totals Meta $80,
   Fireworks $50, Baseten $50; daily Meta $20, Fireworks $12, Baseten $12 (env `CAP_*_USD`, `DAILY_CAP_*_USD`). Each call reserves its
-  worst case first; chat calls settle to their token cost at the planner rule's prices. Voice Transcribe ($0.10 reserved) and SAM 3.1
-  ($0.50 reserved per frame) publish no price here, so their reservations stand; once Meta's Billing page shows SAM's price, set
-  `SAM_USD_PER_FRAME` and FILM settles each completed frame to it. FILM reserves its three frames before the first call; each chat
+  worst case first; chat calls settle to their token cost at the planner rule's prices. Voice Transcribe ($0.10 reserved) keeps its
+  reservation. SAM 3.1 reserves $0.50 per frame and settles each completed frame to `SAM_USD_PER_FRAME`, set to $0.01: Meta lists
+  video at $0.20 per 1,000 frames and a one-frame call bills a 50-frame minimum (`docs/deploy_checklist.md`). FILM reserves its three frames before the first call; each chat
   call carries `max_tokens` so it cannot cost more than its reservation, and `settle` holds an over-run at the cap.
 - Spark Open runs on Fireworks; Baseten (`BASETEN_API_KEY`) is its fallback host when Fireworks has no key, is capped, or fails. The
   receipt names the host that answered.

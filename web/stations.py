@@ -33,11 +33,12 @@ HOSTS = {"spark-1.3": (("meta", "spark-1.3"),),                            # (pr
 KEY_ENV = {"fireworks": "FIREWORKS_API_KEY", "baseten": "BASETEN_API_KEY"}
 TIMEOUT_S = {"meta": 60.0, "fireworks": 25.0, "baseten": 60.0}   # the page's plan and audit calls: a stalled Fireworks call settles as
                                                                   # api_error and falls through to Baseten (ruling of Oct 30, 07:40 UTC, e)
-RESERVE = {"plan": 0.05, "audit": 0.03, "transcribe": 0.10, "sam": 0.50}   # worst case $ per call; Voice Transcribe and SAM publish no
-RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # price here, so they keep their reservation (never settled);
+RESERVE = {"plan": 0.05, "audit": 0.03, "transcribe": 0.10, "sam": 0.50}   # worst case $ per call; Voice Transcribe keeps its
+RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # reservation (never settled), SAM settles to SAM_USD_PER_FRAME;
                                                                            # 7 is the third example chip's seed
-# SAM 3.1's price per one-frame call, from Meta's Billing page once it shows one (env SAM_USD_PER_FRAME): FILM settles each completed
-# frame to it. Unset, no price is known and each frame keeps its $0.50 reservation. A frame never reserves less than its price.
+# SAM 3.1's price per one-frame call (env SAM_USD_PER_FRAME; docs/deploy_checklist.md: a one-frame call bills a 50-frame minimum,
+# $0.01): FILM settles each completed frame to it. Unset, each frame keeps its $0.50 reservation. A frame never reserves less than its
+# price.
 SAM_USD_PER_FRAME = float(os.environ["SAM_USD_PER_FRAME"]) if os.environ.get("SAM_USD_PER_FRAME") else None
 FILM_N = 3                                                                 # frames per FILM run
 TRANSCRIBE_TIMEOUT_S = 60.0   # BUILD's Voice Transcribe call: the menu's clips are 40 s at most; the client's 300 s default is Vercel
