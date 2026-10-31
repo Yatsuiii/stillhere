@@ -28,8 +28,9 @@ FAIL_CODES = ("timeout", "oom", "model_error", "bad_recipe", "cache_key_mismatch
 MAX_POINTS = 60
 QUEUE_MAX = 6                                               # jobs waiting at most: about five minutes of the laptop's work
 ADDRESS_WAITING = 2                                         # of them, from one network address at most (fourth review, item 1)
-WAITING_TTL_S = 600                                         # an address's waiting count ends 10 minutes after its first job, so a
-                                                            # count a lost answer leaks is short (cloud review of Oct 31, 12:20 UTC, item 8)
+WAITING_TTL_S = 600                                         # an address's waiting count ends 10 minutes after its latest job (each
+                                                            # INCR sets it again: refuter's review of Oct 31, item 5), so a count a lost
+                                                            # answer leaks is short (cloud review of Oct 31, 12:20 UTC, item 8)
 BUSY_LINE = "The laptop's queue is full, so a saved forecast is shown where one exists."
 FAILED_LINE = "The live forecast did not finish, so a saved forecast is shown where one exists."
 ADDRESS_BUSY_LINE = "This network address already has forecasts waiting on the laptop, so a saved forecast is shown where one exists."
@@ -142,7 +143,7 @@ def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None) -> di
     job_id = secrets.token_hex(8)
     if addr:                                               # one atomic count per address: added here, removed once per job id on
         claimed.add(lambda: _unwait(addr, job_id))         # claim, expiry or give-back. The give-back goes in before the INCR, so an
-        if s.incrbyfloat(_waiting(addr), 1, ttl=WAITING_TTL_S) > ADDRESS_WAITING:   # INCR whose answer is lost is given back too
+        if s.incrbyfloat(_waiting(addr), 1, ttl=WAITING_TTL_S, extend=True) > ADDRESS_WAITING:   # INCR whose answer is lost is given back too
             return full(ADDRESS_BUSY_LINE)                 # (item 8); the caller gives it back with the rest
     ledger.station_hour("forecast", claimed=claimed, addr=addr)
     s.set(f"job:{job_id}", json.dumps({"id": job_id, "recipe": r, "cache_key": key, "status": "queued", "created_utc": _now(),

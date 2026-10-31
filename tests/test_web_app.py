@@ -2022,8 +2022,8 @@ def test_a_lost_answer_to_the_waiting_count_is_given_back(web):
     class LostAnswer(store.MemoryStore):
         lose = 2
 
-        def incrbyfloat(self, k, amount, ttl=None):
-            v = super().incrbyfloat(k, amount, ttl)
+        def incrbyfloat(self, k, amount, ttl=None, extend=False):
+            v = super().incrbyfloat(k, amount, ttl, extend)
             if k.startswith("waiting:") and amount > 0 and self.lose:
                 self.lose -= 1; raise store.StoreError("ReadTimeout")
             return v
@@ -2350,3 +2350,22 @@ def test_a_failed_give_back_in_claim_still_runs_the_job(web, capsys):
     code, _, out = call(app, "POST", "/api/worker/claim", {}, auth=W)
     assert code == 200 and json.loads(out)["job"]["id"] == a and jobs.status(a)["status"] == "running" and S.lrange("jobs:queue") == []
     assert waiting_count(ledger, store) == 1 and "store error (ReadTimeout) in claim" in capsys.readouterr().err
+
+
+def test_every_new_waiting_job_restarts_the_counts_ten_minutes(web, monkeypatch):
+    """Refuter item 5: each INCR of an address's waiting count sets its 600 s again (plain EXPIRE), so jobs queued late in a key's
+    life keep their count. EXPIRE NX counted from the first job only: two jobs queued at 590 s lost their count at 600 s and the
+    address queued two more, four waiting against ADDRESS_WAITING 2."""
+    app, jobs, ledger, stations, store = web
+    clock = fake_clock(monkeypatch, store, jobs, ledger); S = store.get_store()
+    call(app, "POST", "/api/worker/claim", {}, auth=W)
+    assert wait_forecast(ledger, stations, store, "1" * 32, 1)["state"] == "queued"
+    call(app, "POST", "/api/worker/claim", {}, auth=W)                              # job 1 claimed: the count back to 0
+    clock[0] += 590; call(app, "POST", "/api/worker/claim", {}, auth=W)             # the idle worker's poll
+    assert [wait_forecast(ledger, stations, store, f"{i:032x}", s)["state"] for i, s in ((2, 2), (3, 3))] == ["queued", "queued"]
+    assert S._exp[f"waiting:{ledger._address(WAIT_IP)}"] == pytest.approx(clock[0] + jobs.WAITING_TTL_S)
+    clock[0] += 11
+    d = wait_forecast(ledger, stations, store, "4" * 32, 4)
+    assert d["state"] == "busy" and d["why"] == jobs.ADDRESS_BUSY_LINE and len(S.lrange("jobs:queue")) == 2
+    sent = upstash(monkeypatch, store); store.get_store().incrbyfloat("waiting:x", 1, ttl=600, extend=True)
+    assert sent == [[["INCRBYFLOAT", "waiting:x", "1"], ["EXPIRE", "waiting:x", "600"]]]          # on Upstash: plain EXPIRE, no NX

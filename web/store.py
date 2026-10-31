@@ -43,20 +43,22 @@ class MemoryStore:
             self._d[k] = str(v); self._exp.pop(k, None); self._ttl(k, ttl)
             return True
 
-    def incrbyfloat(self, k, amount, ttl=None):
-        return self.incrbyfloat_many([(k, amount, ttl)])[0]
+    def incrbyfloat(self, k, amount, ttl=None, extend=False):
+        """INCRBYFLOAT; the ttl set on a key it creates, or with `extend` on every call (EXPIRE, not EXPIRE NX)."""
+        with self._lock:
+            return self._incr(k, amount, ttl, extend)
 
     def incrbyfloat_many(self, items):
         """INCRBYFLOAT for each (key, amount, ttl), the ttl set on a key it creates, all under one lock; the new values."""
         with self._lock:
-            out = []
-            for k, amount, ttl in items:
-                v = float(self._live(k) or 0) + float(amount); new = self._live(k) is None
-                self._d[k] = repr(v)
-                if new:
-                    self._ttl(k, ttl)
-                out.append(v)
-            return out
+            return [self._incr(k, amount, ttl, False) for k, amount, ttl in items]
+
+    def _incr(self, k, amount, ttl, extend):
+        v = float(self._live(k) or 0) + float(amount); new = self._live(k) is None
+        self._d[k] = repr(v)
+        if new or extend:
+            self._ttl(k, ttl)
+        return v
 
     def zwindow(self, k, member, score, span):
         """ZREMRANGEBYSCORE k -inf score-span, ZADD k score member, ZCARD k, EXPIRE k span: how many members are left in
@@ -138,10 +140,10 @@ class UpstashStore:
         args = ["SET", k, v] + (["EX", int(ttl)] if ttl else []) + (["NX"] if nx else [])
         return self._cmd(*args) == "OK"
 
-    def incrbyfloat(self, k, amount, ttl=None):
+    def incrbyfloat(self, k, amount, ttl=None, extend=False):
         if not ttl:
             return float(self._cmd("INCRBYFLOAT", k, amount))
-        v, _ = self._pipe(["INCRBYFLOAT", k, amount], ["EXPIRE", k, int(ttl), "NX"])
+        v, _ = self._pipe(["INCRBYFLOAT", k, amount], ["EXPIRE", k, int(ttl)] + ([] if extend else ["NX"]))
         return float(v)
 
     def incrbyfloat_many(self, items):
