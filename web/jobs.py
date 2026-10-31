@@ -31,6 +31,9 @@ ADDRESS_WAITING = 2                                         # of them, from one 
 BUSY_LINE = "The laptop's queue is full, so a saved forecast is shown where one exists."
 FAILED_LINE = "The live forecast did not finish, so a saved forecast is shown where one exists."
 ADDRESS_BUSY_LINE = "This network address already has forecasts waiting on the laptop, so a saved forecast is shown where one exists."
+SESSION_BUSY_LINE = "This session's other forecast is still on the laptop, so a saved forecast is shown where one exists."
+_clock = time.time
+_online = {}                                                # per store: (when read, the answer), for worker_online(max_age_s)
 
 
 def _now() -> str:
@@ -84,30 +87,54 @@ def default_seed() -> int:
     return int((_load(MENU) or {}).get("default_seed", 20261028))
 
 
-def worker_online() -> bool:
-    return get_store().get("worker:last_seen") is not None
+def worker_online(max_age_s: float = 0) -> bool:
+    """Whether the worker's heartbeat is fresh. With max_age_s (the status call), an answer read in the last max_age_s seconds in this
+    instance is reused, so a flood of status calls costs the store one command per instance in that time (fifth review, item 7)."""
+    s, now = get_store(), _clock()
+    got = _online.get(id(s))
+    if max_age_s and got and now - got[0] < max_age_s:
+        return got[1]
+    v = s.get("worker:last_seen") is not None
+    _online[id(s)] = (now, v)
+    return v
 
 
-def submit(r: dict, sid: str, claimed: "ledger.Claimed" = None, addr: str = None) -> dict:
+def _waiting(addr: str) -> str:
+    return f"waiting:{addr}"
+
+
+def _unwait(addr: str) -> None:
+    """One fewer job waiting for this address (claimed by the worker, expired, or never queued); never below zero."""
+    if addr:
+        s = get_store(); v = s.incrbyfloat(_waiting(addr), -1)
+        if v < 0:
+            s.incrbyfloat(_waiting(addr), -v)
+
+
+def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None) -> dict:
     """Cached result, a queued job, or the cached default-seed forecast when the worker is offline, the queue is full, or the
     network address `addr` already has ADDRESS_WAITING jobs waiting; past FORECAST's hourly cap (or the address's slice of it), which
-    counts only jobs that reach the laptop, ledger.Refused and nothing written. The hour goes into `claimed`, so a caller that ends
-    without a queued job (busy, a lost queue race) gives it back."""
+    counts only jobs that reach the laptop, ledger.Refused and nothing written. The hour and the address's waiting count go into
+    `claimed`, so the caller, ending without a queued job (busy, a lost queue race, a refusal), gives them back."""
     key = cache_key(r); hit = cached(key)
     if hit:
         return {"state": "cached", "result": hit}
     s, sh = get_store(), hashlib.sha256(sid.encode()).hexdigest()[:16]
     busy = s.get(f"sjob:{sh}")
-    if busy and (status(busy) or {}).get("status") in ("queued", "running"):
-        return {"state": "busy", "job_id": busy}
+    other = (status(busy) or {}) if busy else {}
+    if other.get("status") in ("queued", "running"):           # one job per session: followed only by a request for its own recipe
+        return {"state": "busy", "job_id": busy} if other.get("recipe") == r else \
+            {"state": "busy", "why": SESSION_BUSY_LINE, "fallback": fallback(r)}
     if not worker_online():                                # no queue without a worker: the saved run, labelled (ruling of 17:35 UTC, 7)
         return {"state": "offline", "fallback": fallback(r)}
     full = lambda line=BUSY_LINE: {"state": "busy", "why": line, "fallback": fallback(r)}
     waiting = s.lrange("jobs:queue")
     if len(waiting) >= QUEUE_MAX:
         return full()
-    if addr and sum(json.loads(j or "{}").get("addr") == addr for j in s.mget([f"job:{i}" for i in waiting])) >= ADDRESS_WAITING:
-        return full(ADDRESS_BUSY_LINE)                     # one MGET; two at once from one address may both pass (a soft cap)
+    if addr:                                               # one atomic count per address: added here, removed on claim or expiry
+        if s.incrbyfloat(_waiting(addr), 1, ttl=3600) > ADDRESS_WAITING:
+            _unwait(addr); return full(ADDRESS_BUSY_LINE)
+        claimed.add(lambda: _unwait(addr))                 # given back with everything else when no job is queued
     ledger.station_hour("forecast", claimed=claimed, addr=addr)
     job_id = secrets.token_hex(8)
     s.set(f"job:{job_id}", json.dumps({"id": job_id, "recipe": r, "cache_key": key, "status": "queued", "created_utc": _now(),
@@ -137,7 +164,9 @@ def status(job_id: str):
     stale = (j["status"] == "running" and time.time() - j["claimed_t"] > JOB_EXPIRY_S) or \
         (j["status"] == "queued" and not worker_online() and time.time() - j.get("created_t", 0) > JOB_EXPIRY_S)
     if stale:                                              # a running job past its time, or a queued one with no worker online
-        j["status"] = "expired"; s.set(f"job:{job_id}", json.dumps(j), ttl=6 * 3600)
+        was = j["status"]; j["status"] = "expired"; s.set(f"job:{job_id}", json.dumps(j), ttl=6 * 3600)
+        if was == "queued":
+            _unwait(j.get("addr"))
     out = {"status": j["status"], "recipe": j["recipe"], "events": [json.loads(e) for e in s.lrange(f"events:{job_id}")]}
     if j["status"] == "done":
         out["result"] = cached(j["cache_key"])
@@ -166,7 +195,7 @@ def claim(body: dict):
         if j["status"] != "queued":
             continue
         j.update(status="running", claimed_utc=_now(), claimed_t=time.time())
-        s.set(f"job:{job_id}", json.dumps(j), ttl=6 * 3600)
+        s.set(f"job:{job_id}", json.dumps(j), ttl=6 * 3600); _unwait(j.get("addr"))
         return {"id": job_id, "recipe": j["recipe"], "cache_key": j["cache_key"], "claimed_utc": j["claimed_utc"], "deadline_s": 40}
 
 

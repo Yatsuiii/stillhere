@@ -45,6 +45,8 @@ def web(monkeypatch, tmp_path):
     monkeypatch.setattr(jobs, "CACHE", tmp_path / "no_cache.json")                   # tests own the precomputed cache
     store.set_store(store.MemoryStore())
     store.get_store().set("visitor:" + "a" * 32, "1")                                # call()'s default cookie, as if a page issued it
+    if hasattr(app, "TokenBucket"):                                                  # its own test sets the real one
+        monkeypatch.setattr(app, "BUCKET", app.TokenBucket(10 ** 9, 1e-6))
     return app, jobs, ledger, stations, store
 
 
@@ -61,9 +63,9 @@ def call(app, method, path, body=None, auth=None, cookie="sh_sid=" + "a" * 32, e
     return int(st["s"].split()[0]), dict(st["h"]), out
 
 
-def planned_run(ledger, store, sid, clip_id="alice_ch02", condition="sentence_scramble", decline="none"):
+def planned_run(ledger, store, sid, clip_id="alice_ch02", condition="sentence_scramble", decline="none", ip=None):
     """A run as a live PLAN leaves it: the run record and its stored plan, routed to one clip and condition (or declined)."""
-    run = ledger.start_run(sid)
+    run = ledger.start_run(sid, ip=ip)
     route = ({"kind": "live", "clip_id": clip_id, "condition": condition, "seed": 20261028, "defaults": []} if decline == "none"
              else {"kind": "decline", "reason": decline})
     store.get_store().set(f"runspec:{run}", json.dumps({"spec": {"population": "healthy_adults", "decline_reason": decline}, "route": route}))
@@ -798,6 +800,7 @@ def test_an_address_gets_more_runs_than_a_session_and_ipv6_counts_by_its_64(live
     (app, jobs, ledger, stations, store), paid = live
     stub_plans(monkeypatch, stations)
     monkeypatch.setitem(ledger.STATION_RUNS_PER_HOUR, "plan", 1000)                 # only the visitor limits are under test
+    monkeypatch.setitem(ledger.ADDRESS_SLICE, "plan", 1000)
     n, k = ledger.RUNS_PER_HOUR, ledger.RUNS_PER_HOUR_PER_ADDRESS
     assert k > n
     plan = lambda ck, env: J(call(app, "POST", "/api/plan", PLAN_BODY, cookie=issued(ck), env=env))
@@ -850,7 +853,7 @@ def test_one_visitor_takes_a_small_share_of_a_day(live, monkeypatch):
         clock[0] += 3600; last = full_run(app, page_cookie(app, "203.0.113.10"), "203.0.113.10")
     assert meta() - one <= ledger.ADDRESS_DAILY_USD["meta"] + 1e-9 and stations.why_line("ip_daily") in last["why"]
     for p in ledger.DAILY_CAP:                                                       # the shares, of whatever caps are configured
-        assert ledger.SESSION_DAILY_USD[p] == pytest.approx(ledger.DAILY_CAP[p] / 8)
+        assert ledger.SESSION_DAILY_USD[p] == pytest.approx(ledger.DAILY_CAP[p] * 0.20)
         assert ledger.ADDRESS_DAILY_USD[p] == pytest.approx(ledger.DAILY_CAP[p] * 0.20)
 
 
@@ -863,23 +866,23 @@ def test_one_full_run_leaves_every_station_live_for_the_next_visitor(live):
 
 
 def test_caps_and_bounds_are_sized_from_the_configured_daily_caps(web):
-    """Items 2 and 8 of the second review and the reviewer's ruling, as numbers: BUILD's hourly cap holds ten runs at a run's worst
-    case (1 + the reshuffle seeds = 7 builds), every other station's at least three runs' uses; a session's daily bound (1/8 of the
-    configured cap) and an address's (20%) each fit one ordinary run's worst case; and no hour at every station's cap can empty a
-    configured day, so the per-visitor bounds, not the station caps, are what stop one visitor."""
+    """The station caps and the visitor bounds as numbers: BUILD's hourly cap holds ten runs at a run's worst case (1 + the reshuffle
+    seeds = 7 builds), every other station's at least three runs' uses; a session's and an address's daily bound (20% of the
+    configured cap each, fifth review, item 1) fit one ordinary run's worst case; one address takes at most a quarter of any station's
+    hour. An hour at every cap can now reserve more than a Meta day (FILM unpriced), so the daily cap is what stops many addresses."""
     app, jobs, ledger, stations, store = web
     R, caps, day, sam = stations.RESERVE, ledger.STATION_RUNS_PER_HOUR, ledger.DAILY_CAP, 3 * stations.RESERVE["sam"]
     per_run = {"plan": 1, "build": 1 + len(stations.RESHUFFLE_SEEDS), "audit": 1, "forecast": 4, "film": 1}
     assert per_run["build"] == 7 and caps["build"] >= 10 * per_run["build"], caps
     assert set(caps) == set(per_run) and all(caps[k] >= 3 * per_run[k] for k in per_run), caps
     run_meta = R["plan"] + per_run["build"] * R["transcribe"] + sam
-    assert run_meta <= ledger.SESSION_DAILY_USD["meta"] < ledger.ADDRESS_DAILY_USD["meta"]
+    assert run_meta <= ledger.SESSION_DAILY_USD["meta"] == ledger.ADDRESS_DAILY_USD["meta"] == pytest.approx(0.20 * day["meta"])
     assert R["plan"] + R["audit"] <= min(ledger.SESSION_DAILY_USD["fireworks"], ledger.SESSION_DAILY_USD["baseten"])
-    assert caps["plan"] * R["plan"] + caps["build"] * R["transcribe"] + caps["film"] * sam < day["meta"]
     assert caps["plan"] * R["plan"] + caps["audit"] * R["audit"] < min(day["fireworks"], day["baseten"])
-    slices = {k: ledger.address_slice(k) for k in caps}                              # fourth review, item 1
-    assert slices == {"plan": 10, "build": 17, "audit": 5, "forecast": 7, "film": 1}
-    assert all(v <= caps[k] / 4 or v == 1 for k, v in slices.items()) and slices["build"] >= 2 * per_run["build"]
+    assert caps == {"plan": 120, "build": 70, "audit": 120, "forecast": 30, "film": 10}            # fifth review, items 1 and 8
+    slices = {k: ledger.address_slice(k) for k in caps}
+    assert slices == {"plan": 10, "build": 17, "audit": 10, "forecast": 7, "film": 2}
+    assert all(v <= caps[k] / 4 for k, v in slices.items()) and slices["build"] >= 2 * per_run["build"]
 
 
 def test_each_station_has_a_global_hourly_cap_then_its_recorded_run(web, monkeypatch):
@@ -941,11 +944,11 @@ def test_hourly_limits_hold_over_every_true_hour(web, monkeypatch):
 def test_no_true_hour_reserves_more_than_the_station_caps_allow(live, monkeypatch):
     """Item 2 of the third review, at the configured caps: visitors from many addresses (so no per-visitor bound binds) fill the end
     of an hour, then come every 20 s for two hours. In no true hour do PLAN, BUILD and FILM reserve more Meta spend than the station
-    caps allow (PLAN 40 x $0.05 + BUILD 70 x $0.10 + FILM 3 x 3 x $0.50 = $13.50), which is less than the configured day."""
+    caps allow (PLAN 120 x $0.05 + BUILD 70 x $0.10 + FILM 10 x 3 x $0.50 = $28.00, of which PLAN's $6.00 settles to its tokens).
+    That is more than a configured Meta day, so with FILM unpriced the daily cap, not the hourly caps, stops many addresses."""
     (app, jobs, ledger, stations, store), paid = live
-    caps, R, day = ledger.STATION_RUNS_PER_HOUR, stations.RESERVE, ledger.DAILY_CAP["meta"]
+    caps, R = ledger.STATION_RUNS_PER_HOUR, stations.RESERVE
     bound = caps["plan"] * R["plan"] + caps["build"] * R["transcribe"] + caps["film"] * 3 * R["sam"]
-    assert bound < day
     monkeypatch.setitem(ledger.DAILY_CAP, "meta", 1e6); monkeypatch.setitem(ledger.TOTAL_CAP, "meta", 1e6)   # only the hours bind
     clock = [3600.0 * 500_000 - 1.0]
     monkeypatch.setattr(ledger, "time", types.SimpleNamespace(time=lambda: clock[0]))
@@ -1258,9 +1261,10 @@ def test_film_reserves_every_frame_first_and_settles_each(live, monkeypatch):
     from web import sam
     monkeypatch.setattr(ledger, "_day", lambda: "d1"); S = store.get_store()
     ip = "203.0.113.81"; ck = page_cookie(app, ip); sid = ck.split("=")[1]
-    S.set(f"vspend:meta:{sid}:d1", "1.5")                                             # $1.00 of the session's $2.50 left
+    S.set(f"vspend:meta:{sid}:d1", str(ledger.SESSION_DAILY_USD["meta"] - 1.0))         # $1.00 of the session's share left
     d = J(call(app, "POST", "/api/film", {"concept": "face"}, cookie=ck, env={"HTTP_X_REAL_IP": ip}))
-    assert d["why"] == stations.why_line("session_daily") and paid["sam"] == 0 and float(S.get(f"vspend:meta:{sid}:d1")) == 1.5
+    assert d["why"] == stations.why_line("session_daily") and paid["sam"] == 0
+    assert float(S.get(f"vspend:meta:{sid}:d1")) == pytest.approx(ledger.SESSION_DAILY_USD["meta"] - 1.0)
     calls = []
 
     def flaky(clip, q):
@@ -1410,8 +1414,10 @@ def test_a_static_error_is_a_500_not_a_crash(web, monkeypatch, capsys):
 # ---- fourth review (Oct 31) ------------------------------------------------------------------------------------------------------
 def test_one_address_never_switches_a_station_off_for_another(live, monkeypatch):
     """Item 1: every station gives each network address at most a quarter of its hour (address_slice; FILM 1), and FORECAST at most
-    two waiting jobs, so one address with many cookies, using every station all it can, leaves every station live for another."""
+    two waiting jobs, so one address with many cookies, using every station all it can, leaves every station live for another (SAM's
+    price set, so FILM's slice binds before the address's daily share)."""
     (app, jobs, ledger, stations, store), paid = live
+    monkeypatch.setattr(stations, "SAM_USD_PER_FRAME", 0.05)
     call(app, "POST", "/api/worker/claim", {}, auth=W)
     ip, env = "203.0.113.60", {"HTTP_X_REAL_IP": "203.0.113.60"}
     got = {k: 0 for k in ledger.STATIONS}
@@ -1426,18 +1432,19 @@ def test_one_address_never_switches_a_station_off_for_another(live, monkeypatch)
             got["forecast"] += sum(call(app, "POST", "/api/forecast", {"run_id": rid, **ROUTE, "seed": s}, cookie=ck, env=env)[0] == 202
                                    for s in (1, 2, 3, 4))
             got["film"] += J(call(app, "POST", "/api/film", {"run_id": rid, "concept": "face"}, cookie=ck, env=env))["mode"] == "live"
-    assert all(got[k] <= ledger.address_slice(k) for k in got) and got["film"] == 1 and got["forecast"] <= 2, got
+    assert all(got[k] <= ledger.address_slice(k) for k in got) and got["film"] == 2 and got["forecast"] <= 2, got
     them, ck = {"HTTP_X_REAL_IP": "198.51.100.61"}, page_cookie(app, "198.51.100.61")
     assert full_run(app, ck, "198.51.100.61") == LIVE_RUN
     d = J(call(app, "POST", "/api/plan", PLAN_BODY, cookie=ck, env=them))
-    assert call(app, "POST", "/api/forecast", {"run_id": d["run_id"], **ROUTE, "seed": 5}, cookie=ck, env=them)[0] == 202
-    with pytest.raises(ledger.Refused) as e:                                        # its FILM slice (1) is spent; others' are not
+    assert call(app, "POST", "/api/forecast", {"run_id": d["run_id"], **ROUTE, "seed": 7}, cookie=ck, env=them)[0] == 202
+    with pytest.raises(ledger.Refused) as e:                                        # its FILM slice (2) is spent; others' are not
         ledger.station_hour("film", addr=ledger._address(ip))
     assert e.value.code == "ip_station" and stations.why_line("ip_station").startswith("This network address has used its part")
 
 
-def chrome_dump(wrapper, path, tmp_path):
-    """The DOM headless Chrome ends with on `path`, served by `wrapper` on a free local port."""
+def chrome_dump(wrapper, path, tmp_path, budget=8000):
+    """The DOM headless Chrome ends with on `path`, served by `wrapper` on a free local port; budget None: in real time, dumped once
+    the page has loaded."""
     class Quiet(WSGIRequestHandler):
         def log_message(self, *a):
             pass
@@ -1449,9 +1456,9 @@ def chrome_dump(wrapper, path, tmp_path):
                       handler_class=Quiet)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     try:
-        return subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--no-first-run", f"--user-data-dir={tmp_path / 'p'}",
-                               "--virtual-time-budget=8000", "--dump-dom", f"http://127.0.0.1:{port}{path}"],
-                              capture_output=True, text=True, timeout=120).stdout
+        vt = [f"--virtual-time-budget={budget}"] if budget else []
+        return subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--no-first-run", f"--user-data-dir={tmp_path / 'p'}", *vt,
+                               "--dump-dom", f"http://127.0.0.1:{port}{path}"], capture_output=True, text=True, timeout=120).stdout
     finally:
         srv.shutdown()
 
@@ -1600,3 +1607,234 @@ def test_a_call_that_reached_the_provider_settles_its_reservation(live, monkeypa
         raise httpx.ConnectError("down")
     monkeypatch.setattr(sam, "segment", never_connected); before = meta()
     stations.film(None, "d" * 32, "face", ip="198.51.100.73"); assert meta() == pytest.approx(before)
+
+
+# ---- fifth review (Oct 31) -------------------------------------------------------------------------------------------------------
+def test_three_walks_with_reshuffles_from_one_visitor_stay_live(live, monkeypatch):
+    """Item 1: a session's daily share is the address's, 20% of the configured cap ($4.00 at Meta's $20), so three full walks (PLAN,
+    the build and its six reshuffles, AUDIT, FILM), one an hour, stay live once SAM's measured price is set (SAM_USD_PER_FRAME;
+    $0.05 a frame stands in for it here). Unset, FILM keeps its $1.50 a run and a second FILM in a day does not fit."""
+    (app, jobs, ledger, stations, store), paid = live
+    monkeypatch.setattr(stations, "SAM_USD_PER_FRAME", 0.05)
+    clock = [86400.0 * 20000 + 60]
+    monkeypatch.setattr(ledger, "time", types.SimpleNamespace(time=lambda: clock[0])); monkeypatch.setattr(ledger, "_day", lambda: "d1")
+    ck = page_cookie(app, "203.0.113.9")
+    for _ in range(3):
+        assert full_run(app, ck, "203.0.113.9") == LIVE_RUN
+        clock[0] += 3600
+    assert ledger.SESSION_DAILY_SHARE == ledger.ADDRESS_DAILY_SHARE == 0.20
+
+
+def test_film_stays_live_for_six_visitors_in_an_hour(live, monkeypatch):
+    """Item 1: FILM's hour holds 10 for everyone and 2 for one address (with SAM's price set, so the address's daily share does not
+    bind first: unpriced, two FILMs and a third's $1.50 pass an address's $4.00)."""
+    (app, jobs, ledger, stations, store), paid = live
+    monkeypatch.setattr(stations, "SAM_USD_PER_FRAME", 0.05)
+    for i in range(6):
+        ip = f"198.51.100.{i + 10}"
+        d = J(call(app, "POST", "/api/film", {"concept": "face"}, cookie=page_cookie(app, ip), env={"HTTP_X_REAL_IP": ip}))
+        assert d["mode"] == "live", (i, d.get("why"))
+    one = {"HTTP_X_REAL_IP": "198.51.100.40"}
+    ds = [J(call(app, "POST", "/api/film", {"concept": "face"}, cookie=issued(f"{i + 1:032x}"), env=one)) for i in range(3)]
+    assert [d["mode"] for d in ds] == ["live", "live", "recorded"] and ds[2]["why"] == stations.why_line("ip_station")
+
+
+def test_forecast_answers_an_unoffered_seed_with_the_saved_run(web):
+    """Item 2: FORECAST takes only the seeds BUILD offers for a scramble (RESHUFFLE_SEEDS); another gets the saved forecast with
+    the plan line, not a 400 (the page keeps its built state across plans), and costs the run nothing."""
+    app, jobs, ledger, stations, store = web
+    call(app, "POST", "/api/worker/claim", {}, auth=W)
+    run = planned_run(ledger, store, "a" * 32)
+    code, _, out = call(app, "POST", "/api/forecast", {"run_id": run, **ROUTE, "seed": 99})
+    d = json.loads(out)
+    assert code == 200 and d["state"] == "offline" and d["why"] == stations.why_line("not_the_plan", shown=stations.SAVED_SHOWN)
+    assert store.get_store().lrange("jobs:queue") == [] and float(store.get_store().get(f"use:{run}:forecast") or 0) == 0
+    assert call(app, "POST", "/api/forecast", {"run_id": run, **ROUTE, "seed": 7})[0] == 202
+
+
+def test_an_address_holds_at_most_two_waiting_jobs_even_at_once(web, monkeypatch):
+    """Item 2: an address's waiting jobs are one atomic count (added on submit, removed when the worker claims a job or it expires),
+    so ten forecasts at once from one address, with every queue read 50 ms late, queue two."""
+    app, jobs, ledger, stations, store = web
+    call(app, "POST", "/api/worker/claim", {}, auth=W)
+    S = store.get_store(); real_lrange, real_mget = S.lrange, S.mget
+    monkeypatch.setattr(S, "lrange", lambda k, start=0, stop=-1: (real_lrange(k, start, stop), time.sleep(0.05))[0])
+    monkeypatch.setattr(S, "mget", lambda keys: (real_mget(keys), time.sleep(0.05))[0])
+    runs = [(f"{i:032x}", planned_run(ledger, store, f"{i:032x}", ip="203.0.113.44")) for i in range(10)]
+    gate, out = threading.Barrier(10), []
+
+    def go(sid, run):
+        gate.wait(); out.append(stations.forecast(run, sid, *ROUTE.values(), 2)["state"])
+    ts = [threading.Thread(target=go, args=r) for r in runs]
+    for t in ts:
+        t.start()
+    for t in ts:
+        t.join()
+    assert out.count("queued") == jobs.ADDRESS_WAITING == 2 and len(real_lrange("jobs:queue")) == 2
+    call(app, "POST", "/api/worker/claim", {}, auth=W)                              # the worker claims one: room for one more
+    more = planned_run(ledger, store, "f" * 32, ip="203.0.113.44")
+    assert stations.forecast(more, "f" * 32, *ROUTE.values(), 3)["state"] == "queued"
+    monkeypatch.setattr(jobs, "JOB_EXPIRY_S", -1); S.delete("worker:last_seen")      # the queued ones expire with no worker
+    for jid in real_lrange("jobs:queue"):
+        assert jobs.status(jid)["status"] == "expired"
+    assert float(S.get(f"waiting:{ledger._address('203.0.113.44')}") or 0) == 0
+
+
+def test_busy_follows_only_a_job_for_the_same_recipe(web):
+    """Item 3: a session's job is followed only by a request for the same recipe; another recipe while it runs gets the saved
+    forecast and a line saying the session's other forecast is still on the laptop."""
+    app, jobs, ledger, stations, store = web
+    call(app, "POST", "/api/worker/claim", {}, auth=W)
+    run = planned_run(ledger, store, "a" * 32)
+    jid = stations.forecast(run, "a" * 32, *ROUTE.values(), 1)["job_id"]
+    d = stations.forecast(run, "a" * 32, *ROUTE.values(), 2)
+    assert d["state"] == "busy" and "job_id" not in d and d["why"] == jobs.SESSION_BUSY_LINE and "fallback" in d
+    assert stations.forecast(run, "a" * 32, *ROUTE.values(), 1) == {**stations._forecast_base(jobs.recipe(*ROUTE.values(), 1)),
+                                                                     "state": "busy", "job_id": jid}
+
+
+@pytest.mark.skipif(CHROME is None, reason="headless Chrome is not on this machine")
+def test_a_new_forecast_stops_the_earlier_poll(web, monkeypatch, tmp_path):
+    """Item 3 in the real page: a forecast started while an earlier one is still polling owns the output; the earlier poll, when its
+    job finishes, writes nothing (a generation count checked before each write)."""
+    app, jobs, ledger, stations, store = web
+    first = {**stations._forecast_base(jobs.recipe(*ROUTE.values(), 1)), "state": "queued", "job_id": "1" * 16}
+    second = {**stations._forecast_base(jobs.recipe(*ROUTE.values(), 2)), "state": "cached",
+              "result": {**result_for("k" * 64), "source": "worker"}}
+    answers = iter([first, second])
+    monkeypatch.setattr(stations, "forecast", lambda *a: next(answers))
+    polls = []
+
+    def status(jid):
+        polls.append(jid)
+        if len(polls) == 1:
+            return {"status": "running", "recipe": first["chip"] and jobs.recipe(*ROUTE.values(), 1), "events": []}
+        return {"status": "done", "recipe": jobs.recipe(*ROUTE.values(), 1), "events": [], "result": result_for("j" * 64)}
+    monkeypatch.setattr(jobs, "status", status)
+    page = with_probe(app, b'addEventListener("load", () => { S.route = {kind: "live", clip_id: "alice_ch02", condition: '
+                           b'"sentence_scramble", seed: 1}; S.seed = 1; doForecast(); setTimeout(() => { S.seed = 2; doForecast(); }, 500); });')
+    out = chrome_dump(page, "/probe.html", tmp_path)
+    box = out[out.index('id="forecast-out"'):out.index("</section>", out.index('id="forecast-out"'))]
+    assert len(polls) >= 1 and "<h3>Forecast</h3>" in box and "Forecast, live" not in box, box[:400]
+
+
+def test_film_drops_a_mask_that_lies_only_in_the_letterbox(live, monkeypatch):
+    """Item 4: a SAM object only in the 640x360 cut's letterbox bars maps to an empty release mask; FILM drops empty masks (none
+    left: "no mask found") instead of a 500, and any error while editing a frame gives the recorded run with the API line."""
+    (app, jobs, ledger, stations, store), paid = live
+    import numpy as np
+    import stillhere
+    from web import sam
+    fe = types.ModuleType("stillhere.face_edit"); fe.VERSIONS = ("intact", "faces_removed", "area_matched")
+    cut_h, cut_w, act_y0, act_h, rel_h, rel_w = 360, 640, 46, 268, 534, 1280    # stillhere/face_edit.py's geometry
+
+    def masks_for(row):                                                              # its crop to the active picture, numpy only
+        out = []
+        for o in row["objects"]:
+            cut = np.zeros((cut_h, cut_w), bool); x0, y0, x1, y1 = o["box_xyxy"]; cut[y0:y1, x0:x1] = True
+            act = cut[act_y0:act_y0 + act_h]
+            out.append(act[np.arange(rel_h) * act_h // rel_h][:, np.arange(rel_w) * cut_w // rel_w])
+        return out
+
+    def edit(frame, masks, skip_unplaceable=False):                                  # as face_edit.box() does on an empty mask
+        for m in masks:
+            np.nonzero(m)[1].min()
+        return {v: frame for v in fe.VERSIONS}, [], [None] * len(masks)
+    fe.masks_for, fe.edit = masks_for, edit
+    monkeypatch.setitem(sys.modules, "stillhere.face_edit", fe); monkeypatch.setattr(stillhere, "face_edit", fe, raising=False)
+    bar = {"id": 1, "score": 0.9, "box_xyxy": [100, 2, 160, 40], "mask": {}}           # inside the top bar (y < 46)
+    monkeypatch.setattr(sam, "segment", lambda clip, q: {"objects": [bar], "usage": {}, "status": "response.completed"})
+    code, _, out = call(app, "POST", "/api/film", {"concept": "face"}, cookie=page_cookie(app, "203.0.113.91"),
+                        env={"HTTP_X_REAL_IP": "203.0.113.91"})
+    d = json.loads(out)
+    assert code == 200 and d["mode"] == "live" and [f["found"] for f in d["frames"]] == [False] * 3
+    monkeypatch.setattr(fe, "masks_for", lambda row: (_ for _ in ()).throw(RuntimeError("a mask the decoder cannot read")))
+    code, _, out = call(app, "POST", "/api/film", {"concept": "face"}, cookie=page_cookie(app, "203.0.113.92"),
+                        env={"HTTP_X_REAL_IP": "203.0.113.92"})
+    assert code == 200 and json.loads(out)["why"] == stations.why_line("api_error")
+
+
+def test_build_transcribe_ends_well_inside_the_function_limit(live, monkeypatch):
+    """Item 5: BUILD's Voice Transcribe call gets 60 s, not the client's 300 s default (Vercel Hobby's whole function limit), so a
+    stall ends in the recorded run, not a platform 504; the longest clip on the menu is 40 s."""
+    (app, jobs, ledger, stations, store), paid = live
+    seen = []
+    monkeypatch.setattr(stations.meta_client, "transcribe", lambda audio, **k: seen.append(k.get("timeout")) or {"transcript": ""})
+    assert stations.build(planned_run(ledger, store, "a" * 32), "a" * 32, *ROUTE.values(), 20261028)["mode"] == "live"
+    assert seen == [60.0] and stations.TRANSCRIBE_TIMEOUT_S == 60.0
+    assert max(c.get("dur_s") or 0 for c in json.loads((REPO / "stillhere/live_menu.json").read_text())["clips"]) <= 45
+
+
+@pytest.mark.skipif(CHROME is None, reason="headless Chrome is not on this machine")
+def test_a_slow_visitor_call_is_cut_off_at_8_s(web, monkeypatch, tmp_path):
+    """Item 6 in the real page, in real time: the visitor call is aborted at 8 s, so its Set-Cookie arriving at 9 s never lands; a
+    PLAN at 8.5 s and every later call go on as the same cookieless visitor, so nothing is stranded. The page's load is held to
+    11 s by one slow test image so the clock runs."""
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setenv("STILLHERE_LIVE", "0")
+    log = []
+    page = with_probe(app, b'setTimeout(() => { document.getElementById("ask").value = "Plan a story test.";'
+                           b' document.getElementById("plan-go").click(); }, 8500);'
+                           b'setTimeout(() => fetch("/api/evidence"), 10000);'
+                           b'document.body.append(Object.assign(document.createElement("img"), {src: "/hold.png", alt: ""}));')
+
+    def wrapper(env, start):
+        path, ck = env["PATH_INFO"], env.get("HTTP_COOKIE", "")
+        if path == "/hold.png":
+            time.sleep(11); start("404 Not Found", [("Content-Type", "text/plain")]); return [b""]
+        if path == "/api/visitor":
+            time.sleep(9)
+        if path in ("/api/plan", "/api/evidence"):
+            log.append((path, "sh_sid=" in ck))
+        return page(env, start)
+    out = chrome_dump(wrapper, "/probe.html", tmp_path, budget=None)
+    assert ("/api/plan", False) in log and ("/api/evidence", True) not in log, log
+
+
+def test_a_flood_from_one_address_never_reaches_the_store(web, monkeypatch):
+    """Item 7: a per-address token bucket in each instance stands before the visitor call and every station POST, ahead of any store
+    command: 20 at once, then one every 10 s; past it, 429 and no store command. Another address is untouched."""
+    app, jobs, ledger, stations, store = web
+    stub_plans(monkeypatch, stations)
+    now = [1000.0]
+    monkeypatch.setattr(app, "BUCKET", app.TokenBucket(*app.POST_LIMIT, clock=lambda: now[0]))
+    assert app.POST_LIMIT == (20, 10.0)
+    sent = upstash(monkeypatch, store)
+    env = {"HTTP_X_REAL_IP": "203.0.113.99"}
+    codes = [call(app, "POST", "/api/plan", PLAN_BODY, cookie="", env=env)[0] for _ in range(20)]
+    before = len(sent)
+    late = [call(app, "POST", p, b, cookie="", env=env)[0] for p, b in (("/api/plan", PLAN_BODY), ("/api/visitor", {}),
+                                                                         ("/api/build", {"old_bug": True}), ("/api/film", {"concept": "f"}))]
+    assert set(codes) == {200} and late == [429] * 4 and len(sent) == before
+    assert call(app, "POST", "/api/plan", PLAN_BODY, cookie="", env={"HTTP_X_REAL_IP": "198.51.100.99"})[0] == 200
+    now[0] += 10.0; assert call(app, "POST", "/api/plan", PLAN_BODY, cookie="", env=env)[0] == 200
+    assert call(app, "POST", "/api/worker/claim", {}, auth=W, env=env)[0] in (200, 204)   # the worker is not a visitor
+
+
+def test_status_reads_the_worker_once_in_five_seconds(web, monkeypatch):
+    """Item 7: /api/status reads the worker's heartbeat from the store at most once every 5 s per instance, however often it is
+    asked (a cache-busting query skips the CDN, not this)."""
+    app, jobs, ledger, stations, store = web
+    sent = upstash(monkeypatch, store)
+    now = [5000.0]; monkeypatch.setattr(jobs, "_clock", lambda: now[0], raising=False)
+    for i in range(10):
+        assert call(app, "GET", "/api/status", env={"QUERY_STRING": f"x={i}"})[0] == 200
+    assert sum(1 for c in sent if c == ["GET", "worker:last_seen"]) == 1
+    now[0] += 5.1; call(app, "GET", "/api/status")
+    assert sum(1 for c in sent if c == ["GET", "worker:last_seen"]) == 2
+
+
+def test_plan_and_audit_hours_hold_a_busy_hour(live, monkeypatch):
+    """Item 8: PLAN's and AUDIT's hours hold 120, one address taking at most 10 of each, so six addresses with ten runs each are all
+    live; PLAN and AUDIT settle to their tokens, so the daily caps still bound the money."""
+    (app, jobs, ledger, stations, store), paid = live
+    live_runs = 0
+    for a in range(6):
+        env = {"HTTP_X_REAL_IP": f"198.51.100.{a + 120}"}
+        for c in range(2):
+            ck = issued(f"{a * 2 + c + 1:032x}")
+            for _ in range(ledger.RUNS_PER_HOUR):
+                d = J(call(app, "POST", "/api/plan", PLAN_BODY, cookie=ck, env=env))
+                a_ = J(call(app, "POST", "/api/audit", {"run_id": d.get("run_id")}, cookie=ck, env=env))
+                live_runs += d["mode"] == "live" and a_["mode"] == "live"
+    assert live_runs == 60

@@ -55,6 +55,7 @@ empty HOME, so no laptop key or list can be read). Result: SMOKE PASS.
 | `CAP_META_USD`, `CAP_FIREWORKS_USD`, `CAP_BASETEN_USD` | no | Yatsu | `80`, `50`, `50` |
 | `DAILY_CAP_META_USD`, `DAILY_CAP_FIREWORKS_USD`, `DAILY_CAP_BASETEN_USD` | no | Yatsu | `20`, `12`, `12` |
 | `POST_CREDIT_CAP_META_USD` | no | Yatsu | `20` |
+| `SAM_USD_PER_FRAME` | no | Yatsu, once measured | unset: each FILM frame keeps its $0.50 reservation ($1.50 a run). Measure on the preview: note the Meta Billing page's usage total, run FILM once (three SAM 3.1 calls), wait for the page to update, and set the increase divided by 3, rounded up to the cent |
 | `JOB_EXPIRY_S` | no | optional | `120` |
 | `STILLHERE_LIVE` | no | only as a switch | unset; `0` turns every station to its recorded run |
 | `VERCEL` | no | Vercel | present on Vercel: live calls then require the shared store |

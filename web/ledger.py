@@ -37,22 +37,24 @@ RUNS_PER_HOUR_PER_ADDRESS = 20     # per network address (an IPv6 /64): four vis
 RUN_TTL_S = 2 * 3600
 STATIONS = ("plan", "build", "audit", "forecast", "film")
 # What one visitor may keep on the ledger per UTC day, as a share of each provider's configured daily cap (DAILY_CAP, env
-# DAILY_CAP_*_USD): a session 1/8, an address 20% (the reviewer's ruling of Oct 31). At the configured caps (Meta $20, Fireworks and
-# Baseten $12) that is $2.50 and $1.50 a session, $4.00 and $2.40 an address; both fit one ordinary run's worst case at Meta (PLAN
-# $0.05 + BUILD 7 x $0.10 + FILM 3 x $0.50 = $2.25). These bounds, on top of the hourly limits, stop one visitor: one cookie keeps at
-# most an eighth of a day, and every cookie from one address together at most a fifth, so one address can never empty a day.
-SESSION_DAILY_SHARE, ADDRESS_DAILY_SHARE = 1 / 8, 0.20
+# DAILY_CAP_*_USD): 20% for a session and the same for an address (fifth review, item 1: a session's own eighth turned a visitor's
+# second FILM into a recorded run). At the configured caps (Meta $20, Fireworks and Baseten $12) that is $4.00 and $2.40. Three
+# reshuffle-heavy walks fit once SAM_USD_PER_FRAME is set (FILM then settles to its price); unset, FILM keeps $1.50 a run, so a walk
+# with FILM is $2.20 and a second FILM in one day does not fit. Every cookie from one address together keeps at most a fifth of a day.
+SESSION_DAILY_SHARE, ADDRESS_DAILY_SHARE = 0.20, 0.20
 SESSION_DAILY_USD = {p: c * SESSION_DAILY_SHARE for p, c in DAILY_CAP.items()}
 ADDRESS_DAILY_USD = {p: c * ADDRESS_DAILY_SHARE for p, c in DAILY_CAP.items()}
-# Live uses of each station per sliding hour, all visitors together: a ceiling for many addresses at once that ordinary traffic never
-# meets. BUILD 70: a run builds at most 1 + len(stations.RESHUFFLE_SEEDS) = 7 times (its max_uses), and the ruling of Oct 31 asks for
-# ten such runs an hour. The others hold at least three runs' uses (a run may FORECAST 4 times); FORECAST counts only jobs that reach
-# the laptop, and 30 is about half of what it finishes in an hour. An hour at every cap reserves less than a configured day (Meta
-# PLAN 40 x $0.05 + BUILD 70 x $0.10 + FILM 3 x $1.50 = $13.50 of $20; Fireworks PLAN $2.00 + AUDIT 20 x $0.03 = $2.60 of $12), so no
-# hour can empty a day. tests/test_web_app.py checks these relations against DAILY_CAP and stations.RESERVE.
-STATION_RUNS_PER_HOUR = {"plan": 40, "build": 70, "audit": 20, "forecast": 30, "film": 3}
+# Live uses of each station per sliding hour, all visitors together, and (ADDRESS_SLICE) the most one network address may take of
+# it, at most a quarter, so no address can switch a station off for another. BUILD 70: a run builds at most 1 +
+# len(stations.RESHUFFLE_SEEDS) = 7 times, ten such runs an hour; its slice 17 holds two. PLAN and AUDIT 120 with a slice of 10 each
+# (fifth review, item 8: four addresses held PLAN's 40 all day): both settle to their tokens, so the daily caps bound their money, and
+# an address cannot AUDIT more runs than it plans. FILM 10 with a slice of 2 (item 1). FORECAST counts only jobs that reach the
+# laptop: 30 is about half of what it finishes in an hour. An hour at every cap can now reserve more than a Meta day (PLAN 120 x $0.05
+# + BUILD 70 x $0.10 + FILM 10 x $1.50 = $28.00 of $20, PLAN's $6.00 settling to cents), so with FILM unpriced the daily cap is the
+# stop for many addresses at once, and the daily shares the stop for one; Fireworks: PLAN $6.00 + AUDIT 120 x $0.03 = $9.60 of $12.
+STATION_RUNS_PER_HOUR = {"plan": 120, "build": 70, "audit": 120, "forecast": 30, "film": 10}
+ADDRESS_SLICE = {"plan": 10, "build": 17, "audit": 10, "forecast": 7, "film": 2}
 VISITOR_TTL_S = 86400              # an issued visitor id lives as long as its cookie (Max-Age)
-ADDRESS_SLICE = 4                  # one address takes at most a quarter of any station's hour (and at least one use: FILM's 1 of 3)
 SHARED = "a-"                      # the visitor of a request with no issued cookie: "a-" and its address's name (never a cookie)
 HOUR = 3600
 
@@ -248,8 +250,8 @@ def start_run(sid: str, now: float = None, ip: str = None, claimed: Claimed = No
 
 
 def address_slice(station: str) -> int:
-    """The most of a station's hour one network address may take: a quarter of its cap, and at least one."""
-    return max(1, STATION_RUNS_PER_HOUR[station] // ADDRESS_SLICE)
+    """The most of a station's hour one network address may take (ADDRESS_SLICE)."""
+    return ADDRESS_SLICE[station]
 
 
 def station_hour(station: str, claimed: Claimed = None, addr: str = None) -> None:

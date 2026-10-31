@@ -8,6 +8,8 @@ import mimetypes
 import os
 import re
 import sys
+import threading
+import time
 import urllib.parse
 from pathlib import Path
 
@@ -29,6 +31,33 @@ MEDIA = {"/media/old_bug.wav": REPO / stations.OLD_BUG["audio"]}
 MAX_BODY = 8192
 ROUTES = []
 COOKIE = "sh_sid"
+
+
+class TokenBucket:
+    """Each network address's request budget in this instance's memory, checked before any store command: `burst` at once, then one
+    every `refill_s` seconds. On Vercel every warm instance keeps its own, so a flood spread over N instances gets N budgets: this
+    bounds the store commands one address can cost per instance, not in all; a Vercel Firewall rate limit is the global bound."""
+
+    def __init__(self, burst: int, refill_s: float, clock=time.monotonic):
+        self.burst, self.refill_s, self.clock, self._b, self._lock = burst, refill_s, clock, {}, threading.Lock()
+
+    def take(self, key: str) -> bool:
+        with self._lock:
+            now = self.clock()
+            if len(self._b) > 10000:                           # forget addresses whose budget is full again
+                self._b = {k: v for k, v in self._b.items() if now - v[1] < self.burst * self.refill_s}
+            tokens, t = self._b.get(key, (self.burst, now))
+            tokens = min(self.burst, tokens + (now - t) / self.refill_s)
+            ok = tokens >= 1
+            self._b[key] = (tokens - 1 if ok else tokens, now)
+            return ok
+
+
+# 20 at once covers one ordinary walk's POSTs (the visitor call, PLAN, seven BUILDs, AUDIT, up to four FORECASTs, FILM); then one
+# every 10 s (360 an hour) is over three times what RUNS_PER_HOUR runs can use (fifth review, item 7)
+POST_LIMIT = (20, 10.0)
+BUCKET = TokenBucket(*POST_LIMIT)
+LIMITED = {"/api/visitor", "/api/plan", "/api/audit", "/api/build", "/api/forecast", "/api/film"}   # the page's POSTs, not the worker's
 
 
 def route(method: str, pattern: str, cache: str = None):
@@ -119,7 +148,7 @@ def visitor(req, m):
 def status(req, m):
     """Always whole: with the store failing (fourth review, item 4), worker offline and live off, so the page says what it will do."""
     try:
-        online, live = jobs.worker_online(), {"meta": stations.live_ok("meta"), "fireworks": stations.live_ok("fireworks")}
+        online, live = jobs.worker_online(max_age_s=5), {"meta": stations.live_ok("meta"), "fireworks": stations.live_ok("fireworks")}
     except StoreError as e:
         print(f"stillhere: store error ({e}) in status", file=sys.stderr, flush=True)
         online, live = False, {"meta": False, "fireworks": False}
@@ -272,7 +301,9 @@ def app(env, start):
             m = rx.match(req.path)
             if m and req.method == method:
                 where = rx.pattern
-                code, body = (method == "POST" and refused_post(req)) or fn(req, m)
+                code, body = (method == "POST" and refused_post(req)) or (
+                    (429, {"error": "slow_down"}) if method == "POST" and req.path in LIMITED and not BUCKET.take(ledger._address(req.ip))
+                    else fn(req, m))
                 return respond(start, code, body, req=req, cache=cache)
         if req.path.startswith("/api/"):
             return respond(start, 404 if not any(rx.match(req.path) for _, rx, _, _ in ROUTES) else 405, {"error": "not_found"}, req=req)

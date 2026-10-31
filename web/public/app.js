@@ -227,7 +227,8 @@ function grayLine(values, chip) {
   x.textContent = "seconds of clip (language areas, TRIBE units)"; svg.append(x);
   return svg;
 }
-async function showResult(res, d, label) {
+async function showResult(res, d, label, current = () => true) {   // current(): false once a newer forecast owns the output
+  if (!current()) return;
   const out = $("forecast-out"); out.textContent = "";
   const end = el("div", "endscreen");
   const mine = el("div", "panel");
@@ -244,6 +245,7 @@ async function showResult(res, d, label) {
   mine.append(nd());
   end.append(mine);
   const ev = await api("/api/evidence");
+  if (!current()) return;
   const pair = el("div", "panel");
   pair.append(el("h3", "", ev.data.pair_label || ""));
   if (ev.data.pair === "d20" && ev.data.d20 && ev.data.d20.line) {
@@ -258,18 +260,21 @@ async function showResult(res, d, label) {
   pair.append(nd());
   end.append(pair); out.append(end); done("forecast");
 }
+let forecastGen = 0;                                           // the latest forecast owns the output; an earlier poll writes nothing
 async function doForecast() {
+  const gen = ++forecastGen, current = () => gen === forecastGen;
   $("forecast-go").disabled = true;
   const out = $("forecast-out"); out.textContent = "Queued.";
   const r = S.route;
   const {status, data} = await api("/api/forecast", {run_id: S.run, clip_id: r.clip_id, condition: r.condition, seed: S.seed});
+  if (!current()) return;
   if (status >= 400) { out.textContent = "Forecast refused (" + (data.error || status) + ")."; return; }
   $("lane-note").textContent = data.reversed_line || "";
-  if (data.state === "cached") return showResult(data.result, data, data.result.source === "cache" ? "Cached forecast, computed " + (data.result.computed_utc || "") : "Forecast");
+  if (data.state === "cached") return showResult(data.result, data, data.result.source === "cache" ? "Cached forecast, computed " + (data.result.computed_utc || "") : "Forecast", current);
   if (data.state === "offline" || (data.state === "busy" && !data.job_id)) {   // busy with a job_id: this session's own job, followed below
     if (data.fallback) {
-      await showResult(data.fallback, data, "Cached forecast, computed " + (data.fallback.computed_utc || ""));
-      if (data.why) out.prepend(recordedNote({label: "saved forecast", why: data.why}));   // why no live forecast ran
+      await showResult(data.fallback, data, "Cached forecast, computed " + (data.fallback.computed_utc || ""), current);
+      if (data.why && current()) out.prepend(recordedNote({label: "saved forecast", why: data.why}));   // why no live forecast ran
     } else out.textContent = data.why || "The worker is offline and no cached forecast exists for this clip.";
     return;
   }
@@ -277,13 +282,14 @@ async function doForecast() {
   const recipe = new URLSearchParams({clip_id: r.clip_id, condition: r.condition, seed: S.seed});   // for a final answer if the
   const poll = async () => {                                                                         // job record cannot be read
     const s = await api("/api/forecast/" + data.job_id + "?" + recipe);
+    if (!current()) return;                                                                          // a newer forecast: stop here
     if (s.status >= 400) { out.textContent = s.data.why || "The live forecast did not finish."; return; }   // final: no more polls
     setLanes(s.data.events || []);
-    if (s.data.status === "done") return showResult(s.data.result, data, "Forecast, live");
+    if (s.data.status === "done") return showResult(s.data.result, data, "Forecast, live", current);
     if (["failed", "expired"].includes(s.data.status)) {
       if (s.data.fallback) {
-        await showResult(s.data.fallback, data, "Cached forecast, computed " + (s.data.fallback.computed_utc || ""));
-        if (s.data.why) out.prepend(recordedNote({label: "saved forecast", why: s.data.why}));
+        await showResult(s.data.fallback, data, "Cached forecast, computed " + (s.data.fallback.computed_utc || ""), current);
+        if (s.data.why && current()) out.prepend(recordedNote({label: "saved forecast", why: s.data.why}));
         return;
       }
       out.textContent = s.data.why || "The live forecast did not finish."; return;
@@ -342,6 +348,8 @@ $("audit-go").addEventListener("click", doAudit);
 $("forecast-go").addEventListener("click", doForecast);
 $("film-go").addEventListener("click", doFilm);
 $("plan-go").disabled = true;                                  // no PLAN before the visitor cookie, or its run would be stranded
-Promise.race([api("/api/visitor", {}), new Promise((ok) => setTimeout(ok, 8000))])   // answered, failed or slow: go on
-  .catch(() => null).then(() => { $("plan-go").disabled = false; });
+const visitorCall = new AbortController();                     // cut off at 8 s, so a Set-Cookie arriving after a PLAN went out as
+const visitorTimer = setTimeout(() => visitorCall.abort(), 8000);   // the cookieless visitor never lands and strands that run
+fetch("/api/visitor", {method: "POST", headers: {"Content-Type": "application/json"}, body: "{}", signal: visitorCall.signal})
+  .catch(() => null).finally(() => { clearTimeout(visitorTimer); $("plan-go").disabled = false; });
 loadStatus(); loadEvidence();

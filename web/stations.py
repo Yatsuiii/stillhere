@@ -40,6 +40,8 @@ RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # pri
 # frame to it. Unset, no price is known and each frame keeps its $0.50 reservation. A frame never reserves less than its price.
 SAM_USD_PER_FRAME = float(os.environ["SAM_USD_PER_FRAME"]) if os.environ.get("SAM_USD_PER_FRAME") else None
 FILM_N = 3                                                                 # frames per FILM run
+TRANSCRIBE_TIMEOUT_S = 60.0   # BUILD's Voice Transcribe call: the menu's clips are 40 s at most; the client's 300 s default is Vercel
+                              # Hobby's whole function limit, so a stall would end in a platform 504 instead of the recorded run
 FILM_FRAMES = REPO / "web/film/frames.json"
 RECORDED = "recorded run"
 NO_RECORDED_CHECK = "No recorded check for this clip and condition."
@@ -495,7 +497,7 @@ def build(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> dic
                 t.paid = True
                 try:
                     with capture():
-                        out = meta_client.transcribe(audio, mode="DIARIZATION")
+                        out = meta_client.transcribe(audio, mode="DIARIZATION", timeout=TRANSCRIBE_TIMEOUT_S)
                 except Exception:                              # never connected: not counted; reached the provider: it may be billed
                     ledger.settle(res, RESERVE["transcribe"] if reached() else 0.0)
                     return recorded_build(clip_id, condition, "api_error")
@@ -552,6 +554,8 @@ def forecast(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> 
     base = _forecast_base(r)
     try:
         with ledger.Claimed() as t:                              # the run's use and the hours stand only for a job that reaches the queue
+            if condition in ("sentence_scramble", "word_scramble") and r["seed"] not in RESHUFFLE_SEEDS:
+                raise ledger.Refused("not_the_plan")           # BUILD's seeds only; the saved run, not a 400 (the page keeps its built state)
             planned(run_id, r["clip_id"], r["condition"])
             addr = ledger.use(run_id, sid, "forecast", max_uses=4, claimed=t)
             out = jobs.submit(r, sid, claimed=t, addr=addr)
@@ -633,11 +637,14 @@ def film(run_id: str, sid: str, concept: str, ip: str = None) -> dict:
                 priced.append(SAM_USD_PER_FRAME)
             else:                                              # no price, or an answer that did not complete (it may still be
                 held += per                                    # billed): the frame's reservation stands
-            frame = cv2.cvtColor(cv2.imread(str(REPO / f["release_jpg"])), cv2.COLOR_BGR2RGB)
-            if not seg["objects"]:
-                frames.append({"id": f["id"], "found": False, "line": "no mask found", "intact": _b64png(frame)}); continue
-            masks = FE.masks_for({"objects": seg["objects"]})
-            img, px, offs = FE.edit(frame, masks, skip_unplaceable=True)
+            try:                                               # an object only in the letterbox bars maps to an empty mask: dropped;
+                frame = cv2.cvtColor(cv2.imread(str(REPO / f["release_jpg"])), cv2.COLOR_BGR2RGB)   # any other error editing a
+                masks = [m for m in FE.masks_for({"objects": seg["objects"]}) if m.any()] if seg["objects"] else []   # frame gives
+                if not masks:                                  # the recorded run, never a 500 (fifth review, item 4)
+                    frames.append({"id": f["id"], "found": False, "line": "no mask found", "intact": _b64png(frame)}); continue
+                img, px, offs = FE.edit(frame, masks, skip_unplaceable=True)
+            except Exception:
+                return recorded_film("api_error")
             frames.append({"id": f["id"], "found": True, "n_masks": len(masks), "controls": sum(o is not None for o in offs),
                            **{v: _b64png(img[v]) for v in FE.VERSIONS}})
     finally:                                                   # on every way out: each frame called at its price or reservation,

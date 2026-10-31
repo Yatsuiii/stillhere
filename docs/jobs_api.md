@@ -76,7 +76,7 @@ the result (`upload` is the server's side).
 
 | Call | Body | Answer |
 |---|---|---|
-| `POST /api/forecast` | `{run_id, clip_id, condition, seed}` | `200 {"state": "cached", "result"}` when the cache key is known; `202 {"state": "queued", "job_id"}` when the worker is online; `200 {"state": "offline", "why", "fallback"}` when it is not (no job is queued); `200 {"state": "busy", "job_id"}` while this session already has a job (the page follows that job); `200 {"state": "busy", "why", "fallback"}` when 6 jobs already wait (no job is queued); a session past its runs, a run whose live plan named another clip or condition or was declined, or a station past its hourly cap gets the saved run only |
+| `POST /api/forecast` | `{run_id, clip_id, condition, seed}` | `200 {"state": "cached", "result"}` when the cache key is known; `202 {"state": "queued", "job_id"}` when the worker is online; `200 {"state": "offline", "why", "fallback"}` when it is not (no job is queued); `200 {"state": "busy", "job_id"}` while this session already has a job for this same recipe (the page follows it), or `200 {"state": "busy", "why", "fallback"}` when that job is for another recipe; `200 {"state": "busy", "why", "fallback"}` when 6 jobs already wait (no job is queued); a session past its runs, a scramble seed BUILD does not offer, a run whose live plan named another clip or condition or was declined, or a station past its hourly cap gets the saved run only |
 | `GET /api/forecast/{job_id}` | | `{"status": "queued" or "running" or "done" or "failed" or "expired", "events": [...], "result"}`, with `"fallback"` and a `"why"` line when failed or expired |
 
 ## Timeouts and cache
@@ -88,7 +88,7 @@ the result (`upload` is the server's side).
   computed <UTC>"; when the visitor asked for another seed it adds "No saved run for seed {seed}; shown: the saved run at seed 20261028."
 - Results are kept by `cache_key` (no TTL). `data/forecast_cache.json` (committed by the worker fork) holds the 12 clips x 4 conditions
   at the default seed, precomputed, in the result format above; the server loads it at start.
-- One queued or running job per session; at most 6 jobs waiting in all, 2 of them from one network address; at most 5 runs per sliding hour per session and 20 per
+- One queued or running job per session; at most 6 jobs waiting in all, 2 of them from one network address (one atomic count: added on submit, removed when the worker claims the job or it expires); at most 5 runs per sliding hour per session and 20 per
   network address (shared with the other live stations); FORECAST's own hourly cap is 30 jobs for all visitors together, counting only
   jobs that reach the queue: a cached, busy, offline or refused forecast gives back both the hour and the run's use.
 
