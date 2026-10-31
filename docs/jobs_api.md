@@ -34,7 +34,7 @@ only secret. Page calls never see it.
 
 | Call | Body | Answer |
 |---|---|---|
-| `/api/worker/claim` | `{"worker": "laptop-4050", "models": {...}}` | `200 {"job": {"id", "recipe", "cache_key", "claimed_utc", "deadline_s": 40}}` (`deadline_s` is the audio cap in seconds), or `204` when no job waits. Every claim also counts as a heartbeat (`worker_last_seen`, 30 s TTL); the page shows the worker online only within it. The worker polls every 2 s, during worker hours only. |
+| `/api/worker/claim` | `{"worker": "laptop-4050", "models": {...}}` | `200 {"job": {"id", "recipe", "cache_key", "claimed_utc", "deadline_s": 40}}` (`deadline_s` is the audio cap in seconds), or `204` when no job waits. Every authorized worker call (claim, event, result, fail, whatever its answer) is a heartbeat (`worker:last_seen`, TTL `JOB_EXPIRY_S`, 120 s by default), so a worker busy with a 35-56 s job, which does not poll claim, stays online; the page shows the worker online only within it. So the page may show the worker online for up to `JOB_EXPIRY_S` after it stops, and a job queued in that time expires later than with the old 30 s heartbeat from claim alone (cloud review of Oct 31, 12:20 UTC, item 3). The worker polls every 2 s, during worker hours only. |
 | `/api/worker/jobs/{id}/event` | `{"stage", "lane", "status", "t_utc", "detail"}` | `204` |
 | `/api/worker/jobs/{id}/result` | the result object below | `204`; `409` if the job expired or was already finished |
 | `/api/worker/jobs/{id}/fail` | `{"reason": "<code>"}`, codes: `timeout`, `oom`, `model_error`, `bad_recipe`, `cache_key_mismatch`, `busy` | `204` |
@@ -88,7 +88,7 @@ the result (`upload` is the server's side).
   computed <UTC>"; when the visitor asked for another seed it adds "No saved run for seed {seed}; shown: the saved run at seed 20261028."
 - Results are kept by `cache_key` (no TTL). `data/forecast_cache.json` (committed by the worker fork) holds the 12 clips x 4 conditions
   at the default seed, precomputed, in the result format above; the server loads it at start.
-- One queued or running job per session; at most 6 jobs waiting in all, 2 of them from one network address (one atomic count: added on submit, removed when the worker claims the job or it expires); at most 5 runs per sliding hour per session and 20 per
+- One queued or running job per session; at most 6 jobs waiting in all, 2 of them from one network address (one atomic count: added on submit, removed once per job when the worker claims the job, it expires or the submit gives it back; it lapses 600 s after the address's latest job); at most 5 runs per sliding hour per session and 20 per
   network address (shared with the other live stations); FORECAST's own hourly cap is 30 jobs for all visitors together, counting only
   jobs that reach the queue: a cached, busy, offline or refused forecast gives back both the hour and the run's use.
 
