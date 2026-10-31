@@ -5,7 +5,7 @@ made here. Sets: dev (v0's 106 requests and v2's 62, the only requests R4 develo
 public f19badd before any prompt or schema change, for the one final measurement of both versions). Scoring is v0's
 (stillhere/planner_eval.py, bars unchanged). Spend: every call is costed at the planner rule's prices and counted in
 results/planner_r4_spend.json across all R4 runs; no run starts once the total reaches TOTAL_CAP ($13.00, under 10% of the Meta credit
-left on Oct 31, $136.43). Writes results/planner_r4_<set>_<version>.json; prints rates and cost only.
+left on Oct 31, $136.43). Writes results/planner_r4_<set>_<version>.json; prints rates and cost only. The held-out set runs only on the frozen prompts (FROZEN).
 usage: python scripts/run_planner_r4_eval.py --set dev|r4_heldout --version v2|r4 [--repeats 1] [--workers 4]"""
 import argparse
 import datetime
@@ -27,6 +27,8 @@ TOTAL_CAP = 13.00
 SETS = {"dev": ["eval/planner_questions.json", "eval/planner_questions_v2_heldout.json"], "r4_heldout": ["eval/planner_questions_r4_heldout.json"]}
 SYSTEM = {"v2": "planner_system", "r4": "planner_system_r4"}
 SPEND = ROOT / "results/planner_r4_spend.json"
+FROZEN = {"planner_system": "1dd41b613de304ef82be334a237715e399d94f82b026a21ebb65a09fd8e32393",      # v2's prompt, as allowlisted
+          "planner_system_r4": "dac8bf7b5650e7ea614e95aaa869ea6fafe0c14b1beb5f572681a8cb76a2f3e1"}   # frozen after dev pass 3
 _tl = threading.local(); _real_post = httpx.post; lock = threading.Lock()
 state = {"spend": 0.0, "skipped": 0, "total_before": 0.0}
 
@@ -42,6 +44,15 @@ def _recording_post(*a, **k):                     # meta_client calls httpx.post
 
 def questions(qset: str) -> list:
     return [q for f in SETS[qset] for q in json.load(open(ROOT / f))["questions"]]
+
+
+def check_frozen():
+    """The one final measurement runs only on the frozen prompts."""
+    import hashlib
+    for name, want in FROZEN.items():
+        got = hashlib.sha256((ROOT / f"stillhere/public_text/{name}.txt").read_bytes()).hexdigest()
+        if got != want:
+            raise SystemExit(f"refused: {name}.txt differs from its frozen SHA-256")
 
 
 def check_sets():
@@ -87,6 +98,8 @@ def main():
     ap.add_argument("--set", required=True, choices=sorted(SETS)); ap.add_argument("--version", required=True, choices=sorted(SYSTEM))
     ap.add_argument("--repeats", type=int, default=1); ap.add_argument("--workers", type=int, default=4); a = ap.parse_args()
     check_sets()
+    if a.set == "r4_heldout":
+        check_frozen()
     Q = questions(a.set)
     for q in Q:
         egress.PublicQuestion(text=q["text"])                            # every request passes the scan before any call

@@ -35,12 +35,20 @@ def test_v2_default_is_unchanged():
     assert sent == [(ROOT / "stillhere/public_text/planner_system.txt").read_text()]
 
 
-def test_r4_prompt_changes_only_the_analysis_sentence():
+def test_r4_prompt_keeps_v2s_text_around_its_change_and_is_frozen():
     v2 = (ROOT / "stillhere/public_text/planner_system.txt").read_text()
     r4 = (ROOT / "stillhere/public_text/planner_system_r4.txt").read_text()
     old = "Choose the analysis only from the analysis enum; any other analysis declines with analysis_not_offered."
     head, tail = v2.split(old)
     assert r4.startswith(head) and r4.endswith(tail) and old not in r4
+    R.check_frozen()                                             # the files are the frozen ones
+
+
+def test_heldout_refuses_a_changed_prompt(monkeypatch):
+    monkeypatch.setitem(R.FROZEN, "planner_system_r4", "0" * 64)
+    import pytest
+    with pytest.raises(SystemExit, match="differs from its frozen"):
+        R.check_frozen()
 
 
 def test_dev_and_heldout_are_apart():

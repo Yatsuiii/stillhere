@@ -9,6 +9,34 @@
    "calls": 50,
    "finished_utc": "2026-10-31T11:07:44Z",
    "note": "r4/probe_first_answers.py: 30 development accept requests, raw first answers recorded"
+  },
+  {
+   "set": "dev",
+   "version": "r4",
+   "repeats": 1,
+   "usd": 0.9537,
+   "finished_utc": "2026-10-31T11:15:28+00:00"
+  },
+  {
+   "set": "dev",
+   "version": "v2",
+   "repeats": 1,
+   "usd": 1.0044,
+   "finished_utc": "2026-10-31T11:19:15+00:00"
+  },
+  {
+   "set": "dev",
+   "version": "r4",
+   "repeats": 1,
+   "usd": 0.9252,
+   "finished_utc": "2026-10-31T11:23:33+00:00"
+  },
+  {
+   "set": "dev",
+   "version": "r4",
+   "repeats": 1,
+   "usd": 0.9491,
+   "finished_utc": "2026-10-31T11:27:31+00:00"
   }
  ]
 }

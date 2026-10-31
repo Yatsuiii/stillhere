@@ -28,8 +28,33 @@ a result into it is a later decision.
 
 The development requests are v0's 106 and v2's 62 (168, all seen before); never an R4 held-out request (the runner checks ids and
 texts). At most four passes of the candidate, one repeat each, on Muse Spark 1.3, each recorded (`results/planner_r4_dev_r4.json`
-for the last pass and `results/planner_r4_spend.json` for every pass), plus one pass of v2 on the same requests for reference. Any
+for each pass (kept as `_pass1` to `_pass3`) and `results/planner_r4_spend.json` for every pass), plus one pass of v2 on the same requests for reference. Any
 edit between passes changes only `planner_system_r4.txt` and is listed in the freeze commit.
+
+## 3a. Freeze (Oct 31, after three development passes; written before the final measurement)
+
+Development, Muse Spark 1.3, the 168 development requests, one repeat per pass (decision accuracy, false-accept rate, first-answer
+validity; all of v0's bars passed on every pass):
+
+| Pass | Prompt | Decision accuracy | False accepts | First-answer validity | Other |
+|---|---|---|---|---|---|
+| v2 reference | v2's | 94.6% | 1.7% (2 of 118) | 86.3% | 7 accepts declined, 3 of them analysis_not_offered |
+| 1 | section 2's text | 98.2% | 2.5% (3 of 118) | 100% | no accept declined |
+| 2 | + one condition sentence | 99.4% | 0.8% (1 of 118) | 100% | no accept declined |
+| 3 | + one analysis clause | 100% | 0% | 100% | decline-reason accuracy 94.9% (v2 reference 96.6%) |
+
+Edits between passes, both to `planner_system_r4.txt` only (and its allowlist line):
+- After pass 1, whose new false accept mapped "the same words in random order" to sentence_scramble (as v2 does for another
+  word-order request): "sentence_scramble reorders whole sentences and keeps each sentence's words in order; a request to shuffle
+  words, within or across sentences, is not sentence_scramble and declines with condition_not_validated." The table lists
+  word_scramble as failed_check, so no word shuffle is offered.
+- After pass 2, whose one false accept compared TRIBE with a GPT-2 surprisal model (v2 accepted it in 2 of its 3 runs): the analysis
+  sentence's "a request for any other analysis" became "a request for any other analysis, including comparing TRIBE with another
+  model or adding another model".
+
+Frozen: `planner_system_r4.txt` SHA-256 dac8bf7b5650e7ea614e95aaa869ea6fafe0c14b1beb5f572681a8cb76a2f3e1; v2's prompt unchanged
+(1dd41b61...). The runner refuses the held-out set on any other prompt. Development spend $4.048 (probe $0.215, four passes). The
+three passes' outputs are `results/planner_r4_dev_r4_pass{1,2,3}.json`, v2's reference `results/planner_r4_dev_v2.json`.
 
 ## 4. The final measurement (once)
 

@@ -1,0 +1,5846 @@
+{
+ "label": "exploratory",
+ "rule": "docs/rules/planner_r4_rule.md",
+ "set": "dev",
+ "version": "v2",
+ "system": "planner_system",
+ "repeats": 1,
+ "model": "muse-spark-1.3",
+ "effort": "low",
+ "plan_calls_only": true,
+ "started_utc": "2026-10-31T11:15:29+00:00",
+ "finished_utc": "2026-10-31T11:19:15+00:00",
+ "spend_usd": 1.0044,
+ "skipped_runs": 0,
+ "bars": {
+  "decision_accuracy": {
+   "value": 0.9464,
+   "bar": ">= 0.9",
+   "pass": true
+  },
+  "false_accept_rate": {
+   "value": 0.0169,
+   "bar": "<= 0.05",
+   "pass": true
+  },
+  "decline_reason_accuracy": {
+   "value": 0.9655,
+   "bar": ">= 0.8",
+   "pass": true
+  },
+  "spec_field_accuracy": {
+   "value": 1.0,
+   "bar": ">= 0.9",
+   "pass": true
+  },
+  "first_answer_validity": {
+   "value": 0.8631,
+   "bar": ">= 0.85",
+   "pass": true
+  },
+  "rule_made_decline_rate": {
+   "value": 0.0238,
+   "bar": "<= 0.05",
+   "pass": true
+  },
+  "planner_unavailable_rate": {
+   "value": 0.0,
+   "bar": "<= 0.02",
+   "pass": true
+  }
+ },
+ "runs": [
+  {
+   "qid": "A01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 3.67,
+     "prompt_tokens": 468,
+     "completion_tokens": 921
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.71,
+     "prompt_tokens": 513,
+     "completion_tokens": 949
+    }
+   ],
+   "started": "2026-10-31T11:15:29+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.19,
+     "prompt_tokens": 458,
+     "completion_tokens": 1007
+    }
+   ],
+   "started": "2026-10-31T11:15:29+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "A03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.74,
+     "prompt_tokens": 459,
+     "completion_tokens": 1034
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.5,
+     "prompt_tokens": 504,
+     "completion_tokens": 623
+    }
+   ],
+   "started": "2026-10-31T11:15:29+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.33,
+     "prompt_tokens": 463,
+     "completion_tokens": 463
+    }
+   ],
+   "started": "2026-10-31T11:15:29+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.59,
+     "prompt_tokens": 457,
+     "completion_tokens": 593
+    }
+   ],
+   "started": "2026-10-31T11:15:31+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 3.82,
+     "prompt_tokens": 458,
+     "completion_tokens": 854
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.48,
+     "prompt_tokens": 503,
+     "completion_tokens": 874
+    }
+   ],
+   "started": "2026-10-31T11:15:33+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A07",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.51,
+     "prompt_tokens": 463,
+     "completion_tokens": 1006
+    },
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.23,
+     "prompt_tokens": 508,
+     "completion_tokens": 1011
+    }
+   ],
+   "started": "2026-10-31T11:15:34+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": true,
+   "trace": [
+    "plan:rejected:decline_inconsistent",
+    "plan:rejected:decline_inconsistent",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "A08",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.28,
+     "prompt_tokens": 458,
+     "completion_tokens": 531
+    }
+   ],
+   "started": "2026-10-31T11:15:36+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A09",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.25,
+     "prompt_tokens": 456,
+     "completion_tokens": 1157
+    }
+   ],
+   "started": "2026-10-31T11:15:36+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "A10",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.52,
+     "prompt_tokens": 462,
+     "completion_tokens": 825
+    }
+   ],
+   "started": "2026-10-31T11:15:38+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A11",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.46,
+     "prompt_tokens": 460,
+     "completion_tokens": 520
+    }
+   ],
+   "started": "2026-10-31T11:15:40+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A12",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.14,
+     "prompt_tokens": 464,
+     "completion_tokens": 520
+    }
+   ],
+   "started": "2026-10-31T11:15:41+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A13",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.46,
+     "prompt_tokens": 464,
+     "completion_tokens": 1149
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.6,
+     "prompt_tokens": 509,
+     "completion_tokens": 556
+    }
+   ],
+   "started": "2026-10-31T11:15:42+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A14",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 3.37,
+     "prompt_tokens": 463,
+     "completion_tokens": 653
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.68,
+     "prompt_tokens": 508,
+     "completion_tokens": 766
+    }
+   ],
+   "started": "2026-10-31T11:15:42+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A15",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 5.11,
+     "prompt_tokens": 461,
+     "completion_tokens": 1236
+    },
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 14.07,
+     "prompt_tokens": 506,
+     "completion_tokens": 3474
+    }
+   ],
+   "started": "2026-10-31T11:15:43+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": true,
+   "trace": [
+    "plan:rejected:decline_inconsistent",
+    "plan:rejected:decline_inconsistent",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "A16",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.73,
+     "prompt_tokens": 460,
+     "completion_tokens": 733
+    }
+   ],
+   "started": "2026-10-31T11:15:44+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A17",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.47,
+     "prompt_tokens": 462,
+     "completion_tokens": 550
+    }
+   ],
+   "started": "2026-10-31T11:15:47+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A18",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 3.38,
+     "prompt_tokens": 457,
+     "completion_tokens": 728
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.52,
+     "prompt_tokens": 502,
+     "completion_tokens": 1029
+    }
+   ],
+   "started": "2026-10-31T11:15:49+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A19",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.71,
+     "prompt_tokens": 464,
+     "completion_tokens": 1302
+    }
+   ],
+   "started": "2026-10-31T11:15:50+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A20",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 3.78,
+     "prompt_tokens": 464,
+     "completion_tokens": 838
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.33,
+     "prompt_tokens": 509,
+     "completion_tokens": 1137
+    }
+   ],
+   "started": "2026-10-31T11:15:50+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A21",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.62,
+     "prompt_tokens": 462,
+     "completion_tokens": 636
+    }
+   ],
+   "started": "2026-10-31T11:15:54+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A22",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 1.53,
+     "prompt_tokens": 458,
+     "completion_tokens": 414
+    }
+   ],
+   "started": "2026-10-31T11:15:57+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A23",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.33,
+     "prompt_tokens": 454,
+     "completion_tokens": 969
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.77,
+     "prompt_tokens": 499,
+     "completion_tokens": 612
+    }
+   ],
+   "started": "2026-10-31T11:15:57+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A24",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.07,
+     "prompt_tokens": 454,
+     "completion_tokens": 733
+    }
+   ],
+   "started": "2026-10-31T11:15:58+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A25",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.95,
+     "prompt_tokens": 460,
+     "completion_tokens": 695
+    }
+   ],
+   "started": "2026-10-31T11:15:58+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A26",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.48,
+     "prompt_tokens": 468,
+     "completion_tokens": 614
+    }
+   ],
+   "started": "2026-10-31T11:16:01+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A27",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 2.81,
+     "prompt_tokens": 458,
+     "completion_tokens": 702
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.46,
+     "prompt_tokens": 503,
+     "completion_tokens": 1166
+    }
+   ],
+   "started": "2026-10-31T11:16:01+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A28",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.15,
+     "prompt_tokens": 453,
+     "completion_tokens": 890
+    }
+   ],
+   "started": "2026-10-31T11:16:02+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A29",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.02,
+     "prompt_tokens": 454,
+     "completion_tokens": 1151
+    }
+   ],
+   "started": "2026-10-31T11:16:03+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A30",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 3.03,
+     "prompt_tokens": 462,
+     "completion_tokens": 717
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.87,
+     "prompt_tokens": 507,
+     "completion_tokens": 851
+    }
+   ],
+   "started": "2026-10-31T11:16:04+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A31",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.69,
+     "prompt_tokens": 458,
+     "completion_tokens": 602
+    }
+   ],
+   "started": "2026-10-31T11:16:06+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "A32",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.49,
+     "prompt_tokens": 456,
+     "completion_tokens": 483
+    }
+   ],
+   "started": "2026-10-31T11:16:08+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "B01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.51,
+     "prompt_tokens": 455,
+     "completion_tokens": 854
+    }
+   ],
+   "started": "2026-10-31T11:16:29+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "B02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.12,
+     "prompt_tokens": 453,
+     "completion_tokens": 1038
+    }
+   ],
+   "started": "2026-10-31T11:16:32+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "B03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.88,
+     "prompt_tokens": 456,
+     "completion_tokens": 1237
+    }
+   ],
+   "started": "2026-10-31T11:16:33+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "B04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.33,
+     "prompt_tokens": 453,
+     "completion_tokens": 901
+    }
+   ],
+   "started": "2026-10-31T11:16:33+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "B05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.2,
+     "prompt_tokens": 455,
+     "completion_tokens": 1134
+    }
+   ],
+   "started": "2026-10-31T11:16:34+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "B06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.99,
+     "prompt_tokens": 459,
+     "completion_tokens": 951
+    }
+   ],
+   "started": "2026-10-31T11:16:37+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "B07",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.19,
+     "prompt_tokens": 458,
+     "completion_tokens": 665
+    }
+   ],
+   "started": "2026-10-31T11:16:37+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "B08",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.58,
+     "prompt_tokens": 453,
+     "completion_tokens": 1070
+    }
+   ],
+   "started": "2026-10-31T11:16:38+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "C01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 8.95,
+     "prompt_tokens": 458,
+     "completion_tokens": 2067
+    }
+   ],
+   "started": "2026-10-31T11:16:39+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "C02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.71,
+     "prompt_tokens": 456,
+     "completion_tokens": 901
+    }
+   ],
+   "started": "2026-10-31T11:16:41+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "C03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.24,
+     "prompt_tokens": 454,
+     "completion_tokens": 1377
+    }
+   ],
+   "started": "2026-10-31T11:16:41+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "C04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.42,
+     "prompt_tokens": 458,
+     "completion_tokens": 1385
+    }
+   ],
+   "started": "2026-10-31T11:16:42+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "C05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.73,
+     "prompt_tokens": 453,
+     "completion_tokens": 1402
+    }
+   ],
+   "started": "2026-10-31T11:16:44+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "C06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.02,
+     "prompt_tokens": 455,
+     "completion_tokens": 1040
+    }
+   ],
+   "started": "2026-10-31T11:16:48+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "C07",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.19,
+     "prompt_tokens": 456,
+     "completion_tokens": 1092
+    }
+   ],
+   "started": "2026-10-31T11:16:48+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "C08",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.32,
+     "prompt_tokens": 456,
+     "completion_tokens": 912
+    }
+   ],
+   "started": "2026-10-31T11:16:48+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "HA01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.59,
+     "prompt_tokens": 463,
+     "completion_tokens": 992
+    },
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.83,
+     "prompt_tokens": 508,
+     "completion_tokens": 1032
+    }
+   ],
+   "started": "2026-10-31T11:17:44+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": true,
+   "trace": [
+    "plan:rejected:decline_inconsistent",
+    "plan:rejected:decline_inconsistent",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "HA02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.1,
+     "prompt_tokens": 466,
+     "completion_tokens": 581
+    }
+   ],
+   "started": "2026-10-31T11:17:44+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.27,
+     "prompt_tokens": 462,
+     "completion_tokens": 472
+    }
+   ],
+   "started": "2026-10-31T11:17:45+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 5.04,
+     "prompt_tokens": 460,
+     "completion_tokens": 1249
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.04,
+     "prompt_tokens": 505,
+     "completion_tokens": 1370
+    }
+   ],
+   "started": "2026-10-31T11:17:46+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.1,
+     "prompt_tokens": 466,
+     "completion_tokens": 1003
+    }
+   ],
+   "started": "2026-10-31T11:17:47+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.58,
+     "prompt_tokens": 462,
+     "completion_tokens": 1064
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.49,
+     "prompt_tokens": 507,
+     "completion_tokens": 848
+    }
+   ],
+   "started": "2026-10-31T11:17:47+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA07",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.65,
+     "prompt_tokens": 472,
+     "completion_tokens": 550
+    }
+   ],
+   "started": "2026-10-31T11:17:51+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory",
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA08",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.06,
+     "prompt_tokens": 465,
+     "completion_tokens": 921
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.69,
+     "prompt_tokens": 510,
+     "completion_tokens": 746
+    }
+   ],
+   "started": "2026-10-31T11:17:53+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA09",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 3.1,
+     "prompt_tokens": 460,
+     "completion_tokens": 783
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.32,
+     "prompt_tokens": 505,
+     "completion_tokens": 545
+    }
+   ],
+   "started": "2026-10-31T11:17:54+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA10",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 3.66,
+     "prompt_tokens": 457,
+     "completion_tokens": 737
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.17,
+     "prompt_tokens": 502,
+     "completion_tokens": 434
+    }
+   ],
+   "started": "2026-10-31T11:17:55+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA11",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 1.74,
+     "prompt_tokens": 468,
+     "completion_tokens": 435
+    }
+   ],
+   "started": "2026-10-31T11:17:57+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA12",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.17,
+     "prompt_tokens": 455,
+     "completion_tokens": 999
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.18,
+     "prompt_tokens": 500,
+     "completion_tokens": 778
+    }
+   ],
+   "started": "2026-10-31T11:17:59+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA13",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 4.63,
+     "prompt_tokens": 469,
+     "completion_tokens": 1192
+    },
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 5.0,
+     "prompt_tokens": 514,
+     "completion_tokens": 1163
+    }
+   ],
+   "started": "2026-10-31T11:17:59+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": true,
+   "trace": [
+    "plan:rejected:decline_inconsistent",
+    "plan:rejected:decline_inconsistent",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "HA14",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 1.81,
+     "prompt_tokens": 461,
+     "completion_tokens": 446
+    }
+   ],
+   "started": "2026-10-31T11:18:00+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA15",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.2,
+     "prompt_tokens": 471,
+     "completion_tokens": 1047
+    }
+   ],
+   "started": "2026-10-31T11:18:01+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA16",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.02,
+     "prompt_tokens": 462,
+     "completion_tokens": 400
+    }
+   ],
+   "started": "2026-10-31T11:18:02+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA17",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 3.96,
+     "prompt_tokens": 459,
+     "completion_tokens": 978
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.74,
+     "prompt_tokens": 504,
+     "completion_tokens": 818
+    }
+   ],
+   "started": "2026-10-31T11:18:04+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network",
+     "auditory"
+    ],
+    "conditions": [
+     "intact",
+     "reversed",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "french",
+    "population": "healthy_adults",
+    "stimulus": "le_petit_prince"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HA18",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.52,
+     "prompt_tokens": 470,
+     "completion_tokens": 1235
+    }
+   ],
+   "started": "2026-10-31T11:18:05+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "HB01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.93,
+     "prompt_tokens": 456,
+     "completion_tokens": 984
+    }
+   ],
+   "started": "2026-10-31T11:18:22+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "HB02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.61,
+     "prompt_tokens": 456,
+     "completion_tokens": 718
+    }
+   ],
+   "started": "2026-10-31T11:18:23+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "HB03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.42,
+     "prompt_tokens": 454,
+     "completion_tokens": 1207
+    }
+   ],
+   "started": "2026-10-31T11:18:23+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "HB04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.38,
+     "prompt_tokens": 452,
+     "completion_tokens": 1017
+    }
+   ],
+   "started": "2026-10-31T11:18:26+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "HB05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.07,
+     "prompt_tokens": 455,
+     "completion_tokens": 845
+    }
+   ],
+   "started": "2026-10-31T11:18:27+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "HC01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.49,
+     "prompt_tokens": 457,
+     "completion_tokens": 1290
+    }
+   ],
+   "started": "2026-10-31T11:18:27+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "HC02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.13,
+     "prompt_tokens": 455,
+     "completion_tokens": 1089
+    }
+   ],
+   "started": "2026-10-31T11:18:28+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "HC03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 5.81,
+     "prompt_tokens": 459,
+     "completion_tokens": 1319
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.19,
+     "prompt_tokens": 504,
+     "completion_tokens": 466
+    }
+   ],
+   "started": "2026-10-31T11:18:31+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HC04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.8,
+     "prompt_tokens": 462,
+     "completion_tokens": 1562
+    }
+   ],
+   "started": "2026-10-31T11:18:31+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "HC05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.74,
+     "prompt_tokens": 461,
+     "completion_tokens": 1015
+    }
+   ],
+   "started": "2026-10-31T11:18:32+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "HK01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 7.39,
+     "prompt_tokens": 456,
+     "completion_tokens": 1523
+    }
+   ],
+   "started": "2026-10-31T11:18:48+00:00",
+   "decision": "decline",
+   "reason": "clinical_out_of_scope",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "clinical_out_of_scope"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:clinical_out_of_scope"
+   ]
+  },
+  {
+   "qid": "HK02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 12.62,
+     "prompt_tokens": 456,
+     "completion_tokens": 2622
+    }
+   ],
+   "started": "2026-10-31T11:18:48+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HK03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 10.19,
+     "prompt_tokens": 459,
+     "completion_tokens": 2387
+    }
+   ],
+   "started": "2026-10-31T11:18:49+00:00",
+   "decision": "decline",
+   "reason": "clinical_out_of_scope",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "clinical_out_of_scope"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:clinical_out_of_scope"
+   ]
+  },
+  {
+   "qid": "HK04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.51,
+     "prompt_tokens": 456,
+     "completion_tokens": 985
+    }
+   ],
+   "started": "2026-10-31T11:18:50+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HK05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 12.68,
+     "prompt_tokens": 457,
+     "completion_tokens": 2981
+    }
+   ],
+   "started": "2026-10-31T11:18:54+00:00",
+   "decision": "decline",
+   "reason": "clinical_out_of_scope",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "clinical_out_of_scope"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:clinical_out_of_scope"
+   ]
+  },
+  {
+   "qid": "HL01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.26,
+     "prompt_tokens": 456,
+     "completion_tokens": 891
+    }
+   ],
+   "started": "2026-10-31T11:18:14+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "HL02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.64,
+     "prompt_tokens": 454,
+     "completion_tokens": 1279
+    }
+   ],
+   "started": "2026-10-31T11:18:15+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "HL03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.47,
+     "prompt_tokens": 457,
+     "completion_tokens": 1226
+    }
+   ],
+   "started": "2026-10-31T11:18:16+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "HL04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.13,
+     "prompt_tokens": 453,
+     "completion_tokens": 1054
+    }
+   ],
+   "started": "2026-10-31T11:18:19+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "HL05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.06,
+     "prompt_tokens": 455,
+     "completion_tokens": 1409
+    }
+   ],
+   "started": "2026-10-31T11:18:21+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "HM01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 8.69,
+     "prompt_tokens": 454,
+     "completion_tokens": 1871
+    }
+   ],
+   "started": "2026-10-31T11:18:56+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HM02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 7.58,
+     "prompt_tokens": 453,
+     "completion_tokens": 1789
+    }
+   ],
+   "started": "2026-10-31T11:18:59+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HM03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.83,
+     "prompt_tokens": 456,
+     "completion_tokens": 1265
+    }
+   ],
+   "started": "2026-10-31T11:19:01+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HN01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.34,
+     "prompt_tokens": 461,
+     "completion_tokens": 983
+    }
+   ],
+   "started": "2026-10-31T11:18:40+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "HN02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.22,
+     "prompt_tokens": 466,
+     "completion_tokens": 839
+    }
+   ],
+   "started": "2026-10-31T11:18:41+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "HN03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 2.46,
+     "prompt_tokens": 463,
+     "completion_tokens": 630
+    }
+   ],
+   "started": "2026-10-31T11:18:44+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "HN04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.94,
+     "prompt_tokens": 461,
+     "completion_tokens": 924
+    }
+   ],
+   "started": "2026-10-31T11:18:44+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "HN05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.2,
+     "prompt_tokens": 466,
+     "completion_tokens": 1104
+    }
+   ],
+   "started": "2026-10-31T11:18:45+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "HN06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.58,
+     "prompt_tokens": 464,
+     "completion_tokens": 781
+    }
+   ],
+   "started": "2026-10-31T11:18:46+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "HP01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.62,
+     "prompt_tokens": 458,
+     "completion_tokens": 895
+    }
+   ],
+   "started": "2026-10-31T11:18:06+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HP02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [
+      "decline_inconsistent"
+     ],
+     "s": 6.61,
+     "prompt_tokens": 456,
+     "completion_tokens": 1848
+    },
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 8.24,
+     "prompt_tokens": 501,
+     "completion_tokens": 1971
+    }
+   ],
+   "started": "2026-10-31T11:18:09+00:00",
+   "decision": "accept",
+   "reason": "none",
+   "spec": {
+    "analysis": "forecast_tribe_stock",
+    "brain_areas": [
+     "language_network"
+    ],
+    "conditions": [
+     "intact",
+     "sentence_scramble"
+    ],
+    "decline_reason": "none",
+    "language": "english",
+    "population": "healthy_adults",
+    "stimulus": "librivox_audiobook"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok"
+   ]
+  },
+  {
+   "qid": "HP03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.28,
+     "prompt_tokens": 457,
+     "completion_tokens": 1374
+    }
+   ],
+   "started": "2026-10-31T11:18:10+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HP04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.99,
+     "prompt_tokens": 458,
+     "completion_tokens": 867
+    }
+   ],
+   "started": "2026-10-31T11:18:10+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HP05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.0,
+     "prompt_tokens": 461,
+     "completion_tokens": 1182
+    }
+   ],
+   "started": "2026-10-31T11:18:11+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HS01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.43,
+     "prompt_tokens": 454,
+     "completion_tokens": 1429
+    }
+   ],
+   "started": "2026-10-31T11:18:32+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "HS02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.53,
+     "prompt_tokens": 455,
+     "completion_tokens": 1235
+    }
+   ],
+   "started": "2026-10-31T11:18:36+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "HS03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.64,
+     "prompt_tokens": 455,
+     "completion_tokens": 721
+    }
+   ],
+   "started": "2026-10-31T11:18:37+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "HS04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.84,
+     "prompt_tokens": 455,
+     "completion_tokens": 1315
+    }
+   ],
+   "started": "2026-10-31T11:18:38+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "HS05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 9.6,
+     "prompt_tokens": 456,
+     "completion_tokens": 2431
+    }
+   ],
+   "started": "2026-10-31T11:18:39+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "HX01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.9,
+     "prompt_tokens": 463,
+     "completion_tokens": 1585
+    }
+   ],
+   "started": "2026-10-31T11:19:04+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HX02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.5,
+     "prompt_tokens": 467,
+     "completion_tokens": 1118
+    }
+   ],
+   "started": "2026-10-31T11:19:07+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "HX03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.81,
+     "prompt_tokens": 465,
+     "completion_tokens": 1314
+    }
+   ],
+   "started": "2026-10-31T11:19:07+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "HX04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.52,
+     "prompt_tokens": 461,
+     "completion_tokens": 1024
+    }
+   ],
+   "started": "2026-10-31T11:19:07+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "HX05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.33,
+     "prompt_tokens": 461,
+     "completion_tokens": 1040
+    }
+   ],
+   "started": "2026-10-31T11:19:11+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "K01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.72,
+     "prompt_tokens": 455,
+     "completion_tokens": 1203
+    }
+   ],
+   "started": "2026-10-31T11:17:11+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "K02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 8.06,
+     "prompt_tokens": 458,
+     "completion_tokens": 2133
+    }
+   ],
+   "started": "2026-10-31T11:17:12+00:00",
+   "decision": "decline",
+   "reason": "clinical_out_of_scope",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "clinical_out_of_scope"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:clinical_out_of_scope"
+   ]
+  },
+  {
+   "qid": "K03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.8,
+     "prompt_tokens": 458,
+     "completion_tokens": 1621
+    }
+   ],
+   "started": "2026-10-31T11:17:12+00:00",
+   "decision": "decline",
+   "reason": "clinical_out_of_scope",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "clinical_out_of_scope"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:clinical_out_of_scope"
+   ]
+  },
+  {
+   "qid": "K04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.82,
+     "prompt_tokens": 453,
+     "completion_tokens": 878
+    }
+   ],
+   "started": "2026-10-31T11:17:15+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "K05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.2,
+     "prompt_tokens": 455,
+     "completion_tokens": 1196
+    }
+   ],
+   "started": "2026-10-31T11:17:16+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "K06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.61,
+     "prompt_tokens": 451,
+     "completion_tokens": 1552
+    }
+   ],
+   "started": "2026-10-31T11:17:19+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "K07",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.32,
+     "prompt_tokens": 450,
+     "completion_tokens": 985
+    }
+   ],
+   "started": "2026-10-31T11:17:19+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "K08",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.08,
+     "prompt_tokens": 455,
+     "completion_tokens": 1095
+    }
+   ],
+   "started": "2026-10-31T11:17:20+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "L01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.94,
+     "prompt_tokens": 450,
+     "completion_tokens": 1157
+    }
+   ],
+   "started": "2026-10-31T11:16:21+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "L02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.85,
+     "prompt_tokens": 453,
+     "completion_tokens": 753
+    }
+   ],
+   "started": "2026-10-31T11:16:21+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "L03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.65,
+     "prompt_tokens": 456,
+     "completion_tokens": 811
+    }
+   ],
+   "started": "2026-10-31T11:16:23+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "L04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.75,
+     "prompt_tokens": 448,
+     "completion_tokens": 1293
+    }
+   ],
+   "started": "2026-10-31T11:16:23+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "L05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.28,
+     "prompt_tokens": 451,
+     "completion_tokens": 959
+    }
+   ],
+   "started": "2026-10-31T11:16:25+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "L06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.12,
+     "prompt_tokens": 454,
+     "completion_tokens": 1181
+    }
+   ],
+   "started": "2026-10-31T11:16:27+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "L07",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.05,
+     "prompt_tokens": 454,
+     "completion_tokens": 1522
+    }
+   ],
+   "started": "2026-10-31T11:16:27+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "L08",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.04,
+     "prompt_tokens": 453,
+     "completion_tokens": 1328
+    }
+   ],
+   "started": "2026-10-31T11:16:28+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "M01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.82,
+     "prompt_tokens": 448,
+     "completion_tokens": 1617
+    }
+   ],
+   "started": "2026-10-31T11:17:20+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "M02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.85,
+     "prompt_tokens": 453,
+     "completion_tokens": 1356
+    }
+   ],
+   "started": "2026-10-31T11:17:23+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "M03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.87,
+     "prompt_tokens": 452,
+     "completion_tokens": 1685
+    }
+   ],
+   "started": "2026-10-31T11:17:24+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "M04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 8.7,
+     "prompt_tokens": 462,
+     "completion_tokens": 2146
+    }
+   ],
+   "started": "2026-10-31T11:17:26+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "M05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 10.14,
+     "prompt_tokens": 455,
+     "completion_tokens": 2547
+    }
+   ],
+   "started": "2026-10-31T11:17:27+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "M06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.46,
+     "prompt_tokens": 458,
+     "completion_tokens": 909
+    }
+   ],
+   "started": "2026-10-31T11:17:27+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "N01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.3,
+     "prompt_tokens": 443,
+     "completion_tokens": 788
+    }
+   ],
+   "started": "2026-10-31T11:17:03+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "N02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.84,
+     "prompt_tokens": 460,
+     "completion_tokens": 996
+    }
+   ],
+   "started": "2026-10-31T11:17:03+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "N03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.84,
+     "prompt_tokens": 460,
+     "completion_tokens": 1610
+    }
+   ],
+   "started": "2026-10-31T11:17:04+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "N04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.16,
+     "prompt_tokens": 459,
+     "completion_tokens": 929
+    }
+   ],
+   "started": "2026-10-31T11:17:04+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "N05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.48,
+     "prompt_tokens": 456,
+     "completion_tokens": 817
+    }
+   ],
+   "started": "2026-10-31T11:17:06+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "N06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.57,
+     "prompt_tokens": 460,
+     "completion_tokens": 1077
+    }
+   ],
+   "started": "2026-10-31T11:17:08+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "N07",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.06,
+     "prompt_tokens": 462,
+     "completion_tokens": 855
+    }
+   ],
+   "started": "2026-10-31T11:17:08+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "N08",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.55,
+     "prompt_tokens": 461,
+     "completion_tokens": 1579
+    }
+   ],
+   "started": "2026-10-31T11:17:10+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "P01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.23,
+     "prompt_tokens": 456,
+     "completion_tokens": 1225
+    }
+   ],
+   "started": "2026-10-31T11:16:09+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "P02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.96,
+     "prompt_tokens": 458,
+     "completion_tokens": 952
+    }
+   ],
+   "started": "2026-10-31T11:16:09+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "P03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 10.19,
+     "prompt_tokens": 457,
+     "completion_tokens": 2345
+    }
+   ],
+   "started": "2026-10-31T11:16:11+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "P04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.96,
+     "prompt_tokens": 447,
+     "completion_tokens": 1361
+    }
+   ],
+   "started": "2026-10-31T11:16:11+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "P05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.99,
+     "prompt_tokens": 451,
+     "completion_tokens": 968
+    }
+   ],
+   "started": "2026-10-31T11:16:13+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "P06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.89,
+     "prompt_tokens": 454,
+     "completion_tokens": 914
+    }
+   ],
+   "started": "2026-10-31T11:16:14+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "P07",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.33,
+     "prompt_tokens": 454,
+     "completion_tokens": 722
+    }
+   ],
+   "started": "2026-10-31T11:16:16+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "P08",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.44,
+     "prompt_tokens": 454,
+     "completion_tokens": 1031
+    }
+   ],
+   "started": "2026-10-31T11:16:17+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "P09",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.68,
+     "prompt_tokens": 456,
+     "completion_tokens": 1234
+    }
+   ],
+   "started": "2026-10-31T11:16:18+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "P10",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.12,
+     "prompt_tokens": 450,
+     "completion_tokens": 997
+    }
+   ],
+   "started": "2026-10-31T11:16:19+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "S01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 8.31,
+     "prompt_tokens": 455,
+     "completion_tokens": 2068
+    }
+   ],
+   "started": "2026-10-31T11:16:51+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "S02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.46,
+     "prompt_tokens": 452,
+     "completion_tokens": 1241
+    }
+   ],
+   "started": "2026-10-31T11:16:52+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "S03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.17,
+     "prompt_tokens": 452,
+     "completion_tokens": 980
+    }
+   ],
+   "started": "2026-10-31T11:16:52+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "S04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.83,
+     "prompt_tokens": 451,
+     "completion_tokens": 734
+    }
+   ],
+   "started": "2026-10-31T11:16:53+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "S05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.71,
+     "prompt_tokens": 453,
+     "completion_tokens": 1511
+    }
+   ],
+   "started": "2026-10-31T11:16:56+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "S06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.24,
+     "prompt_tokens": 453,
+     "completion_tokens": 1567
+    }
+   ],
+   "started": "2026-10-31T11:16:57+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "S07",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 6.81,
+     "prompt_tokens": 454,
+     "completion_tokens": 1601
+    }
+   ],
+   "started": "2026-10-31T11:16:57+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "S08",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.77,
+     "prompt_tokens": 453,
+     "completion_tokens": 1012
+    }
+   ],
+   "started": "2026-10-31T11:16:59+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "X01",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.4,
+     "prompt_tokens": 455,
+     "completion_tokens": 1194
+    }
+   ],
+   "started": "2026-10-31T11:17:31+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "X02",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.18,
+     "prompt_tokens": 461,
+     "completion_tokens": 1358
+    }
+   ],
+   "started": "2026-10-31T11:17:31+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "X03",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.59,
+     "prompt_tokens": 460,
+     "completion_tokens": 888
+    }
+   ],
+   "started": "2026-10-31T11:17:34+00:00",
+   "decision": "decline",
+   "reason": "condition_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "condition_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:condition_not_validated"
+   ]
+  },
+  {
+   "qid": "X04",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.56,
+     "prompt_tokens": 459,
+     "completion_tokens": 885
+    }
+   ],
+   "started": "2026-10-31T11:17:36+00:00",
+   "decision": "decline",
+   "reason": "language_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "language_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:language_not_validated"
+   ]
+  },
+  {
+   "qid": "X05",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 3.41,
+     "prompt_tokens": 463,
+     "completion_tokens": 814
+    }
+   ],
+   "started": "2026-10-31T11:17:36+00:00",
+   "decision": "decline",
+   "reason": "analysis_not_offered",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "analysis_not_offered"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:analysis_not_offered"
+   ]
+  },
+  {
+   "qid": "X06",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.23,
+     "prompt_tokens": 463,
+     "completion_tokens": 1158
+    }
+   ],
+   "started": "2026-10-31T11:17:37+00:00",
+   "decision": "decline",
+   "reason": "brain_area_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "brain_area_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:brain_area_not_validated"
+   ]
+  },
+  {
+   "qid": "X07",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 5.43,
+     "prompt_tokens": 458,
+     "completion_tokens": 1409
+    }
+   ],
+   "started": "2026-10-31T11:17:38+00:00",
+   "decision": "decline",
+   "reason": "clinical_out_of_scope",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "clinical_out_of_scope"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:clinical_out_of_scope"
+   ]
+  },
+  {
+   "qid": "X08",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.11,
+     "prompt_tokens": 459,
+     "completion_tokens": 836
+    }
+   ],
+   "started": "2026-10-31T11:17:40+00:00",
+   "decision": "decline",
+   "reason": "stimulus_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "stimulus_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:stimulus_not_validated"
+   ]
+  },
+  {
+   "qid": "X09",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.7,
+     "prompt_tokens": 461,
+     "completion_tokens": 1134
+    }
+   ],
+   "started": "2026-10-31T11:17:40+00:00",
+   "decision": "decline",
+   "reason": "population_not_validated",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "population_not_validated"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:population_not_validated"
+   ]
+  },
+  {
+   "qid": "X10",
+   "backend": "spark-1.3",
+   "version": "v2",
+   "repeat": 1,
+   "calls": [
+    {
+     "kind": "plan",
+     "codes": [],
+     "s": 4.31,
+     "prompt_tokens": 460,
+     "completion_tokens": 1040
+    }
+   ],
+   "started": "2026-10-31T11:17:43+00:00",
+   "decision": "decline",
+   "reason": "clinical_out_of_scope",
+   "spec": {
+    "population": null,
+    "language": null,
+    "stimulus": null,
+    "analysis": null,
+    "brain_areas": [],
+    "conditions": [],
+    "decline_reason": "clinical_out_of_scope"
+   },
+   "rule_made": false,
+   "trace": [
+    "plan:ok:normalised",
+    "decline:clinical_out_of_scope"
+   ]
+  }
+ ]
+}
