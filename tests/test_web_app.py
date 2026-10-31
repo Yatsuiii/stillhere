@@ -1034,8 +1034,8 @@ def test_film_settles_each_completed_frame_to_sams_price(web, monkeypatch):
     monkeypatch.setattr(ledger, "STATION_RUNS_PER_HOUR", {**getattr(ledger, "STATION_RUNS_PER_HOUR", {}), "film": 2}, raising=False)
     d = stations.film(None, "a" * 32, "face")
     assert d["mode"] == "live" and len(d["frames"]) == 3
-    assert float(store.get_store().get("spend:meta:total")) == pytest.approx(2 * 0.02 + 0.50)
-    r = stations.get_receipt(d["receipt_id"]); assert r["usd"] == pytest.approx(0.04) and r["usd_reserved"] == pytest.approx(0.50)
+    assert float(store.get_store().get("spend:meta:total")) == pytest.approx(2 * 0.02 + 2 * 0.02)   # priced: a frame reserves twice it
+    r = stations.get_receipt(d["receipt_id"]); assert r["usd"] == pytest.approx(0.04) and r["usd_reserved"] == pytest.approx(0.04)
     monkeypatch.setattr(stations, "SAM_USD_PER_FRAME", None); status = iter(["response.completed"] * 3)
     d = stations.film(None, "b" * 32, "face")                                        # no price set: every reservation stands
     assert d["mode"] == "live"; r = stations.get_receipt(d["receipt_id"]); assert r["usd"] is None and r["usd_reserved"] == pytest.approx(1.50)
@@ -1787,7 +1787,7 @@ def test_a_slow_visitor_call_is_cut_off_at_8_s(web, monkeypatch, tmp_path):
         if path in ("/api/plan", "/api/evidence"):
             log.append((path, "sh_sid=" in ck))
         return page(env, start)
-    out = chrome_dump(wrapper, "/probe.html", tmp_path, budget=None)
+    chrome_dump(wrapper, "/probe.html", tmp_path, budget=None)
     assert ("/api/plan", False) in log and ("/api/evidence", True) not in log, log
 
 
@@ -1838,3 +1838,28 @@ def test_plan_and_audit_hours_hold_a_busy_hour(live, monkeypatch):
                 a_ = J(call(app, "POST", "/api/audit", {"run_id": d.get("run_id")}, cookie=ck, env=env))
                 live_runs += d["mode"] == "live" and a_["mode"] == "live"
     assert live_runs == 60
+
+
+# ---- sixth review (cloud review of Oct 31, 12:20 UTC) ----------------------------------------------------------------------------
+def test_a_fourth_walk_in_a_day_keeps_film_live_with_sams_price_set(live, monkeypatch):
+    """Item 1: with SAM_USD_PER_FRAME set ($0.01, the measured price) a FILM frame reserves twice it, not $0.50, so FILM needs $0.06
+    of a share's headroom and a fourth walk in one day (each keeps $0.73 of Meta: seven builds and FILM) stays live under the
+    session's $4.00; unset, a frame still reserves $0.50 ($1.50 a run)."""
+    (app, jobs, ledger, stations, store), paid = live
+    from web import sam
+    monkeypatch.setattr(stations, "SAM_USD_PER_FRAME", 0.01)
+    clock = [86400.0 * 20000 + 60]
+    monkeypatch.setattr(ledger, "time", types.SimpleNamespace(time=lambda: clock[0])); monkeypatch.setattr(ledger, "_day", lambda: "d1")
+    ck = page_cookie(app, "203.0.113.19")
+    for _ in range(4):
+        assert full_run(app, ck, "203.0.113.19") == LIVE_RUN
+        clock[0] += 3600
+    S, held = store.get_store(), []
+    total = lambda: float(S.get("spend:meta:total") or 0)
+    for i, (price, want) in enumerate(((0.01, 0.06), (None, 1.50))):
+        monkeypatch.setattr(stations, "SAM_USD_PER_FRAME", price); before, held[:] = total(), []
+        monkeypatch.setattr(sam, "segment", lambda clip, q, **k: held.append(total() - before) or {"objects": [], "usage": {},
+                                                                                                   "status": "response.completed"})
+        ip = f"198.51.100.{30 + i}"
+        assert J(call(app, "POST", "/api/film", {"concept": "face"}, cookie=page_cookie(app, ip), env={"HTTP_X_REAL_IP": ip}))["mode"] == "live"
+        assert held[0] == pytest.approx(want), price                                    # all three frames reserved before the first call

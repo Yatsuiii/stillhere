@@ -38,9 +38,10 @@ RUN_TTL_S = 2 * 3600
 STATIONS = ("plan", "build", "audit", "forecast", "film")
 # What one visitor may keep on the ledger per UTC day, as a share of each provider's configured daily cap (DAILY_CAP, env
 # DAILY_CAP_*_USD): 20% for a session and the same for an address (fifth review, item 1: a session's own eighth turned a visitor's
-# second FILM into a recorded run). At the configured caps (Meta $20, Fireworks and Baseten $12) that is $4.00 and $2.40. Three
-# reshuffle-heavy walks fit once SAM_USD_PER_FRAME is set (FILM then settles to its price); unset, FILM keeps $1.50 a run, so a walk
-# with FILM is $2.20 and a second FILM in one day does not fit. Every cookie from one address together keeps at most a fifth of a day.
+# second FILM into a recorded run). At the configured caps (Meta $20, Fireworks and Baseten $12) that is $4.00 and $2.40. Four
+# reshuffle-heavy walks ($0.73 each) fit once SAM_USD_PER_FRAME is set (FILM then reserves twice its price and settles to it; cloud
+# review of Oct 31, 12:20 UTC, item 1); unset, FILM keeps $1.50 a run, so a walk with FILM is $2.20 and a second FILM in one day does
+# not fit. Every cookie from one address together keeps at most a fifth of a day.
 SESSION_DAILY_SHARE, ADDRESS_DAILY_SHARE = 0.20, 0.20
 SESSION_DAILY_USD = {p: c * SESSION_DAILY_SHARE for p, c in DAILY_CAP.items()}
 ADDRESS_DAILY_USD = {p: c * ADDRESS_DAILY_SHARE for p, c in DAILY_CAP.items()}

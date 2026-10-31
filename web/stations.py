@@ -37,8 +37,9 @@ RESERVE = {"plan": 0.05, "audit": 0.03, "transcribe": 0.10, "sam": 0.50}   # wor
 RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # reservation (never settled), SAM settles to SAM_USD_PER_FRAME;
                                                                            # 7 is the third example chip's seed
 # SAM 3.1's price per one-frame call (env SAM_USD_PER_FRAME; docs/deploy_checklist.md: a one-frame call bills a 50-frame minimum,
-# $0.01): FILM settles each completed frame to it. Unset, each frame keeps its $0.50 reservation. A frame never reserves less than its
-# price.
+# $0.01): FILM settles each completed frame to it. Set, a frame reserves twice its price ($0.06 a run at $0.01), so FILM fits a share
+# with little left (cloud review of Oct 31, 12:20 UTC, item 1: $0.50 a frame sent FILM to its recorded run with $1 of a share left);
+# unset, each frame reserves and keeps $0.50.
 SAM_USD_PER_FRAME = float(os.environ["SAM_USD_PER_FRAME"]) if os.environ.get("SAM_USD_PER_FRAME") else None
 FILM_N = 3                                                                 # frames per FILM run
 TRANSCRIBE_TIMEOUT_S = 60.0   # BUILD's Voice Transcribe call: the menu's clips are 40 s at most; the client's 300 s default is Vercel
@@ -614,7 +615,7 @@ def film(run_id: str, sid: str, concept: str, ip: str = None) -> dict:
     except ImportError:
         return recorded_film("no_key")
     from web import sam
-    per = max(RESERVE["sam"], SAM_USD_PER_FRAME or 0.0)        # a frame never reserves less than its price
+    per = RESERVE["sam"] if SAM_USD_PER_FRAME is None else 2 * SAM_USD_PER_FRAME   # priced: twice the price (item 1, above)
     try:
         with ledger.Claimed() as t:                              # every frame reserved before the first call (third review, item 7)
             if not run_id:
