@@ -8,6 +8,7 @@ import json
 import math
 import os
 import secrets
+import sys
 import time
 from pathlib import Path
 
@@ -210,7 +211,10 @@ def claim(body: dict):
         if j["status"] != "queued":
             continue
         j.update(status="running", claimed_utc=_now(), claimed_t=time.time())
-        _unwait(j.get("addr"), job_id)                     # first: a failed write below never leaves the count up (item 8)
+        try:                                               # first, so a failed write below never leaves the count up (item 8); best
+            _unwait(j.get("addr"), job_id)                 # effort, so a failure here never strands the popped job as "queued" (it
+        except StoreError as e:                            # would poll "Queued" for 6 h): the count over-counts at worst (refuter's
+            print(f"stillhere: store error ({e}) in claim", file=sys.stderr, flush=True)   # review of Oct 31, item 4)
         s.set(f"job:{job_id}", json.dumps(j), ttl=6 * 3600)
         return {"id": job_id, "recipe": j["recipe"], "cache_key": j["cache_key"], "claimed_utc": j["claimed_utc"], "deadline_s": 40}
 

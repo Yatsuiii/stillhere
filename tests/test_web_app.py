@@ -2329,3 +2329,24 @@ def test_film_gives_every_sam_call_its_end(live, monkeypatch):
     assert stations.film(None, "a" * 32, "face", ip="203.0.113.79")["mode"] == "live"
     assert got == [{"timeout": 60.0, "deadline": 7_000_000.0 + stations.FILM_END_S}] * 3
     assert stations.FILM_DEADLINE_S == 150 < stations.FILM_END_S == 180
+
+
+def test_a_failed_give_back_in_claim_still_runs_the_job(web, capsys):
+    """Refuter item 4: claim() gives the waiting count back before it marks the job running, best effort: a store error there is
+    logged and the job still goes to the worker as running (the count over-counts at worst). Raising left the job off the queue but
+    "queued", never expired while the worker polls, so the page showed "Queued" for the record's 6 h."""
+    app, jobs, ledger, stations, store = web
+
+    class Flaky(store.MemoryStore):
+        fail = False
+
+        def set(self, k, v, ttl=None, nx=False):
+            if self.fail and k.startswith("unwait:"):
+                self.fail = False; raise store.StoreError("ReadTimeout")
+            return super().set(k, v, ttl=ttl, nx=nx)
+    S = Flaky(); store.set_store(S); call(app, "POST", "/api/worker/claim", {}, auth=W)
+    a = wait_forecast(ledger, stations, store, "1" * 32, 2)["job_id"]
+    S.fail = True
+    code, _, out = call(app, "POST", "/api/worker/claim", {}, auth=W)
+    assert code == 200 and json.loads(out)["job"]["id"] == a and jobs.status(a)["status"] == "running" and S.lrange("jobs:queue") == []
+    assert waiting_count(ledger, store) == 1 and "store error (ReadTimeout) in claim" in capsys.readouterr().err
