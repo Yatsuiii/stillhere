@@ -1,0 +1,137 @@
+{
+ "rule": "docs/rules/r3_variants_rule.md",
+ "bar": {
+  "z": 0.2,
+  "p": 0.05
+ },
+ "k_grid": [
+  1,
+  2,
+  3
+ ],
+ "inputs_sha256": {
+  "../d22/d3/out_stock/d3_out/pred_en_full.npz": "925ac173683ac8fe49674b8441ccd7f4eab4d5693406fbe17bfe7fa6dc2e146d",
+  "../d22/d3/out_stock/d3_out/pred_en_audio.npz": "96f48a9c9710bb7f2bf1db4d7937adce5c560d269653b08124fb8b26f70ade33",
+  "../d22/d3/out_tuned/d3_out/pred_en_full.npz": "2f22aac924ac0fc84f159f244a42c5a03753229b29594e5177a06ab87cf399da",
+  "../d22/d3/out_tuned/d3_out/pred_en_audio.npz": "006072d9e4836f09721de6c7303717879b8d07f8801e0508fce562ca0a1aacbf",
+  "../k2/out/k2_out/pred_fr_full.npz": "b9268ee548718e2e966cd128d6d4ab22bca04f471c487620d57c08143cd5158f",
+  "../k2/out/k2_out/pred_fr_audio.npz": "83c7e967f332bce85ea485ecbd0f74ec671f334091188c17a0fd32885b922793",
+  "../lpp_variants/forecast/out/pred_fr_stock_full.npz": "f61ce1b83965b71f48038d8aa214d1711a7788c52b33661e5da8cd5541a3718c",
+  "../lpp_variants/forecast/out/pred_fr_stock_audio.npz": "bdadf0885afd16002df944be9bc4bb2c27a16d13e6671566ee2205f2ac4eaec4",
+  "../lpp_variants/forecast/out/pred_fr_tuned_full.npz": "805f404f8a2031db872c0d4282239952952983c3ab67a15d0476a532c74154e0",
+  "../lpp_variants/forecast/out/pred_fr_tuned_audio.npz": "d4d1ed6b06e19043108294758df1e1d0e07708f6a11fe0ed48954b08e3b2ea2e"
+ },
+ "scorer_checks": {
+  "EN_stock_d3": [
+   1.7252,
+   1.4723
+  ],
+  "EN_tuned_d3": [
+   1.9283,
+   1.4495
+  ],
+  "FR_section3_stock_language": 1.1079
+ },
+ "k_chosen": 3,
+ "means": {
+  "EN_default": {
+   "all": {
+    "LANGUAGE": 1.7251570578112523,
+    "HEARING": 1.472286050161612
+   }
+  },
+  "EN_tuned": {
+   "all": {
+    "LANGUAGE": 1.9283120379695786,
+    "HEARING": 1.4494569537696054
+   }
+  },
+  "EN_a": {
+   "all": {
+    "LANGUAGE": 1.7950718132594146,
+    "HEARING": 1.4750537145253135
+   }
+  },
+  "EN_b1": {
+   "all": {
+    "LANGUAGE": 1.7247656762409305,
+    "HEARING": 1.4698606531278766
+   }
+  },
+  "EN_b2": {
+   "all": {
+    "LANGUAGE": 1.7259128355711824,
+    "HEARING": 1.4678613711370843
+   }
+  },
+  "EN_b3": {
+   "all": {
+    "LANGUAGE": 1.7267472027858677,
+    "HEARING": 1.4659616807235294
+   }
+  },
+  "FR_default": {
+   "all": {
+    "LANGUAGE": 1.1078891425888522,
+    "HEARING": 2.183370008827933
+   },
+   "fr_holdout9": {
+    "LANGUAGE": 1.0406379918319892,
+    "HEARING": 2.307206114409641
+   }
+  },
+  "FR_a": {
+   "all": {
+    "LANGUAGE": 1.1951962297625833,
+    "HEARING": 2.1980445663215007
+   },
+   "fr_holdout9": {
+    "LANGUAGE": 1.1424133029836845,
+    "HEARING": 2.2944939113774327
+   }
+  },
+  "FR_b3": {
+   "all": {
+    "LANGUAGE": 1.1223313293192005,
+    "HEARING": 2.174904439979199
+   },
+   "fr_holdout9": {
+    "LANGUAGE": 1.0517935515842143,
+    "HEARING": 2.2943812708602938
+   }
+  },
+  "FR_tuned": {
+   "all": {
+    "LANGUAGE": 1.416561952243465,
+    "HEARING": 2.209966954239682
+   },
+   "fr_holdout9": {
+    "LANGUAGE": 1.422527269368448,
+    "HEARING": 2.231254585164297
+   }
+  }
+ },
+ "decisions": {
+  "a_average": {
+   "en_gain": 0.06991475544816228,
+   "fr_mean_difference": 0.08730708717373117,
+   "fr_higher": 21,
+   "fr_n": 28,
+   "fr_p": 0.0002364516258239746,
+   "dev_ok": true,
+   "bar_ok": false,
+   "adopted": false
+  },
+  "b_smooth_k3": {
+   "en_gain": 0.001590144974615404,
+   "fr_mean_difference": 0.014442186730348269,
+   "fr_higher": 20,
+   "fr_n": 28,
+   "fr_p": 0.01585453748703003,
+   "dev_ok": true,
+   "bar_ok": false,
+   "adopted": false
+  }
+ },
+ "adopted": "none"
+}
