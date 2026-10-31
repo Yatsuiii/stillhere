@@ -81,3 +81,20 @@ $136.43). Estimate posted before any call: about $7.10. The app's daily caps do 
   before the run | Not an improvement by the rule set before the run: {the bars it missed}}."
 
 Not a diagnosis or medical advice.
+
+
+## Dated note, Oct 31, after the result (cloud ruling of Oct 31, 21:30 UTC, items 4-6; the text above is unchanged)
+
+- Section 5's estimate was posted with this rule (6955a28, 11:11 UTC), after the $0.215 v2-only development probe had run (it finished
+  at 11:07 UTC), not before every call. Arithmetic: (4 development passes x 168 requests + 2 versions x 62 held-out requests x 3 repeats)
+  = 672 + 372 = 1,044 runs, x $0.0068 a run (v2's logged Spark 1.3 usage on its 186 held-out runs: 798 prompt and 1,365 completion
+  tokens a run, at $1.25 and $4.25 per million) = $7.10; the v2 development reference (168 runs) and the probe were outside it. The
+  $136.43 is the free credit left that the Meta Model API's Billing page (dev.meta.ai/billing) showed in Yatsu's browser on Oct 31 at
+  about 09:12 UTC; the page notes that activity can take up to an hour to appear. R4's total spend, every run counted:
+  `results/planner_r4_spend.json`.
+- `results/planner_r4_dev_v2.json` is a development reference (v2's prompt on the 168 development requests, one repeat), not a re-run of
+  v2's evaluation of record: v2's 83.3% (`results/planner_v2_eval.json`) stays. Its 168 requests include v2's 62 held-out requests.
+- The session that tuned the prompt could read the committed held-out file (f19badd), as with v2's rule: the runner refuses held-out
+  ids during development, but nothing stopped that session from opening the file. Decline-reason accuracy on the development
+  requests: pass 1 95.7%, pass 2 95.7%, pass 3 94.9%, all three below v2's reference 96.6%. Section 1's sentence on the probe reports
+  its finding.
