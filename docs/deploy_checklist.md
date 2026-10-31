@@ -114,6 +114,21 @@ Without the Upstash variables on Vercel, every station shows its recorded run: s
    vercel env ls        # names and environments only
    ```
 7. Provider alerts (`web/README.md`, Money): the Meta Billing page's Spend Limit notification, Fireworks and Baseten spend alerts.
+8. Vercel Firewall, the cross-instance bound in front of the store (each instance's own bucket cannot see the others): one custom
+   rule, rate limit, path starts with `/api/` and path does not start with `/api/worker/` (the laptop worker polls from one address),
+   fixed window 60 s, 300 requests per IP per window (one page uses about 30 a minute; a forecast poll is about 40 GETs a minute),
+   then 429:
+
+   ```sh
+   vercel firewall rules add "api rate limit per IP" --condition '{"type":"path","op":"pre","value":"/api/"}' \
+     --condition '{"type":"path","op":"pre","value":"/api/worker/","neg":true}' --action rate_limit \
+     --rate-limit-algo fixed_window --rate-limit-window 60 --rate-limit-requests 300 --rate-limit-keys ip --rate-limit-action rate_limit --yes
+   vercel firewall publish --yes
+   ```
+
+   VERIFIED Oct 31 on the Hobby plan: published to production, and 320 quick GETs of `/api/status` from one address returned 300 of
+   200 and 20 of 429. After any env var change, redeploy: `stations.py` reads `SAM_USD_PER_FRAME` and the caps at import, and an env
+   change reaches only new builds.
 
 ## 8c. Preview deploy and its smoke list
 
