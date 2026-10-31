@@ -59,13 +59,19 @@ def check_pins(pred_dir, pins) -> dict:
     return got
 
 
-def stock_scores(path) -> dict:
-    """The stock run's output file, only if it is the run on the stock rule's pinned forecasts; its claim-window stage."""
+def stock_scores(path, published=None) -> dict:
+    """The stock run's output file, only if it is the corrected run of record: its forecast pins are the stock rule's (both stock runs
+    share them, so the pins alone cannot tell the first run's file apart) and its claim-window group LANGUAGE and HEARING z equal
+    results/alice_heldout.json's (dated note of Oct 31, cloud ruling of 21:30 UTC, item 9). Returns the claim-window stage."""
     d = json.load(open(path))
     got = {k: (d.get("inputs_sha256") or {}).get(f"pred_{k}") for k in MODES}
     if got != STOCK_PINS:
         raise SystemExit(f"refused: {path} is not the stock run on the pinned stock forecasts")
-    return d["stage"]["145_primary"]
+    pub = json.load(open(published or f"{AH.REPO}/results/alice_heldout.json"))["stage"]["145_primary"]
+    st = d["stage"]["145_primary"]
+    if any((st.get(a) or {}).get("z") != pub[a]["z"] for a in ("language", "hearing")):
+        raise SystemExit(f"refused: {path} is not the stock run of record (its claim-window group z differ from results/alice_heldout.json)")
+    return st
 
 
 def paired(stock: dict, tuned: dict) -> dict:

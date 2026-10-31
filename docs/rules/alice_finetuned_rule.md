@@ -101,3 +101,18 @@ issue fixed above. `scripts/alice_heldout.py`, `alice/forecast/run_alice_forecas
 This commit on origin; the three forecasts on the laptop, never during a chain step that uses the laptop (gate 0, the film maps,
 the picker merge and scoring) and never during Sunday's filming; the second commit with the pins; one scoring run; the results
 commit. On origin/main by Mon Nov 2, 12:00 UTC, or the not-run line.
+
+
+## Dated note, Oct 31, after the result (cloud ruling of Oct 31, 21:30 UTC, items 9-11; the text above is unchanged; the result stands)
+
+- Section 5 says the stock-file pin check rules out the first run's file. It cannot: both stock runs share the same three forecast
+  pins (`results/alice_heldout_first_run.json` lists the same SHA-256). The committed `vs_stock` means match the corrected run of record
+  exactly: stock LANGUAGE 1.4153 and HEARING 3.0278, equal to `results/alice_heldout.json`'s claim-window group z. From this note
+  `stock_scores` also requires the file's claim-window group LANGUAGE and HEARING z to equal `results/alice_heldout.json`'s, so the
+  first run's file is refused; the test uses the first run's real pins (`tests/test_alice_finetuned.py`). No number changed and
+  nothing was re-scored.
+- Forecast provenance committed: `results/alice_finetuned_provenance.json` (`scripts/alice_finetuned_provenance.py`): the three stage
+  records (counts, hashes and placement; no brain data, no word text), their UTC start and end (audio 10:46:26-10:46:45, full
+  10:46:45-10:47:09, shuffled 10:47:09-10:47:33), the SHA-256 of the runner, the stock runner, `k2/tribe_common.py` and the launcher,
+  and asserts that no Llama placement was used (every Llama feature was read from the stock runs' cache).
+- The README row carries a numbers-only footnote on the volunteer figures and the one comparison not beaten.

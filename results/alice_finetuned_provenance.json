@@ -1,0 +1,166 @@
+{
+ "stages": {
+  "audio": {
+   "start_utc": "2026-10-31T10:46:26Z",
+   "end_utc": "2026-10-31T10:46:45Z",
+   "record_sha256": "fc8076c3fdda3440773470812929ee57b1ba95d7772ae3de3636d7b35159e081",
+   "record": {
+    "stage": "alice_audio",
+    "mode": "audio",
+    "shuffle_seed": null,
+    "n_tsv_words": 2101,
+    "rows": 2132,
+    "timed": 2101,
+    "dropped_untimed": 31,
+    "set_to_min_duration": 2,
+    "annotations_sha256": "6e25b0d85a1457a75c608f2a298dbef97172f83270eb35a82b43c92229d0e46c",
+    "audio_end_s": 743.6593197278911,
+    "shape": [
+     744,
+     20484
+    ],
+    "n_windows": 15,
+    "finite": true,
+    "contiguous_seconds": true,
+    "peak_vram_gb": 0.0,
+    "seconds": 13,
+    "placement": {
+     "audio_extractor": "cpu",
+     "brain_model": "cpu"
+    },
+    "pred_sha256": "5593dd410b871671c8046e2af620d76333dfb02d408706ecaa4bf0cf8b24ec2e",
+    "weights": {
+     "stock_ckpt_sha256": "9c79ffff6b642b7b0c71d558c935fb3fa33f2788bfb509feead94fafbba2f321",
+     "tuned_ckpt_sha256": "96923860eb47ee8e8f65e597f2fc216992470852dc07af95112d80d32746421e",
+     "tuned_tensors": 108,
+     "tensors_changed_vs_stock": 105,
+     "training_mode": false
+    },
+    "features": {
+     "sound_and_text": "read from the stock runs' feature cache (no file added)",
+     "work_folder_unchanged": true
+    },
+    "vs_stock": {
+     "max_abs_diff": 1.193291425704956,
+     "corr": 0.8463197571320131,
+     "stock_sha256": "d747d74f16231b249e1288da14f48ed0b57e434bd356edfb2836cdc7f166859b"
+    }
+   }
+  },
+  "full": {
+   "start_utc": "2026-10-31T10:46:45Z",
+   "end_utc": "2026-10-31T10:47:09Z",
+   "record_sha256": "23a3a055a05937596e12ed225ae1d0d44cd0481f1a2f86a10b418ad4028bdd30",
+   "record": {
+    "stage": "alice_full",
+    "mode": "full",
+    "shuffle_seed": null,
+    "n_tsv_words": 2101,
+    "rows": 2132,
+    "timed": 2101,
+    "dropped_untimed": 31,
+    "set_to_min_duration": 2,
+    "annotations_sha256": "6e25b0d85a1457a75c608f2a298dbef97172f83270eb35a82b43c92229d0e46c",
+    "n_audio_events": 12,
+    "audio_end_s": 743.6593197278911,
+    "n_words": 2101,
+    "words_equal_tsv": true,
+    "n_words_after_60s": 1984,
+    "tsv_after_60s": 1984,
+    "last_word_before_audio_end": true,
+    "shape": [
+     744,
+     20484
+    ],
+    "n_windows": 15,
+    "finite": true,
+    "contiguous_seconds": true,
+    "peak_vram_gb": 0.0,
+    "seconds": 18,
+    "placement": {
+     "audio_extractor": "cpu",
+     "brain_model": "cpu",
+     "text_features": "read from the infra cache"
+    },
+    "pred_sha256": "dbdf2ee7558f195d3d1488791d1ac3c5c0ebb4faee798357a170ff8d682a7194",
+    "weights": {
+     "stock_ckpt_sha256": "9c79ffff6b642b7b0c71d558c935fb3fa33f2788bfb509feead94fafbba2f321",
+     "tuned_ckpt_sha256": "96923860eb47ee8e8f65e597f2fc216992470852dc07af95112d80d32746421e",
+     "tuned_tensors": 108,
+     "tensors_changed_vs_stock": 105,
+     "training_mode": false
+    },
+    "features": {
+     "sound_and_text": "read from the stock runs' feature cache (no file added)",
+     "work_folder_unchanged": true
+    },
+    "vs_stock": {
+     "max_abs_diff": 1.212585687637329,
+     "corr": 0.8698648052981907,
+     "stock_sha256": "0a47d825a521f643fc5b298942fde7049679b070381bc97330ffd11a25d30ae3"
+    }
+   }
+  },
+  "shuf": {
+   "start_utc": "2026-10-31T10:47:09Z",
+   "end_utc": "2026-10-31T10:47:33Z",
+   "record_sha256": "e23590d26b98f84561db9bddc248b54fe809f9ce485fd84e4fbcee97ea113128",
+   "record": {
+    "stage": "alice_shuf",
+    "mode": "full",
+    "shuffle_seed": 7,
+    "n_tsv_words": 2101,
+    "rows": 2132,
+    "timed": 2101,
+    "dropped_untimed": 31,
+    "set_to_min_duration": 2,
+    "annotations_sha256": "6e25b0d85a1457a75c608f2a298dbef97172f83270eb35a82b43c92229d0e46c",
+    "n_audio_events": 12,
+    "audio_end_s": 743.6593197278911,
+    "n_words": 2101,
+    "words_equal_tsv": true,
+    "n_words_after_60s": 1984,
+    "tsv_after_60s": 1984,
+    "last_word_before_audio_end": true,
+    "shape": [
+     744,
+     20484
+    ],
+    "n_windows": 15,
+    "finite": true,
+    "contiguous_seconds": true,
+    "peak_vram_gb": 0.0,
+    "seconds": 17,
+    "placement": {
+     "audio_extractor": "cpu",
+     "brain_model": "cpu",
+     "text_features": "read from the infra cache"
+    },
+    "pred_sha256": "fdbfa5b03f27cbf34eaeb57f4864936b295c65a848a3781eab5b1e68745322ec",
+    "weights": {
+     "stock_ckpt_sha256": "9c79ffff6b642b7b0c71d558c935fb3fa33f2788bfb509feead94fafbba2f321",
+     "tuned_ckpt_sha256": "96923860eb47ee8e8f65e597f2fc216992470852dc07af95112d80d32746421e",
+     "tuned_tensors": 108,
+     "tensors_changed_vs_stock": 105,
+     "training_mode": false
+    },
+    "features": {
+     "sound_and_text": "read from the stock runs' feature cache (no file added)",
+     "work_folder_unchanged": true
+    },
+    "vs_stock": {
+     "max_abs_diff": 0.8791689872741699,
+     "corr": 0.7171977232028777,
+     "stock_sha256": "7c4ba627bc0b6d801e263fa17d887f18a4028dec84fbec9850c750a4d66f41bf"
+    }
+   }
+  }
+ },
+ "code_sha256": {
+  "alice/forecast/run_alice_forecast_tuned.py": "f9d77acc5afd52463f88535a171201bdba65d6a6d70e9ae0333b3a15718fc76e",
+  "alice/forecast/run_alice_forecast.py": "5193ed33cdcb039dcdaf61b39d1e7996a71037289e265aee47b9685c8786a80e",
+  "k2/tribe_common.py (analysis tree)": "5029b14736b31dd652f9f37ac0b25bc72e9cf978c4e1d6958f6847e4dd459a34",
+  "alice/forecast/run_all_tuned.sh (analysis tree)": "9890610a841462c19afa8224c586a6e71df96c4fa0dc97b97c4a63a3ec9ecb2f"
+ },
+ "llama_placement_used": false
+}

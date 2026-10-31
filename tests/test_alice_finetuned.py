@@ -147,8 +147,15 @@ def test_overlay_links(AF, tmp_path):
         AF.overlay(root, other, ovl)
 
 
-def stage(listeners, lang, hearing):
-    return {"per_listener": {"listeners": listeners, "language": lang, "hearing_listeners": listeners, "hearing": hearing}}
+PUB = json.load(open(REPO / "results/alice_heldout.json"))["stage"]["145_primary"]          # the stock run of record
+FIRST = json.load(open(REPO / "results/alice_heldout_first_run.json"))                       # the first run: same forecast pins
+
+
+def stage(listeners, lang, hearing, z=None):
+    """A claim-window stage; its group z are the run of record's unless z (language, hearing) is given."""
+    zl, zh = z or (PUB["language"]["z"], PUB["hearing"]["z"])
+    return {"per_listener": {"listeners": listeners, "language": lang, "hearing_listeners": listeners, "hearing": hearing},
+            "language": {"z": zl}, "hearing": {"z": zh}}
 
 
 def stock_file(AF, path, st, pins=None):
@@ -158,12 +165,16 @@ def stock_file(AF, path, st, pins=None):
     return path
 
 
-def test_stock_file_must_be_the_pinned_run(AF, tmp_path):
+def test_stock_file_must_be_the_run_of_record(AF, tmp_path):
     st = stage(["a"], [1.0], [1.0])
     assert AF.stock_scores(stock_file(AF, tmp_path / "ok.json", st)) == st
-    first_run = {**AF.STOCK_PINS, "full": "0" * 64}                  # e.g. a different run's forecasts
-    with pytest.raises(SystemExit, match="not the stock run"):
-        AF.stock_scores(stock_file(AF, tmp_path / "other.json", st, first_run))
+    with pytest.raises(SystemExit, match="not the stock run"):                   # other forecasts
+        AF.stock_scores(stock_file(AF, tmp_path / "other.json", st, {**AF.STOCK_PINS, "full": "0" * 64}))
+    first_pins = {k: FIRST["inputs_sha256"][f"pred_{k}"] for k in AF.MODES}
+    assert first_pins == AF.STOCK_PINS                                          # the first run's real pins: the same forecasts
+    first = stage(["a"], [1.0], [1.0], (FIRST["stage"]["145_primary"]["language"]["z"], FIRST["stage"]["145_primary"]["hearing"]["z"]))
+    with pytest.raises(SystemExit, match="not the stock run of record"):        # so its group z tell it apart
+        AF.stock_scores(stock_file(AF, tmp_path / "first.json", first, first_pins))
 
 
 def test_paired_comparison(AF):
@@ -180,14 +191,15 @@ def test_paired_comparison(AF):
 
 def test_writer_keeps_the_stock_file(AF, tmp_path, monkeypatch):
     repo = tmp_path / "repo"; (repo / "results").mkdir(parents=True)
-    (repo / "results/alice_heldout.json").write_text('{"stock": "as recorded"}')
+    recorded = json.dumps({"stock": "as recorded", "stage": {"145_primary": PUB}})      # the run of record's group z, as stock_scores reads
+    (repo / "results/alice_heldout.json").write_text(recorded)
     monkeypatch.setattr(AF.AH, "REPO", str(repo))
     stock_full = stock_file(AF, tmp_path / "stock_full.json", stage(["a", "b"], [1.0, 1.0], [1.0, 1.0]))
     out = tmp_path / "out"; out.mkdir()
     pub = {"rule": "docs/rules/alice_heldout_rule.md", "lines": ["line one", "line two"], "stage": {"145_primary": {"n": 2}}}
     full = {**pub, "stage": {"145_primary": stage(["a", "b"], [1.5, 0.5], [1.0, 2.0])}}
     AF.make_writer(stock_full)(pub, full, str(out))
-    assert (repo / "results/alice_heldout.json").read_text() == '{"stock": "as recorded"}'
+    assert (repo / "results/alice_heldout.json").read_text() == recorded
     res = json.load(open(repo / "results/alice_finetuned.json"))
     assert res["lines"] == ["Fine-tuned TRIBE v2: line one", "Fine-tuned TRIBE v2: line two"]
     assert res["rule"] == AF.RULE and res["model"]["name"] == "fine-tuned TRIBE v2"
