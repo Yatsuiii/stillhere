@@ -532,3 +532,80 @@ model of Kaggle's T4 sessions), with the laptop as the fallback.
 - Its clips count only if its LPP-FR section 8 and pieman predictions pass D26's bar against Kaggle part 1's (median vertex r >= 0.999,
   max |difference| <= 0.05 SD), checked on the laptop before the merge; if they fail, those clips are not scored and the picker is
   "pre-registered, not run" with that reason.
+
+## Picker scorer: predictors over T1's rows, a NaN guard and a no-BOLD preflight (Oct 31, before any picker BOLD was read)
+
+Cloud rulings of Oct 31, 05:40 UTC (item d) and 06:35 UTC, after an audit of the picker and wall scoring path (one agent found, two
+others tried to refute). No picker BOLD has been read: the scoring call has not run since it refused on Oct 28, and nothing below
+reads a BOLD value. The code catches up with the registered text; no bar, threshold or test changes.
+
+- Why: PREREG section 9 says PULA has "music rows and the first 10 s dropped". T1's rows already drop each story's music rows, its
+  first 10 s and the gap between two stories (`clips.py` `part_vols`, via `gauges.run_times`), but `gauges.predictors` built its rows
+  over the whole audio file (`part_vols(n, tr, 0.0, 0.0, wav_dur)`), so for 7 of 9 Skyra families (and bronx and the two shapes clips)
+  PULA, PH, B-WR and B-ENV also read music, pre-story audio and, for slumlordreach, the 43.5 s between its two stories; S3 compared
+  predictors and targets on different rows.
+- What changes (`gauges.py`, `score_picker.py`, both in the hashed bundle): each clip's predictor rows are the rows T1's own rule
+  gives for a complete, uncensored run, from stimulus timing only (each listener's wav_start, s0 and K from its parts; the row bound is
+  T1's, the TRIBE sample before s0 + K; enough volumes to reach the story's end; no FD censoring). Listeners that share their timing
+  (every non-schema clip) share one row set; schema clips, whose listeners each have their own wav_start, get each listener's rows and
+  the predictors are averaged per row exactly as T1 is (a plain mean over the row's listeners, `score_picker.py`, then over families,
+  `bars.py`). Run length and FD censoring come from the scans and stay T1-only by design, since section 9's predictors use no BOLD.
+  B-WR and B-SPF now count words per contiguous run of rows (identical to before on a single span); every other predictor line is
+  unchanged. On LPP the predictors gain T1's 2 or 3 end rows (LPP-EN section 1: 273 to 275 rows).
+- Rows before and now, by example (TR 1.5 s, LPP 2.0 s): lppEN_section1 10-554 s, 273 rows -> 10-558 s, 275; bronx 10.5-559.5 s,
+  367 -> 25.69-555.19 s, 354; slumlordreach 10.5-1801.5 s, 1,195 -> 36-931.5 s and 975-1794 s, 1,145; 21styear 2,243 -> 2,222;
+  black 527 -> 530; friends 103 -> 106. On synthetic clips built from all 42 clip structures, predictor rows equal T1's complete-run
+  rows for every listener (92 rule sets; schema clips with three different wav_starts each).
+- Gate 2: its numbers stay on record as computed on Oct 23 (PREREG section 9). Recomputed descriptively on the same inputs with T1's
+  rows, by the builder and independently by a refuter (no BOLD; section 8 not touched):
+
+| | Rows, LPP-EN sections 1-6 | PULA, sections 1-6 | Multiple R (p) | r(PULA, B-WR) | r(PULA, sd(P_full)) |
+|---|---|---|---|---|---|
+| Oct 23 record (gate 2's rows) | 273, 289, 331, 295, 257, 335 | 0.0722, 0.0636, 0.0618, 0.0765, 0.0701, 0.0680 | 0.50 (0.64) | -0.06 | +0.94 |
+| T1's complete-run rows (descriptive) | 275, 292, 334, 297, 259, 337 | 0.0722, 0.0654, 0.0620, 0.0769, 0.0706, 0.0684 | 0.64 (0.48) | +0.04 | +0.86 |
+
+- Naming (ruling of 07:05 UTC): the Oct 23 result (r +0.94) fixed the forecast's name as "TRIBE's predicted response strength", never
+  a claim about language, and a later code fix can only keep that restriction. `score_picker.py` already writes that
+  name unconditionally; the scoring call's own recheck (`name_predicted_response_strength`, `r_pula_sdpf_fisher_mean`) is reported only.
+  So the bundle's wording does not change; the page, the write-up and the video call the picker forecast by that name whatever the
+  recheck shows, with gate 2 reported beside it: +0.94 (Oct 23 rows), +0.86 (T1's rows, 6 sections) and the scoring call's recheck.
+- S2: the code passes S2 only when rho > 0 and p < 0.05, while section 9 asks only rho > 0. Left as is, since it can only withhold the
+  "real brains" wording and never a headline; the scoring call prints rho and p beside the S2 verdict.
+- `check_pred_inputs.py` (outside the bundle): refuses, and reports the clip and mode, any prediction file whose values are not all
+  finite.
+- `preflight_picker.py` (new, outside the bundle; `score_job.sh` runs it before the scoring call, which takes the single-run lock):
+  for each listener file it reads only the zip member list, `parts`, `tr`, and the AUD and LANG members' npy headers (shape and dtype,
+  read with a one-byte zip read size, so 186 bytes of a 21,560-byte member are read and no BOLD value is decoded). It refuses a file that
+  is missing, duplicated, truncated or unreadable; a missing member; parts that lack the clip; timing that is not finite or K <= 0; a
+  LANG volume count or parts that differ from the hashed download-job record; a header that cannot hold the clip's rows; a row whose
+  listeners do not share one TR; and any error from the predictor step, which it runs for every row. Known residuals, not checked
+  without reading values: damage inside a member's values (a CRC error), and censored edge frames that nilearn drops before filtering
+  on a run that passes the row filter by a few rows.
+- `CHOICES.md` item 2 corrected (dated note): T1 has 275 rows on LPP-EN section 1; gate 2 had 273.
+
+| | Before | After |
+|---|---|---|
+| Code bundle (FROZEN.json, the manifest's `code_bundle_sha256`) | `9d70b4b09545c64b...` | `961a00fb5ff71429...` |
+| Kaggle code dataset MANIFEST (FROZEN.json `kds_manifest_sha256`) | `10aef9fafb694fa6...` | `2cfae3212f389a1c...` |
+| `d22/picker/gauges.py` (bundle) | `9b1108eb4be994ba...` | `e8072e8b04eae066...` |
+| `d22/picker/score_picker.py` (bundle) | `0d6dfb9d66d68596...` | `2cdfa982deef3a27...` |
+| `d22/picker/score_job.sh` | `7979e51896cf4f0a...` | `2a21c4cd72b235a8...` |
+| `d22/picker/preflight_picker.py` (new) | | `2174da89365de75a...` |
+| `d22/picker_pred/check_pred_inputs.py` | `57d1ccabede93c07...` | `b89db3a199416df5...` |
+| `d22/picker/CHOICES.md` | `569254df1643007d...` | `b66ebd5b3583708e...` |
+| Picker manifest (`picker_manifest.json`) | `65d321c2a5209ce7...` | `b5fdba4a64b25667...` |
+
+- The manifest was rebuilt in place from the same tier-D files with the frozen builder (it reads no BOLD): its clip and family rows,
+  blocks, floor, wall floor, download jobs, not-passed list, cutoff and status are byte-identical to the Oct 29 manifest; only
+  `built_utc`, `code_bundle_sha256` and the per-file hashes of `gauges.py` and `score_picker.py` differ. The new hash
+  `b5fdba4a64b2566724f3ee4bb7189d218c7bec275db8742058bf06dc02390dce` is posted as D15 posts it; until then the scoring call refuses
+  (the posted hash on record is still Oct 29's). The replaced files and the Oct 29 manifest are kept in the analysis tree
+  (`archive_oct31_picker_before_rowfix/`). The registry gains history lines for `score_job.sh` and `check_pred_inputs.py` and an entry
+  for `preflight_picker.py`.
+- Tests, run in place: `test_picker.py` 15 of 16 pass, including predictor rows equal to T1's complete-run rows for every listener of all
+  42 clip structures, `predictors_at` on the Oct 28 rows equal to the Oct 28 predictors on every key, the input check refusing NaN and inf,
+  the scoring checks on planted, null and wrong-label worlds and on story-part rows, and the preflight refusing truncated files, missing
+  parts, infinite timing, mismatched volume counts, mixed TRs and a predictor failure before any lock exists. The one failure,
+  `test_download_pass_fake`, fails the same way on the Oct 28 code (a pre-existing fault of that fake; it covers `download_pass.py`, which
+  is unchanged and ran for real on Oct 29). picker-pred: the parts test 4/4, `test_picker_pred.py` 9/9, the chain's dry test 14/14 (their
+  fixtures now write real prediction files, which the NaN guard reads). Two independent refuters checked the change before install.

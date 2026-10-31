@@ -445,13 +445,19 @@
   },
   {
    "path": "d22/picker_pred/check_pred_inputs.py",
-   "sha256": "57d1ccabede93c075db9b4aa6ea182998c9bf0ca68fa15eab160b24c2bcfc78d",
+   "sha256": "b89db3a199416df5f26f9a3a0e937ffcfa2dfb562bf29e1d265f2cfbec96bfd8",
    "role": "runner",
    "implements": [
     "§9",
     "D26"
    ],
-   "what": "42/42 input check before the picker's single scoring call (refuses unless all 42 verified stock predictions)"
+   "what": "42/42 input check before the picker's single scoring call (refuses unless all 42 verified stock predictions)",
+   "history": [
+    {
+     "old_sha256": "57d1ccabede93c075db9b4aa6ea182998c9bf0ca68fa15eab160b24c2bcfc78d",
+     "why": "cloud rulings of Oct 31, 05:40 and 06:35 UTC (picker audit, item d): refuses any prediction file whose values are not all finite (NaN guard), refuse and report only; made before any picker BOLD was read; docs/frozen_code_changes.md"
+    }
+   ]
   },
   {
    "path": "d22/picker_pred/make_picker_pred_parts.py",
@@ -499,13 +505,29 @@
   },
   {
    "path": "d22/picker/score_job.sh",
-   "sha256": "7979e51896cf4f0a64232d527a14785594abc6513a940c06de3c3dcaa91f10cd",
+   "sha256": "2a21c4cd72b235a8317a96e149471ff68bb61e94a8c3cd6d8e14532cf8b59f0b",
    "role": "runner",
    "implements": [
     "§9",
     "D19"
    ],
-   "what": "the picker's single scoring call with the wall, then the wall baselines, via run_frozen.sh; posted hash and 42/42 checks first"
+   "what": "the picker's single scoring call with the wall, then the wall baselines, via run_frozen.sh; posted hash and 42/42 checks first",
+   "history": [
+    {
+     "old_sha256": "7979e51896cf4f0a64232d527a14785594abc6513a940c06de3c3dcaa91f10cd",
+     "why": "cloud rulings of Oct 31, 05:40 and 06:35 UTC (picker audit, item d): runs the no-BOLD preflight (preflight_picker.py) before the scoring call takes its lock, and the input check under an interpreter with numpy; made before any picker BOLD was read; docs/frozen_code_changes.md"
+    }
+   ]
+  },
+  {
+   "path": "d22/picker/preflight_picker.py",
+   "sha256": "2174da89365de75a9dd40990bc37a7472333eddb0c46628ce9b7e87974f1fd27",
+   "role": "runner",
+   "implements": [
+    "§9",
+    "D19"
+   ],
+   "what": "the scoring call's preflight before its lock (cloud ruling of Oct 31, 06:35 UTC): reads only each listener file's member list, parts, tr and the AUD and LANG npy headers (never a BOLD value), checks them against the download-job records and the manifest, and runs the predictor step for every row"
   }
  ],
  "not_entry_points": [
