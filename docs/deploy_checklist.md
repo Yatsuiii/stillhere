@@ -55,7 +55,7 @@ empty HOME, so no laptop key or list can be read). Result: SMOKE PASS.
 | `CAP_META_USD`, `CAP_FIREWORKS_USD`, `CAP_BASETEN_USD` | no | Yatsu | `80`, `50`, `50` |
 | `DAILY_CAP_META_USD`, `DAILY_CAP_FIREWORKS_USD`, `DAILY_CAP_BASETEN_USD` | no | Yatsu | `20`, `12`, `12` |
 | `POST_CREDIT_CAP_META_USD` | no | Yatsu | `20` |
-| `SAM_USD_PER_FRAME` | no | Yatsu | `0.01` (set Oct 31). Meta's Models page lists SAM 3.1 video at $0.20 per 1,000 frames, and one FILM call on a one-frame clip (`web/film/bridge_t032.5_cut.mp4`, 1 frame by ffprobe) reported `video_frames_processed: 50`, so a call bills 50 frames: $0.01 (VERIFIED Oct 31, one call). Set: each FILM frame reserves twice it ($0.06 a run) and settles to it. Unset, or set to anything but a positive number (0, negative, not a number; logged): each FILM frame keeps its $0.50 reservation ($1.50 a run) |
+| `SAM_USD_PER_FRAME` | no | Yatsu | `0.01` (set Oct 31). Meta's Models page lists SAM 3.1 video at $0.20 per 1,000 frames, and one FILM call on a one-frame clip (`web/film/bridge_t032.5_cut.mp4`, 1 frame by ffprobe) reported `video_frames_processed: 50`, so a call bills 50 frames: $0.01 (VERIFIED Oct 31, one call). Set: each FILM frame reserves twice it ($0.06 a run) and settles to it. Unset, or set to anything but a number of at least 0.01 (0, negative, not a number, or a per-frame list price such as 0.0002; logged): each FILM frame keeps its $0.50 reservation ($1.50 a run) |
 | `JOB_EXPIRY_S` | no | optional | `120` |
 | `STILLHERE_LIVE` | no | only as a switch | unset; `0` turns every station to its recorded run |
 | `VERCEL` | no | Vercel | present on Vercel: live calls then require the shared store |

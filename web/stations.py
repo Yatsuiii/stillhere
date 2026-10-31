@@ -39,18 +39,23 @@ RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # res
 # $0.01): FILM settles each completed frame to it. Set, a frame reserves twice its price ($0.06 a run at $0.01), so FILM fits a share
 # with little left (cloud review of Oct 31, 12:20 UTC, item 1: $0.50 a frame sent FILM to its recorded run with $1 of a share left);
 # unset, each frame reserves and keeps $0.50.
+SAM_MIN_USD = 0.01   # one SAM call bills a 50-frame minimum: $0.01 at Meta's $0.20 per 1,000 frames (docs/deploy_checklist.md)
+
+
 def sam_price(raw):
-    """SAM_USD_PER_FRAME as a price: a positive finite number, else None (unset). A value set by mistake (0, negative, not a number)
-    would make FILM reserve $0 and pass spent caps, so it counts as unset, FILM reserves and keeps $0.50 a frame, and the log says so
-    (refuter's review of Oct 31, item 8)."""
+    """SAM_USD_PER_FRAME as a price: a finite number of at least SAM_MIN_USD, else None (unset). A value set by mistake would make FILM
+    reserve too little: 0, negative or not a number $0, passing spent caps (refuter's review of Oct 31, item 8); 0.0002, Meta's list
+    price per frame, $0.0006 a run against a real $0.03 (second refuter's review, item D). So it counts as unset, FILM reserves and
+    keeps $0.50 a frame, and the log says so."""
     if not raw:
         return None
     try:
         v = float(raw)
     except ValueError:
         v = None
-    if v is None or not math.isfinite(v) or v <= 0:
-        print("stillhere: SAM_USD_PER_FRAME is not a positive number, so FILM reserves $0.50 a frame", file=sys.stderr, flush=True)
+    if v is None or not math.isfinite(v) or v < SAM_MIN_USD:
+        print(f"stillhere: SAM_USD_PER_FRAME is not a number of at least {SAM_MIN_USD} (one call's 50-frame minimum), so FILM "
+              "reserves $0.50 a frame", file=sys.stderr, flush=True)
         return None
     return v
 
