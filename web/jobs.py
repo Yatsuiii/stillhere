@@ -28,9 +28,9 @@ FAIL_CODES = ("timeout", "oom", "model_error", "bad_recipe", "cache_key_mismatch
 MAX_POINTS = 60
 QUEUE_MAX = 6                                               # jobs waiting at most: about five minutes of the laptop's work
 ADDRESS_WAITING = 2                                         # of them, from one network address at most (fourth review, item 1)
-WAITING_TTL_S = 600                                         # an address's waiting count ends 10 minutes after its latest job (each
-                                                            # INCR sets it again: refuter's review of Oct 31, item 5), so a count a lost
-                                                            # answer leaks is short (cloud review of Oct 31, 12:20 UTC, item 8)
+WAITING_TTL_S = 600                                         # an address's waiting count ends 10 minutes after its latest queued job
+                                                            # (each queued job sets it again, a refused try never: the refuters' items
+                                                            # 5 and B), so a count a lost answer leaks is short (cloud review, item 8)
 BUSY_LINE = "The laptop's queue is full, so a saved forecast is shown where one exists."
 FAILED_LINE = "The live forecast did not finish, so a saved forecast is shown where one exists."
 ADDRESS_BUSY_LINE = "This network address already has forecasts waiting on the laptop, so a saved forecast is shown where one exists."
@@ -147,7 +147,7 @@ def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None) -> di
     # per lost INCR, never money (refuter's review of Oct 31, item 6). With no job queued the caller gives it back with the rest.
     if addr:
         claimed.add(lambda: _unwait(addr, job_id))
-        if s.incrbyfloat(_waiting(addr), 1, ttl=WAITING_TTL_S, extend=True) > ADDRESS_WAITING:
+        if s.incrbyfloat(_waiting(addr), 1, ttl=WAITING_TTL_S) > ADDRESS_WAITING:
             return full(ADDRESS_BUSY_LINE)
     ledger.station_hour("forecast", claimed=claimed, addr=addr)
     s.set(f"job:{job_id}", json.dumps({"id": job_id, "recipe": r, "cache_key": key, "status": "queued", "created_utc": _now(),
@@ -155,6 +155,8 @@ def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None) -> di
     if s.rpush("jobs:queue", job_id) > QUEUE_MAX:          # visitors passed the check at once: RPUSH's length is atomic, so each one
         s.delete(f"job:{job_id}"); s.lrem("jobs:queue", job_id); return full()       # past the cap takes its own id back out
     claimed.paid = True                                    # queued: the counts stand, whatever the next write does (item 8)
+    if addr:                                               # the count's 600 s again, for a queued job only: a refused try never
+        s.expire(_waiting(addr), WAITING_TTL_S)            # keeps a leaked count alive (second refuter's review of Oct 31, item B)
     s.set(f"sjob:{sh}", job_id, ttl=600)
     return {"state": "queued", "job_id": job_id}
 

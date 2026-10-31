@@ -43,22 +43,28 @@ class MemoryStore:
             self._d[k] = str(v); self._exp.pop(k, None); self._ttl(k, ttl)
             return True
 
-    def incrbyfloat(self, k, amount, ttl=None, extend=False):
-        """INCRBYFLOAT; the ttl set on a key it creates, or with `extend` on every call (EXPIRE, not EXPIRE NX)."""
+    def incrbyfloat(self, k, amount, ttl=None):
+        """INCRBYFLOAT; the ttl set on a key it creates (EXPIRE NX)."""
         with self._lock:
-            return self._incr(k, amount, ttl, extend)
+            return self._incr(k, amount, ttl)
 
     def incrbyfloat_many(self, items):
         """INCRBYFLOAT for each (key, amount, ttl), the ttl set on a key it creates, all under one lock; the new values."""
         with self._lock:
-            return [self._incr(k, amount, ttl, False) for k, amount, ttl in items]
+            return [self._incr(k, amount, ttl) for k, amount, ttl in items]
 
-    def _incr(self, k, amount, ttl, extend):
+    def _incr(self, k, amount, ttl):
         v = float(self._live(k) or 0) + float(amount); new = self._live(k) is None
         self._d[k] = repr(v)
-        if new or extend:
+        if new:
             self._ttl(k, ttl)
         return v
+
+    def expire(self, k, ttl):
+        """EXPIRE k ttl: a live key's ttl set again."""
+        with self._lock:
+            if self._live(k) is not None:
+                self._exp[k] = time.time() + ttl
 
     def zwindow(self, k, member, score, span):
         """ZREMRANGEBYSCORE k -inf score-span, ZADD k score member, ZCARD k, EXPIRE k span: how many members are left in
@@ -140,11 +146,14 @@ class UpstashStore:
         args = ["SET", k, v] + (["EX", int(ttl)] if ttl else []) + (["NX"] if nx else [])
         return self._cmd(*args) == "OK"
 
-    def incrbyfloat(self, k, amount, ttl=None, extend=False):
+    def incrbyfloat(self, k, amount, ttl=None):
         if not ttl:
             return float(self._cmd("INCRBYFLOAT", k, amount))
-        v, _ = self._pipe(["INCRBYFLOAT", k, amount], ["EXPIRE", k, int(ttl)] + ([] if extend else ["NX"]))
+        v, _ = self._pipe(["INCRBYFLOAT", k, amount], ["EXPIRE", k, int(ttl), "NX"])
         return float(v)
+
+    def expire(self, k, ttl):
+        self._cmd("EXPIRE", k, int(ttl))
 
     def incrbyfloat_many(self, items):
         """INCRBYFLOAT for each (key, amount, ttl), EXPIRE NX after each with a ttl, in one pipeline: one round trip, so a request

@@ -2022,8 +2022,8 @@ def test_a_lost_answer_to_the_waiting_count_is_given_back(web):
     class LostAnswer(store.MemoryStore):
         lose = 2
 
-        def incrbyfloat(self, k, amount, ttl=None, extend=False):
-            v = super().incrbyfloat(k, amount, ttl, extend)
+        def incrbyfloat(self, k, amount, ttl=None):
+            v = super().incrbyfloat(k, amount, ttl)
             if k.startswith("waiting:") and amount > 0 and self.lose:
                 self.lose -= 1; raise store.StoreError("ReadTimeout")
             return v
@@ -2354,7 +2354,7 @@ def test_a_failed_give_back_in_claim_still_runs_the_job(web, capsys):
 
 
 def test_every_new_waiting_job_restarts_the_counts_ten_minutes(web, monkeypatch):
-    """Refuter item 5: each INCR of an address's waiting count sets its 600 s again (plain EXPIRE), so jobs queued late in a key's
+    """Refuter item 5: each queued job sets its address's waiting count to 600 s again (plain EXPIRE), so jobs queued late in a key's
     life keep their count. EXPIRE NX counted from the first job only: two jobs queued at 590 s lost their count at 600 s and the
     address queued two more, four waiting against ADDRESS_WAITING 2."""
     app, jobs, ledger, stations, store = web
@@ -2368,8 +2368,8 @@ def test_every_new_waiting_job_restarts_the_counts_ten_minutes(web, monkeypatch)
     clock[0] += 11
     d = wait_forecast(ledger, stations, store, "4" * 32, 4)
     assert d["state"] == "busy" and d["why"] == jobs.ADDRESS_BUSY_LINE and len(S.lrange("jobs:queue")) == 2
-    sent = upstash(monkeypatch, store); store.get_store().incrbyfloat("waiting:x", 1, ttl=600, extend=True)
-    assert sent == [[["INCRBYFLOAT", "waiting:x", "1"], ["EXPIRE", "waiting:x", "600"]]]          # on Upstash: plain EXPIRE, no NX
+    sent = upstash(monkeypatch, store); store.get_store().expire("waiting:x", 600)
+    assert sent == [["EXPIRE", "waiting:x", "600"]]                                  # on Upstash: plain EXPIRE, no NX
 
 
 def test_a_sam_price_that_is_not_a_positive_number_counts_as_unset(live, monkeypatch, capsys):
@@ -2453,3 +2453,29 @@ def test_film_waits_for_a_sam_call_only_until_its_end(web, monkeypatch, capsys):
         srv.shutdown()
     assert d["why"] == stations.why_line("api_error") and 3.9 < took < 4.8, took
     assert total() == pytest.approx(0.50)                                            # frame 1 stands, frames 2 and 3 freed
+
+
+def test_refused_tries_never_keep_a_leaked_waiting_count_alive(web, monkeypatch):
+    """Second refuter item B: only a submit that queues its job sets the address's waiting count to 600 s again; a refused try does
+    not, so a count leaked by two failed give-backs (nothing waits, the count says 2) lapses 600 s after the last queued job, while
+    the address keeps trying every 5 minutes. Refreshing on every INCR kept it alive as long as the address tried."""
+    app, jobs, ledger, stations, store = web
+    clock = fake_clock(monkeypatch, store, jobs, ledger)
+
+    class Flaky(store.MemoryStore):
+        fail = 0
+
+        def incrbyfloat(self, k, amount, ttl=None, **kw):
+            if self.fail and k.startswith("waiting:") and amount < 0:
+                self.fail -= 1; raise store.StoreError("ReadTimeout")
+            return super().incrbyfloat(k, amount, ttl, **kw)
+    S = Flaky(); store.set_store(S); call(app, "POST", "/api/worker/claim", {}, auth=W)
+    assert [wait_forecast(ledger, stations, store, f"{i:032x}", s)["state"] for i, s in ((1, 2), (2, 3))] == ["queued", "queued"]
+    S.fail = 2
+    assert [call(app, "POST", "/api/worker/claim", {}, auth=W)[0] for _ in range(2)] == [200, 200]   # both give-backs fail, logged
+    assert waiting_count(ledger, store) == 2 and S.lrange("jobs:queue") == []
+    states = []
+    for i in range(3):                                                               # a try every 5 minutes, the worker online
+        clock[0] += 300; call(app, "POST", "/api/worker/claim", {}, auth=W)
+        states.append(wait_forecast(ledger, stations, store, f"{100 + i:032x}", (1, 4, 7)[i])["state"])
+    assert states == ["busy", "queued", "queued"], states                            # lapsed at 600 s, then counted as usual

@@ -88,7 +88,7 @@ the result (`upload` is the server's side).
   computed <UTC>"; when the visitor asked for another seed it adds "No saved run for seed {seed}; shown: the saved run at seed 20261028."
 - Results are kept by `cache_key` (no TTL). `data/forecast_cache.json` (committed by the worker fork) holds the 12 clips x 4 conditions
   at the default seed, precomputed, in the result format above; the server loads it at start.
-- One queued or running job per session; at most 6 jobs waiting in all, 2 of them from one network address (one atomic count: added on submit, removed once per job when the worker claims the job, it expires or the submit gives it back; it lapses 600 s after the address's latest job); at most 5 runs per sliding hour per session and 20 per
+- One queued or running job per session; at most 6 jobs waiting in all, 2 of them from one network address (one atomic count: added on submit, removed once per job when the worker claims the job, it expires or the submit gives it back; it lapses 600 s after the address's latest queued job, a refused try never extending it); at most 5 runs per sliding hour per session and 20 per
   network address (shared with the other live stations); FORECAST's own hourly cap is 30 jobs for all visitors together, counting only
   jobs that reach the queue: a cached, busy, offline or refused forecast gives back both the hour and the run's use.
 
