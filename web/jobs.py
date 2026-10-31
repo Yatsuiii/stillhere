@@ -68,9 +68,11 @@ def cache_key(r: dict) -> str:
     R = _recipe(); return R.cache_key(r, R.load_index())
 
 
-def cached(key: str):
+def cached(key: str, from_store: bool = True):
+    """A worker's result for this cache key, else the committed precompute's, else None; from_store False: the precompute only (an
+    answer that must cost no store command, such as a refusal past the address's bucket)."""
     try:
-        v = get_store().get(f"result:{key}")
+        v = get_store().get(f"result:{key}") if from_store else None
     except StoreError:                                      # the store is failing: the committed precompute still answers
         v = None
     if v:
@@ -144,11 +146,11 @@ def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None) -> di
     return {"state": "queued", "job_id": job_id}
 
 
-def fallback(r: dict):
+def fallback(r: dict, from_store: bool = True):
     """The saved forecast for this clip and condition at the default seed, or None; when the visitor asked for another seed it says
-    so (ruling of Oct 29, 17:35 UTC, item 7)."""
+    so (ruling of Oct 29, 17:35 UTC, item 7). from_store: as for cached()."""
     d = {**r, "seed": RESEED.get(r["condition"], default_seed())}
-    hit = cached(cache_key(d))
+    hit = cached(cache_key(d), from_store)
     if not hit:
         return None
     note = None if d["seed"] == r["seed"] else f"No saved run for seed {r['seed']}; shown: the saved run at seed {d['seed']}."

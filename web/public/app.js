@@ -16,6 +16,9 @@ async function api(path, body) {
   try { data = await r.json(); } catch (e) { data = null; }
   return {status: r.status, data: data || {}};
 }
+// An answer with nothing to show: an error carrying no recorded run. A POST past the address's bucket is a 429 that carries the
+// station's recorded run and its why line, shown as any other refusal is (cloud review of Oct 31, 12:20 UTC, item 6).
+function failed(status, data) { return status >= 400 && data.mode !== "recorded" && !data.state; }
 function badge(kind, text) { return el("span", "badge b-" + kind, text); }
 function nd() { return el("p", "nd", "Not a diagnosis or medical advice."); }
 function receiptLink(id) {
@@ -95,7 +98,7 @@ async function doPlan() {
   const out = $("plan-out"); out.textContent = "Planning.";
   const {status, data} = await api("/api/plan", {text: text, backend: $("backend").value});
   $("plan-go").disabled = false; out.textContent = "";
-  if (status !== 200) { out.append(el("p", "small", "The request could not be planned (" + (data.error || status) + ").")); return; }
+  if (failed(status, data)) { out.append(el("p", "small", "The request could not be planned (" + (data.error || status) + ").")); return; }
   if (data.mode === "refused") { out.append(el("p", "", data.line)); return; }
   if (data.mode === "recorded") {
     out.append(recordedNote(data));
@@ -150,7 +153,7 @@ async function doBuild(seed) {
   const out = $("build-out"); out.textContent = "Building and transcribing.";
   const {status, data} = await api("/api/build", {run_id: S.run, clip_id: S.route.clip_id, condition: S.route.condition, seed: seed});
   out.textContent = ""; $("build-go").disabled = false;
-  if (status !== 200) { out.append(el("p", "small", "Build refused (" + (data.error || status) + ").")); return; }
+  if (failed(status, data)) { out.append(el("p", "small", "Build refused (" + (data.error || status) + ").")); return; }
   if (data.mode === "recorded") out.append(recordedNote(data));
   if (data.mode === "refused") { out.append(el("p", "", data.line)); return; }
   if (data.mode === "live") S.seed = data.seed;               // a recorded build never sets the seed
@@ -167,7 +170,8 @@ function nextSeed() {
 }
 async function doOldBug() {
   const out = $("build-out");
-  const {data} = await api("/api/build", {old_bug: true});
+  const {status, data} = await api("/api/build", {old_bug: true});
+  if (failed(status, data)) { out.prepend(el("p", "small", "The old bug could not be shown (" + (data.error || status) + ").")); return; }
   const view = checklistView(data, "caught flash");
   out.prepend(view);
   setTimeout(() => {
@@ -180,8 +184,11 @@ async function doOldBug() {
 async function doAudit() {
   $("audit-go").disabled = true;
   const out = $("audit-out"); out.textContent = "Asking.";
-  const {data} = await api("/api/audit", {run_id: S.run});
+  const {status, data} = await api("/api/audit", {run_id: S.run});
   out.textContent = "";
+  if (failed(status, data)) {                                 // a line and the button back; AUDIT is not marked done
+    out.append(el("p", "small", "The check could not run (" + (data.error || status) + ").")); $("audit-go").disabled = false; return;
+  }
   const box = el("div", "panel");
   box.append(el("h3", "", data.label || "Advisory check, not measured"));
   if (data.mode === "recorded") box.append(recordedNote(data));
@@ -268,7 +275,7 @@ async function doForecast() {
   const r = S.route;
   const {status, data} = await api("/api/forecast", {run_id: S.run, clip_id: r.clip_id, condition: r.condition, seed: S.seed});
   if (!current()) return;
-  if (status >= 400) { out.textContent = "Forecast refused (" + (data.error || status) + ")."; return; }
+  if (failed(status, data)) { out.textContent = "Forecast refused (" + (data.error || status) + ")."; return; }
   $("lane-note").textContent = data.reversed_line || "";
   if (data.state === "cached") return showResult(data.result, data, data.result.source === "cache" ? "Cached forecast, computed " + (data.result.computed_utc || "") : "Forecast", current);
   if (data.state === "offline" || (data.state === "busy" && !data.job_id)) {   // busy with a job_id: this session's own job, followed below
@@ -319,7 +326,7 @@ async function doFilm() {
   const out = $("film-out"); out.textContent = "Masking three frames.";
   const {status, data} = await api("/api/film", {run_id: S.run, concept: concept});
   $("film-go").disabled = false; out.textContent = "";
-  if (status !== 200) { out.append(el("p", "small", "Refused (" + (data.error || status) + ").")); return; }
+  if (failed(status, data)) { out.append(el("p", "small", "Refused (" + (data.error || status) + ").")); return; }
   const box = el("div", "panel");
   if (data.mode === "recorded") box.append(recordedNote(data));
   if (data.line) box.append(el("p", "", data.line));

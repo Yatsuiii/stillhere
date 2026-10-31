@@ -697,7 +697,7 @@ def test_evidence_carries_the_alice_panel_after_section8(web):
 
 # ---- hardening (Oct 31): cookie rotation, caps, atomic counts, plan checks, the queue, POST checks, caching ------------------------
 NEW_CODES = ("ip_limit", "station_cap", "not_the_plan", "plan_declined", "session_daily", "ip_daily", "shared_limit", "shared_daily",
-             "worker_offline", "store_down", "ip_station")
+             "worker_offline", "store_down", "ip_station", "slow_down")
 PLAN_BODY = {"text": "Plan a story test on chapter 2.", "backend": "spark-1.3"}
 ROUTE = {"clip_id": "alice_ch02", "condition": "sentence_scramble"}                 # where _Card routes
 
@@ -1913,3 +1913,60 @@ def test_receipt_and_job_polls_pass_their_own_bucket_before_the_store(web, monke
     for _ in range(400):                                                             # ten minutes of the page's poll, from the drained address
         now[0] += 1.5; assert call(app, "GET", "/api/forecast/" + ids[0], env=env)[0] == 404
     assert call(app, "GET", "/api/status", env=env)[0] == 200                        # status and the static files are not in it
+
+
+def test_a_bucket_refusal_answers_with_the_stations_recorded_run(web, monkeypatch, tmp_path):
+    """Item 6: a POST past its address's bucket stays a 429 with no store command, and its body is what any other refusal gives:
+    the station's recorded run with a why line (FORECAST: the committed saved forecast, read without the store; the old bug is a
+    recording already). The visitor call's 429 stays bare: the page reads nothing from it."""
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setattr(app, "BUCKET", app.TokenBucket(0, 1e9))                    # every POST is past the bucket
+    sent = upstash(monkeypatch, store); saved_cache(jobs, monkeypatch, tmp_path)
+    slow, env = stations.why_line("slow_down"), {"HTTP_X_REAL_IP": "203.0.113.97"}
+    assert slow == "This network address sent too many requests in a short time, so this station shows its recorded run."
+    for path, body in (("/api/plan", PLAN_BODY), ("/api/audit", {"run_id": "0" * 16}), ("/api/film", {"concept": "face"}),
+                       ("/api/build", {"run_id": "0" * 16, **ROUTE, "seed": 20261028})):
+        code, _, out = call(app, "POST", path, body, env=env); d = json.loads(out)
+        assert code == 429 and d["mode"] == "recorded" and d["why"] == slow, path
+    code, _, out = call(app, "POST", "/api/forecast", {"run_id": "0" * 16, **ROUTE, "seed": 2}, env=env); d = json.loads(out)
+    assert code == 429 and d["state"] == "offline" and d["why"] == stations.why_line("slow_down", shown=stations.SAVED_SHOWN)
+    assert d["fallback"]["source"] == "cache" and d["fallback"]["recipe"]["seed"] == 20261028 and d["end_line"]
+    code, _, out = call(app, "POST", "/api/build", {"old_bug": True}, env=env); assert code == 429 and json.loads(out)["pass"] is False
+    code, _, out = call(app, "POST", "/api/visitor", {}, cookie="", env=env); assert code == 429 and json.loads(out) == {"error": "slow_down"}
+    assert sent == []
+
+
+def section(out, sid):
+    """The dumped DOM of one output box, up to the end of its section."""
+    i = out.index(f'id="{sid}"'); return out[i:out.index("</section>", i)]
+
+
+@pytest.mark.skipif(CHROME is None, reason="headless Chrome is not on this machine")
+@pytest.mark.parametrize("case", ["bucket", "error"])
+def test_the_page_shows_a_bucket_refusal_as_a_recorded_run(web, monkeypatch, tmp_path, case):
+    """Item 6 in the real page: past the bucket, PLAN, BUILD, AUDIT, FORECAST and FILM show their recorded runs with the why line,
+    not bare text; AUDIT and the old bug answered with an error show a line, never an empty panel, and AUDIT is not marked done."""
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setenv("STILLHERE_LIVE", "0"); saved_cache(jobs, monkeypatch, tmp_path)
+    if case == "bucket":
+        monkeypatch.setattr(app, "BUCKET", app.TokenBucket(0, 1e9))
+        probe = (b'addEventListener("load", async () => { $("ask").value = "Plan a story test."; await doPlan();'
+                 b' await doBuild(20261028); await doAudit(); S.route = {kind: "live", clip_id: "alice_ch02", condition:'
+                 b' "sentence_scramble", seed: 2}; S.seed = 2; await doForecast(); await doFilm(); });')
+    else:
+        monkeypatch.setattr(stations, "audit", lambda run, sid: 1 / 0)
+        monkeypatch.setattr(stations, "old_bug", lambda: 1 / 0)
+        probe = b'addEventListener("load", async () => { await doAudit(); await doOldBug(); });'
+    out = chrome_dump(with_probe(app, probe), "/probe.html", tmp_path)
+    if case == "bucket":
+        slow = stations.why_line("slow_down")
+        for box in ("plan-out", "build-out", "audit-out", "film-out"):
+            assert slow in section(out, box) and "recorded run" in section(out, box), (box, section(out, box)[:300])
+        assert "Recorded request" in section(out, "plan-out") and "Advisory check, not measured" in section(out, "audit-out")
+        f = section(out, "forecast-out")
+        assert "Cached forecast, computed" in f and stations.why_line("slow_down", shown=stations.SAVED_SHOWN) in f, f[:300]
+    else:
+        a, b = section(out, "audit-out"), section(out, "build-out")
+        assert "The check could not run (server_error)." in a and "panel" not in a, a[:300]
+        assert "The old bug could not be shown (server_error)." in b and "caught" not in b, b[:300]
+        assert not re.search(r'<a href="#audit"[^>]*class="done"', out)

@@ -229,6 +229,7 @@ def why_line(code: str, shown: str = "this station shows its recorded run") -> s
             "worker_offline": f"The laptop worker is offline (it runs live {hours_et()}), so {{shown}}.",
             "store_down": "Live runs are paused, so {shown}.",
             "ip_station": "This network address has used its part of this station's live runs for this hour, so {shown}.",
+            "slow_down": "This network address sent too many requests in a short time, so {shown}.",
             "post_credit_cap": ("The event's Meta API credit has ended and the $20 set aside after it is spent, so this station shows "
                                 "its recorded run.")}.get(
         code, "Live calls are off right now.").format(shown=shown)
@@ -569,6 +570,22 @@ def forecast(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> 
     if out["state"] == "offline":
         out = {**out, "why": why_line("worker_offline", shown=SAVED_SHOWN)}
     return {**base, **out}
+
+
+def slowed(station: str, b: dict) -> dict:
+    """A station's answer to a POST past its address's token bucket (web/app.py): its recorded run with the why line, as for any other
+    refusal, made with no store command (cloud review of Oct 31, 12:20 UTC, item 6): FORECAST shows the committed saved forecast only,
+    and the old bug is a recording already."""
+    if station == "forecast":
+        try:
+            r = jobs.recipe(b.get("clip_id"), b.get("condition"), b.get("seed"))
+        except ValueError as e:
+            raise Bad(str(e))
+        return {**_forecast_base(r), "state": "offline", "why": why_line("slow_down", shown=SAVED_SHOWN),
+                "fallback": jobs.fallback(r, from_store=False)}
+    if station == "build":
+        return old_bug() if b.get("old_bug") else recorded_build(b.get("clip_id"), b.get("condition"), "slow_down")
+    return {"plan": recorded_plan, "audit": recorded_audit, "film": recorded_film}[station]("slow_down")
 
 
 def hours_et() -> str:

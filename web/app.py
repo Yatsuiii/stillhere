@@ -73,6 +73,13 @@ def bucket(req):
     return GET_BUCKET if req.method == "GET" and POLLED.fullmatch(req.path) else None
 
 
+def slowed(req) -> dict:
+    """The body of a 429 past a bucket: for a station's POST its recorded run with the why line, as for any other refusal and with no
+    store command (stations.slowed; cloud review of Oct 31, 12:20 UTC, item 6); bare for the visitor call and the GETs."""
+    name = req.path.rsplit("/", 1)[1]
+    return stations.slowed(name, req.json()) if req.method == "POST" and name != "visitor" else {"error": "slow_down"}
+
+
 def route(method: str, pattern: str, cache: str = None):
     """`cache`: a Cache-Control for an answer that is the same for every visitor (see respond)."""
     def deco(fn):
@@ -315,7 +322,7 @@ def app(env, start):
             if m and req.method == method:
                 where, b = rx.pattern, bucket(req)
                 code, body = (method == "POST" and refused_post(req)) or (
-                    (429, {"error": "slow_down"}) if b and not b.take(ledger._address(req.ip)) else fn(req, m))
+                    (429, slowed(req)) if b and not b.take(ledger._address(req.ip)) else fn(req, m))
                 return respond(start, code, body, req=req, cache=cache)
         if req.path.startswith("/api/"):
             return respond(start, 404 if not any(rx.match(req.path) for _, rx, _, _ in ROUTES) else 405, {"error": "not_found"}, req=req)
