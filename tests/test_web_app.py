@@ -726,7 +726,7 @@ def live(web, monkeypatch):
                                                                   COLOR_BGR2RGB=4))
     monkeypatch.setitem(sys.modules, "meta_sam_parser", types.ModuleType("meta_sam_parser"))
     monkeypatch.setitem(sys.modules, "stillhere.face_edit", fe); monkeypatch.setattr(stillhere, "face_edit", fe, raising=False)
-    monkeypatch.setattr(sam, "segment", lambda clip, q: paid.__setitem__("sam", paid["sam"] + 1) or {"objects": [], "usage": {},
+    monkeypatch.setattr(sam, "segment", lambda clip, q, **k: paid.__setitem__("sam", paid["sam"] + 1) or {"objects": [], "usage": {},
                                                                                                      "status": "response.completed"})
     R, memo = stations._recipe_mod(), {}
     real = R.build_condition
@@ -1030,7 +1030,7 @@ def test_film_settles_each_completed_frame_to_sams_price(web, monkeypatch):
     monkeypatch.setitem(sys.modules, "meta_sam_parser", types.ModuleType("meta_sam_parser"))
     monkeypatch.setitem(sys.modules, "stillhere.face_edit", fe); monkeypatch.setattr(stillhere, "face_edit", fe, raising=False)
     status = iter(["response.completed", "response.completed", "response.failed"])
-    monkeypatch.setattr(sam, "segment", lambda clip, q: {"objects": [], "usage": {}, "status": next(status)})
+    monkeypatch.setattr(sam, "segment", lambda clip, q, **k: {"objects": [], "usage": {}, "status": next(status)})
     monkeypatch.setattr(stations, "SAM_USD_PER_FRAME", 0.02, raising=False)
     monkeypatch.setattr(ledger, "STATION_RUNS_PER_HOUR", {**getattr(ledger, "STATION_RUNS_PER_HOUR", {}), "film": 2}, raising=False)
     d = stations.film(None, "a" * 32, "face")
@@ -1268,7 +1268,7 @@ def test_film_reserves_every_frame_first_and_settles_each(live, monkeypatch):
     assert float(S.get(f"vspend:meta:{sid}:d1")) == pytest.approx(ledger.SESSION_DAILY_USD["meta"] - 1.0)
     calls = []
 
-    def flaky(clip, q):
+    def flaky(clip, q, **k):
         calls.append(clip)
         if len(calls) == 2:
             raise httpx.ConnectError("frame 2 never answered")
@@ -1744,7 +1744,7 @@ def test_film_drops_a_mask_that_lies_only_in_the_letterbox(live, monkeypatch):
     fe.masks_for, fe.edit = masks_for, edit
     monkeypatch.setitem(sys.modules, "stillhere.face_edit", fe); monkeypatch.setattr(stillhere, "face_edit", fe, raising=False)
     bar = {"id": 1, "score": 0.9, "box_xyxy": [100, 2, 160, 40], "mask": {}}           # inside the top bar (y < 46)
-    monkeypatch.setattr(sam, "segment", lambda clip, q: {"objects": [bar], "usage": {}, "status": "response.completed"})
+    monkeypatch.setattr(sam, "segment", lambda clip, q, **k: {"objects": [bar], "usage": {}, "status": "response.completed"})
     code, _, out = call(app, "POST", "/api/film", {"concept": "face"}, cookie=page_cookie(app, "203.0.113.91"),
                         env={"HTTP_X_REAL_IP": "203.0.113.91"})
     d = json.loads(out)
@@ -1970,3 +1970,26 @@ def test_the_page_shows_a_bucket_refusal_as_a_recorded_run(web, monkeypatch, tmp
         assert "The check could not run (server_error)." in a and "panel" not in a, a[:300]
         assert "The old bug could not be shown (server_error)." in b and "caught" not in b, b[:300]
         assert not re.search(r'<a href="#audit"[^>]*class="done"', out)
+
+
+def test_film_stops_at_its_deadline_and_settles(live, monkeypatch):
+    """Item 7: each SAM call gets timeout=60, and FILM starts no frame once 150 s have passed, so it ends with the api_error line
+    well inside Vercel's 300 s and its finally settles: the frames called at their price, the frame never called freed (a kill at
+    300 s would have left the whole reservation booked)."""
+    (app, jobs, ledger, stations, store), paid = live
+    from web import sam
+    monkeypatch.setattr(stations, "SAM_USD_PER_FRAME", 0.01)
+    clock = [5_000_000.0]; monkeypatch.setattr(stations, "time", types.SimpleNamespace(time=lambda: clock[0]))
+    calls = []
+
+    def slow(clip, q, **k):
+        calls.append(k.get("timeout")); clock[0] += 76; return {"objects": [], "usage": {}, "status": "response.completed"}
+    monkeypatch.setattr(sam, "segment", slow)
+    S = store.get_store(); total = lambda: float(S.get("spend:meta:total") or 0); before = total()
+    d = stations.film(None, "a" * 32, "face", ip="203.0.113.77")
+    assert d["mode"] == "recorded" and d["why"] == stations.why_line("api_error") and calls == [60.0, 60.0]   # 152 s: no third
+    assert total() - before == pytest.approx(2 * 0.01) and stations.FILM_DEADLINE_S == 150 and stations.SAM_TIMEOUT_S == 60.0
+    calls.clear(); clock[0] += 3600
+    monkeypatch.setattr(sam, "segment", lambda clip, q, **k: calls.append(k.get("timeout")) or {"objects": [], "usage": {},
+                                                                                                "status": "response.completed"})
+    assert stations.film(None, "b" * 32, "face", ip="203.0.113.78")["mode"] == "live" and calls == [60.0] * 3   # in time: all three

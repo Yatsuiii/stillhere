@@ -42,6 +42,10 @@ RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # res
 # unset, each frame reserves and keeps $0.50.
 SAM_USD_PER_FRAME = float(os.environ["SAM_USD_PER_FRAME"]) if os.environ.get("SAM_USD_PER_FRAME") else None
 FILM_N = 3                                                                 # frames per FILM run
+# FILM's clock (cloud review of Oct 31, 12:20 UTC, item 7): each SAM call gets 60 s, not sam.segment's 120 s default, and no frame
+# starts once 150 s have passed, so the run ends with the api_error line well inside Vercel Hobby's 300 s and its finally always
+# settles (a platform kill at 300 s would leave the whole reservation booked).
+SAM_TIMEOUT_S, FILM_DEADLINE_S = 60.0, 150
 TRANSCRIBE_TIMEOUT_S = 60.0   # BUILD's Voice Transcribe call: the menu's clips are 40 s at most; the client's 300 s default is Vercel
                               # Hobby's whole function limit, so a stall would end in a platform 504 instead of the recorded run
 FILM_FRAMES = REPO / "web/film/frames.json"
@@ -646,9 +650,11 @@ def film(run_id: str, sid: str, concept: str, ip: str = None) -> dict:
     frames, t0, priced, held = [], time.time(), [], 0.0
     try:
         for f in json.loads(FILM_FRAMES.read_text())["frames"][:FILM_N]:
+            if time.time() - t0 >= FILM_DEADLINE_S:            # out of time: this frame and the rest are freed below
+                return recorded_film("api_error")
             try:
                 with capture():
-                    seg = sam.segment(str(REPO / f["clip"]), q)
+                    seg = sam.segment(str(REPO / f["clip"]), q, timeout=SAM_TIMEOUT_S)
             except Exception:                                  # this frame failed; later ones are not called. Never connected: not
                 held += per if reached() else 0.0              # counted; reached the provider (a parse error after it answered): kept
                 return recorded_film("api_error")
