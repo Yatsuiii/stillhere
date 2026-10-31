@@ -27,6 +27,8 @@ FAIL_CODES = ("timeout", "oom", "model_error", "bad_recipe", "cache_key_mismatch
 MAX_POINTS = 60
 QUEUE_MAX = 6                                               # jobs waiting at most: about five minutes of the laptop's work
 ADDRESS_WAITING = 2                                         # of them, from one network address at most (fourth review, item 1)
+WAITING_TTL_S = 600                                         # an address's waiting count ends 10 minutes after its first job, so a
+                                                            # count a lost answer leaks is short (cloud review of Oct 31, 12:20 UTC, item 8)
 BUSY_LINE = "The laptop's queue is full, so a saved forecast is shown where one exists."
 FAILED_LINE = "The live forecast did not finish, so a saved forecast is shown where one exists."
 ADDRESS_BUSY_LINE = "This network address already has forecasts waiting on the laptop, so a saved forecast is shown where one exists."
@@ -104,10 +106,13 @@ def _waiting(addr: str) -> str:
     return f"waiting:{addr}"
 
 
-def _unwait(addr: str) -> None:
-    """One fewer job waiting for this address (claimed by the worker, expired, or never queued); never below zero."""
-    if addr:
-        s = get_store(); v = s.incrbyfloat(_waiting(addr), -1)
+def _unwait(addr: str, job_id: str) -> None:
+    """One fewer job waiting for this address (claimed by the worker, expired, or never queued), at most once per job id: SET NX on
+    the id's own key, kept as long as the job's record, so the give-back, the claim and two polls expiring the job at once take it
+    off once between them (cloud review of Oct 31, 12:20 UTC, item 8); never below zero."""
+    s = get_store()
+    if addr and s.set(f"unwait:{job_id}", "1", ttl=6 * 3600, nx=True):
+        v = s.incrbyfloat(_waiting(addr), -1)
         if v < 0:
             s.incrbyfloat(_waiting(addr), -v)
 
@@ -116,7 +121,8 @@ def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None) -> di
     """Cached result, a queued job, or the cached default-seed forecast when the worker is offline, the queue is full, or the
     network address `addr` already has ADDRESS_WAITING jobs waiting; past FORECAST's hourly cap (or the address's slice of it), which
     counts only jobs that reach the laptop, ledger.Refused and nothing written. The hour and the address's waiting count go into
-    `claimed`, so the caller, ending without a queued job (busy, a lost queue race, a refusal), gives them back."""
+    `claimed`, so the caller, ending without a queued job (busy, a lost queue race, a refusal, a store error), gives them back; once
+    RPUSH has queued the job they stand (claimed.paid), as the worker will claim and run it."""
     key = cache_key(r); hit = cached(key)
     if hit:
         return {"state": "cached", "result": hit}
@@ -132,16 +138,17 @@ def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None) -> di
     waiting = s.lrange("jobs:queue")
     if len(waiting) >= QUEUE_MAX:
         return full()
-    if addr:                                               # one atomic count per address: added here, removed on claim or expiry
-        if s.incrbyfloat(_waiting(addr), 1, ttl=3600) > ADDRESS_WAITING:
-            _unwait(addr); return full(ADDRESS_BUSY_LINE)
-        claimed.add(lambda: _unwait(addr))                 # given back with everything else when no job is queued
-    ledger.station_hour("forecast", claimed=claimed, addr=addr)
     job_id = secrets.token_hex(8)
+    if addr:                                               # one atomic count per address: added here, removed once per job id on
+        claimed.add(lambda: _unwait(addr, job_id))         # claim, expiry or give-back. The give-back goes in before the INCR, so an
+        if s.incrbyfloat(_waiting(addr), 1, ttl=WAITING_TTL_S) > ADDRESS_WAITING:   # INCR whose answer is lost is given back too
+            return full(ADDRESS_BUSY_LINE)                 # (item 8); the caller gives it back with the rest
+    ledger.station_hour("forecast", claimed=claimed, addr=addr)
     s.set(f"job:{job_id}", json.dumps({"id": job_id, "recipe": r, "cache_key": key, "status": "queued", "created_utc": _now(),
                                        "sid_hash": sh, "created_t": time.time(), "addr": addr}), ttl=6 * 3600)
     if s.rpush("jobs:queue", job_id) > QUEUE_MAX:          # visitors passed the check at once: RPUSH's length is atomic, so each one
         s.delete(f"job:{job_id}"); s.lrem("jobs:queue", job_id); return full()       # past the cap takes its own id back out
+    claimed.paid = True                                    # queued: the counts stand, whatever the next write does (item 8)
     s.set(f"sjob:{sh}", job_id, ttl=600)
     return {"state": "queued", "job_id": job_id}
 
@@ -167,7 +174,7 @@ def status(job_id: str):
     if stale:                                              # a running job past its time, or a queued one with no worker online
         was = j["status"]; j["status"] = "expired"; s.set(f"job:{job_id}", json.dumps(j), ttl=6 * 3600)
         if was == "queued":
-            _unwait(j.get("addr"))
+            _unwait(j.get("addr"), job_id)
     out = {"status": j["status"], "recipe": j["recipe"], "events": [json.loads(e) for e in s.lrange(f"events:{job_id}")]}
     if j["status"] == "done":
         out["result"] = cached(j["cache_key"])
@@ -203,7 +210,8 @@ def claim(body: dict):
         if j["status"] != "queued":
             continue
         j.update(status="running", claimed_utc=_now(), claimed_t=time.time())
-        s.set(f"job:{job_id}", json.dumps(j), ttl=6 * 3600); _unwait(j.get("addr"))
+        _unwait(j.get("addr"), job_id)                     # first: a failed write below never leaves the count up (item 8)
+        s.set(f"job:{job_id}", json.dumps(j), ttl=6 * 3600)
         return {"id": job_id, "recipe": j["recipe"], "cache_key": j["cache_key"], "claimed_utc": j["claimed_utc"], "deadline_s": 40}
 
 

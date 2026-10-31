@@ -1993,3 +1993,95 @@ def test_film_stops_at_its_deadline_and_settles(live, monkeypatch):
     monkeypatch.setattr(sam, "segment", lambda clip, q, **k: calls.append(k.get("timeout")) or {"objects": [], "usage": {},
                                                                                                 "status": "response.completed"})
     assert stations.film(None, "b" * 32, "face", ip="203.0.113.78")["mode"] == "live" and calls == [60.0] * 3   # in time: all three
+
+
+WAIT_IP = "203.0.113.45"
+
+
+def waiting_count(ledger, store):
+    return float(store.get_store().get(f"waiting:{ledger._address(WAIT_IP)}") or 0)
+
+
+def wait_forecast(ledger, stations, store, sid, seed):
+    """A FORECAST from WAIT_IP's address on a fresh planned run."""
+    return stations.forecast(planned_run(ledger, store, sid, ip=WAIT_IP), sid, *ROUTE.values(), seed)
+
+
+def test_a_lost_answer_to_the_waiting_count_is_given_back(web):
+    """Item 8: the give-back is registered before the address's INCR, so an INCR whose answer is lost (applied, then a StoreError)
+    is still given back; two such losses used to lock the address out of the queue for the key's whole life."""
+    app, jobs, ledger, stations, store = web
+
+    class LostAnswer(store.MemoryStore):
+        lose = 2
+
+        def incrbyfloat(self, k, amount, ttl=None):
+            v = super().incrbyfloat(k, amount, ttl)
+            if k.startswith("waiting:") and amount > 0 and self.lose:
+                self.lose -= 1; raise store.StoreError("ReadTimeout")
+            return v
+    store.set_store(LostAnswer()); call(app, "POST", "/api/worker/claim", {}, auth=W)
+    for i in range(2):
+        d = wait_forecast(ledger, stations, store, f"{i + 1:032x}", 2)
+        assert d["state"] == "offline" and d["why"] == stations.why_line("store_down", shown=stations.SAVED_SHOWN)
+    assert waiting_count(ledger, store) == 0 and wait_forecast(ledger, stations, store, "3" * 32, 2)["state"] == "queued"
+
+
+def test_the_waiting_count_lives_ten_minutes(web):
+    """Item 8: an address's waiting count expires 600 s after its first job, not 3600 s, so any count a lost answer leaks is short."""
+    app, jobs, ledger, stations, store = web
+    call(app, "POST", "/api/worker/claim", {}, auth=W)
+    assert wait_forecast(ledger, stations, store, "1" * 32, 2)["state"] == "queued" and waiting_count(ledger, store) == 1
+    left = store.get_store()._exp[f"waiting:{ledger._address(WAIT_IP)}"] - time.time()
+    assert jobs.WAITING_TTL_S == 600 and 590 < left <= 600
+
+
+def test_a_queued_job_keeps_its_counts_when_a_later_write_fails(web):
+    """Item 8: once RPUSH has queued the job, the request's counts stand (claimed.paid): a store error on the session's job key after
+    it gives back neither the waiting count nor the run's use nor the hour, since the worker will still claim and run the job."""
+    app, jobs, ledger, stations, store = web
+
+    class Flaky(store.MemoryStore):
+        def set(self, k, v, ttl=None, nx=False):
+            if k.startswith("sjob:"):
+                raise store.StoreError("ConnectError")
+            return super().set(k, v, ttl=ttl, nx=nx)
+    S = Flaky(); store.set_store(S); call(app, "POST", "/api/worker/claim", {}, auth=W)
+    run = planned_run(ledger, store, "1" * 32, ip=WAIT_IP)
+    d = stations.forecast(run, "1" * 32, *ROUTE.values(), 2)
+    assert d["why"] == stations.why_line("store_down", shown=stations.SAVED_SHOWN) and len(S.lrange("jobs:queue")) == 1
+    assert waiting_count(ledger, store) == 1 and float(S.get(f"use:{run}:forecast")) == 1 and hours(store, "forecast") == 1
+    assert J(call(app, "POST", "/api/worker/claim", {}, auth=W))["job"] and waiting_count(ledger, store) == 0
+
+
+def test_two_polls_expiring_one_job_take_it_off_the_count_once(web, monkeypatch):
+    """Item 8: each job id leaves the address's waiting count once (SET NX on its own key), so two polls that both read a queued job
+    before either marks it expired take one job off, not two, and the address's other waiting job still counts."""
+    app, jobs, ledger, stations, store = web
+    call(app, "POST", "/api/worker/claim", {}, auth=W)
+    a, b = (wait_forecast(ledger, stations, store, f"{i + 1:032x}", s)["job_id"] for i, s in enumerate((2, 3)))
+    assert waiting_count(ledger, store) == 2
+    S = store.get_store(); stale = S.get(f"job:{a}"); real = S.get
+    monkeypatch.setattr(S, "get", lambda k: stale if k == f"job:{a}" else real(k))  # both polls read it before either writes
+    S.delete("worker:last_seen"); monkeypatch.setattr(jobs, "JOB_EXPIRY_S", -1)
+    assert [jobs.status(a)["status"] for _ in range(2)] == ["expired", "expired"] and waiting_count(ledger, store) == 1
+
+
+def test_claim_takes_a_job_off_the_count_before_marking_it_running(web, monkeypatch):
+    """Item 8: claim() takes the job off its address's waiting count before it writes the job as running, so a store error on that
+    write never leaves the count up for a job that left the queue; the job's later expiry does not take it off again."""
+    app, jobs, ledger, stations, store = web
+
+    class Flaky(store.MemoryStore):
+        fail = False
+
+        def set(self, k, v, ttl=None, nx=False):
+            if self.fail and k.startswith("job:") and '"running"' in v:
+                self.fail = False; raise store.StoreError("ConnectError")
+            return super().set(k, v, ttl=ttl, nx=nx)
+    S = Flaky(); store.set_store(S); call(app, "POST", "/api/worker/claim", {}, auth=W)
+    a = wait_forecast(ledger, stations, store, "1" * 32, 2)["job_id"]; wait_forecast(ledger, stations, store, "2" * 32, 3)
+    S.fail = True
+    assert call(app, "POST", "/api/worker/claim", {}, auth=W)[0] == 500 and waiting_count(ledger, store) == 1
+    S.delete("worker:last_seen"); monkeypatch.setattr(jobs, "JOB_EXPIRY_S", -1)
+    assert jobs.status(a)["status"] == "expired" and waiting_count(ledger, store) == 1   # the other job still waits
