@@ -609,3 +609,12 @@ reads a BOLD value. The code catches up with the registered text; no bar, thresh
   `test_download_pass_fake`, fails the same way on the Oct 28 code (a pre-existing fault of that fake; it covers `download_pass.py`, which
   is unchanged and ran for real on Oct 29). picker-pred: the parts test 4/4, `test_picker_pred.py` 9/9, the chain's dry test 14/14 (their
   fixtures now write real prediction files, which the NaN guard reads). Two independent refuters checked the change before install.
+- Addendum, Oct 31 (before part 3's outputs are merged): part 3 runs on Colab Pro (paid), on a Tesla T4 that the notebook's first cell
+  enforces, with the no-Drive variant of the same notebook: `part3_colab_nodrive.ipynb` (built by the same `make_part3_colab.py`; SHA-256 of
+  its code cells 45f81396173450f5...). Yatsu's Google Drive had about 300 MB free and the per-clip copies need about 6 GB (about 0.2 MB
+  per second of audio and 0.25 MB per word, measured on the laptop's feature cache), so the Drive notebook (11e515fb...) was not used and a
+  disconnect loses the run; the fallback is the laptop. The variant is the Drive notebook without its Drive cells; the kernel, the
+  five-line path variant, the MPLBACKEND fix and the records (nvidia-smi, pip freeze, the code cells' SHA-256, start and end times) are the
+  same, and every cell was dry-run on the laptop with a stand-in kernel before use. Earlier tries, all on free Colab, kept no output: try 1
+  (05:55 to 05:59 UTC) failed in every feature stage on Colab's MPLBACKEND; try 2 (the MPLBACKEND fix, about 06:00 to 06:40 UTC) finished
+  LPP-FR section 8's feature stage in 1,668 s and was stopped by hand to move to the Drive notebook, which the full Drive then ruled out.
