@@ -78,10 +78,10 @@ Without the Upstash variables on Vercel, every station shows its recorded run: s
    `git clone https://github.com/Yatsuiii/stillhere.git stillhere-deploy && cd stillhere-deploy`
 3. `vercel login` (Hobby account), then `vercel link` in the clone: a new project, root directory `./`, no Git connection (pushes
    must not deploy production; `vercel git disconnect` if it was connected), settings not customized (it detects Python).
-4. Upstash: Vercel dashboard, the project, Storage, create an Upstash Redis database on the free plan, connect it to Production and
-   Preview. Then Settings, Environment Variables must list `KV_REST_API_URL` and `KV_REST_API_TOKEN` (ASSUMPTION about the exact names:
-   if it lists `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` instead, that also works). Set the database's spending limit
-   if the Upstash console offers one.
+4. Upstash: Vercel dashboard, the project, Storage, create an Upstash Redis database, connect it to Production and Preview. Then
+   Settings, Environment Variables must list `KV_REST_API_URL` and `KV_REST_API_TOKEN` (ASSUMPTION about the exact names: if it lists
+   `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` instead, that also works). Plan: pay-as-you-go with a $5 budget set in the
+   Upstash console (changed Oct 31 from the free plan).
 5. Secrets, each Sensitive, for Production and Preview, from a file or pipe (never `--value`):
 
    ```sh

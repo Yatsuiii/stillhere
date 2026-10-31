@@ -61,7 +61,7 @@ the confidential clip and never leaves the laptop, and the server holds nothing 
   more total cap of $20 (`POST_CREDIT_CAP_META_USD`), then each Meta station shows its recorded run with "The event's Meta API credit
   has ended and the $20 set aside after it is spent, so this station shows its recorded run."
 - Provider alerts Yatsu should set: Meta Model API "Spend Limit" notification on the Billing page (the event page names it); Fireworks
-  spend limit or alert at $50; Baseten usage alert at $50; Upstash max monthly budget (free tier). Vercel Hobby has no paid overage.
+  spend limit or alert at $50; Baseten usage alert at $50; Upstash pay-as-you-go with a $5 budget (since Oct 31). Vercel Hobby has no paid overage.
 
 ## Deploy
 

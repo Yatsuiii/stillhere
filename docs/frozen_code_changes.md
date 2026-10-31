@@ -443,9 +443,12 @@ never computed, gate 0 is rerun on the corrected word table, and no Emo-FilM BOL
     100 s windows at a 50 s stride, one sorted row per second.
   - Pins (audit K6): the install line runs against `kernels/film/film_lock.txt` (uv pip compile of the same line on Oct 31, 128
     packages: torch 2.6.0, transformers 5.17.0, accelerate 1.15.0, moviepy 2.2.1, huggingface-hub 1.16.1, neuralset 0.0.2; a dry run of
-    the kernel's install line resolves to exactly the lock), and the Hugging Face revisions of every model the stages load are baked into
-    all three kernels (facebook/tribev2 f894e783, facebook/vjepa2-vitg-fpc64-256 875c192b, facebook/w2v-bert-2.0 da985ba0,
-    meta-llama/Llama-3.2-3B 13afe512, each `main` on Oct 31); a stage that loads another revision stops the kernel. Each kernel records
+    the kernel's install line resolves to exactly the lock), and the Hugging Face revisions of four models are baked into all three
+    kernels: facebook/tribev2 f894e783, facebook/vjepa2-vitg-fpc64-256 875c192b, facebook/w2v-bert-2.0 da985ba0 and
+    meta-llama/Llama-3.2-3B 13afe512, each `main` on Oct 31; a stage that loads another revision of one of them stops the kernel.
+    whisperx's own models (faster-whisper large-v3, the wav2vec2 alignment model and the voice-activity model) are neither pinned nor
+    checked; faster-whisper's revision is recorded with the others (`hf_revisions`), and the transcript every forecast uses is fixed by
+    the intact run's word table, whose SHA-256 gate 0 records and score requires. Each kernel records
     pip freeze and its hash, the revisions it loaded, the pins, its GPU, and the whisperx version uvx chose (tribev2 runs speech-to-text
     through `uvx whisperx`, which it does not pin; only the intact run transcribes, and the edit runs reuse its words). All three run on
     one T4 (`machine_shape NvidiaTeslaT4`, `CUDA_VISIBLE_DEVICES=0`).
@@ -512,6 +515,15 @@ never computed, gate 0 is rerun on the corrected word table, and no Emo-FilM BOL
 
 The kernels' metadata files are unchanged. None of these files is in the prereg registry (the film path is recorded by this repository's
 history); the analysis tree's push copies (`pilot/film/k_film/`) are byte copies of the kernels above.
+
+Oct 31, 10:25 UTC (cloud review of 07:35 UTC, item 3): K4 was a cloud audit error. Glimmer ran the v2 frames under its four bars: the
+frames set it read is `edit_check_rule.md`'s v2 set, MANIFEST.sha256 fe3d936dcddc6101... (62 frames per version and 31 no-mask), and its
+record holds 217 answers, 31 per version for the bridge and the new instants and 31 no-mask. The hash is the upload folder's
+(`pilot/probes/k1e_editcheck/kds/edit_check_frames`, every file matching its manifest, written at the dataset's last update, Oct 29
+06:42 UTC); Kaggle refused a download of its copy, and all 93 frame names in Glimmer's answers are in that manifest. The write-up's
+"a check of the v1 bridge edits" wording (K4) is reverted. Same review: before each film push the laptop checks that the four pinned
+repositories' `main` still equals its pin, and before film-rem and film-am it checks the intact record (every stage ok, `words_ok`,
+`route.predict`, the export manifest); no kernel or template file changed.
 
 ## picker-pred D26 part 3 on Colab (Oct 31, before its outputs are merged)
 

@@ -59,6 +59,10 @@ removal (ratio 0.817: controls sit nearer the centre); change energy, control ov
 - Saturday order: picker-pred, intact film, film-rem, film-am, the Glimmer edit check, then the picker fallback parts only if
   triggered, then scoring. Builder: `pilot/film/k_film/make_film_kernels.py` (SHA-256 18a19f742ec90039...); kernels: intact f367fac66857f559...,
   film-rem 47078e93b851d74c..., film-am 0a7ef8bc370b857e....
+- Oct 31, 10:25 UTC: the builder and kernels above are superseded by public d7bba3d: builder `kernels/film/make_film_kernels.py`
+  ea3126b1cfb18004..., intact 4deff1a0e1a5429e..., film-rem 29f59a53f05d29eb..., film-am 09b3bec84d77577a..., lock
+  `kernels/film/film_lock.txt` 13306c91335c0774... (the film entry in `docs/frozen_code_changes.md` says what changed and why). The
+  stimuli are unchanged.
 - CPU checks before Saturday: film-rem's and film-am's own input code ran on Kaggle CPU (stillhere-filmcheck) against the real
   stimuli dataset and a stand-in intact export: segment SHA-256 asserted, export files hash-checked, PASS; the intact kernel's
   export code ran in a local sandbox: it exports exactly the audio and text caches (not video), manifest self-check PASS.
