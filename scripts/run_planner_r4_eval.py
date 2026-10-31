@@ -5,7 +5,8 @@ made here. Sets: dev (v0's 106 requests and v2's 62, the only requests R4 develo
 public f19badd before any prompt or schema change, for the one final measurement of both versions). Scoring is v0's
 (stillhere/planner_eval.py, bars unchanged). Spend: every call is costed at the planner rule's prices and counted in
 results/planner_r4_spend.json across all R4 runs; no run starts once the total reaches TOTAL_CAP ($13.00, under 10% of the Meta credit
-left on Oct 31, $136.43). Writes results/planner_r4_<set>_<version>.json; prints rates and cost only. The held-out set runs only on the frozen prompts (FROZEN).
+left on Oct 31, $136.43). Writes results/planner_r4_<set>_<version>.json; prints rates and cost only; each finished run is also appended to a .partial.jsonl as it lands
+(removed once the result is written), so a stopped run leaves its record. The held-out set runs only on the frozen prompts (FROZEN).
 usage: python scripts/run_planner_r4_eval.py --set dev|r4_heldout --version v2|r4 [--repeats 1] [--workers 4]"""
 import argparse
 import datetime
@@ -107,8 +108,17 @@ def main():
     state["total_before"] = sum(r["usd"] for r in log["runs"])
     httpx.post = _recording_post
     t0 = datetime.datetime.now(datetime.timezone.utc)
+    partial = ROOT / f"results/planner_r4_{a.set}_{a.version}.partial.jsonl"   # crash safety: each finished run, as it lands
+    partial.write_text("")
+
+    def run_and_keep(x):
+        r = run_one(*x)
+        if r:
+            with lock, partial.open("a") as fh:
+                fh.write(json.dumps(r) + "\n")
+        return r
     with ThreadPoolExecutor(max_workers=a.workers) as pool:
-        runs = [r for r in pool.map(lambda x: run_one(*x), [(q, a.version, rep) for rep in range(1, a.repeats + 1) for q in Q]) if r]
+        runs = [r for r in pool.map(run_and_keep, [(q, a.version, rep) for rep in range(1, a.repeats + 1) for q in Q]) if r]
     summ = PE.summarize([{**r, "set": a.set} for r in runs], Q)
     m = summ["backends"][BACKEND]
     out = {"label": "exploratory", "rule": "docs/rules/planner_r4_rule.md", "set": a.set, "version": a.version, "system": SYSTEM[a.version],
@@ -119,6 +129,7 @@ def main():
     log["runs"].append({"set": a.set, "version": a.version, "repeats": a.repeats, "usd": round(state["spend"], 4), "finished_utc": out["finished_utc"]})
     json.dump(log, open(SPEND, "w"), indent=1)
     json.dump(out, open(ROOT / f"results/planner_r4_{a.set}_{a.version}.json", "w"), indent=1)
+    partial.unlink()
     print(f"{a.set} {a.version} x{a.repeats}: " + ", ".join(f"{k} {v['value']} ({'pass' if v['pass'] else 'FAIL'})" for k, v in m["bars"].items())
           + f"; spend ${state['spend']:.3f}; R4 total ${state['total_before'] + state['spend']:.3f} of ${TOTAL_CAP:.2f}; skipped {state['skipped']}")
 

@@ -37,6 +37,29 @@
    "repeats": 1,
    "usd": 0.9491,
    "finished_utc": "2026-10-31T11:27:31+00:00"
+  },
+  {
+   "set": "r4_heldout",
+   "version": "v2",
+   "repeats": 3,
+   "usd": 1.0679,
+   "calls": 200,
+   "finished_utc": "2026-10-31T11:33:24Z",
+   "note": "stopped by Claude Code for low system memory before it wrote anything (the runner writes only at the end): no answer was saved, scored or read; the r4 version had not started"
+  },
+  {
+   "set": "r4_heldout",
+   "version": "v2",
+   "repeats": 3,
+   "usd": 1.1298,
+   "finished_utc": "2026-10-31T12:27:16+00:00"
+  },
+  {
+   "set": "r4_heldout",
+   "version": "r4",
+   "repeats": 3,
+   "usd": 1.029,
+   "finished_utc": "2026-10-31T12:31:22+00:00"
   }
  ]
 }
