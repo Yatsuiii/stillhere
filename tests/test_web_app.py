@@ -697,7 +697,7 @@ def test_evidence_carries_the_alice_panel_after_section8(web):
 
 # ---- hardening (Oct 31): cookie rotation, caps, atomic counts, plan checks, the queue, POST checks, caching ------------------------
 NEW_CODES = ("ip_limit", "station_cap", "not_the_plan", "plan_declined", "session_daily", "ip_daily", "shared_limit", "shared_daily",
-             "worker_offline", "store_down", "ip_station", "slow_down")
+             "worker_offline", "store_down", "ip_station", "slow_down", "seed_not_offered")
 PLAN_BODY = {"text": "Plan a story test on chapter 2.", "backend": "spark-1.3"}
 ROUTE = {"clip_id": "alice_ch02", "condition": "sentence_scramble"}                 # where _Card routes
 
@@ -1642,13 +1642,15 @@ def test_film_stays_live_for_six_visitors_in_an_hour(live, monkeypatch):
 
 def test_forecast_answers_an_unoffered_seed_with_the_saved_run(web):
     """Item 2: FORECAST takes only the seeds BUILD offers for a scramble (RESHUFFLE_SEEDS); another gets the saved forecast with
-    the plan line, not a 400 (the page keeps its built state across plans), and costs the run nothing."""
+    its own line (cloud review of Oct 31, 12:20 UTC, item 10: not the plan's, which named another clip or condition), not a 400
+    (the page keeps its built state across plans), and costs the run nothing."""
     app, jobs, ledger, stations, store = web
     call(app, "POST", "/api/worker/claim", {}, auth=W)
     run = planned_run(ledger, store, "a" * 32)
     code, _, out = call(app, "POST", "/api/forecast", {"run_id": run, **ROUTE, "seed": 99})
     d = json.loads(out)
-    assert code == 200 and d["state"] == "offline" and d["why"] == stations.why_line("not_the_plan", shown=stations.SAVED_SHOWN)
+    assert code == 200 and d["state"] == "offline" and d["why"] == stations.why_line("seed_not_offered", shown=stations.SAVED_SHOWN)
+    assert d["why"] == "This seed is not one of the offered seeds, so a saved forecast is shown where one exists."
     assert store.get_store().lrange("jobs:queue") == [] and float(store.get_store().get(f"use:{run}:forecast") or 0) == 0
     assert call(app, "POST", "/api/forecast", {"run_id": run, **ROUTE, "seed": 7})[0] == 202
 

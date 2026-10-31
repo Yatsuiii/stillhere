@@ -223,6 +223,7 @@ def why_line(code: str, shown: str = "this station shows its recorded run") -> s
             "ip_limit": f"This network address has used its {ledger.RUNS_PER_HOUR_PER_ADDRESS} live runs for this hour.",
             "station_cap": "The live runs of this station for this hour are used up across all visitors, so {shown}.",
             "not_the_plan": "This run's plan names another clip or condition, so {shown}.",
+            "seed_not_offered": "This seed is not one of the offered seeds, so {shown}.",   # cloud review of Oct 31, 12:20 UTC, item 10
             "plan_declined": "This run's plan was declined, so {shown}.",
             "session_daily": "This session has used its share of the live budget until 00:00 UTC, so {shown}.",
             "ip_daily": "This network address has used its share of the live budget until 00:00 UTC, so {shown}.",
@@ -562,7 +563,7 @@ def forecast(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> 
     try:
         with ledger.Claimed() as t:                              # the run's use and the hours stand only for a job that reaches the queue
             if condition in ("sentence_scramble", "word_scramble") and r["seed"] not in RESHUFFLE_SEEDS:
-                raise ledger.Refused("not_the_plan")           # BUILD's seeds only; the saved run, not a 400 (the page keeps its built state)
+                raise ledger.Refused("seed_not_offered")       # BUILD's seeds only; the saved run, not a 400 (the page keeps its built state)
             planned(run_id, r["clip_id"], r["condition"])
             addr = ledger.use(run_id, sid, "forecast", max_uses=4, claimed=t)
             out = jobs.submit(r, sid, claimed=t, addr=addr)
