@@ -1863,3 +1863,31 @@ def test_a_fourth_walk_in_a_day_keeps_film_live_with_sams_price_set(live, monkey
         ip = f"198.51.100.{30 + i}"
         assert J(call(app, "POST", "/api/film", {"concept": "face"}, cookie=page_cookie(app, ip), env={"HTTP_X_REAL_IP": ip}))["mode"] == "live"
         assert held[0] == pytest.approx(want), price                                    # all three frames reserved before the first call
+
+
+def fake_clock(monkeypatch, store, jobs, ledger, t=2_000_000.0):
+    """One clock for the store's expiries, the jobs table and the ledger's windows; returns it as a one-item list to move."""
+    clock = [t]; fake = types.SimpleNamespace(time=lambda: clock[0])
+    for mod in (store, jobs, ledger):
+        monkeypatch.setattr(mod, "time", fake)
+    monkeypatch.setattr(jobs, "_clock", lambda: clock[0]); return clock
+
+
+def test_the_worker_stays_online_through_a_job(web, monkeypatch):
+    """Item 3: a claim keeps the worker online for JOB_EXPIRY_S, not 30 s, and every event, result and fail call refreshes it, so a
+    second visitor 31 s into the first job (35-56 s long) is queued, not told the laptop is offline."""
+    app, jobs, ledger, stations, store = web
+    clock = fake_clock(monkeypatch, store, jobs, ledger); S = store.get_store()
+    call(app, "POST", "/api/worker/claim", {}, auth=W)                              # the idle worker's poll: online
+    one = stations.forecast(planned_run(ledger, store, "1" * 32), "1" * 32, *ROUTE.values(), 1)
+    clock[0] += 2; j = J(call(app, "POST", "/api/worker/claim", {}, auth=W))["job"]
+    assert one["state"] == "queued" and j["id"] == one["job_id"]
+    clock[0] += 31                                                                   # the worker is busy with the job: no claim polls
+    two = stations.forecast(planned_run(ledger, store, "2" * 32), "2" * 32, *ROUTE.values(), 2)
+    assert two["state"] == "queued" and "job_id" in two, two.get("why")
+    for kind, body in (("event", {"stage": "build", "lane": None, "status": "start"}), ("result", result_for(j["cache_key"])),
+                       ("fail", {"reason": "oom"})):                                # fail after the result: 409, still a heartbeat
+        S.delete("worker:last_seen"); clock[0] += 1
+        assert call(app, "POST", f"/api/worker/jobs/{j['id']}/{kind}", body, auth=W)[0] in (204, 409)
+        assert jobs.worker_online() and S._exp["worker:last_seen"] == pytest.approx(clock[0] + jobs.JOB_EXPIRY_S), kind
+    clock[0] += jobs.JOB_EXPIRY_S + 1; assert not jobs.worker_online()             # silent for the expiry: offline

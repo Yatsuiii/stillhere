@@ -20,7 +20,6 @@ CACHE = REPO / "data/forecast_cache.json"
 CONDITIONS = ("intact", "sentence_scramble", "word_scramble", "reversed")
 RESEED = {"intact": 0, "reversed": 0}
 JOB_EXPIRY_S = float(os.environ.get("JOB_EXPIRY_S", 120))   # measured jobs: 39-56 s warm on the 4050 (worker fork)
-HEARTBEAT_S = 30
 STAGES = ("load", "build", "text_lane", "audio_lane", "video_lane", "predict", "regions", "upload")
 LANES = ("w2v-bert", "llama-3.2", "v-jepa-2", None)
 STATUSES = ("start", "end", "off")
@@ -182,8 +181,15 @@ def authorized(header: str) -> bool:
     return bool(tok) and hmac.compare_digest(got.encode(), tok.encode())
 
 
+def _heartbeat() -> None:
+    """The worker is online for JOB_EXPIRY_S after any authorized call (claim, event, result, fail): a busy worker does not poll
+    claim, and a 30 s heartbeat from claim alone had it offline from 30 s into every 35-56 s job, so other visitors were told it was
+    offline and queued jobs expired on a poll (cloud review of Oct 31, 12:20 UTC, item 3)."""
+    get_store().set("worker:last_seen", _now(), ttl=JOB_EXPIRY_S)
+
+
 def claim(body: dict):
-    s = get_store(); s.set("worker:last_seen", _now(), ttl=HEARTBEAT_S)
+    s = get_store(); _heartbeat()
     while True:
         job_id = s.lpop("jobs:queue")
         if job_id is None:
@@ -208,6 +214,7 @@ def _running(job_id: str):
 
 
 def event(job_id: str, e: dict) -> int:
+    _heartbeat()
     if not _running(job_id):
         return 409
     if e.get("stage") not in STAGES or e.get("lane") not in LANES or e.get("status") not in STATUSES:
@@ -229,7 +236,7 @@ def _series(x) -> bool:
 
 
 def result(job_id: str, body: dict) -> int:
-    j = _running(job_id)
+    _heartbeat(); j = _running(job_id)
     if not j:
         return 409
     regs = body.get("regions") or {}
@@ -246,7 +253,7 @@ def result(job_id: str, body: dict) -> int:
 
 
 def fail(job_id: str, body: dict) -> int:
-    j = _running(job_id)
+    _heartbeat(); j = _running(job_id)
     if not j:
         return 409
     if body.get("reason") not in FAIL_CODES:
