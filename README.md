@@ -85,7 +85,9 @@ Not a diagnosis or medical advice.
 | Sedation case study · OpenNeuro ds003171 | No sedation stage line: two of the three co-primary bars did not pass. | language fell in 9 of 12 (needed 10) | a case study, not a headline | Pre-registered; exploratory variants in the [write-up](docs/writeup_sedation.md) |
 
 <sup>4</sup> A first run used the dataset README's 10-volume offset, which the files do not follow; it is kept in
-`results/alice_heldout_first_run.json`.
+`results/alice_heldout_first_run.json`. The listener-to-listener yardstick uses the other listeners' scans as recorded, while the forecast is shifted
+to each listener's own onset (0 to 0.84 s); this can lower the yardstick slightly and so raise the point estimate, but the lower bound,
+z and p do not depend on it.
 
 ### Reading the results
 

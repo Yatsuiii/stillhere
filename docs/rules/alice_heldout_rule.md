@@ -6,8 +6,10 @@ step it changes runs. The second commit, still before any BOLD, added the foreca
 runner, and the SHA-256 of every cited file kept outside the repository (cloud ruling of Oct 30, 18:20 UTC). A third commit, after
 the download and before scoring, excludes sub-53 for a file corrupt at the source (section 2; cloud ruling of Oct 30, 19:40 UTC).
 A fourth commit, after the first scoring run and before one corrected run, corrects the volume mapping (sections 2 and 4; cloud
-ruling of Oct 30, 20:20 UTC); the first run is kept, unchanged, in `results/alice_heldout_first_run.json`. The result is shown
-whatever it is, labelled exploratory.
+ruling of Oct 30, 20:20 UTC); the first run is kept, unchanged, in `results/alice_heldout_first_run.json`. A fifth commit, after the
+corrected run, changes text only (cloud ruling of Oct 31, 04:45 UTC, item 7): section 5's window sentence matches section 4's
+indexing, section 8 lists the per-listener fields the results file holds, and section 6 says how the yardstick and the onset shift
+differ; no step, number or code changed. The result is shown whatever it is, labelled exploratory.
 
 ## 1. What is tested
 
@@ -94,8 +96,8 @@ TRIBE v2 was trained on CNeuroMod, BoldMoments, Lebel2023 and Wen2017 and evalua
   forecast and every stimulus-time regressor are shifted by its onset; TRIBE's own 5 s offset is unchanged (raw volume j reads
   stimulus time 2j - onset - 5 s, linear between 1 Hz samples).
 - Windows: section 8's two, in raw volumes. Primary, the claim window: volumes 10 to 154 (145 volumes); it starts at raw volume 10,
-  which is both section 8's skip point and the first kept volume. Full length: volume 10 to the last volume with BOLD and a forecast
-  for every listener.
+  section 8's skip point. Derivative volume i is raw volume i (section 4), so volumes 0 to 9 are in the file and read by no step. Full
+  length: volume 10 to the last volume with BOLD and a forecast for every listener.
 
 ## 6. Scoring: section 8, unchanged
 
@@ -113,6 +115,9 @@ TRIBE v2 was trained on CNeuroMod, BoldMoments, Lebel2023 and Wen2017 and evalua
   annotations.tsv); GPT-2 small surprisal (section 3).
 - Cheap baselines (`docs/rules/cheap_baselines_rule.md`): word rate and the sound envelope, every predictor scored the same way, as
   `results/section8_baselines.json`.
+- The listener-to-listener yardstick uses the other listeners' scans as recorded, while the forecast is shifted to each listener's own
+  onset (0 to 0.84 s); this can lower the yardstick slightly and so raise the point estimate, but the lower bound, z and p do not
+  depend on it.
 - Not run: section 8's M2 (hybrid) and M3 (wrong story), because they need a second story's listener group and are not part of the
   claim.
 
@@ -139,8 +144,9 @@ No other line describes this result. Not a diagnosis or medical advice.
 
 `scripts/alice_heldout.py`, three steps: `download` (the 23 derivatives and their events.tsv, only once this commit is on origin and
 the cloud has said go), `surprisal`, and `score` (one run). `score` writes the per-listener numbers outside the repository and
-`results/alice_heldout.json` with the group numbers, the outcome line, the stimulus-file note, and per listener only the protocol,
-onset and covered shares. `tests/test_alice_heldout.py` checks the indexing, the onset shift, the coverage rule and its exclusions,
+`results/alice_heldout.json` with the group numbers, the outcome line, the stimulus-file note, and per listener only these fields:
+`protocol`, `onset_s`, `stim_file`, `volumes` (the listener's volume count), `covered_share` (AUD and LANG), and `language` and
+`hearing` (whether the listener was scored for that area). `tests/test_alice_heldout.py` checks the indexing, the onset shift, the coverage rule and its exclusions,
 the outcome lines, and the one-listener-at-a-time group step against section 8's functions, on synthetic data only; no Alice BOLD is
 read by any test. `alice/forecast/run_alice_forecast.py`, the forecast runner, was added by the second commit.
 
