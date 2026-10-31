@@ -141,10 +141,14 @@ def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None) -> di
     if len(waiting) >= QUEUE_MAX:
         return full()
     job_id = secrets.token_hex(8)
-    if addr:                                               # one atomic count per address: added here, removed once per job id on
-        claimed.add(lambda: _unwait(addr, job_id))         # claim, expiry or give-back. The give-back goes in before the INCR, so an
-        if s.incrbyfloat(_waiting(addr), 1, ttl=WAITING_TTL_S, extend=True) > ADDRESS_WAITING:   # INCR whose answer is lost is given back too
-            return full(ADDRESS_BUSY_LINE)                 # (item 8); the caller gives it back with the rest
+    # One atomic count per address: added here, removed once per job id on claim, expiry or give-back. The give-back goes in before
+    # the INCR (cloud review of Oct 31, 12:20 UTC, item 8), so an INCR whose answer is lost is given back too. The trade-off, kept on
+    # purpose: an INCR that never reached the store is given back as well, so the count runs one low, at most one extra waiting job
+    # per lost INCR, never money (refuter's review of Oct 31, item 6). With no job queued the caller gives it back with the rest.
+    if addr:
+        claimed.add(lambda: _unwait(addr, job_id))
+        if s.incrbyfloat(_waiting(addr), 1, ttl=WAITING_TTL_S, extend=True) > ADDRESS_WAITING:
+            return full(ADDRESS_BUSY_LINE)
     ledger.station_hour("forecast", claimed=claimed, addr=addr)
     s.set(f"job:{job_id}", json.dumps({"id": job_id, "recipe": r, "cache_key": key, "status": "queued", "created_utc": _now(),
                                        "sid_hash": sh, "created_t": time.time(), "addr": addr}), ttl=6 * 3600)
