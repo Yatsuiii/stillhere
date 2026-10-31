@@ -143,10 +143,10 @@ def reserve(provider: str, usd: float, run_id: str = None) -> dict:
     if provider not in TOTAL_CAP:
         raise Refused("provider_not_offered")
     s, day, caps = get_store(), _day(), _caps(provider, run_id)
-    over = {code for k, cap, code, ttl in caps if s.incrbyfloat(k, usd, ttl=ttl) > cap + 1e-9}   # every key, then the check
-    if over:
-        for k, *_ in caps:
-            s.incrbyfloat(k, -usd)
+    have = s.incrbyfloat_many([(k, usd, ttl) for k, cap, code, ttl in caps])        # every key in one round trip, then the check: a
+    over = {code for (k, cap, code, ttl), v in zip(caps, have) if v > cap + 1e-9}   # store error moves none (cloud review of Oct 31,
+    if over:                                                                         # 12:20 UTC, item 11)
+        s.incrbyfloat_many([(k, -usd, None) for k, *_ in caps])
         raise Refused(next(c for c in ORDER if c in over))
     return {"provider": provider, "reserved": usd, "day": day, "caps": [(k, cap) for k, cap, *_ in caps]}
 
@@ -160,10 +160,10 @@ def settle(r: dict, actual_usd: float) -> None:
     delta = max(actual_usd, 0.0) - r["reserved"]; s = get_store()
     if delta > 1e-12:
         print(f"stillhere: a {r['provider']} call cost more than its reservation", file=sys.stderr, flush=True)
-    for k, cap in r["caps"]:
-        v = s.incrbyfloat(k, delta)
-        if delta > 0 and v > cap:
-            s.incrbyfloat(k, cap - v)
+    have = s.incrbyfloat_many([(k, delta, None) for k, cap in r["caps"]])           # one round trip, as in reserve()
+    over = [(k, cap - v, None) for (k, cap), v in zip(r["caps"], have) if delta > 0 and v > cap]
+    if over:
+        s.incrbyfloat_many(over)
 
 
 def remaining() -> dict:

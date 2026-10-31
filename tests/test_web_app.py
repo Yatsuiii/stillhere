@@ -752,14 +752,15 @@ def page_cookie(app, ip):
 
 def upstash(monkeypatch, store, fail=False):
     """Upstash's REST API in process: web/smoke_local.py's stand-in (the commands the smoke test serves) behind a fake httpx.post,
-    as the store. Returns the requests sent, one per round trip; `fail`: every request fails, as in an outage."""
+    as the store. Returns the requests sent, one per round trip; `fail`: every request fails, as in an outage, or (a function of the
+    request's body) the requests it picks."""
     from web.smoke_local import RedisStub
     stub = object.__new__(RedisStub); stub.db, stub.exp, stub.seen = {}, {}, []
     sent = []
 
     def post(url, json=None, headers=None, timeout=None):
         sent.append(json)
-        if fail:
+        if fail is True or (callable(fail) and fail(json)):
             raise httpx.ConnectError("store down")
         out = [{"result": stub.run(c)} for c in json] if url.endswith("/pipeline") else {"result": stub.run(json)}
         return httpx.Response(200, request=httpx.Request("POST", url), json=out)
@@ -2135,3 +2136,39 @@ def test_the_forecast_poll_survives_the_network_and_always_ends(web, monkeypatch
         assert marks["misses"] == "3" and polls == ["1" * 16] and "Forecast, live" in box and marks["end"].startswith("false|done"), marks
     else:
         assert marks["misses"] == "20" and polls == [] and "The live forecast did not finish." in box and marks["end"] == "false|" + idle
+
+
+def test_reserve_and_settle_move_every_bound_or_none(web, monkeypatch):
+    """Item 11: reserve() adds its price to every bound the call counts toward (the provider's total and daily caps, the run's
+    session's and address's daily shares) in one Upstash pipeline, and settle() moves them in one, so a store failing on its Nth
+    write leaves every bound moved or none: the failed call raises StoreError and no key changed (key by key, the earlier keys
+    stayed counted)."""
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setattr(ledger, "_day", lambda: "d1")
+    writes, nth = [], [0]
+
+    def nth_write(body):                                                             # a write: any request carrying INCRBYFLOAT
+        if "INCRBYFLOAT" not in json.dumps(body):
+            return False
+        writes.append(body); return len(writes) == nth[0]
+    upstash(monkeypatch, store, fail=nth_write)
+    run = ledger.start_run("a" * 32, ip="203.0.113.50")
+    keys = [k for k, *_ in ledger._caps("meta", run)]; S = store.get_store()
+    have = lambda: [float(v or 0) for v in S.mget(keys)]
+    assert len(keys) == 4
+    failed = {"reserve": 0, "settle": 0}
+    for n in range(1, len(keys) + 1):
+        writes.clear(); nth[0] = n; before = have()
+        try:
+            ledger.reserve("meta", 0.10, run)
+            assert have() == pytest.approx([b + 0.10 for b in before]), n
+        except store.StoreError:
+            failed["reserve"] += 1; assert have() == before, ("reserve", n)
+        nth[0] = 0; r = ledger.reserve("meta", 0.10, run)
+        writes.clear(); nth[0] = n; before = have()
+        try:
+            ledger.settle(r, 0.02)
+            assert have() == pytest.approx([b - 0.08 for b in before]), n
+        except store.StoreError:
+            failed["settle"] += 1; assert have() == before, ("settle", n)
+    assert failed["reserve"] >= 1 and failed["settle"] >= 1

@@ -44,12 +44,19 @@ class MemoryStore:
             return True
 
     def incrbyfloat(self, k, amount, ttl=None):
+        return self.incrbyfloat_many([(k, amount, ttl)])[0]
+
+    def incrbyfloat_many(self, items):
+        """INCRBYFLOAT for each (key, amount, ttl), the ttl set on a key it creates, all under one lock; the new values."""
         with self._lock:
-            v = float(self._live(k) or 0) + float(amount); new = self._live(k) is None
-            self._d[k] = repr(v)
-            if new:
-                self._ttl(k, ttl)
-            return v
+            out = []
+            for k, amount, ttl in items:
+                v = float(self._live(k) or 0) + float(amount); new = self._live(k) is None
+                self._d[k] = repr(v)
+                if new:
+                    self._ttl(k, ttl)
+                out.append(v)
+            return out
 
     def zwindow(self, k, member, score, span):
         """ZREMRANGEBYSCORE k -inf score-span, ZADD k score member, ZCARD k, EXPIRE k span: how many members are left in
@@ -136,6 +143,18 @@ class UpstashStore:
             return float(self._cmd("INCRBYFLOAT", k, amount))
         v, _ = self._pipe(["INCRBYFLOAT", k, amount], ["EXPIRE", k, int(ttl), "NX"])
         return float(v)
+
+    def incrbyfloat_many(self, items):
+        """INCRBYFLOAT for each (key, amount, ttl), EXPIRE NX after each with a ttl, in one pipeline: one round trip, so a request
+        that fails moves no key, where key by key a failure left the earlier keys moved (cloud review of Oct 31, 12:20 UTC, item 11).
+        An answer lost after Upstash ran it moves them all, as for any one command. The new values."""
+        cmds, at = [], []
+        for k, amount, ttl in items:
+            at.append(len(cmds)); cmds.append(["INCRBYFLOAT", k, amount])
+            if ttl:
+                cmds.append(["EXPIRE", k, int(ttl), "NX"])
+        out = self._pipe(*cmds) if cmds else []
+        return [float(out[i]) for i in at]
 
     def zwindow(self, k, member, score, span):
         return int(self._pipe(["ZREMRANGEBYSCORE", k, "-inf", repr(score - span)], ["ZADD", k, repr(score), member], ["ZCARD", k],
