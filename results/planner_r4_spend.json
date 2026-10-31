@@ -1,0 +1,14 @@
+{
+ "cap_usd": 13.0,
+ "runs": [
+  {
+   "set": "dev_probe",
+   "version": "v2",
+   "repeats": 1,
+   "usd": 0.2154,
+   "calls": 50,
+   "finished_utc": "2026-10-31T11:07:44Z",
+   "note": "r4/probe_first_answers.py: 30 development accept requests, raw first answers recorded"
+  }
+ ]
+}

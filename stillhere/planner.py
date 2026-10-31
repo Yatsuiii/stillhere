@@ -212,10 +212,10 @@ def _model(backend: str) -> str:
     return MODELS[backend]
 
 
-def plan(question, backend: str = "spark-1.3", client: Client | None = None) -> Card:
+def plan(question, backend: str = "spark-1.3", client: Client | None = None, system: str = "planner_system") -> Card:
     """One json_schema call for the StudySpec; a rejected answer is re-prompted exactly once, then a deterministic
     decline card ships. A schema-valid decline is normalised, not rejected. question is an allowlisted menu PublicText or a
-    scanned PublicQuestion."""
+    scanned PublicQuestion. system names the system prompt: v2's by default; R4's candidate is planner_system_r4."""
     client = client or live_client()
     model = _model(backend)
     trace, rejected, last = [], [], None
@@ -225,11 +225,11 @@ def plan(question, backend: str = "spark-1.3", client: Client | None = None) -> 
         offered = {"population": enums["population"], "language": enums["language"],
                    "brain_area": enums["brain_area"], "condition": enums["condition"], "stimulus": enums["stimulus"],
                    "analysis": enums["analysis"]}
-        system = [public("planner_system")] + ([public("planner_reprompt")] if rejected else [])
+        prompt = [public(system)] + ([public("planner_reprompt")] if rejected else [])
         user = [question, egress.TableEnums(enums=offered)] \
             + ([egress.TableEnums(enums={"rejected": sorted(set(rejected))})] if rejected else [])
         try:
-            ans = client(egress.Request(model=model, system=system, user=user,
+            ans = client(egress.Request(model=model, system=prompt, user=user,
                                         schema_name="study_spec", json_schema=schema))["content"]
         except (LookupError, ValueError, httpx.HTTPError) as e:     # a failed call is not a decline: never guess a reason
             return Card(text=f"Planner unavailable: the model call failed ({type(e).__name__}). Nothing was planned or declined.",
