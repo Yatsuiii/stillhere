@@ -87,6 +87,63 @@ def test_tribe_at_reads_the_prediction_at_its_sample_times():
     assert np.allclose(E.tribe_at(P, np.arange(10.0), [0.0, 4.25]), [[0, 4.25]] * 3)
 
 
+def test_tribe_at_refuses_starts_that_are_not_strictly_increasing():
+    P = np.arange(6, dtype=float)[:, None] * np.ones((1, 2))
+    for st in ([0, 1, 2, 1, 2, 3], [0, 1, 1, 2, 3, 4]):                          # overlapping windows end to end; a repeated sample
+        with pytest.raises(ValueError, match="strictly increasing"):
+            E.tribe_at(P, np.asarray(st, float), [0.5, 2.5])
+
+
+def test_load_pred_needs_one_row_per_second_in_order_and_finite(tmp_path):
+    p = tmp_path / "pred.npz"; n = int(E.OPENING_S[1]) + 1; P = np.ones((n, 3), np.float32)       # 181 rows: samples 0 to 180 s
+    np.savez(p, P=P, starts=np.arange(n, dtype=float)); Q, st = E.load_pred(p)
+    assert Q.dtype == np.float32 and np.array_equal(Q, P) and list(st) == list(range(n))
+    for starts in (np.r_[0.0, 1, 2, 1, np.arange(4.0, n - 1)], np.arange(n) + 1.0, np.arange(n) * 0.5, np.arange(n - 1.0), np.r_[0.0, 2, 1, np.arange(3.0, n)]):
+        np.savez(p, P=P, starts=starts)
+        with pytest.raises(ValueError, match="starts"):
+            E.load_pred(p)
+    for v in (np.nan, np.inf):
+        bad = P.copy(); bad[2, 1] = v; np.savez(p, P=bad, starts=np.arange(n, dtype=float))
+        with pytest.raises(ValueError, match="finite"):
+            E.load_pred(p)
+    np.savez(p, P=P[:-1], starts=np.arange(n - 1.0))                                            # ends at 179 s: short of the scored window
+    with pytest.raises(ValueError, match="scored window"):
+        E.load_pred(p)
+
+
+VOCAB = ["the", "you", "i", "to", "a", "it", "we", "celia", "thom", "what", "is", "no", "come", "on", "of", "and", "that", "this"] + \
+    [f"w{i}" for i in range(80)]
+
+
+def transcript(rng, n, lo, hi):
+    """Words with Zipf-like frequencies (a few repeat often, as speech) at ms-resolution starts in [lo, hi)."""
+    p = 1.0 / np.arange(1, len(VOCAB) + 1); p /= p.sum()
+    return [{"start": f"{s:.3f}", "text": VOCAB[i]} for s, i in zip(np.sort(rng.uniform(lo, hi, n)), rng.choice(len(VOCAB), n, p=p))]
+
+
+def test_check_words_refuses_the_chunked_copies_and_late_words_not_natural_repeats():
+    rng = np.random.default_rng(31); clean = transcript(rng, 230, 0.0, 189.5)
+    clean += [{"start": f"{t:.3f}", "text": x} for t0 in (30.0, 95.0) for t, x in zip(t0 + np.r_[0, 0.25, 0.5], ("what", "is", "this"))]
+    clean += [{"start": f"{t:.3f}", "text": "no"} for t in (50.1, 50.4, 50.7)]           # a phrase said twice, a word said three times
+    out = E.check_words(clean, 190.0)
+    assert out["n"] == 239 and 3 <= out["max_shift_copies"] < max(5, 23.9) and out["last_start_s"] < 190.0
+    # The old kernels' table: 0 to 110 s, then the 110 to 190 s block mostly copies of the words 120.000 s earlier, plus a few others.
+    first = transcript(rng, 130, 0.0, 110.0)
+    copies = [{"start": f"{float(r['start']) + 120.0:.3f}", "text": r["text"]} for r in first if float(r["start"]) < 70.0]
+    old = first + copies + transcript(rng, 18, 110.0, 190.0)
+    with pytest.raises(ValueError, match=r"copies of words 120\.000 s earlier"):
+        E.check_words(old, 190.0)
+    with pytest.raises(ValueError, match="at or past"):
+        E.check_words(clean + [{"start": "190.000", "text": "w3"}], 190.0)              # the old table ran to 377 s
+    with pytest.raises(ValueError, match="at or past"):
+        E.check_words([dict(r, start=f"{float(r['start']) + 187:.3f}") for r in copies], 190.0)
+    uniq = [{"start": f"{s:.3f}", "text": f"u{i}"} for i, s in enumerate(np.linspace(1.0, 100.0, 40))]   # the threshold: max(5, 10%)
+    shifted = lambda k: uniq + [{"start": f"{float(r['start']) + 12.345:.3f}", "text": r["text"]} for r in uniq[:k]]
+    assert E.check_words(shifted(4), 190.0)["max_shift_copies"] == 4
+    with pytest.raises(ValueError, match="5 of 45"):
+        E.check_words(shifted(5), 190.0)
+
+
 def test_alignment_sign_and_onset_matter():
     rng = np.random.default_rng(1); j, ft, ts, B, keep = viewer(rng)
     X = lambda t: E.parcel_means(E.tribe_at(P_AUD, STARTS, t), SETS)["AUD"]

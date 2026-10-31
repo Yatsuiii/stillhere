@@ -251,7 +251,8 @@ The registry keeps the before hashes as history lines.
   bit for bit, so pred_stage's compare passes on both self-check clips; timing equals pred_stage's definition computed independently on
   the clip's series (a version that skips the frame replacement fails this check); windows that disagree on a shared frame are counted; a
   failing clip leaves the others complete. `test_picker_pred_parts.py` (SHA-256 `c8da72dc391df2c1...` -> `fb586ccde5b71aa9...`): each part
-  is 1a9f1812 plus exactly these lines (8 added, 3 removed) with `HARNESS_STAGE` equal to `harness_pred.py`; the split, the kernel's own
+  is the Oct 28 part plus these lines (5 added, 3 removed), that is 1a9f1812 plus 8 added and 3 removed, with `HARNESS_STAGE`
+  equal to `harness_pred.py`; the split, the kernel's own
   routing, the merge and the 42/42 check pass as before.
 
 ```diff
@@ -402,3 +403,132 @@ if __name__ == "__main__":
 ```
 
 </details>
+
+## Film forecasts: word table, stitching and audit fixes (Oct 31, before R and C and before any Emo-FilM BOLD was read)
+
+Cloud rulings of Oct 31, 05:15 and 05:30 UTC (the 05:30 audit read the public repo at de6426a). No film result exists: R and C were
+never computed, gate 0 is rerun on the corrected word table, and no Emo-FilM BOLD has been read. No published number changes.
+
+- Problem 1, the word table, measured on the downloaded intact forecast (stillhere-pilot-bridge-intact, Oct 31, 01:38 to 03:30 UTC):
+  `words.csv` held 306 words with starts from 4.7 to 377.4 s for a 190 s segment. 120 words start after 190 s, and 102 of them are
+  copies of earlier words shifted by exactly +120.000 s; inside 0 to 190 s, 84 of the 102 words at 110 to 190 s are copies of words
+  120.000 s earlier (no other shift matches any word). Cause: the kernels built their events with tribev2's own
+  `get_events_dataframe`, which chunks the audio and video into 60 s pieces before speech-to-text; `tribe_common.build_events` takes
+  the words from the whole audio first and chunks after. The table fed the text lane of all three film forecasts (they share the
+  intact run's events) and gate 0's word-rate regressor (gate 0 passed, VIF(face) 1.12, on this table).
+- Problem 2, stitching: `pred_full.npz` and `pred_audio.npz` held TRIBE's built-in predict output unstitched, the eight overlapping
+  100 s windows' rows end to end (706 rows, starts 0 to 377 out of order). `emofilm_score.tribe_at` and `film_volumes` assume one
+  sorted row per second. On the maps grid (135 points, TR 1.3 s, read at film time - 5 s) every point found a row for the right second
+  and the right next row, but 18 of 135 read the edge window instead of the one whose centre is closest (the harness's rule); a second
+  read from its two windows differs by 0.42 SD (median over seconds, at most 0.78). The audit confirmed this independently.
+- Stopped before any harm: the Saturday chain was stopped by hand at 05:08 UTC while it waited on film-rem and film-am, before it
+  computed and pushed R and C; film-rem and film-am were cancelled on Kaggle at 05:14 UTC (logs kept). Their outputs are discarded.
+- Audit findings folded in (K = kernels, S = scorer): K2, film-rem and film-am wrote their record as `f"tierD_{name}_forecast.json"`
+  with `name` never bound in the kernel (the builder wrote it into a plain string), so the run ended in an error after its predictions
+  and without its record; K5, the builder read the template from `kernels/k_bridge`, which does not exist in this repository; K6,
+  only tribev2 was pinned; S1, `score` and `gate --words <folder>` refused on a real download (words.csv sits in bridge/ and
+  bridge/export/); S2, no guard against a NaN or constant parcel row, which would make the one-shot face test UNINFORMATIVE for good;
+  K3, `maps` read only the three prediction files, so swapped --removed/--matched folders (B2's sign would flip) or an intact rerun
+  between the edit kernels would pass; K3b, `face_map_rule.md` described the v1 control while v2 is forecast; K4, Glimmer checks the
+  v1 bridge edits, not the v2 cuts TRIBE forecasts.
+- What changes in the film kernels (`kernels/film/bridge_forecast_tpl.py`, built by `make_film_kernels.py` into `intact/`, `rem/`, `am/`):
+  - Events in the harness's order: a Video event, its audio extracted, words from the whole audio (`ExtractWordsFromAudio`, English),
+    then sentence and context, then chunking of the audio and the video into 60 s pieces (the transforms `tribe_common.build_events`
+    uses, with the video lane). Same video, audio, frame rate, resolution, checkpoint and seeds; intact, removed and control still differ
+    only in the video (the edit kernels load the intact run's events, transcript and audio and text features, hash-checked).
+  - A word-table gate before any feature stage: the events stage records the word count, the last start, the segment length and the
+    largest number of words repeated at one exact shift; the kernel stops if a word starts at or past the segment end or if one shift
+    holds at least max(5, 10% of the words) copies.
+  - Predictions through `tribe_common.stitched_predict`, copied byte for byte from the pinned `tribe_common.py` (SHA-256 5029b147...):
+    100 s windows at a 50 s stride, one sorted row per second.
+  - Pins (audit K6): the install line runs against `kernels/film/film_lock.txt` (uv pip compile of the same line on Oct 31, 128
+    packages: torch 2.6.0, transformers 5.17.0, accelerate 1.15.0, moviepy 2.2.1, huggingface-hub 1.16.1, neuralset 0.0.2; a dry run of
+    the kernel's install line resolves to exactly the lock), and the Hugging Face revisions of every model the stages load are baked into
+    all three kernels (facebook/tribev2 f894e783, facebook/vjepa2-vitg-fpc64-256 875c192b, facebook/w2v-bert-2.0 da985ba0,
+    meta-llama/Llama-3.2-3B 13afe512, each `main` on Oct 31); a stage that loads another revision stops the kernel. Each kernel records
+    pip freeze and its hash, the revisions it loaded, the pins, its GPU, and the whisperx version uvx chose (tribev2 runs speech-to-text
+    through `uvx whisperx`, which it does not pin; only the intact run transcribes, and the edit runs reuse its words). All three run on
+    one T4 (`machine_shape NvidiaTeslaT4`, `CUDA_VISIBLE_DEVICES=0`).
+  - K2: the edit kernels write `tierD_film_rem_forecast.json` and `tierD_film_am_forecast.json` (the name is bound when the builder runs);
+    they also record every cache folder their stages added and how many files each received. K5: the builder reads the template beside
+    it, takes an optional output folder, and rebuilds the committed kernels byte for byte.
+  - The import of `ExtractAudioFromVideo` comes from `neuralset.events.transforms`, as tribev2's own `demo_utils.py` imports it (a first
+    draft imported it from `tribev2.eventstransforms`; the laptop proof below caught it before any GPU run).
+- What changes in the scorer (frozen code; each change refuses, none moves a number on valid input):
+  - `stillhere/emofilm_score.py`: `load_pred` refuses a forecast unless its starts are exactly 0 to n-1 (one sorted row per second), every
+    value is finite, and it reaches the scored window's end (180 s); `tribe_at` raises on starts that are not strictly increasing;
+    `check_words` refuses a word table with a start at or past the segment end or a block of words at one exact shift (at least
+    max(5, 10%) copies at one shift, to 1 ms).
+  - `stillhere/face_map.py`: `degenerate_rows` flags a constant or non-finite cleaned parcel row.
+  - `scripts/emofilm_score_runner.py`: `prepare` refuses, naming every viewer and the counts per parcel set, if a parcel row the scored
+    path reads is constant or not finite (AUD, LANG and VIS always; ALL only on the face path); nothing is dropped; `load_forecast`
+    reads both forecasts through `load_pred`; `score` checks the word table.
+  - `scripts/face_map_runner.py`: gate and score read `<forecast>/words.csv` directly (S1); score refuses unless that file's SHA-256 equals
+    gate 0's and the intact `pred_full.npz` equals the one the maps used; maps reads the three kernel records first and refuses unless
+    each video matches its flag, each segment matches the stimuli MANIFEST, the checkpoint matches the pin, the video and predict stages
+    succeeded, both edit runs loaded the intact run's export (manifest hash), every file their stages added sits in a video-extractor cache
+    folder, pip freeze and GPU are identical across the three, the pins are identical and every loaded revision equals its pin, and the
+    intact word table passed its gate (K3); all of these checks are written into `face_map_RC.json`; score refuses before `evaluate` if
+    any viewer's cleaned row is constant or M is not finite (S2).
+  - Checked by an independent review on synthetic fixtures: every number (VIF, R and C hashes, gate 1, B1, B2, the intact score's
+    result) is identical before and after on valid inputs.
+- Text: `docs/rules/face_map_rule.md` gains one dated line: the control scored is `film_stimulus_rule.md`'s v2 (88.9% in-view coverage,
+  51 faces without a control) (K3b). The write-up (`docs/submission.md`, app repository) calls Glimmer's check "a check of the v1 bridge
+  edits" (K4).
+- Proof before any GPU (ruling of 05:40 UTC (a); `pilot/film/proof/film_route_proof.py` in the analysis tree, SHA-256 0a2b6f105ffca945...,
+  kept outside the repository): on the laptop (NVIDIA GeForce RTX 4050 Laptop GPU; torch 2.6.0+cu124, Python 3.11.17; the brain model
+  and w2v-BERT on the CPU, Llama 3.2's fp16 layers pinned to 3 GiB of GPU (12 modules on the GPU, 19 on the CPU), speech-to-text on
+  the GPU), on the film segment's audio and text (no video lane), the built intact kernel's own events code, cut from its STAGE string and
+  run as is, with its embedded `stitched_predict`, against `tribe_common.build_events` and `tribe_common.stitched_predict` run twice, all in
+  one process: new against the reference, max |difference| 0.0 over 190 seconds (bit for bit, median vertex r 1.0); the reference
+  against itself, 0.0; the three word tables are identical (102 words); the new route's word table ends at 137.4 s (segment 190 s) and
+  its largest exact-shift repeat is 1 word (the bar is 10). The three routes shared one feature cache, so Llama's word features were
+  computed once and reused while the audio features were computed for each route; the proof tests the event building, the windows and
+  the stitching, not Llama's run-to-run noise. Pass. The 102 words equal the old table's 186 words before 190 s minus its 84 copies.
+- Rerun, in the frozen order, all three on Kaggle T4s: intact; then gate 0 on the corrected word table (if it fails, the face test is
+  NOT RUN, as the rule says); then film-rem and film-am; then R and C pushed; then the Emo-FilM BOLD. Glimmer reads only SAM frames and
+  ran alongside (pushed by hand at 05:15 UTC). GPU: the film rerun keeps a 7 h reserve of this week's quota (about 6 h plus 1 h margin);
+  the picker parts take what is left (ruling of 05:40 UTC (c)).
+- Tests: `tests/test_film_kernels.py` (new): every name each kernel reads is bound (it flags `name` in the old film-rem and film-am),
+  each edit kernel writes its own record, one lock, one set of pins and the reference `stitched_predict` in all three, words before
+  chunking and predictions through the harness, and the builder rebuilds the committed kernels byte for byte. The scorer tests gain
+  the refusals above (unstitched, gapped, duplicated, NaN, short or truncated forecasts; late or copied words; swapped folders; an intact
+  rerun between the edits; audio or text cache writes in an edit run; a constant parcel; mismatched words or forecast hashes) and keep
+  every existing number. Full suite: see the commit.
+
+| File | SHA-256 before | SHA-256 after |
+|---|---|---|
+| `kernels/film/bridge_forecast_tpl.py` | `7dd2c0a7764867d9...` | `bb56bce65a7ee3e1...` |
+| `kernels/film/make_film_kernels.py` | `18a19f742ec90039...` | `ea3126b1cfb18004...` |
+| `kernels/film/intact/stillhere_pilot_bridge_intact.py` | `f367fac66857f559...` | `4deff1a0e1a5429e...` |
+| `kernels/film/rem/stillhere_pilot_film_rem.py` | `47078e93b851d74c...` | `29f59a53f05d29eb...` |
+| `kernels/film/am/stillhere_pilot_film_am.py` | `0a7ef8bc370b857e...` | `09b3bec84d77577a...` |
+| `kernels/film/film_lock.txt` (new) | | `13306c91335c0774...` |
+| `stillhere/emofilm_score.py` | `e2b3297a92972557...` | `ce7d5af6f0289a6c...` |
+| `stillhere/face_map.py` | `13b4a457a7e09004...` | `e8f0122e175ca2d2...` |
+| `scripts/emofilm_score_runner.py` | `30ef93ea67a8dfb9...` | `06b6c1b3eb600390...` |
+| `scripts/face_map_runner.py` | `2af1e6534e0327af...` | `fc0acaa1f6f9c9f7...` |
+| `docs/rules/face_map_rule.md` | `e51497a1ad24932e...` | `3d760395de027747...` |
+
+The kernels' metadata files are unchanged. None of these files is in the prereg registry (the film path is recorded by this repository's
+history); the analysis tree's push copies (`pilot/film/k_film/`) are byte copies of the kernels above.
+
+## picker-pred D26 part 3 on Colab (Oct 31, before its outputs are merged)
+
+Cloud rulings of Oct 31, 05:40 UTC (b) and 06:05 UTC. Parts 1 and 2 run on Kaggle; Kaggle runs at most two GPU sessions at once and part 3
+(about 5.2 h) does not fit this week's quota beside the film rerun's reserve, so it runs on Google Colab, free tier, Tesla T4 (the GPU
+model of Kaggle's T4 sessions), with the laptop as the fallback.
+- What runs: kernel `stillhere-picker-pred-part3` (SHA-256 518eb0eb..., c87bf88) as a path-only variant. Colab mounts `/kaggle/input`
+  read-only, so the five driver lines that name `/kaggle/` (outputs, the input guard, the token, the two cached-feature lookups) read
+  `/content/kaggle/` instead; nothing inside the embedded stage code (tribe_common, the feature stage, pred_stage, harness_pred) changes;
+  the notebook checks the original's SHA-256, asserts that exactly those five lines differ (lines 32, 125, 129, 151 and 157) and records
+  the variant's SHA-256 (532e6d57...). `MPLBACKEND` is unset for the kernel, because Colab sets an inline plotting backend the kernel's own
+  environment does not have (the first try, 05:55 to 05:59 UTC, failed on it in every feature stage and computed nothing).
+- Notebook: `d22/picker_pred/colab/part3_colab.ipynb`, built by `make_part3_colab.py` (analysis tree); SHA-256 of its code cells
+  11e515fb61389b93... It records nvidia-smi, pip freeze of the kernel's environment, the code cells' SHA-256 as run, the kernel and variant
+  hashes and the start and end times. After each clip's feature stage it copies that clip's new feature-cache files and its stim folder to
+  Google Drive with a SHA-256 list; a rerun after a disconnect restores them first (a file that differs from its list is not restored), so
+  one disconnect costs at most the clip in progress. The kernel still runs whole, so its own record and self-check stand.
+- Its clips count only if its LPP-FR section 8 and pieman predictions pass D26's bar against Kaggle part 1's (median vertex r >= 0.999,
+  max |difference| <= 0.05 SD), checked on the laptop before the merge; if they fail, those clips are not scored and the picker is
+  "pre-registered, not run" with that reason.

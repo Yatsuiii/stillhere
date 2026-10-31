@@ -57,6 +57,46 @@ def test_prepare_run_counts_motion_and_parcels(tmp_path):
     assert out["status"].startswith("dropped")
     out = R.prepare_run(ip, mp, row, [("sub-X_ses-1_task-TearsOfSteel_bold", n + 5)], 0.1, sets, proj)
     assert out["fd"] is None and out["keep"].all() and out["fd_source"].startswith("fallback")
+    def proj_bad(im):
+        x = np.random.default_rng(0).standard_normal((20484, n)); x[10:20] = 7.0; x[45] = np.nan; x[60:70] = 7.0   # AUD, VIS, face-map-only
+        return x
+    sets_all = {**sets, "ALL": [*sets["AUD"], *sets["VIS"], np.arange(60, 70)]}
+    out = R.prepare_run(ip, mp, row, runs, 0.1, sets_all, proj_bad)
+    assert out["status"] == "prepared" and out["degenerate"] == {"AUD": 1, "LANG": 0, "VIS": 1}       # ALL only when asked
+    assert R.prepare_run(ip, mp, row, runs, 0.1, sets_all, proj_bad, R.NETS + ("ALL",))["degenerate"]["ALL"] == 3
+
+
+def test_prepare_refuses_every_degenerate_viewer_and_checks_all_parcels_on_the_face_path_only(tmp_path, monkeypatch):
+    """A constant or NaN parcel row refuses prepare (nothing dropped), naming every such viewer; a parcel only the face map reads refuses
+    on the face path, not on the not_run path, where the intact film is scored alone."""
+    n = 40; data, meta, cache = tmp_path / "data", tmp_path / "meta", tmp_path / "cache"; data.mkdir(); runs = []
+    mriqc = "bids_name\tsize_t\tfd_mean\n"
+    for s in ("sub-A", "sub-B", "sub-C"):
+        nib.save(nib.Nifti1Image(np.zeros((2, 2, 2, n), np.float32), np.eye(4)), data / f"{s}_ses-1_task-TearsOfSteel_space-MNI_desc-ppres_bold.nii.gz")
+        with gzip.open(data / f"{s}_ses-1_task-mc_space-orig_desc-motion_bold.tsv.gz", "wt") as f:
+            f.write("0 0 0 0 0 0\n" * n)
+        (meta / s / "ses-1").mkdir(parents=True)
+        (meta / s / "ses-1" / f"{s}_ses-1_scans.tsv").write_text(f"filename\tacq_time\nfunc/{s}_ses-1_task-TearsOfSteel_bold.nii.gz\t2000-01-01T10:00:00\n")
+        mriqc += f"{s}_ses-1_task-TearsOfSteel_bold\t{n}\t0.1\n"; runs.append({"subject": s, "session": "ses-1", "keep": True, "n_vols": n})
+    (meta / "mriqc_group_bold.tsv").write_text(mriqc); rt = tmp_path / "runs.json"; json.dump({"runs": runs}, open(rt, "w"))
+    bad = {"sub-A": [(slice(60, 70), 7.0)], "sub-B": [(slice(10, 20), 7.0), (55, np.nan)]}    # A: a face-map-only parcel; B: AUD and VIS
+
+    def project(img, meshes):
+        x = np.random.default_rng(1).standard_normal((20484, n))
+        for sl, v in bad.get(Path(img.get_filename()).name[:5], []):
+            x[sl] = v
+        return x
+    monkeypatch.setattr(R, "parcel_index", lambda d: {**SETS, "ALL": [*SETS["AUD"], *SETS["LANG"], *SETS["VIS"], np.arange(60, 70)]})
+    monkeypatch.setattr(R, "mid_meshes", lambda: None); monkeypatch.setattr(E, "project", project)
+    a = argparse.Namespace(data=str(data), meta=str(meta), runs=str(rt), atlas="unused", cache=str(cache), gate="unused", rc_repo="unused")
+    for mode, match in (("face", "2 of 3 viewers.*sub-A_ses-1: ALL 1 of 7.*sub-B_ses-1: AUD 1 of 2, VIS 1 of 2, ALL 2 of 7"),
+                        ("not_run", "1 of 3 viewers.*sub-B_ses-1: AUD 1 of 2, VIS 1 of 2")):
+        monkeypatch.setattr(R, "read_guard", lambda g, r, mode=mode: {"ok": True, "mode": mode, "why": None})
+        with pytest.raises(SystemExit, match=match) as e:
+            R.cmd_prepare(a)
+        assert not (cache / "prepare_manifest.json").exists() and (mode == "face" or "sub-A" not in str(e.value))
+    del bad["sub-B"]; R.cmd_prepare(a)                                       # not_run: sub-A's face-map-only parcel does not stop it
+    assert [v["status"] for v in json.load(open(cache / "prepare_manifest.json"))["runs"].values()] == ["prepared"] * 3
 
 
 def build(tmp, signal=3.0, n_view=6, n_vols=260, tr=1.3):
@@ -104,6 +144,40 @@ def test_score_end_to_end_planted_signal_and_refusals(tmp_path, monkeypatch):
     (Path(a.forecast) / "words.csv").unlink()
     with pytest.raises(SystemExit):
         R.cmd_score(a)                                                              # no forecast, no score
+
+
+def fast(monkeypatch):
+    monkeypatch.setattr(R, "parcel_index", lambda d: SETS)
+    monkeypatch.setattr(E.isc_curve, "__defaults__", ((1, 2), 2, E.SEED)); monkeypatch.setattr(E.group, "__defaults__", (200, E.SEED))
+
+
+def test_score_refuses_an_unstitched_or_nonfinite_forecast(tmp_path, monkeypatch):
+    """The old kernels saved TRIBE's overlapping predict windows end to end (starts out of order); tribe_at would read them as one series."""
+    fast(monkeypatch); a = build(tmp_path); fd = Path(a.forecast); good = {f: dict(np.load(fd / f)) for f in ("pred_full.npz", "pred_audio.npz")}
+    z = good["pred_full.npz"]; np.savez(fd / "pred_full.npz", P=np.r_[z["P"][:100], z["P"][90:]], starts=np.r_[np.arange(100.0), np.arange(90.0, 190.0)])
+    with pytest.raises(SystemExit, match="refused: pred_full.npz.*starts"):
+        R.cmd_score(a)
+    np.savez(fd / "pred_full.npz", **good["pred_full.npz"]); z = good["pred_audio.npz"]; P = z["P"].copy(); P[50, 3] = np.nan
+    np.savez(fd / "pred_audio.npz", P=P, starts=z["starts"])
+    with pytest.raises(SystemExit, match="refused: pred_audio.npz.*finite"):
+        R.cmd_score(a)
+    np.savez(fd / "pred_audio.npz", **good["pred_audio.npz"]); z = good["pred_full.npz"]
+    np.savez(fd / "pred_full.npz", P=z["P"][:150], starts=z["starts"][:150])                  # truncated: film_volumes would drop volumes
+    with pytest.raises(SystemExit, match="refused: pred_full.npz.*scored window"):
+        R.cmd_score(a)
+    assert not Path(a.results).exists()
+
+
+def test_score_refuses_a_words_table_with_the_chunked_copies(tmp_path, monkeypatch):
+    fast(monkeypatch); a = build(tmp_path); s = np.sort(np.random.default_rng(4).uniform(0, 110, 120))
+    rows = [(x, f"t{i % 40}") for i, x in enumerate(s)]; rows += [(x + 120.0, t) for x, t in rows if x < 70]    # the +120 s block
+    (Path(a.forecast) / "words.csv").write_text("start,duration,text\n" + "".join(f"{x:.3f},0.3,{t}\n" for x, t in rows))
+    with pytest.raises(SystemExit, match="refused: .*copies of words 120.000 s earlier"):
+        R.cmd_score(a)
+    (Path(a.forecast) / "words.csv").write_text("start,duration,text\n0.5,0.3,a\n377.2,0.3,b\n")
+    with pytest.raises(SystemExit, match="at or past"):
+        R.cmd_score(a)
+    assert not Path(a.results).exists()
 
 
 def test_score_without_signal_detects_nothing(tmp_path, monkeypatch):

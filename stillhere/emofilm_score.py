@@ -12,6 +12,8 @@ rule; the BOLD cleaned (detrend + high-pass 0.03 Hz + z-score) over the whole ru
 (clean_full_then_crop); HEARING, LANGUAGE, VISUAL gauges and the unpartialled TRIBE and baseline gauges against circular shifts of the
 regressor. Group: median z with a viewer bootstrap CI, share detected, TRIBE minus each baseline paired over viewers, and ISC(k) on a
 common film-time grid with TRIBE placed on that curve."""
+import os
+
 import numpy as np
 
 from . import cheap_baselines as CB
@@ -53,10 +55,28 @@ def film_volumes(n_vols: int, tr: float, onset: float, slice_offset: float, star
     return j[ok], ft[ok], ts[ok]
 
 
+def load_pred(path) -> tuple:
+    """(P, starts) of a forecast file (pred_full.npz or pred_audio.npz: tribe_common.stitched_predict's P (n, V) and starts); ValueError
+    unless starts are exactly 0, 1, ..., n-1 (one row per stimulus second, in order), P is finite and the samples reach the scored
+    window's end (starts[-1] >= OPENING_S[1]: a shorter forecast would be read at its last row, or film_volumes would drop volumes).
+    TRIBE's built-in predict output is not that: the old kernels saved its overlapping 100 s windows end to end (706 rows, starts 0..377
+    out of order). Every scorer reads a forecast through here."""
+    z = np.load(path); P, st = z["P"], np.asarray(z["starts"], float); name = os.path.basename(str(path))
+    if P.ndim != 2 or not len(P) or not np.array_equal(st, np.arange(len(P))):
+        raise ValueError(f"{name}: starts are not exactly 0, 1, ..., n-1, one row per second ({len(st)} starts for {len(P)} rows)")
+    if not np.isfinite(P).all():
+        raise ValueError(f"{name}: the forecast has {int((~np.isfinite(P)).sum())} non-finite values")
+    if st[-1] < OPENING_S[1]:
+        raise ValueError(f"{name}: the forecast ends at {st[-1]:.0f} s, before the scored window's end ({OPENING_S[1]:.0f} s)")
+    return P, st
+
+
 def tribe_at(P, starts, t) -> np.ndarray:
     """P (n, V), row i predicting stimulus time starts[i] (s, 1 Hz), read at times t inside [starts[0], starts[-1]] with linear
-    interpolation (as heldout.align) -> (V, len(t))."""
+    interpolation (as heldout.align) -> (V, len(t)). Starts must increase strictly: searchsorted on anything else reads wrong rows."""
     st = np.asarray(starts, float); t = np.asarray(t, float)
+    if not (np.diff(st) > 0).all():
+        raise ValueError("tribe_at needs strictly increasing starts (one series, not overlapping windows end to end)")
     i0 = np.clip(np.searchsorted(st, t, side="right") - 1, 0, len(st) - 1); i1 = np.minimum(i0 + 1, len(st) - 1)
     w = np.where(i1 > i0, (t - st[i0]) / np.where(i1 > i0, st[i1] - st[i0], 1.0), 0.0)[None, :]
     return ((1 - w) * np.asarray(P)[i0].T + w * np.asarray(P)[i1].T).astype(float)
@@ -200,6 +220,32 @@ def word_rate_per_s(onsets, n_s: int) -> np.ndarray:
     """Per-second word onset counts (onsets in film seconds) over [0, n_s)."""
     on = np.asarray(onsets, float); on = on[(on >= 0) & (on < n_s)]
     return np.bincount(on.astype(int), minlength=n_s).astype(float)
+
+
+def check_words(rows, segment_s: float) -> dict:
+    """The forecast kernel's words table (rows with start and text, as words.csv) for a segment segment_s seconds long; ValueError when a
+    word starts at or past the segment's end, or when one shift d > 0 (rounded to 1 ms) has at least max(5, 10% of the words) copies:
+    words whose text equals that of a word starting exactly d earlier (within 1 ms). TRIBE's own events path chunks the audio before
+    speech-to-text, and the old kernels' table so held 306 words for a 190 s segment, starts to 377 s, 84 of the 102 at 110 to 190 s
+    copies of words 120.000 s earlier. Natural repeats (a common word, a phrase said twice) do not line up at one shift that often.
+    Returns {n, last_start_s, segment_seconds, max_shift_copies, at_shift_s}."""
+    s = np.array([float(r["start"]) for r in rows]); n = len(s); by, same = {}, {}
+    out = {"n": n, "last_start_s": float(s.max()) if n else None, "segment_seconds": float(segment_s)}
+    if n and s.max() >= segment_s:
+        raise ValueError(f"{int((s >= segment_s).sum())} of {n} words start at or past the segment's end ({segment_s} s)")
+    for j, r in enumerate(rows):
+        same.setdefault(r["text"], []).append(j)
+    for g in same.values():
+        for i in g:
+            for j in g:
+                d = int(round((s[j] - s[i]) * 1000))
+                if d > 0:
+                    by.setdefault(d, set()).add(j)                      # word j copies the text of the word d ms before it
+    k, _, at = max(((len(set().union(*(by.get(d + e, set()) for e in (-1, 0, 1)))), len(by[d]), d) for d in by), default=(0, 0, None))
+    out.update(max_shift_copies=k, at_shift_s=None if at is None else at / 1000)
+    if k >= max(5, 0.1 * n):
+        raise ValueError(f"{k} of {n} words are copies of words {at / 1000:.3f} s earlier (speech-to-text on overlapping audio chunks)")
+    return out
 
 
 def baseline_gauges(bold: dict, pred: dict, regs: dict, keep, tr: float, visual: bool) -> dict:

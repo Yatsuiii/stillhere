@@ -8,9 +8,11 @@ the committed functions in stillhere/emofilm_score.py (and, through them, stillh
            only. The image is projected to fsaverage5 exactly as the LPP harness (vol_to_surf, ball 3 mm, linear, the mid mesh between
            pial and white) and averaged into Schaefer-400 parcels (AUD, LANG, VIS, and all 400 for the face map). Saved per run to
            CACHE (outside the repo): the raw parcel rows over the whole run, FD and the censoring mask, plus a manifest with every
-           input's and cache file's SHA-256. No forecast is needed.
+           input's and cache file's SHA-256. Refuses (drops nothing, writes no manifest) naming every run with a constant or non-finite
+           AUD, LANG or VIS row (and, on the face path, any of the 400). No forecast is needed.
   score    With the forecast kernel's output (pred_full.npz, pred_audio.npz, words.csv, tierD_bridge_forecast.json): refuses unless the
-           forecast files exist and every cache file's SHA-256 equals the manifest's. Per viewer: scored volumes (no lag search, the
+           forecast files exist, each forecast is one row per second (emofilm_score.load_pred), the words table passes
+           emofilm_score.check_words and every cache file's SHA-256 equals the manifest's. Per viewer: scored volumes (no lag search, the
            10 s drop), clean_full_then_crop, the D7 rule, the HEARING / LANGUAGE / VISUAL gauges and the four baselines; group medians
            with viewer bootstrap CIs, TRIBE minus each baseline, ISC(k) and the volunteer-equivalent rule. Group results go to
            results/emofilm_film_score.json; per-viewer values only to CACHE/score_per_viewer.json.
@@ -47,6 +49,14 @@ NETS = ("AUD", "LANG", "VIS")
 GAUGES = ("HEARING", "LANGUAGE", "VISUAL")
 sha = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
 RC_REL = "results/face_map_RC.json"
+
+
+def refused(f, *x):
+    """f(*x), its ValueError (a check of stillhere/emofilm_score.py that failed) turned into the runner's refusal."""
+    try:
+        return f(*x)
+    except ValueError as e:
+        raise SystemExit(f"refused: {e}") from None
 
 
 # ---- read guard (project-thread rulings of Oct 29, 06:30 and 06:50 UTC) -------------------------------------------------------
@@ -164,8 +174,9 @@ def parcel_index(atlas_dir) -> dict:
 
 
 # ---- prepare ------------------------------------------------------------------------------------------------------------------
-def prepare_run(img_path, motion_path, row: dict, runs: list, mriqc_fd_mean: float, sets: dict, project) -> dict:
-    """One run -> {status, n_vols, raw rows per network (p, n_vols), fd or None, keep (n_vols,), fd_source}."""
+def prepare_run(img_path, motion_path, row: dict, runs: list, mriqc_fd_mean: float, sets: dict, project, check=NETS) -> dict:
+    """One run -> {status, n_vols, raw rows per network (p, n_vols), fd or None, keep (n_vols,), fd_source, degenerate}; degenerate:
+    per set in `check`, its constant or non-finite rows (face_map.degenerate_rows), which cmd_prepare refuses on."""
     import nibabel as nib
     img = nib.load(img_path); n = int(img.shape[3])
     if n != int(row["n_vols"]):
@@ -182,7 +193,9 @@ def prepare_run(img_path, motion_path, row: dict, runs: list, mriqc_fd_mean: flo
     raw = E.parcel_means(vert, {k: sets[k] for k in NETS})
     if "ALL" in sets:
         raw["ALL"] = E.parcel_means(vert, {"ALL": sets["ALL"]})["ALL"]           # the face map's series; the intact score reads NETS only
-    return {"status": "prepared", "n_vols": n, "raw": raw, "fd": fd, "keep": keep, "fd_source": src, "mriqc_fd_mean": mriqc_fd_mean}
+    bad = {k: int(FM.degenerate_rows(raw[k]).sum()) for k in check if k in raw}
+    return {"status": "prepared", "n_vols": n, "raw": raw, "fd": fd, "keep": keep, "fd_source": src, "mriqc_fd_mean": mriqc_fd_mean,
+            "degenerate": bad}
 
 
 def cmd_prepare(a):
@@ -193,13 +206,14 @@ def cmd_prepare(a):
     T = json.load(open(a.runs)); mriqc = {r["bids_name"]: r for r in csv.DictReader(open(f"{a.meta}/mriqc_group_bold.tsv"), delimiter="\t")}
     sets = parcel_index(a.atlas); meshes = mid_meshes(); project = lambda img: E.project(img, meshes)
     man = {"label": E.LABEL, "rule": "docs/rules/emofilm_rule.md", "runs_table_sha256": sha(a.runs), "runs": {}}; t0 = time.time()
-    kept = [r for r in T["runs"] if r["keep"] is True]
+    kept = [r for r in T["runs"] if r["keep"] is True]; flat = {}
+    check = NETS + ("ALL",) if guard["mode"] == "face" else NETS     # ALL is the face map's only; not_run scores the intact film alone
     for r in kept:
         sub, ses = r["subject"], r["session"]; t1 = time.time()
         img = f"{a.data}/{sub}_{ses}_task-TearsOfSteel_space-MNI_desc-ppres_bold.nii.gz"
         mot = f"{a.data}/{sub}_{ses}_task-mc_space-orig_desc-motion_bold.tsv.gz"
         runs = session_runs(f"{a.meta}/{sub}/{ses}/{sub}_{ses}_scans.tsv", mriqc)
-        res = prepare_run(img, mot, r, runs, float(mriqc[f"{sub}_{ses}_task-TearsOfSteel_bold"]["fd_mean"]), sets, project)
+        res = prepare_run(img, mot, r, runs, float(mriqc[f"{sub}_{ses}_task-TearsOfSteel_bold"]["fd_mean"]), sets, project, check)
         ent = {"status": res["status"], "image_sha256": sha(img), "motion_sha256": sha(mot)}
         if res["status"] == "prepared":
             out = f"{a.cache}/{sub}_{ses}.npz"
@@ -208,8 +222,13 @@ def cmd_prepare(a):
             ent.update(cache=os.path.basename(out), cache_sha256=sha(out), n_vols=res["n_vols"], fd_source=res["fd_source"],
                        mriqc_fd_mean=res["mriqc_fd_mean"], censored_frames=int((~res["keep"]).sum()),
                        parcels={k: int(v.shape[0]) for k, v in res["raw"].items()})
+            if any(res["degenerate"].values()):
+                flat[f"{sub}_{ses}"] = ", ".join(f"{k} {c} of {len(res['raw'][k])}" for k, c in res["degenerate"].items() if c)
         man["runs"][f"{sub}_{ses}"] = ent
         print(f"{sub}_{ses}: {ent['status']} ({time.time() - t1:.0f} s)", flush=True)
+    if flat:                                                             # refuse, never drop: no manifest, so no score
+        raise SystemExit(f"refused: {len(flat)} of {len(kept)} viewers have constant or non-finite parcel rows (nothing is dropped): "
+                         + "; ".join(f"{k}: {v}" for k, v in flat.items()))
     json.dump(man, open(f"{a.cache}/prepare_manifest.json", "w"), indent=1)
     prepared = [v for v in man["runs"].values() if v["status"] == "prepared"]
     print(f"prepared {len(prepared)} of {len(kept)} kept runs; dropped {len(kept) - len(prepared)}; fd sources "
@@ -232,10 +251,10 @@ def load_forecast(d) -> dict:
     t = json.load(open(f"{d}/tierD_bridge_forecast.json"))
     if t["stimulus"]["sha256"] != TOS_SHA or t.get("ckpt_matches_pin") is not True:
         raise SystemExit("refused: the forecast is not the stock checkpoint on the official release")
-    fz, az = np.load(f"{d}/pred_full.npz"), np.load(f"{d}/pred_audio.npz")
+    full, audio = (refused(E.load_pred, f"{d}/pred_{k}.npz") for k in ("full", "audio"))     # one row per second, in order, finite
     with open(f"{d}/words.csv") as f:
-        onsets = [float(r["start"]) for r in csv.DictReader(f)]
-    return {"full": (fz["P"], fz["starts"]), "audio": (az["P"], az["starts"]), "onsets": onsets,
+        words = list(csv.DictReader(f))
+    return {"full": full, "audio": audio, "onsets": [float(r["start"]) for r in words], "words": words,
             "visual": bool(t["stages"].get("video", {}).get("ok")), "sha256": {f: sha(f"{d}/{f}") for f in need}}
 
 
@@ -282,7 +301,8 @@ def cmd_score(a):
         raise SystemExit(f"refused: {len(bad)} cache files differ from the prepare manifest")
     T = {f"{r['subject']}_{r['session']}": r for r in json.load(open(a.runs))["runs"]}
     rz = np.load(f"{a.regressors}/film_regressors.npz"); per_s = {k: rz[k] for k in ("envelope", "brightness", "motion")}
-    n_s = len(per_s["envelope"]); per_s["word_rate"] = E.word_rate_per_s(fc["onsets"], n_s)
+    n_s = len(per_s["envelope"]); refused(E.check_words, fc["words"], n_s)                    # the segment is the regressors' length
+    per_s["word_rate"] = E.word_rate_per_s(fc["onsets"], n_s)
     sets = parcel_index(a.atlas); t0 = time.time(); per = {}
     for key, v in man["runs"].items():
         if v["status"] != "prepared":

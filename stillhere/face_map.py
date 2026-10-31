@@ -86,6 +86,15 @@ def partial_fz(B, x, controls) -> np.ndarray:
     return np.arctanh(np.clip(r, -0.999999, 0.999999))
 
 
+def degenerate_rows(A) -> np.ndarray:
+    """Per row of A (p, T): True when it has a non-finite value or no variance (SD below 1e-12 of its largest magnitude, partial_fz's
+    test for the regressor). partial_fz divides each BOLD row by its SD, so one such row gives a NaN M_i and gate 1 fails for good:
+    the runners refuse on any (never drop one)."""
+    A = np.asarray(A, float)
+    with np.errstate(invalid="ignore"):
+        return ~np.isfinite(A).all(1) | ~(A.std(1) >= 1e-12 * np.maximum(1.0, np.abs(A).max(1)))
+
+
 def viewer_map(B_all, F_row, controls) -> np.ndarray:
     """M_i over all 400 parcels: B_all (400, n_kept) cleaned BOLD rows; F_row and controls cleaned on the same kept frames."""
     return partial_fz(B_all, F_row, controls)

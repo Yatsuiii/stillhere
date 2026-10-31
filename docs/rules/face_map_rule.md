@@ -29,6 +29,8 @@ located). The intact scorer runs byte-identical; the face map then runs on the s
   edit kernels, each saving its own `pred_full.npz` in the intact kernel's format: film-rem (faces removed) and film-am (area matched:
   each face's exact shape moved to a non-face spot of the same frame, 100% of face pixels matched; `scripts/make_bridge_edit_cuts.py
   --start-frame 0 --frames 4560`). The three must share sample times and shape.
+- Oct 31, 2026 (cloud audit of 05:30 UTC): the control scored is `docs/rules/film_stimulus_rule.md`'s v2 (88.9% in-view coverage,
+  51 faces without a control).
 - Per parcel (the mean of its vertices), the forecast read at film time - 5 s (linear between the 1 Hz samples, as the intact rule) on
   the intact rule's scored film-time grid, averaged over the grid. The grid is exactly the intact rule's (`emofilm_score.common_grid`):
   film time 10 to 185 s in steps of one TR (135 points at TR 1.3 s), so the prediction is read at 5 to 180 s of the film. "10-180" in
