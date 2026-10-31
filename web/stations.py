@@ -5,11 +5,13 @@ Typed text is used for the one model call it is for and is never stored, logged 
 import base64
 import contextlib
 import datetime
+import functools
 import hashlib
 import json
 import os
 import secrets
 import struct
+import sys
 import tempfile
 import threading
 import time
@@ -21,7 +23,7 @@ import httpx
 from stillhere import egress, manipulation_check as MC, meta_client, planner, planner_eval as PE, planner_v21 as P
 from stillhere.story_tags import TAGS
 from web import guard, jobs, ledger
-from web.store import get_store, shared as store_shared
+from web.store import StoreError, get_store, shared as store_shared
 
 REPO = Path(__file__).resolve().parents[1]
 REPLAY = REPO / "web/replay"
@@ -34,6 +36,10 @@ TIMEOUT_S = {"meta": 60.0, "fireworks": 25.0, "baseten": 60.0}   # the page's pl
 RESERVE = {"plan": 0.05, "audit": 0.03, "transcribe": 0.10, "sam": 0.50}   # worst case $ per call; Voice Transcribe and SAM publish no
 RESHUFFLE_SEEDS = (20261028, 7, 1, 2, 3, 4)                                # price here, so they keep their reservation (never settled);
                                                                            # 7 is the third example chip's seed
+# SAM 3.1's price per one-frame call, from Meta's Billing page once it shows one (env SAM_USD_PER_FRAME): FILM settles each completed
+# frame to it. Unset, no price is known and each frame keeps its $0.50 reservation. A frame never reserves less than its price.
+SAM_USD_PER_FRAME = float(os.environ["SAM_USD_PER_FRAME"]) if os.environ.get("SAM_USD_PER_FRAME") else None
+FILM_N = 3                                                                 # frames per FILM run
 FILM_FRAMES = REPO / "web/film/frames.json"
 RECORDED = "recorded run"
 NO_RECORDED_CHECK = "No recorded check for this clip and condition."
@@ -46,20 +52,48 @@ class Bad(ValueError):
     """A malformed page request (400)."""
 
 
-# ---- usage capture: the token counts of this thread's model calls, for the spend ledger -------------------------------------------
+# ---- usage capture: the token counts of this thread's model calls, for the spend ledger; and each chat call's output bound -------
 _tl = threading.local()
 _post = httpx.post
 
 
+def _max_tokens(left_usd: float, body: dict) -> int:
+    """The output tokens a chat call may write so that it cannot cost more than what is left of its reservation: every prompt token
+    is at least one byte of what the request sends (its messages, tools and answer schema), plus a margin for the chat template, so
+    their byte count bounds the prompt's price. Below one token, no call (ValueError)."""
+    sent = sum(len(json.dumps(body.get(f) or "").encode()) for f in ("messages", "tools", "response_format")) + 64 * len(body["messages"])
+    n = int((left_usd - sent * PE.PRICE_IN) / PE.PRICE_OUT)
+    if n < 1:
+        raise ValueError("the reservation cannot cover this call")
+    return n
+
+
+NEVER_SENT = (httpx.ConnectError, httpx.ConnectTimeout, httpx.ProxyError, httpx.UnsupportedProtocol)   # failures before the provider
+
+
 def _recording_post(*a, **k):
-    r = _post(*a, **k)
-    if getattr(_tl, "on", False):
+    on = getattr(_tl, "on", False)
+    body, budget = k.get("json"), getattr(_tl, "budget", None) if on else None
+    if budget is not None and isinstance(body, dict) and "messages" in body:       # a chat call under a reservation: bound its output
+        k["json"] = {**body, "max_tokens": _max_tokens(budget - chat_cost(_tl.usage), body)}
+    try:
+        r = _post(*a, **k)
+    except NEVER_SENT:
+        raise
+    except Exception:
+        if on:
+            _tl.reached = _tl.unknown = True                   # it may have reached the provider: its cost is unknown
+        raise
+    if on:
         try:
             u = r.json().get("usage")
         except Exception:
             u = None
+        _tl.reached = True
         if u:
             _tl.usage.append(u)
+        else:
+            _tl.unknown = True
     return r
 
 
@@ -67,16 +101,44 @@ httpx.post = _recording_post
 
 
 @contextlib.contextmanager
-def capture():
-    _tl.on, _tl.usage = True, []
+def capture(budget: float = None):
+    """The usage of this thread's model calls; with `budget` (the call's reservation), every chat call inside carries max_tokens so
+    that all of them together cannot cost more."""
+    _tl.on, _tl.usage, _tl.budget, _tl.reached, _tl.unknown = True, [], budget, False, False
     try:
         yield _tl.usage
     finally:
-        _tl.on = False
+        _tl.on, _tl.budget = False, None
 
 
 def chat_cost(usage: list) -> float:
     return sum(PE.cost(u.get("prompt_tokens") or 0, u.get("completion_tokens") or 0) for u in usage)
+
+
+def spent(usage: list, reserved: float) -> float:
+    """What the last capture's chat calls settle to: their token cost, or the whole reservation when one reached the provider and
+    reported no usage (it may have been billed); a call that never connected costs nothing (fourth review, item 6)."""
+    return reserved if getattr(_tl, "unknown", False) else chat_cost(usage)
+
+
+def reached() -> bool:
+    """Whether the last capture's calls reached the provider at all (a non-chat call then keeps its reservation when it fails)."""
+    return getattr(_tl, "reached", False)
+
+
+def _store_safe(fallback):
+    """A station whose store fails (an outage, a spent quota, a timeout) answers with `fallback` (its recorded run, called with the
+    station's own arguments) and the line "Live runs are paused", logged by the failure's type only (fourth review, item 4)."""
+    def deco(fn):
+        @functools.wraps(fn)
+        def run(*a, **k):
+            try:
+                return fn(*a, **k)
+            except StoreError as e:
+                print(f"stillhere: store error ({e}) in {fn.__name__}", file=sys.stderr, flush=True)
+                return fallback(*a, **k)
+        return run
+    return deco
 
 
 meta_credit_ended = ledger.meta_credit_ended
@@ -102,18 +164,37 @@ def first_live(backend: str):
     raise ledger.Refused("no_key")
 
 
+def affordable_host(backend: str, run_id: str, usd: float) -> None:
+    """Refused unless some live host for this backend has `usd` left under every cap and share (ledger.affordable, read only)."""
+    first = None
+    for prov, _ in HOSTS[backend]:
+        if live_ok(prov):
+            try:
+                return ledger.affordable(run_id, prov, usd)
+            except ledger.Refused as e:
+                first = first or e
+    raise first or ledger.Refused("no_key")
+
+
 def _now() -> str:
     return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def receipt(rec: dict) -> str:
+def receipt(rec: dict):
+    """The receipt's id, or None when the store cannot keep it (the live answer is still shown, without its receipt link)."""
     rid = secrets.token_hex(8)
-    get_store().set(f"receipt:{rid}", json.dumps({**rec, "utc": _now()}), ttl=14 * 86400)
+    try:
+        get_store().set(f"receipt:{rid}", json.dumps({**rec, "utc": _now()}), ttl=14 * 86400)
+    except StoreError as e:
+        print(f"stillhere: store error ({e}) in receipt", file=sys.stderr, flush=True); return None
     return rid
 
 
 def get_receipt(rid: str):
-    v = get_store().get(f"receipt:{rid}") if rid and rid.isalnum() else None
+    try:
+        v = get_store().get(f"receipt:{rid}") if rid and rid.isalnum() else None
+    except StoreError:
+        return None
     return json.loads(v) if v else None
 
 
@@ -122,14 +203,31 @@ def _load(rel: str):
     return json.loads(p.read_text()) if p.is_file() else None
 
 
-def why_line(code: str) -> str:
+SAVED_SHOWN = "a saved forecast is shown where one exists"          # what FORECAST shows instead of a live forecast
+
+
+def why_line(code: str, shown: str = "this station shows its recorded run") -> str:
+    """The page's line for a refusal code; `shown` ends the lines that say what the station shows instead (FORECAST: SAVED_SHOWN)."""
     return {"session_limit": "This session has used its 5 live runs for this hour.", "spend_cap": "The daily live budget is used up.",
             "no_key": "Live calls are off on this server.", "api_error": "The live call failed, so this station shows its recorded run.", "no_run": "Start with a plan first.",
             "station_used": "This run already used this station.", "provider_not_offered": "That model is not offered live.",
             "recorded_plan": "This plan is a recorded run, so this station shows its recording.",
+            "ip_limit": f"This network address has used its {ledger.RUNS_PER_HOUR_PER_ADDRESS} live runs for this hour.",
+            "station_cap": "The live runs of this station for this hour are used up across all visitors, so {shown}.",
+            "not_the_plan": "This run's plan names another clip or condition, so {shown}.",
+            "plan_declined": "This run's plan was declined, so {shown}.",
+            "session_daily": "This session has used its share of the live budget until 00:00 UTC, so {shown}.",
+            "ip_daily": "This network address has used its share of the live budget until 00:00 UTC, so {shown}.",
+            "shared_limit": (f"Without a visitor cookie, this browser shares this network address's {ledger.RUNS_PER_HOUR} live runs an "
+                             "hour, and they are used up."),
+            "shared_daily": ("Without a visitor cookie, this browser shares this network address's part of the live budget, used up "
+                             "until 00:00 UTC, so {shown}."),
+            "worker_offline": f"The laptop worker is offline (it runs live {hours_et()}), so {{shown}}.",
+            "store_down": "Live runs are paused, so {shown}.",
+            "ip_station": "This network address has used its part of this station's live runs for this hour, so {shown}.",
             "post_credit_cap": ("The event's Meta API credit has ended and the $20 set aside after it is spent, so this station shows "
                                 "its recorded run.")}.get(
-        code, "Live calls are off right now.")
+        code, "Live calls are off right now.").format(shown=shown)
 
 
 # ---- PLAN -----------------------------------------------------------------------------------------------------------------------
@@ -199,7 +297,8 @@ def recorded_plan(why: str) -> dict:
     return {"mode": "recorded", "label": RECORDED, "why": why_line(why), "runs": runs}
 
 
-def plan(text: str, backend: str, sid: str) -> dict:
+@_store_safe(lambda *a, **k: recorded_plan("store_down"))
+def plan(text: str, backend: str, sid: str, ip: str = None) -> dict:
     text = (text or "").strip()
     if not text or len(text) > 280:
         raise Bad("text")
@@ -211,30 +310,35 @@ def plan(text: str, backend: str, sid: str) -> dict:
         return {"mode": "refused", "line": "This request can't be sent to the planner. StillHere plans research studies in healthy "
                                            "volunteers with public stimuli."}
     try:
-        first_live(backend)                                    # checked first, so a recorded run never uses up a visitor's live runs
-        run_id = ledger.start_run(sid); ledger.use(run_id, sid, "plan")
+        with ledger.Claimed() as t:                              # the visitor's counts, then PLAN's shared hour (ledger: Order); any error
+            first_live(backend)                                # before the paid call gives them back. first_live first, so a recorded
+            run_id = ledger.start_run(sid, ip=ip, claimed=t)     # run never uses up a visitor's live runs
+            addr = ledger.use(run_id, sid, "plan", claimed=t)
+            affordable_host(backend, run_id, RESERVE["plan"]); ledger.station_hour("plan", claimed=t, addr=addr)
+            t0, card, why, used = time.time(), None, "no_key", None
+            for prov, b in HOSTS[backend]:                     # Spark Open: Fireworks, then Baseten when Fireworks is off, capped or fails
+                if not live_ok(prov):
+                    continue
+                try:
+                    res = ledger.reserve(prov, RESERVE["plan"], run_id)
+                except ledger.Refused as e:
+                    why = e.code; continue
+                t.paid, usage = True, []
+                try:
+                    with capture(RESERVE["plan"]) as usage:
+                        c = P.plan(q, b, planner.live_client(TIMEOUT_S[prov]))
+                except Exception:
+                    c = None
+                usd = spent(usage, RESERVE["plan"]); ledger.settle(res, usd)
+                if c is not None and c.spec:                   # an empty spec is "planner unavailable": try the next host
+                    card, used = c, (prov, b); break
+                why = "api_error"
+            if card is None:
+                if not t.paid:                                 # no host could take the call: nothing was spent
+                    t.give_back()
+                return recorded_plan(why)
     except ledger.Refused as e:
         return recorded_plan(e.code)
-    t0, card, why, used = time.time(), None, "no_key", None
-    for prov, b in HOSTS[backend]:                             # Spark Open: Fireworks, then Baseten when Fireworks is off, capped or fails
-        if not live_ok(prov):
-            continue
-        try:
-            res = ledger.reserve(prov, RESERVE["plan"])
-        except ledger.Refused as e:
-            why = e.code; continue
-        usage = []
-        try:
-            with capture() as usage:
-                c = P.plan(q, b, planner.live_client(TIMEOUT_S[prov]))
-        except Exception:
-            c = None
-        usd = chat_cost(usage); ledger.settle(res, usd)
-        if c is not None and c.spec:                           # an empty spec is "planner unavailable": try the next host
-            card, used = c, (prov, b); break
-        why = "api_error"
-    if card is None:
-        return recorded_plan(why)
     view = card_view(card)
     get_store().set(f"runspec:{run_id}", json.dumps({"spec": card.spec or {}, "route": getattr(card, "route", None)}), ttl=ledger.RUN_TTL_S)
     rid = receipt({"station": "plan", "model": P.MODELS[used[1]], "host": used[0], "planner": P.VERSION, "spec_sha256": hashlib.sha256(
@@ -247,51 +351,74 @@ AUDIT_SCHEMA = {"type": "object", "properties": {"notes": {"type": "array", "ite
                 "required": ["notes"], "additionalProperties": False}
 
 
+def recorded_audit(why: str, line: str = None) -> dict:
+    return {**(_load("web/replay/audit.json") or {"notes": []}), "mode": "recorded", "label": f"{AUDIT_LABEL} ({RECORDED})",
+            "why": line or why_line(why)}
+
+
+AUDIT_LABEL = "Advisory check, not measured"
+
+
+@_store_safe(lambda *a, **k: recorded_audit("store_down"))
 def audit(run_id: str, sid: str) -> dict:
     """Spark Open's advisory check of the plan: never blocks anything, never measured."""
-    label = "Advisory check, not measured"
     spec = (json.loads(get_store().get(f"runspec:{run_id}") or "null") or {}).get("spec") if run_id else None
     if not spec:                                               # a recorded plan (no live run): the recorded audit
-        return {**(_load("web/replay/audit.json") or {"notes": []}), "mode": "recorded", "label": f"{label} ({RECORDED})",
-                "why": "This plan is a recorded run, so its check is too."}
+        return recorded_audit(None, "This plan is a recorded run, so its check is too.")
     if (spec.get("decline_reason") or "none") != "none":
-        return {"mode": "none", "label": label, "line": "No accepted plan to check."}
-    recorded = lambda why: {**(_load("web/replay/audit.json") or {"notes": []}), "mode": "recorded", "label": f"{label} ({RECORDED})",
-                            "why": why_line(why)}
-    try:
-        first_live("spark-open")
-        ledger.use(run_id, sid, "audit")
-    except ledger.Refused as e:
-        return recorded(e.code)
+        return {"mode": "none", "label": AUDIT_LABEL, "line": "No accepted plan to check."}
     enums = {k: [v] if isinstance(v, str) else list(v) for k, v in spec.items()
              if k in ("population", "language", "stimulus", "analysis", "brain_areas", "conditions", "clip_id", "condition") and v}
-    t0, out, why, model = time.time(), None, "no_key", None
-    for prov, b in HOSTS["spark-open"]:                        # Fireworks, then Baseten
-        if not live_ok(prov):
-            continue
-        try:
-            res = ledger.reserve(prov, RESERVE["audit"])
-        except ledger.Refused as e:
-            why = e.code; continue
-        model, usage = P.MODELS[b], []
-        try:
-            with capture() as usage:
-                out = meta_client.chat(egress.Request(model=model, system=[planner.public("audit_system")],
-                                                      user=[egress.TableEnums(enums=enums)], schema_name="audit_notes",
-                                                      json_schema=AUDIT_SCHEMA), timeout=TIMEOUT_S[prov])
-        except Exception:
-            out, why = None, "api_error"
-        usd = chat_cost(usage); ledger.settle(res, usd)
-        if out is not None:
-            break
-    if out is None:
-        return recorded(why)
+    try:
+        with ledger.Claimed() as t:
+            first_live("spark-open")
+            addr = ledger.use(run_id, sid, "audit", claimed=t)
+            affordable_host("spark-open", run_id, RESERVE["audit"]); ledger.station_hour("audit", claimed=t, addr=addr)
+            t0, out, why, model = time.time(), None, "no_key", None
+            for prov, b in HOSTS["spark-open"]:                # Fireworks, then Baseten
+                if not live_ok(prov):
+                    continue
+                try:
+                    res = ledger.reserve(prov, RESERVE["audit"], run_id)
+                except ledger.Refused as e:
+                    why = e.code; continue
+                model, usage, t.paid = P.MODELS[b], [], True
+                try:
+                    with capture(RESERVE["audit"]) as usage:
+                        out = meta_client.chat(egress.Request(model=model, system=[planner.public("audit_system")],
+                                                              user=[egress.TableEnums(enums=enums)], schema_name="audit_notes",
+                                                              json_schema=AUDIT_SCHEMA), timeout=TIMEOUT_S[prov])
+                except Exception:
+                    out, why = None, "api_error"
+                usd = spent(usage, RESERVE["audit"]); ledger.settle(res, usd)
+                if out is not None:
+                    break
+            if out is None:
+                if not t.paid:
+                    t.give_back()
+                return recorded_audit(why)
+    except ledger.Refused as e:
+        return recorded_audit(e.code)
     notes = [guard.clean(n) for n in (out.get("notes") or [])[:3] if isinstance(n, str)]
     rid = receipt({"station": "audit", "model": model, "seconds": round(time.time() - t0, 2), "usd": round(usd, 5)})
-    return {"mode": "live", "label": label, "notes": notes, "receipt_id": rid}
+    return {"mode": "live", "label": AUDIT_LABEL, "notes": notes, "receipt_id": rid}
 
 
 # ---- BUILD ----------------------------------------------------------------------------------------------------------------------
+def planned(run_id: str, clip_id: str, condition: str) -> None:
+    """BUILD and FORECAST run only the clip and condition this run's live plan routed to, as the page asks: Refused('no_run') for a
+    run with no stored plan, 'plan_declined' for a declined one, 'not_the_plan' for a plan off the live list or another clip or
+    condition (a hand-made request). Read before the run's use is counted, so a refused request costs the run nothing."""
+    raw = get_store().get(f"runspec:{run_id}") if run_id else None
+    if not raw:
+        raise ledger.Refused("no_run")
+    rs = json.loads(raw); rt = rs.get("route") or {}
+    if ((rs.get("spec") or {}).get("decline_reason") or "none") != "none" or rt.get("kind") == "decline":
+        raise ledger.Refused("plan_declined")
+    if rt.get("kind") != "live" or (rt.get("clip_id"), rt.get("condition")) != (clip_id, condition):
+        raise ledger.Refused("not_the_plan")
+
+
 def _recipe_mod():
     import importlib
     return importlib.import_module("worker.recipe")
@@ -323,11 +450,22 @@ def old_bug() -> dict:
     """The real broken word scramble, from the committed audio and its committed check: no model call, numbers copied."""
     c = (_load(OLD_BUG["results"]) or {})["conditions"]["word_scramble"]
     return {"mode": "recorded", "label": "the old bug, from the repository history", "condition": "word_scramble", "pass": False,
-            "checklist": checklist("word_scramble", c), "audio_url": "/media/old_bug.wav",
+            "checklist": checklist("word_scramble", c), "audio_url": "/media/old_bug.wav?v=" + hashlib.sha256(
+                (REPO / OLD_BUG["audio"]).read_bytes()).hexdigest()[:8],                    # named by content, so a day's cache is safe
             "caption": (f"Our first word scramble (commit {OLD_BUG['commits'][0]}, Oct 28) kept only {round(100 * c['recall'])}% of its "
                         f"words when Voice Transcribe read it back (commit {OLD_BUG['commits'][1]}), so it was caught before scanning.")}
 
 
+def recorded_build(clip_id: str, condition: str, why: str) -> dict:
+    """Only a recording of this clip and condition, never another one's."""
+    got = (_load("web/replay/build.json") or {}).get(f"{clip_id}:{condition}")
+    if not got:
+        return {"mode": "recorded", "label": RECORDED, "why": why_line(why), "checklist": [], "line": NO_RECORDED_CHECK,
+                "story": story_card(clip_id)}
+    return {**got, "mode": "recorded", "label": f"{RECORDED}, seed {got.get('seed')}", "why": why_line(why), "story": story_card(clip_id)}
+
+
+@_store_safe(lambda run_id, sid, clip_id, condition, seed: recorded_build(clip_id, condition, "store_down"))
 def build(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> dict:
     try:
         r = jobs.recipe(clip_id, condition, seed)
@@ -335,38 +473,34 @@ def build(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> dic
         raise Bad(str(e))
     if condition in ("sentence_scramble", "word_scramble") and r["seed"] not in RESHUFFLE_SEEDS:
         raise Bad("seed_not_offered")
-    rec = _load("web/replay/build.json") or {}
-    def recorded(why):                                       # only a recording of this clip and condition, never another one's
-        got = rec.get(f"{clip_id}:{condition}")
-        if not got:
-            return {"mode": "recorded", "label": RECORDED, "why": why_line(why), "checklist": [], "line": NO_RECORDED_CHECK,
-                    "story": story_card(clip_id)}
-        return {**got, "mode": "recorded", "label": f"{RECORDED}, seed {got.get('seed')}", "why": why_line(why), "story": story_card(clip_id)}
     try:
-        if not live_ok("meta"):
-            raise ledger.Refused("no_key")
-        ledger.use(run_id, sid, "build", max_uses=1 + len(RESHUFFLE_SEEDS))
+        with ledger.Claimed() as t:
+            if not live_ok("meta"):
+                raise ledger.Refused("no_key")
+            planned(run_id, clip_id, condition)
+            addr = ledger.use(run_id, sid, "build", max_uses=1 + len(RESHUFFLE_SEEDS), claimed=t)
+            ledger.affordable(run_id, "meta", RESERVE["transcribe"])
+            R = _recipe_mod(); idx = R.load_index()
+            built, orig = R.build_condition(r, idx), R.build_condition({"clip_id": clip_id, "condition": "intact", "seed": 0}, idx)
+            wav = R.wav_bytes(built.audio, built.sr)
+            t0 = time.time()
+            with tempfile.TemporaryDirectory() as d:
+                p = Path(d) / f"{clip_id}_{condition}.wav"; p.write_bytes(wav)
+                try:
+                    audio = egress.PublicAudio(path=str(p))     # a build that is not on the allowlist is refused: "build differs"
+                except ValueError:
+                    t.give_back(); return {"mode": "refused", "line": "This build differs from the listed public builds, so it was not sent."}
+                ledger.station_hour("build", claimed=t, addr=addr)
+                res = ledger.reserve("meta", RESERVE["transcribe"], run_id)   # no published price: the reservation stands once it answers
+                t.paid = True
+                try:
+                    with capture():
+                        out = meta_client.transcribe(audio, mode="DIARIZATION")
+                except Exception:                              # never connected: not counted; reached the provider: it may be billed
+                    ledger.settle(res, RESERVE["transcribe"] if reached() else 0.0)
+                    return recorded_build(clip_id, condition, "api_error")
     except ledger.Refused as e:
-        return recorded("recorded_plan" if e.code == "no_run" else e.code)
-    R = _recipe_mod(); idx = R.load_index()
-    built, orig = R.build_condition(r, idx), R.build_condition({"clip_id": clip_id, "condition": "intact", "seed": 0}, idx)
-    wav = R.wav_bytes(built.audio, built.sr)
-    t0 = time.time()
-    with tempfile.TemporaryDirectory() as d:
-        p = Path(d) / f"{clip_id}_{condition}.wav"; p.write_bytes(wav)
-        try:
-            audio = egress.PublicAudio(path=str(p))                    # a build that is not on the allowlist is refused: "build differs"
-        except ValueError:
-            return {"mode": "refused", "line": "This build differs from the listed public builds, so it was not sent."}
-        try:
-            res = ledger.reserve("meta", RESERVE["transcribe"])      # no published price: the reservation stands once the call answers
-        except ledger.Refused as e:
-            return recorded(e.code)
-        try:
-            out = meta_client.transcribe(audio, mode="DIARIZATION")
-        except Exception:
-            ledger.settle(res, 0.0)                              # a call that never answered is not counted
-            return recorded("api_error")
+        return recorded_build(clip_id, condition, "recorded_plan" if e.code == "no_run" else e.code)
     chk = MC.check_condition(condition, out.get("transcript") or "", [w["word"] for w in built.words], [w["word"] for w in orig.words])
     items = checklist(condition, chk)
     rid = receipt({"station": "build", "model": meta_client.ASR_MODEL, "input_sha256": hashlib.sha256(wav).hexdigest(),
@@ -397,19 +531,38 @@ def chip(clip_id: str) -> dict:
     return {"short": CHIP_SHORT, "long": end_line(clip_id)}
 
 
+def saved_forecast(clip_id: str, condition: str, seed: int, why: str) -> dict:
+    """FORECAST's fallback: the saved forecast for this clip and condition, with the line saying why no live one runs."""
+    r = jobs.recipe(clip_id, condition, seed)
+    return {**_forecast_base(r), "state": "offline", "why": why, "fallback": jobs.fallback(r)}
+
+
+def _forecast_base(r: dict) -> dict:
+    return {"chip": chip(r["clip_id"]), "end_line": end_line(r["clip_id"]), "word_rate_line": WORD_RATE_LINE,
+            "reversed_line": REVERSED_LINE if r["condition"] == "reversed" else None, "hours_et": hours_et()}
+
+
+@_store_safe(lambda run_id, sid, clip_id, condition, seed: saved_forecast(clip_id, condition, seed,
+                                                                           why_line("store_down", shown=SAVED_SHOWN)))
 def forecast(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> dict:
     try:
         r = jobs.recipe(clip_id, condition, seed)
     except ValueError as e:
         raise Bad(str(e))
-    base = {"chip": chip(r["clip_id"]), "end_line": end_line(r["clip_id"]), "word_rate_line": WORD_RATE_LINE,
-            "reversed_line": REVERSED_LINE if condition == "reversed" else None, "hours_et": hours_et()}
+    base = _forecast_base(r)
     try:
-        ledger.use(run_id, sid, "forecast", max_uses=4)
-    except ledger.Refused as e:                                # no live run (a recorded plan) or used up: the cached forecast only
-        return {**base, "state": "offline", "why": "Cached forecast only." if e.code == "no_run" else why_line(e.code),
+        with ledger.Claimed() as t:                              # the run's use and the hours stand only for a job that reaches the queue
+            planned(run_id, r["clip_id"], r["condition"])
+            addr = ledger.use(run_id, sid, "forecast", max_uses=4, claimed=t)
+            out = jobs.submit(r, sid, claimed=t, addr=addr)
+            if out["state"] != "queued":                       # cached, busy, offline or a lost queue race: no laptop time
+                t.give_back()
+    except ledger.Refused as e:                                # no live run (a recorded plan), used up or past the hour: the saved run
+        return {**base, "state": "offline", "why": "Cached forecast only." if e.code == "no_run" else why_line(e.code, shown=SAVED_SHOWN),
                 "fallback": jobs.fallback(r)}
-    return {**base, **jobs.submit(r, sid)}
+    if out["state"] == "offline":
+        out = {**out, "why": why_line("worker_offline", shown=SAVED_SHOWN)}
+    return {**base, **out}
 
 
 def hours_et() -> str:
@@ -432,7 +585,12 @@ def png(rgb) -> bytes:
 CREDIT = "Tears of Steel (CC) Blender Foundation | mango.blender.org, CC BY 3.0. Edited for this study."
 
 
-def film(run_id: str, sid: str, concept: str) -> dict:
+def recorded_film(why: str) -> dict:
+    return {**(_load("web/replay/film.json") or {"frames": []}), "mode": "recorded", "label": RECORDED, "why": why_line(why), "credit": CREDIT}
+
+
+@_store_safe(lambda *a, **k: recorded_film("store_down"))
+def film(run_id: str, sid: str, concept: str, ip: str = None) -> dict:
     concept = (concept or "").strip()
     if not concept or len(concept) > 40:
         raise Bad("concept")
@@ -440,42 +598,52 @@ def film(run_id: str, sid: str, concept: str) -> dict:
         q = egress.PublicQuestion(text=concept)
     except ValueError:
         return {"mode": "refused", "credit": CREDIT, "line": "This concept can't be sent."}
-    rec = _load("web/replay/film.json") or {"frames": []}
-    recorded = lambda why: {**rec, "mode": "recorded", "label": RECORDED, "why": why_line(why), "credit": CREDIT}
     try:
         if not live_ok("meta"):
             raise ledger.Refused("no_key")
-        if not run_id:
-            run_id = ledger.start_run(sid)
-        ledger.use(run_id, sid, "film")
         import cv2
         from stillhere import face_edit as FE
         import meta_sam_parser  # noqa: F401  (Meta's SAM License; a dependency, not included)
     except ledger.Refused as e:
-        return recorded(e.code)
+        return recorded_film(e.code)
     except ImportError:
-        return recorded("no_key")
+        return recorded_film("no_key")
     from web import sam
-    frames, t0, spent = [], time.time(), 0.0
-    for f in json.loads(FILM_FRAMES.read_text())["frames"][:3]:
-        try:
-            res = ledger.reserve("meta", RESERVE["sam"])         # no published price: the reservation stands once the call answers
-        except ledger.Refused as e:
-            return recorded(e.code)
-        try:
-            seg = sam.segment(str(REPO / f["clip"]), q); spent += RESERVE["sam"]
-        except Exception:
-            ledger.settle(res, 0.0)
-            return recorded("api_error")
-        frame = cv2.cvtColor(cv2.imread(str(REPO / f["release_jpg"])), cv2.COLOR_BGR2RGB)
-        if not seg["objects"]:
-            frames.append({"id": f["id"], "found": False, "line": "no mask found", "intact": _b64png(frame)}); continue
-        masks = FE.masks_for({"objects": seg["objects"]})
-        img, px, offs = FE.edit(frame, masks, skip_unplaceable=True)
-        frames.append({"id": f["id"], "found": True, "n_masks": len(masks), "controls": sum(o is not None for o in offs),
-                       **{v: _b64png(img[v]) for v in FE.VERSIONS}})
+    per = max(RESERVE["sam"], SAM_USD_PER_FRAME or 0.0)        # a frame never reserves less than its price
+    try:
+        with ledger.Claimed() as t:                              # every frame reserved before the first call (third review, item 7)
+            if not run_id:
+                run_id = ledger.start_run(sid, ip=ip, claimed=t)
+            addr = ledger.use(run_id, sid, "film", claimed=t)
+            ledger.affordable(run_id, "meta", FILM_N * per); ledger.station_hour("film", claimed=t, addr=addr)
+            res = ledger.reserve("meta", FILM_N * per, run_id)
+            t.paid = True
+    except ledger.Refused as e:
+        return recorded_film(e.code)
+    frames, t0, priced, held = [], time.time(), [], 0.0
+    try:
+        for f in json.loads(FILM_FRAMES.read_text())["frames"][:FILM_N]:
+            try:
+                with capture():
+                    seg = sam.segment(str(REPO / f["clip"]), q)
+            except Exception:                                  # this frame failed; later ones are not called. Never connected: not
+                held += per if reached() else 0.0              # counted; reached the provider (a parse error after it answered): kept
+                return recorded_film("api_error")
+            if seg.get("status") == "response.completed" and SAM_USD_PER_FRAME is not None:
+                priced.append(SAM_USD_PER_FRAME)
+            else:                                              # no price, or an answer that did not complete (it may still be
+                held += per                                    # billed): the frame's reservation stands
+            frame = cv2.cvtColor(cv2.imread(str(REPO / f["release_jpg"])), cv2.COLOR_BGR2RGB)
+            if not seg["objects"]:
+                frames.append({"id": f["id"], "found": False, "line": "no mask found", "intact": _b64png(frame)}); continue
+            masks = FE.masks_for({"objects": seg["objects"]})
+            img, px, offs = FE.edit(frame, masks, skip_unplaceable=True)
+            frames.append({"id": f["id"], "found": True, "n_masks": len(masks), "controls": sum(o is not None for o in offs),
+                           **{v: _b64png(img[v]) for v in FE.VERSIONS}})
+    finally:                                                   # on every way out: each frame called at its price or reservation,
+        ledger.settle(res, sum(priced) + held)                 # the frames not called freed
     rid = receipt({"station": "film", "model": "sam-3.1", "frames": [f["id"] for f in frames], "seconds": round(time.time() - t0, 2),
-                   "usd": None, "usd_reserved": round(spent, 2)})
+                   "usd": round(sum(priced), 5) if priced else None, "usd_reserved": round(held, 2)})
     return {"mode": "live", "frames": frames, "credit": CREDIT, "receipt_id": rid,
             "caption": "SAM 3.1 masked what you typed; StillHere filled it with the surrounding colour, and filled a same-size patch "
                        "elsewhere in the frame the same way as a control."}

@@ -58,7 +58,9 @@ class RedisStub(BaseHTTPRequestHandler):
         op, k = c[0].upper(), c[1] if len(c) > 1 else None
         self.seen.append((op, k.split(":")[0] if k else None))
         if op == "GET":
-            v = self._live(k); return None if isinstance(v, list) else v
+            v = self._live(k); return None if isinstance(v, (list, dict)) else v
+        if op == "MGET":
+            return [None if isinstance(self._live(x), (list, dict)) else self._live(x) for x in c[1:]]
         if op == "SET":
             nx, ex = "NX" in c, int(c[c.index("EX") + 1]) if "EX" in c else None
             if nx and self._live(k) is not None:
@@ -67,6 +69,20 @@ class RedisStub(BaseHTTPRequestHandler):
             if ex:
                 self.exp[k] = time.time() + ex
             return "OK"
+        if op == "ZREMRANGEBYSCORE":
+            z = self._live(k) or {}; hi = float(c[3]); gone = [m for m, t in z.items() if t <= hi]
+            for m in gone:
+                del z[m]
+            return len(gone)
+        if op == "ZADD":
+            z = self._live(k)
+            if not isinstance(z, dict):
+                z = self.db[k] = {}
+            new = c[3] not in z; z[c[3]] = float(c[2]); return int(new)
+        if op == "ZCARD":
+            return len(self._live(k) or {})
+        if op == "ZREM":
+            return int((self._live(k) or {}).pop(c[2], None) is not None)
         if op == "INCRBYFLOAT":
             v = float(self._live(k) or 0) + float(c[2]); self.db[k] = repr(v); return repr(v)
         if op == "EXPIRE":
@@ -75,6 +91,11 @@ class RedisStub(BaseHTTPRequestHandler):
             self.exp[k] = time.time() + int(c[2]); return 1
         if op == "RPUSH":
             self.db.setdefault(k, []).append(c[2]); return len(self.db[k])
+        if op == "LREM":
+            lst = self._live(k) or []
+            if c[3] in lst:
+                lst.remove(c[3]); return 1
+            return 0
         if op == "LPOP":
             lst = self._live(k); return lst.pop(0) if lst else None
         if op == "LRANGE":
@@ -108,9 +129,10 @@ class Run:
         self.proc = subprocess.Popen([sys.executable, "-c", code], cwd=self.root, env=self.env, stdout=self.log, stderr=subprocess.STDOUT)
         for _ in range(100):
             try:
-                self.get("/api/status"); break
+                self.get("/"); break
             except (urllib.error.URLError, ConnectionError):
                 time.sleep(0.2)
+        self.call("POST", "/api/visitor", {})               # as the page does: its first call gets the visitor cookie
         return self
 
     def __exit__(self, *a):
@@ -201,10 +223,12 @@ def main():
         W = {"Authorization": f"Bearer {dummy['STILLHERE_WORKER_TOKEN']}"}
         b.check(b.call("POST", "/api/worker/claim", {}, {"Authorization": "Bearer wrong"})[0] == 401, "B: bad token 401")
         b.check(b.call("POST", "/api/worker/claim", {}, W)[0] == 204, "B: claim 204 (heartbeat)")
-        # A live forecast belongs to a live plan's run, and every plan here fails by design, so the harness writes one run record into
-        # the REST store for this session (the record a live PLAN writes), then asks for a seed that has no saved forecast.
+        # A live forecast belongs to a live plan's run, and every plan here fails by design, so the harness writes one run record and
+        # its stored plan into the REST store for this session (what a live PLAN writes), then asks for a seed with no saved forecast.
         rid = secrets.token_hex(8)
         RedisStub.db[f"run:{rid}"] = json.dumps({"sid": b.cookie.split("=", 1)[1], "t": time.time()})
+        RedisStub.db[f"runspec:{rid}"] = json.dumps({"spec": {"decline_reason": "none"}, "route": {
+            "kind": "live", "clip_id": "story_telltale_heart", "condition": "sentence_scramble", "seed": 20261028}})
         code, d = b.call("POST", "/api/forecast", {"run_id": rid, "clip_id": "story_telltale_heart", "condition": "sentence_scramble",
                                                    "seed": 4})
         if b.check(code == 202 and d.get("state") == "queued", "B: job queued"):

@@ -2,12 +2,13 @@
 (web/public), the station API, receipts, and the jobs API for the laptop worker (docs/jobs_api.md). Local: `python web/serve.py`.
 Vercel: the repository root's api/index.py exports the same `app` (docs/deploy_checklist.md). Keys stay in the server's environment; no
 response carries one, and request bodies are never logged: an unexpected error logs only its type and the path."""
+import hashlib
 import json
 import mimetypes
 import os
 import re
-import secrets
 import sys
+import urllib.parse
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -20,6 +21,7 @@ if os.environ.get("VERCEL"):                               # only /tmp is writab
     os.environ.setdefault("STILLHERE_USAGE_LOG", "/tmp/stillhere_usage.jsonl")
 
 from web import guard, jobs, ledger, stations  # noqa: E402
+from web.store import StoreError  # noqa: E402
 
 PUBLIC = REPO / "web/public"
 mimetypes.add_type("font/woff2", ".woff2")                     # not in every runtime's table (Vercel's sends octet-stream)
@@ -29,9 +31,10 @@ ROUTES = []
 COOKIE = "sh_sid"
 
 
-def route(method: str, pattern: str):
+def route(method: str, pattern: str, cache: str = None):
+    """`cache`: a Cache-Control for an answer that is the same for every visitor (see respond)."""
     def deco(fn):
-        ROUTES.append((method, re.compile(f"^{pattern}$"), fn)); return fn
+        ROUTES.append((method, re.compile(f"^{pattern}$"), fn, cache)); return fn
     return deco
 
 
@@ -39,10 +42,32 @@ class Req:
     def __init__(self, env):
         self.env, self.method, self.path = env, env["REQUEST_METHOD"], env.get("PATH_INFO") or "/"
         ck = dict(p.strip().split("=", 1) for p in env.get("HTTP_COOKIE", "").split(";") if "=" in p)
-        sid = ck.get(COOKIE, "")
-        self.new_sid = not re.fullmatch(r"[0-9a-f]{32}", sid)
-        self.sid = secrets.token_hex(16) if self.new_sid else sid
+        self.cookie = ck.get(COOKIE) if re.fullmatch(r"[0-9a-f]{32}", ck.get(COOKIE, "")) else None
         self.secure = env.get("HTTP_X_FORWARDED_PROTO", env.get("wsgi.url_scheme")) == "https"
+        self.ip = (env.get("HTTP_X_REAL_IP") or env.get("REMOTE_ADDR") or "").strip()   # Vercel sets x-real-ip to the client's address
+        self._sid, self.new_cookie = None, None
+
+    @property
+    def sid(self) -> str:
+        """The visitor (ledger.visitor): the cookie if the server issued it, else the address. Looked up only when a route needs it."""
+        if self._sid is None:
+            self._sid = ledger.visitor(self.cookie, self.ip)
+        return self._sid
+
+    def issue(self) -> None:
+        """The page's first call: a request without an issued cookie gets a visitor id as its cookie (ledger.issue_visitor)."""
+        if self.cookie is None or self.sid != self.cookie:
+            self.new_cookie = self._sid = ledger.issue_visitor(self.ip)
+
+    def own_origin(self, origin: str) -> bool:
+        """The page's own origin: the Host this request was addressed to, with the scheme the cookie's Secure flag reads, so a Vercel
+        preview, the production domain, and 127.0.0.1 or localhost under serve.py all count with no list to keep; and Vercel's own
+        names for this deployment (its env vars), should the function see another Host. X-Forwarded-Host is a client's to send, so it
+        never counts."""
+        scheme = "https" if self.secure else "http"
+        mine = {f"{scheme}://{self.env['HTTP_HOST']}"} if self.env.get("HTTP_HOST") else set()
+        mine |= {f"https://{os.environ[k]}" for k in ("VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL") if os.environ.get(k)}
+        return origin.lower() in {o.lower() for o in mine}
 
     def json(self) -> dict:
         n = int(self.env.get("CONTENT_LENGTH") or 0)
@@ -57,33 +82,54 @@ class Req:
         return d
 
 
-def respond(start, status: int, body=None, ctype="application/json", req: Req = None, extra=()):
-    text = {200: "OK", 202: "Accepted", 204: "No Content", 400: "Bad Request", 401: "Unauthorized", 404: "Not Found",
-            405: "Method Not Allowed", 409: "Conflict", 422: "Unprocessable Entity", 429: "Too Many Requests", 500: "Internal Server Error",
-            503: "Service Unavailable"}
+def respond(start, status: int, body=None, ctype="application/json", req: Req = None, extra=(), cache: str = None):
+    """`cache`: the Cache-Control of an answer that is the same for every visitor (status, static files). One a cache may reuse
+    without asking again never sets the session cookie, which a shared cache would hand to the next visitor; the pages (no-cache) do,
+    so the cookie is set before any script runs. JSON is otherwise no-store."""
+    text = {200: "OK", 202: "Accepted", 204: "No Content", 400: "Bad Request", 401: "Unauthorized", 403: "Forbidden", 404: "Not Found",
+            405: "Method Not Allowed", 409: "Conflict", 415: "Unsupported Media Type", 422: "Unprocessable Entity", 429: "Too Many Requests",
+            500: "Internal Server Error", 503: "Service Unavailable"}
     data = b"" if body is None else body if isinstance(body, bytes) else json.dumps(body).encode()
     hdrs = [("Content-Type", ctype), ("Content-Length", str(len(data))), ("X-Content-Type-Options", "nosniff"),
             ("Referrer-Policy", "no-referrer"), ("X-Robots-Tag", "noindex")] + list(extra)
-    if ctype == "application/json":
-        hdrs.append(("Cache-Control", "no-store"))
-    if req is not None and req.new_sid:
-        hdrs.append(("Set-Cookie", f"{COOKIE}={req.sid}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400" + ("; Secure" if req.secure else "")))
+    cc = cache or ("no-store" if ctype == "application/json" else None)
+    if cc:
+        hdrs.append(("Cache-Control", cc))
+    if req is not None and req.new_cookie and (not cache or any(d in cache for d in ("no-cache", "private", "no-store"))):
+        hdrs.append(("Set-Cookie", f"{COOKIE}={req.new_cookie}; Path=/; HttpOnly; SameSite=Lax; Max-Age={ledger.VISITOR_TTL_S}"
+                     + ("; Secure" if req.secure else "")))
     start(f"{status} {text.get(status, '')}", hdrs)
     return [data]
 
 
 # ---- page API -------------------------------------------------------------------------------------------------------------------
-@route("GET", "/api/status")
+@route("POST", "/api/visitor")
+def visitor(req, m):
+    """The page's first call (third review, item 5): the visitor id, issued only here, so crawlers and anything else that never runs
+    the page's script spend none, and no page load reaches the store."""
+    req.json()
+    try:
+        req.issue()
+    except StoreError as e:                                 # the page goes on as the address's cookieless visitor
+        print(f"stillhere: store error ({e}) in visitor", file=sys.stderr, flush=True)
+    return 200, {}
+
+
+@route("GET", "/api/status", cache="s-maxage=5")                  # the same for every visitor: the CDN may answer it for 5 s
 def status(req, m):
-    return 200, {"worker_online": jobs.worker_online(), "worker_hours_et": stations.hours_et(),
-                 "saved_line": stations.SAVED_LINE.format(hours=stations.hours_et()),
-                 "live": {"meta": stations.live_ok("meta"), "fireworks": stations.live_ok("fireworks")},
-                 "budget": ledger.remaining(), "runs_per_hour": ledger.RUNS_PER_HOUR, "menu": stations.menu()}
+    """Always whole: with the store failing (fourth review, item 4), worker offline and live off, so the page says what it will do."""
+    try:
+        online, live = jobs.worker_online(), {"meta": stations.live_ok("meta"), "fireworks": stations.live_ok("fireworks")}
+    except StoreError as e:
+        print(f"stillhere: store error ({e}) in status", file=sys.stderr, flush=True)
+        online, live = False, {"meta": False, "fireworks": False}
+    return 200, {"worker_online": online, "worker_hours_et": stations.hours_et(), "saved_line": stations.SAVED_LINE.format(
+        hours=stations.hours_et()), "live": live, "runs_per_hour": ledger.RUNS_PER_HOUR, "menu": stations.menu()}
 
 
 @route("POST", "/api/plan")
 def plan(req, m):
-    b = req.json(); return 200, stations.plan(b.get("text"), b.get("backend", "spark-1.3"), req.sid)
+    b = req.json(); return 200, stations.plan(b.get("text"), b.get("backend", "spark-1.3"), req.sid, ip=req.ip)
 
 
 @route("POST", "/api/audit")
@@ -107,11 +153,28 @@ def forecast(req, m):
 
 @route("GET", "/api/forecast/([0-9a-f]{16})")
 def forecast_status(req, m):
-    out = jobs.status(m.group(1))
+    try:
+        out = jobs.status(m.group(1))
+    except StoreError as e:                                # the job is in the store: answer final, never a 500 polled forever
+        print(f"stillhere: store error ({e}) in forecast_status", file=sys.stderr, flush=True)
+        return 200, paused_forecast(req.env.get("QUERY_STRING", ""))
     if not out:
         return 404, {"error": "no_job"}
     cid = out["recipe"]["clip_id"]
     return 200, {**out, "chip": stations.chip(cid), "end_line": stations.end_line(cid)}
+
+
+def paused_forecast(query: str) -> dict:
+    """A job's final state while the store cannot answer: "failed" with the paused line, and the saved forecast for the recipe the
+    page sends with its poll (?clip_id=&condition=&seed=), checked against the live menu like any recipe; without one it can trust,
+    the line alone."""
+    out = {"status": "failed", "events": [], "why": stations.why_line("store_down", shown=stations.SAVED_SHOWN)}
+    q = {k: v[0] for k, v in urllib.parse.parse_qs(query).items()}
+    try:
+        r = jobs.recipe(q.get("clip_id"), q.get("condition"), int(q.get("seed", "")))
+    except ValueError:
+        return out
+    return {**out, "recipe": r, "fallback": jobs.fallback(r), "chip": stations.chip(r["clip_id"]), "end_line": stations.end_line(r["clip_id"])}
 
 
 @route("GET", "/api/evidence")
@@ -121,7 +184,7 @@ def evidence(req, m):
 
 @route("POST", "/api/film")
 def film(req, m):
-    b = req.json(); return 200, stations.film(b.get("run_id"), req.sid, b.get("concept"))
+    b = req.json(); return 200, stations.film(b.get("run_id"), req.sid, b.get("concept"), ip=req.ip)
 
 
 @route("GET", "/api/receipt/([0-9a-f]{16})")
@@ -159,44 +222,71 @@ def worker_job(req, m):
 
 
 # ---- static -------------------------------------------------------------------------------------------------------------------
+ASSET = re.compile(r'(?:(?:href|src)="|url\()(/[^"?#)]*)(?=[")])')
+
+
+def versioned(text: str) -> str:
+    """A page or style sheet naming each local asset as path?v=<first 8 hex of the SHA-256 of what that path serves>, made as it is
+    served, so a deploy that changes a file changes its URL and the day-long cache on assets never pairs a new page with an old
+    script, style sheet, image or font. Pages are not versioned: they are served no-cache."""
+    def v(m):
+        got = None if m.group(1) == "/" or m.group(1).endswith(".html") else static(m.group(1))
+        return m.group(0) if got is None else f"{m.group(0)}?v={hashlib.sha256(got[0]).hexdigest()[:8]}"
+    return ASSET.sub(v, text)
+
+
 def static(path: str):
     if path == "/pilot.css":                                                         # the static page's own CSS, one source
-        return guard._bp.CSS.encode(), "text/css; charset=utf-8"
-    if path in MEDIA:
-        f = MEDIA[path]
+        body, ctype = guard._bp.CSS.encode(), "text/css"
     else:
-        rel = "index.html" if path in ("/", "") else path.lstrip("/")
-        f = (PUBLIC / rel).resolve()
-        if not f.is_relative_to(PUBLIC.resolve()):
+        if path in MEDIA:
+            f = MEDIA[path]
+        else:
+            rel = "index.html" if path in ("/", "") else path.lstrip("/")
+            f = (PUBLIC / rel).resolve()
+            if not f.is_relative_to(PUBLIC.resolve()):
+                return None
+        if not f.is_file():
             return None
-    if not f.is_file():
-        return None
-    ctype = mimetypes.guess_type(f.name)[0] or "application/octet-stream"
-    return f.read_bytes(), ctype + ("; charset=utf-8" if ctype.startswith("text/") else "")
+        body, ctype = f.read_bytes(), mimetypes.guess_type(f.name)[0] or "application/octet-stream"
+    if ctype in ("text/html", "text/css"):
+        body = versioned(body.decode()).encode()
+    return body, ctype + ("; charset=utf-8" if ctype.startswith("text/") else "")
+
+
+def refused_post(req):
+    """(code, body) for a POST to refuse, else None. It needs Content-Type application/json, which a cross-site form or a fetch
+    without a preflight cannot send, and an Origin, when the browser sends one, that is this page's own (the worker sends none)."""
+    if (req.env.get("CONTENT_TYPE") or "").split(";")[0].strip().lower() != "application/json":
+        return 415, {"error": "content_type"}
+    origin = req.env.get("HTTP_ORIGIN")
+    if origin is not None and not req.own_origin(origin):
+        return 403, {"error": "origin"}
+    return None
 
 
 def app(env, start):
-    req = Req(env)
-    for method, rx, fn in ROUTES:
-        m = rx.match(req.path)
-        if m:
-            if req.method != method:
-                continue
-            try:
-                code, body = fn(req, m)
-            except stations.Bad as e:
-                code, body = 400, {"error": str(e)}
-            except Exception as e:                         # never the message: it may quote the request (pydantic errors do)
-                print(f"stillhere: {type(e).__name__} on {req.method} {rx.pattern}", file=sys.stderr, flush=True)
-                code, body = 500, {"error": "server_error"}
-            return respond(start, code, body, req=req)
-    if req.path.startswith("/api/"):
-        return respond(start, 404 if not any(rx.match(req.path) for _, rx, _ in ROUTES) else 405, {"error": "not_found"}, req=req)
-    if req.method != "GET":
-        return respond(start, 405, {"error": "method"}, req=req)
-    s = static(req.path)
+    req, where = Req(env), "static"
+    try:
+        for method, rx, fn, cache in ROUTES:
+            m = rx.match(req.path)
+            if m and req.method == method:
+                where = rx.pattern
+                code, body = (method == "POST" and refused_post(req)) or fn(req, m)
+                return respond(start, code, body, req=req, cache=cache)
+        if req.path.startswith("/api/"):
+            return respond(start, 404 if not any(rx.match(req.path) for _, rx, _, _ in ROUTES) else 405, {"error": "not_found"}, req=req)
+        if req.method != "GET":
+            return respond(start, 405, {"error": "method"}, req=req)
+        s = static(req.path)                                   # no store call: a page loads whatever the store's state
+    except stations.Bad as e:
+        return respond(start, 400, {"error": str(e)}, req=req)
+    except Exception as e:                                 # never the message or a static path: either may quote the request
+        print(f"stillhere: {type(e).__name__} on {req.method} {where}", file=sys.stderr, flush=True)
+        return respond(start, 500, {"error": "server_error"}, req=req)
     if s is None:
         return respond(start, 404, b"not found", ctype="text/plain; charset=utf-8", req=req)
     csp = ("default-src 'self'; img-src 'self' data:; media-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; "
            "frame-ancestors 'none'; base-uri 'none'")
-    return respond(start, 200, s[0], ctype=s[1], req=req, extra=[("Content-Security-Policy", csp)])
+    cache = "no-cache" if s[1].startswith("text/html") else "max-age=86400"   # assets and media: named by content hash where linked
+    return respond(start, 200, s[0], ctype=s[1], req=req, cache=cache, extra=[("Content-Security-Policy", csp)])

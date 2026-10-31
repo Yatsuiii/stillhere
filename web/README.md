@@ -28,7 +28,7 @@ fake worker through the jobs API, the evidence endings, 360 px).
 |---|---|
 | `app.py` | One WSGI app, standard library only around the repo's modules; session cookie; CSP; never logs request bodies |
 | `stations.py` | The stations; every model call goes through `stillhere/egress.py` |
-| `ledger.py` | Spend reservations and caps, 5 runs per hour per visitor, one use of each station per run |
+| `ledger.py` | Spend reservations and caps; visitor ids issued only by the page's first call (`POST /api/visitor`, a fresh id each, SET NX, at most 20 per address an hour; "Plan it" waits for it), so a request without one counts as its network address (x-real-ip, an IPv6 /64) and no page load touches the store; per UTC day a visitor keeps at most 1/8 of each daily cap and an address 20%; 5 runs per true sliding hour per visitor, 20 per address (sorted sets of event times); one use of each station per run; an hourly cap on each station for all visitors together, of which one address takes at most a quarter (FILM 1), claimed after every per-visitor check and given back on any error before the paid call, then its recorded run; with the store failing, every station gives its recorded run ("Live runs are paused") |
 | `guard.py` | Every model-written line passes the banned-word list or becomes a template line |
 | `jobs.py` | The jobs table and worker API (`docs/jobs_api.md`); recipes and cache keys come from `worker/recipe.py` |
 | `store.py` | Upstash Redis over REST when its env vars are set; an in-memory stand-in otherwise (on Vercel, live calls need Upstash) |
@@ -46,7 +46,9 @@ the confidential clip and never leaves the laptop, and the server holds nothing 
 - Hard stops kept in the store, so they hold across restarts and instances (cloud plan of Oct 29, 19:20 UTC, 1c): totals Meta $80,
   Fireworks $50, Baseten $50; daily Meta $20, Fireworks $12, Baseten $12 (env `CAP_*_USD`, `DAILY_CAP_*_USD`). Each call reserves its
   worst case first; chat calls settle to their token cost at the planner rule's prices. Voice Transcribe ($0.10 reserved) and SAM 3.1
-  ($0.50 reserved per frame) publish no price here, so their reservations stand.
+  ($0.50 reserved per frame) publish no price here, so their reservations stand; once Meta's Billing page shows SAM's price, set
+  `SAM_USD_PER_FRAME` and FILM settles each completed frame to it. FILM reserves its three frames before the first call; each chat
+  call carries `max_tokens` so it cannot cost more than its reservation, and `settle` holds an over-run at the cap.
 - Spark Open runs on Fireworks; Baseten (`BASETEN_API_KEY`) is its fallback host when Fireworks has no key, is capped, or fails. The
   receipt names the host that answered.
 - The event's Meta credit: no source we could reach gives its end. Checked Oct 29: the event details page (cerebralvalley.ai, saved

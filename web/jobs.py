@@ -11,7 +11,8 @@ import secrets
 import time
 from pathlib import Path
 
-from web.store import get_store
+from web import ledger
+from web.store import StoreError, get_store
 
 REPO = Path(__file__).resolve().parents[1]
 MENU = REPO / "stillhere/live_menu.json"
@@ -25,6 +26,11 @@ LANES = ("w2v-bert", "llama-3.2", "v-jepa-2", None)
 STATUSES = ("start", "end", "off")
 FAIL_CODES = ("timeout", "oom", "model_error", "bad_recipe", "cache_key_mismatch", "busy")
 MAX_POINTS = 60
+QUEUE_MAX = 6                                               # jobs waiting at most: about five minutes of the laptop's work
+ADDRESS_WAITING = 2                                         # of them, from one network address at most (fourth review, item 1)
+BUSY_LINE = "The laptop's queue is full, so a saved forecast is shown where one exists."
+FAILED_LINE = "The live forecast did not finish, so a saved forecast is shown where one exists."
+ADDRESS_BUSY_LINE = "This network address already has forecasts waiting on the laptop, so a saved forecast is shown where one exists."
 
 
 def _now() -> str:
@@ -61,7 +67,10 @@ def cache_key(r: dict) -> str:
 
 
 def cached(key: str):
-    s = get_store(); v = s.get(f"result:{key}")
+    try:
+        v = get_store().get(f"result:{key}")
+    except StoreError:                                      # the store is failing: the committed precompute still answers
+        v = None
     if v:
         return {**json.loads(v), "source": "worker"}
     d = _load(CACHE) or {}                                  # the worker fork's precompute: entries by cache key, at the top level or under
@@ -79,8 +88,11 @@ def worker_online() -> bool:
     return get_store().get("worker:last_seen") is not None
 
 
-def submit(r: dict, sid: str) -> dict:
-    """Cached result, a queued job, or the cached default-seed forecast when the worker is offline."""
+def submit(r: dict, sid: str, claimed: "ledger.Claimed" = None, addr: str = None) -> dict:
+    """Cached result, a queued job, or the cached default-seed forecast when the worker is offline, the queue is full, or the
+    network address `addr` already has ADDRESS_WAITING jobs waiting; past FORECAST's hourly cap (or the address's slice of it), which
+    counts only jobs that reach the laptop, ledger.Refused and nothing written. The hour goes into `claimed`, so a caller that ends
+    without a queued job (busy, a lost queue race) gives it back."""
     key = cache_key(r); hit = cached(key)
     if hit:
         return {"state": "cached", "result": hit}
@@ -90,10 +102,19 @@ def submit(r: dict, sid: str) -> dict:
         return {"state": "busy", "job_id": busy}
     if not worker_online():                                # no queue without a worker: the saved run, labelled (ruling of 17:35 UTC, 7)
         return {"state": "offline", "fallback": fallback(r)}
+    full = lambda line=BUSY_LINE: {"state": "busy", "why": line, "fallback": fallback(r)}
+    waiting = s.lrange("jobs:queue")
+    if len(waiting) >= QUEUE_MAX:
+        return full()
+    if addr and sum(json.loads(j or "{}").get("addr") == addr for j in s.mget([f"job:{i}" for i in waiting])) >= ADDRESS_WAITING:
+        return full(ADDRESS_BUSY_LINE)                     # one MGET; two at once from one address may both pass (a soft cap)
+    ledger.station_hour("forecast", claimed=claimed, addr=addr)
     job_id = secrets.token_hex(8)
     s.set(f"job:{job_id}", json.dumps({"id": job_id, "recipe": r, "cache_key": key, "status": "queued", "created_utc": _now(),
-                                       "sid_hash": sh, "created_t": time.time()}), ttl=6 * 3600)
-    s.rpush("jobs:queue", job_id); s.set(f"sjob:{sh}", job_id, ttl=600)
+                                       "sid_hash": sh, "created_t": time.time(), "addr": addr}), ttl=6 * 3600)
+    if s.rpush("jobs:queue", job_id) > QUEUE_MAX:          # visitors passed the check at once: RPUSH's length is atomic, so each one
+        s.delete(f"job:{job_id}"); s.lrem("jobs:queue", job_id); return full()       # past the cap takes its own id back out
+    s.set(f"sjob:{sh}", job_id, ttl=600)
     return {"state": "queued", "job_id": job_id}
 
 
@@ -121,7 +142,7 @@ def status(job_id: str):
     if j["status"] == "done":
         out["result"] = cached(j["cache_key"])
     if j["status"] in ("expired", "failed"):
-        out["fallback"] = fallback(j["recipe"])
+        out.update(fallback=fallback(j["recipe"]), why=FAILED_LINE)
     return out
 
 

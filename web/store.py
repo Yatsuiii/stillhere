@@ -8,6 +8,10 @@ import time
 import httpx
 
 
+class StoreError(Exception):
+    """The shared store failed (an outage, a spent quota, a timeout, an error answer); its message is the cause's type only."""
+
+
 class MemoryStore:
     """Single-process stand-in: the same commands and the same atomicity (one lock) as the Redis calls below."""
 
@@ -27,7 +31,10 @@ class MemoryStore:
     def get(self, k):
         with self._lock:
             v = self._live(k)
-            return None if v is None or isinstance(v, list) else v
+            return None if v is None or isinstance(v, (list, dict)) else v
+
+    def mget(self, keys):
+        return [self.get(k) for k in keys]
 
     def set(self, k, v, ttl=None, nx=False):
         with self._lock:
@@ -44,6 +51,23 @@ class MemoryStore:
                 self._ttl(k, ttl)
             return v
 
+    def zwindow(self, k, member, score, span):
+        """ZREMRANGEBYSCORE k -inf score-span, ZADD k score member, ZCARD k, EXPIRE k span: how many members are left in
+        (score - span, score], this one included."""
+        with self._lock:
+            z = self._live(k)
+            if not isinstance(z, dict):
+                z = self._d[k] = {}
+            for m in [m for m, t in z.items() if t <= score - span]:
+                del z[m]
+            z[str(member)] = float(score); self._exp[k] = time.time() + span
+            return len(z)
+
+    def zrem(self, k, member):
+        with self._lock:
+            z = self._live(k)
+            return int(isinstance(z, dict) and z.pop(str(member), None) is not None)
+
     def rpush(self, k, v, ttl=None):
         with self._lock:
             lst = self._live(k)
@@ -55,6 +79,14 @@ class MemoryStore:
         with self._lock:
             lst = self._live(k)
             return lst.pop(0) if lst else None
+
+    def lrem(self, k, v):
+        """Redis LREM k 1 v: removes the first copy of v; the number removed."""
+        with self._lock:
+            lst = self._live(k) or []
+            if str(v) in lst:
+                lst.remove(str(v)); return 1
+            return 0
 
     def lrange(self, k, start=0, stop=-1):
         with self._lock:
@@ -73,15 +105,27 @@ class UpstashStore:
         self.url, self.h = url.rstrip("/"), {"Authorization": f"Bearer {token}"}
 
     def _cmd(self, *args):
-        r = httpx.post(self.url, json=[str(a) for a in args], headers=self.h, timeout=10)
-        r.raise_for_status(); return r.json()["result"]
+        try:
+            r = httpx.post(self.url, json=[str(a) for a in args], headers=self.h, timeout=10)
+            r.raise_for_status(); return r.json()["result"]
+        except (httpx.HTTPError, ValueError, KeyError, TypeError) as e:
+            raise StoreError(type(e).__name__) from e
 
     def _pipe(self, *cmds):
-        r = httpx.post(self.url + "/pipeline", json=[[str(a) for a in c] for c in cmds], headers=self.h, timeout=10)
-        r.raise_for_status(); return [x.get("result") for x in r.json()]
+        try:
+            r = httpx.post(self.url + "/pipeline", json=[[str(a) for a in c] for c in cmds], headers=self.h, timeout=10)
+            r.raise_for_status(); out = r.json()
+            if any("error" in x for x in out):                     # a pipeline answers each command alone
+                raise ValueError("a command in the pipeline failed")
+            return [x.get("result") for x in out]
+        except (httpx.HTTPError, ValueError, KeyError, TypeError, AttributeError) as e:
+            raise StoreError(type(e).__name__) from e
 
     def get(self, k):
         return self._cmd("GET", k)
+
+    def mget(self, keys):
+        return self._cmd("MGET", *keys) if keys else []
 
     def set(self, k, v, ttl=None, nx=False):
         args = ["SET", k, v] + (["EX", int(ttl)] if ttl else []) + (["NX"] if nx else [])
@@ -93,6 +137,13 @@ class UpstashStore:
         v, _ = self._pipe(["INCRBYFLOAT", k, amount], ["EXPIRE", k, int(ttl), "NX"])
         return float(v)
 
+    def zwindow(self, k, member, score, span):
+        return int(self._pipe(["ZREMRANGEBYSCORE", k, "-inf", repr(score - span)], ["ZADD", k, repr(score), member], ["ZCARD", k],
+                              ["EXPIRE", k, int(span)])[2])
+
+    def zrem(self, k, member):
+        return int(self._cmd("ZREM", k, member))
+
     def rpush(self, k, v, ttl=None):
         if not ttl:
             return int(self._cmd("RPUSH", k, v))
@@ -101,6 +152,9 @@ class UpstashStore:
 
     def lpop(self, k):
         return self._cmd("LPOP", k)
+
+    def lrem(self, k, v):
+        return int(self._cmd("LREM", k, 1, v))
 
     def lrange(self, k, start=0, stop=-1):
         return self._cmd("LRANGE", k, start, stop) or []

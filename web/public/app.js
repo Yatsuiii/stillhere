@@ -73,7 +73,7 @@ async function loadStatus() {
   }
   const live = data.live || {};
   $("status-line").textContent = "Worker: " + (data.worker_online ? "online" : "offline (cached forecasts)") + ". Live models: " +
-    (live.meta ? "on" : "off (recorded runs)") + ". Up to " + data.runs_per_hour + " live runs per hour per visitor.";
+    (live.meta ? "on" : "off (recorded runs)") + "." + (data.runs_per_hour ? " Up to " + data.runs_per_hour + " live runs per hour per visitor." : "");
   $("hours").textContent = data.saved_line || "";
 }
 
@@ -266,19 +266,27 @@ async function doForecast() {
   if (status >= 400) { out.textContent = "Forecast refused (" + (data.error || status) + ")."; return; }
   $("lane-note").textContent = data.reversed_line || "";
   if (data.state === "cached") return showResult(data.result, data, data.result.source === "cache" ? "Cached forecast, computed " + (data.result.computed_utc || "") : "Forecast");
-  if (data.state === "offline" || data.state === "busy") {
-    if (data.fallback) await showResult(data.fallback, data, "Cached forecast, computed " + (data.fallback.computed_utc || ""));
-    else out.textContent = data.why || "The worker is offline and no cached forecast exists for this clip.";
+  if (data.state === "offline" || (data.state === "busy" && !data.job_id)) {   // busy with a job_id: this session's own job, followed below
+    if (data.fallback) {
+      await showResult(data.fallback, data, "Cached forecast, computed " + (data.fallback.computed_utc || ""));
+      if (data.why) out.prepend(recordedNote({label: "saved forecast", why: data.why}));   // why no live forecast ran
+    } else out.textContent = data.why || "The worker is offline and no cached forecast exists for this clip.";
     return;
   }
   const t0 = Date.now();
-  const poll = async () => {
-    const s = await api("/api/forecast/" + data.job_id);
+  const recipe = new URLSearchParams({clip_id: r.clip_id, condition: r.condition, seed: S.seed});   // for a final answer if the
+  const poll = async () => {                                                                         // job record cannot be read
+    const s = await api("/api/forecast/" + data.job_id + "?" + recipe);
+    if (s.status >= 400) { out.textContent = s.data.why || "The live forecast did not finish."; return; }   // final: no more polls
     setLanes(s.data.events || []);
     if (s.data.status === "done") return showResult(s.data.result, data, "Forecast, live");
     if (["failed", "expired"].includes(s.data.status)) {
-      if (s.data.fallback) return showResult(s.data.fallback, data, "Cached forecast, computed " + (s.data.fallback.computed_utc || ""));
-      out.textContent = "The live forecast did not finish."; return;
+      if (s.data.fallback) {
+        await showResult(s.data.fallback, data, "Cached forecast, computed " + (s.data.fallback.computed_utc || ""));
+        if (s.data.why) out.prepend(recordedNote({label: "saved forecast", why: s.data.why}));
+        return;
+      }
+      out.textContent = s.data.why || "The live forecast did not finish."; return;
     }
     out.textContent = (s.data.status === "running" ? "Running on the laptop" : "Queued") + ", " + Math.round((Date.now() - t0) / 1000) + " s.";
     setTimeout(poll, 1500);
@@ -333,4 +341,7 @@ $("old-bug").addEventListener("click", doOldBug);
 $("audit-go").addEventListener("click", doAudit);
 $("forecast-go").addEventListener("click", doForecast);
 $("film-go").addEventListener("click", doFilm);
+$("plan-go").disabled = true;                                  // no PLAN before the visitor cookie, or its run would be stranded
+Promise.race([api("/api/visitor", {}), new Promise((ok) => setTimeout(ok, 8000))])   // answered, failed or slow: go on
+  .catch(() => null).then(() => { $("plan-go").disabled = false; });
 loadStatus(); loadEvidence();
