@@ -2085,3 +2085,51 @@ def test_claim_takes_a_job_off_the_count_before_marking_it_running(web, monkeypa
     assert call(app, "POST", "/api/worker/claim", {}, auth=W)[0] == 500 and waiting_count(ledger, store) == 1
     S.delete("worker:last_seen"); monkeypatch.setattr(jobs, "JOB_EXPIRY_S", -1)
     assert jobs.status(a)["status"] == "expired" and waiting_count(ledger, store) == 1   # the other job still waits
+
+
+@pytest.mark.skipif(CHROME is None, reason="headless Chrome is not on this machine")
+@pytest.mark.parametrize("case", ["final_states", "flaky_network", "network_down"])
+def test_the_forecast_poll_survives_the_network_and_always_ends(web, monkeypatch, tmp_path, case):
+    """Item 9 in the real page: a poll whose fetch is rejected is tried again every 1.5 s, up to 20 times in a row, then ends on the
+    "did not finish" line; every final state (done, offline, busy, expired, that line) gives the Forecast button back; and a new
+    forecast puts the old job's lanes back to idle."""
+    app, jobs, ledger, stations, store = web
+    base = lambda seed: stations._forecast_base(jobs.recipe(*ROUTE.values(), seed))
+    rec = jobs.recipe(*ROUTE.values(), 1)
+    fb = {**result_for("k" * 64), "recipe": jobs.recipe(*ROUTE.values(), 20261028), "note": None}
+    lanes = [{"stage": "audio_lane", "lane": "w2v-bert", "status": "end"},
+             {"stage": "text_lane", "lane": "llama-3.2", "status": "end", "detail": {"n_words": 12}}]
+    answers = iter([{**base(1), "state": "queued", "job_id": "1" * 16}, {**base(2), "state": "offline", "why": "w", "fallback": fb},
+                    {**base(3), "state": "busy", "why": jobs.BUSY_LINE, "fallback": fb}, {**base(4), "state": "queued", "job_id": "2" * 16}])
+    monkeypatch.setattr(stations, "forecast", lambda *a: next(answers))
+    polls = []
+
+    def status(jid):
+        polls.append(jid)
+        if jid == "1" * 16:
+            return {"status": "done", "recipe": rec, "events": lanes, "result": result_for("j" * 64)}
+        return {"status": "expired", "recipe": rec, "events": [], "fallback": fb, "why": jobs.FAILED_LINE}
+    monkeypatch.setattr(jobs, "status", status)
+    head = (b'addEventListener("load", async () => { S.route = {kind: "live", clip_id: "alice_ch02", condition: "sentence_scramble", '
+            b'seed: 1}; S.seed = 1; S.built = true; const wait = (ms) => new Promise((r) => setTimeout(r, ms));'
+            b' const mark = (k) => { document.body.dataset[k] = $("forecast-go").disabled + "|" + [...document.querySelectorAll('
+            b'".lane b")].map((b) => b.textContent).join(",") + "|" + document.querySelector(\'.lane[data-lane="llama-3.2"] span\').textContent; };')
+    if case == "final_states":
+        probe = head + (b' await doForecast(); await wait(4000); mark("done"); await doForecast(); mark("offline");'
+                        b' await doForecast(); mark("busy"); await doForecast(); await wait(4000); mark("expired"); });')
+    else:
+        n = 3 if case == "flaky_network" else 1000                                  # rejected polls before one gets through
+        probe = (b'const realFetch = window.fetch; let misses = 0; window.fetch = (u, o) => String(u).startsWith("/api/forecast/") && misses < '
+                 + str(n).encode() + b' ? (document.body.dataset.misses = ++misses, Promise.reject(new TypeError("network"))) : '
+                 b'realFetch(u, o);' + head + b' await doForecast(); await wait(40000); mark("end"); });')
+    out = chrome_dump(with_probe(app, probe), "/probe.html", tmp_path, budget=60000)
+    marks = dict(re.findall(r'data-(\w+)="([^"]*)"', out[out.index("<body"):out.index(">", out.index("<body"))]))
+    box, idle = section(out, "forecast-out"), "idle,idle,off|Llama 3.2: words in context"
+    if case == "final_states":
+        assert marks["done"] == "false|done,done,off|Llama 3.2: words in context (12 words)", marks
+        assert marks["offline"] == marks["busy"] == marks["expired"] == "false|" + idle, marks
+        assert "Cached forecast, computed" in box and jobs.FAILED_LINE in box.replace("&#39;", "'"), box[:300]
+    elif case == "flaky_network":
+        assert marks["misses"] == "3" and polls == ["1" * 16] and "Forecast, live" in box and marks["end"].startswith("false|done"), marks
+    else:
+        assert marks["misses"] == "20" and polls == [] and "The live forecast did not finish." in box and marks["end"] == "false|" + idle

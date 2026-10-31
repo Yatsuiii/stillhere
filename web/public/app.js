@@ -200,6 +200,10 @@ async function doAudit() {
 }
 
 // ---- FORECAST ------------------------------------------------------------------------------------------------------------------
+const LANES0 = [...document.querySelectorAll(".lane")].map((l) => [l, l.className, l.querySelector("span").textContent, l.querySelector("b").textContent]);
+function resetLanes() {                                        // the lanes as the page loaded them, before a new forecast's events
+  for (const [l, cls, label, state] of LANES0) { l.className = cls; l.querySelector("span").textContent = label; l.querySelector("b").textContent = state; }
+}
 function setLanes(events) {
   for (const lane of document.querySelectorAll(".lane")) {
     const name = lane.dataset.lane;
@@ -268,17 +272,24 @@ async function showResult(res, d, label, current = () => true) {   // current():
   end.append(pair); out.append(end); done("forecast");
 }
 let forecastGen = 0;                                           // the latest forecast owns the output; an earlier poll writes nothing
+const POLL_MS = 1500, POLL_MISSES = 20;                        // a poll whose fetch is rejected (the network dropped) is tried again,
+const NOT_DONE = "The live forecast did not finish.";          // 20 times in a row at most (cloud review of Oct 31, 12:20 UTC, item 9)
 async function doForecast() {
   const gen = ++forecastGen, current = () => gen === forecastGen;
-  $("forecast-go").disabled = true;
+  const end = () => { if (current()) $("forecast-go").disabled = !S.built; };   // every final state gives the button back
+  $("forecast-go").disabled = true; resetLanes();                                  // the old job's lanes go back to idle
   const out = $("forecast-out"); out.textContent = "Queued.";
   const r = S.route;
-  const {status, data} = await api("/api/forecast", {run_id: S.run, clip_id: r.clip_id, condition: r.condition, seed: S.seed});
+  let status, data;
+  try {
+    ({status, data} = await api("/api/forecast", {run_id: S.run, clip_id: r.clip_id, condition: r.condition, seed: S.seed}));
+  } catch (e) { if (current()) { out.textContent = NOT_DONE; end(); } return; }
   if (!current()) return;
-  if (failed(status, data)) { out.textContent = "Forecast refused (" + (data.error || status) + ")."; return; }
+  if (failed(status, data)) { out.textContent = "Forecast refused (" + (data.error || status) + ")."; end(); return; }
   $("lane-note").textContent = data.reversed_line || "";
-  if (data.state === "cached") return showResult(data.result, data, data.result.source === "cache" ? "Cached forecast, computed " + (data.result.computed_utc || "") : "Forecast", current);
+  if (data.state === "cached") { end(); return showResult(data.result, data, data.result.source === "cache" ? "Cached forecast, computed " + (data.result.computed_utc || "") : "Forecast", current); }
   if (data.state === "offline" || (data.state === "busy" && !data.job_id)) {   // busy with a job_id: this session's own job, followed below
+    end();
     if (data.fallback) {
       await showResult(data.fallback, data, "Cached forecast, computed " + (data.fallback.computed_utc || ""), current);
       if (data.why && current()) out.prepend(recordedNote({label: "saved forecast", why: data.why}));   // why no live forecast ran
@@ -287,22 +298,30 @@ async function doForecast() {
   }
   const t0 = Date.now();
   const recipe = new URLSearchParams({clip_id: r.clip_id, condition: r.condition, seed: S.seed});   // for a final answer if the
-  const poll = async () => {                                                                         // job record cannot be read
-    const s = await api("/api/forecast/" + data.job_id + "?" + recipe);
+  let misses = 0;                                                                                    // job record cannot be read
+  const poll = async () => {
+    let s = null;
+    try { s = await api("/api/forecast/" + data.job_id + "?" + recipe); } catch (e) { s = null; }
     if (!current()) return;                                                                          // a newer forecast: stop here
-    if (s.status >= 400) { out.textContent = s.data.why || "The live forecast did not finish."; return; }   // final: no more polls
+    if (!s) {                                                                                        // no answer at all: again, to the cap
+      if (++misses < POLL_MISSES) { setTimeout(poll, POLL_MS); return; }
+      out.textContent = NOT_DONE; end(); return;
+    }
+    misses = 0;
+    if (s.status >= 400) { out.textContent = s.data.why || NOT_DONE; end(); return; }               // final: no more polls
     setLanes(s.data.events || []);
-    if (s.data.status === "done") return showResult(s.data.result, data, "Forecast, live", current);
+    if (s.data.status === "done") { end(); return showResult(s.data.result, data, "Forecast, live", current); }
     if (["failed", "expired"].includes(s.data.status)) {
+      end();
       if (s.data.fallback) {
         await showResult(s.data.fallback, data, "Cached forecast, computed " + (s.data.fallback.computed_utc || ""), current);
         if (s.data.why && current()) out.prepend(recordedNote({label: "saved forecast", why: s.data.why}));
         return;
       }
-      out.textContent = s.data.why || "The live forecast did not finish."; return;
+      out.textContent = s.data.why || NOT_DONE; return;
     }
     out.textContent = (s.data.status === "running" ? "Running on the laptop" : "Queued") + ", " + Math.round((Date.now() - t0) / 1000) + " s.";
-    setTimeout(poll, 1500);
+    setTimeout(poll, POLL_MS);
   };
   poll();
 }
