@@ -1,0 +1,3 @@
+hp 0.01: ceiling 4.91; shift -2 s stock 2.02 (41%) tuned 2.12 (43%) | shift -1 s stock 2.36 (48%) tuned 2.53 (52%) | shift +0 s stock 2.57 (52%) tuned 2.77 (56%) | shift +1 s stock 2.50 (51%) tuned 2.60 (53%) | shift +2 s stock 2.20 (45%) tuned 2.30 (47%)
+hp 0.02: ceiling 4.51; shift -2 s stock 1.51 (33%) tuned 1.85 (41%) | shift -1 s stock 2.02 (45%) tuned 2.54 (56%) | shift +0 s stock 2.38 (53%) tuned 2.89 (64%) | shift +1 s stock 2.27 (50%) tuned 2.58 (57%) | shift +2 s stock 1.84 (41%) tuned 2.11 (47%)
+hp 0.03: ceiling 4.26; shift -2 s stock 1.10 (26%) tuned 1.39 (33%) | shift -1 s stock 1.86 (44%) tuned 2.35 (55%) | shift +0 s stock 2.42 (57%) tuned 2.84 (67%) | shift +1 s stock 2.32 (54%) tuned 2.51 (59%) | shift +2 s stock 1.86 (44%) tuned 1.96 (46%)

@@ -1,0 +1,3 @@
+volumes in the run 282, forecast finite to 279
+volumes 10-154 (145 TRs, 4.8 min): stock 1.725 | tuned 1.928 | average 1.795 | loo48_ceiling 3.249
+volumes 10-279 (270 TRs, 9.0 min): stock 2.313 | tuned 2.640 | average 2.430 | loo48_ceiling 4.241

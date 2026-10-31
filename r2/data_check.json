@@ -1,0 +1,2287 @@
+{
+ "label": "R2 data check: headers and sidecars only, no brain value read",
+ "derivative": {
+  "url": "s3://openneuro-derivatives/fmriprep/ds001338-fmriprep/",
+  "generated_by": [
+   {
+    "Name": "fMRIPrep",
+    "Version": "22.0.2",
+    "CodeURL": "https://github.com/nipreps/fmriprep/archive/22.0.2.tar.gz"
+   }
+  ],
+  "source": [
+   {
+    "URL": "https://doi.org/10.18112/openneuro.ds001338.v1.0.0",
+    "DOI": "10.18112/openneuro.ds001338.v1.0.0"
+   }
+  ],
+  "license": "Creative Commons Attribution-NonCommercial 4.0 International"
+ },
+ "listeners": 22,
+ "participants": [
+  "sub-tb2994",
+  "sub-tb3132",
+  "sub-tb3240",
+  "sub-tb3279",
+  "sub-tb3512",
+  "sub-tb3592",
+  "sub-tb3602",
+  "sub-tb3626",
+  "sub-tb3646",
+  "sub-tb3744",
+  "sub-tb3757",
+  "sub-tb3784",
+  "sub-tb3810",
+  "sub-tb3846",
+  "sub-tb3858",
+  "sub-tb3920",
+  "sub-tb3929",
+  "sub-tb3964",
+  "sub-tb3977",
+  "sub-tb4450",
+  "sub-tb4547",
+  "sub-tb4572"
+ ],
+ "tasks": [
+  "story1",
+  "story2",
+  "story3"
+ ],
+ "fsaverage5": {
+  "files": 132,
+  "bytes": 2520111462
+ },
+ "volumes_per_task": {
+  "story1": [
+   526
+  ],
+  "story2": [
+   452
+  ],
+  "story3": [
+   332
+  ]
+ },
+ "raw_task_sidecars": {
+  "story1": {
+   "RepetitionTime": 1,
+   "TaskName": "story1"
+  },
+  "story2": {
+   "RepetitionTime": 1,
+   "TaskName": "story2"
+  },
+  "story3": {
+   "RepetitionTime": 1,
+   "TaskName": "story3"
+  }
+ },
+ "story_onset_per_task": {
+  "story1": [
+   {
+    "onset": "2",
+    "duration": "524",
+    "stim_file": "story1_audio.wav"
+   }
+  ],
+  "story2": [
+   {
+    "onset": "2",
+    "duration": "449",
+    "stim_file": "story2_audio.wav"
+   }
+  ],
+  "story3": [
+   {
+    "onset": "2",
+    "duration": "329",
+    "stim_file": "story3_audio.wav"
+   }
+  ]
+ },
+ "vertex_order": "TRIBE's: left hemisphere (CortexLeft, 10,242) then right (CortexRight, 10,242); files are per hemisphere",
+ "slice_timing_corrected": [
+  "False"
+ ],
+ "runs": {
+  "sub-tb2994 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22787492,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22715601,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb2994 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19588704,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19520869,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb2994 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14381832,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14346605,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3132 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23449340,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23294445,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3132 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 20171584,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 20038017,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3132 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14814748,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14705109,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3240 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23185368,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23005709,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3240 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19932120,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19768333,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3240 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14622744,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14514301,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3279 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22781332,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22715073,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3279 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19571676,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19513985,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3279 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14378648,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14344181,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3512 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23386504,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23117517,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3512 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 20084840,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19869825,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3512 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14759716,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14595901,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3592 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23362880,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23468177,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3592 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19699576,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19967053,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3592 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14465252,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14591437,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3602 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23159348,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23300021,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3602 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19916872,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 20030549,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3602 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14618032,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14714425,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3626 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22644256,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22623033,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3626 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19487028,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19449121,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3626 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14306524,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14282017,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3646 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22684512,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22693353,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3646 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19508984,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19488429,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3646 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14324956,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14308333,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3744 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23431740,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23261393,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3744 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 20147548,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 20007697,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3744 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14798748,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14693161,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3757 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22803124,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22740933,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3757 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19593272,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19547993,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3757 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14398632,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14349189,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3784 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22819708,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22889569,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3784 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19609756,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19625809,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3784 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14409532,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14416309,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3810 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22828560,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23134953,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3810 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19557296,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19847937,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3810 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14390260,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14549233,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3846 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23364252,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23287789,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3846 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 20098560,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 20007581,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3846 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14765880,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14685093,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3858 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22694900,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22711261,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3858 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19521232,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19481813,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3858 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14332912,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14316193,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3920 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23454748,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22955769,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3920 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 20171208,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19727629,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3920 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14814428,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14491805,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3929 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22746960,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22768553,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3929 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19551540,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19571957,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3929 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14370896,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14378365,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3964 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23435264,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23291869,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3964 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 20143556,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 20014537,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3964 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14806656,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14707613,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3977 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22728468,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22766885,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3977 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19534204,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19564633,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb3977 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14344320,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14367337,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb4450 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 22593464,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 22624021,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb4450 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19411304,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19438713,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb4450 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14263872,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14287877,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb4547 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23091748,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23017913,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb4547 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 19893488,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19804693,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb4547 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14595228,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14529633,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb4572 story1": {
+   "L": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 23338824,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "R": {
+    "volumes": 526,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 23095365,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story1"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb4572 story2": {
+   "L": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 20050580,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "R": {
+    "volumes": 452,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 19857553,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story2"
+    }
+   },
+   "raw_bold_present": true
+  },
+  "sub-tb4572 story3": {
+   "L": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexLeft",
+    "header_bytes_read": 1161,
+    "bytes": 14735020,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "R": {
+    "volumes": 332,
+    "vertices": 10242,
+    "dimensionality": 1,
+    "data_type": "NIFTI_TYPE_FLOAT32",
+    "intent": "NIFTI_INTENT_TIME_SERIES",
+    "structure": "CortexRight",
+    "header_bytes_read": 1162,
+    "bytes": 14596861,
+    "sidecar": {
+     "RepetitionTime": 1,
+     "SliceTimingCorrected": false,
+     "TaskName": "story3"
+    }
+   },
+   "raw_bold_present": true
+  }
+ },
+ "problems": []
+}
