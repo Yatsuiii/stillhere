@@ -198,9 +198,10 @@ def forecast(req, m):
 def forecast_status(req, m):
     try:
         out = jobs.status(m.group(1))
-    except StoreError as e:                                # the job is in the store: answer final, never a 500 polled forever
-        print(f"stillhere: store error ({e}) in forecast_status", file=sys.stderr, flush=True)
-        return 200, paused_forecast(req.env.get("QUERY_STRING", ""))
+    except StoreError as e:                                # the job is in the store: 503, so one store error never ends a running
+        print(f"stillhere: store error ({e}) in forecast_status", file=sys.stderr, flush=True)   # job's display (the page polls again;
+        return 503, paused_forecast(req.env.get("QUERY_STRING", ""))   # second refuter's review of Oct 31, item E), and a body that is
+                                                                         # the page's final answer after 20 in a row, never a 500
     if not out:
         return 404, {"error": "no_job"}
     cid = out["recipe"]["clip_id"]

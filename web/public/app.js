@@ -276,6 +276,8 @@ const POLL_MS = 1500, POLL_MISSES = 20;                        // a poll whose f
 const NOT_DONE = "The live forecast did not finish.";          // 20 times in a row at most (cloud review of Oct 31, 12:20 UTC, item 9)
 const SLOW_MS = 3000;                                          // a poll past the address's GET bucket (429): again after 3 s, not final
                                                                // (pages on one address share 1 a second; refuter's review, item 2)
+const STORE_TRIES = 20;                                        // a poll the store failed (503): again after 3 s, 20 in a row at most,
+                                                               // then its body (the saved forecast, why) is final (second refuter, item E)
 async function doForecast() {
   const gen = ++forecastGen, current = () => gen === forecastGen;
   const end = () => { if (current()) $("forecast-go").disabled = !S.built; };   // every final state gives the button back
@@ -300,7 +302,7 @@ async function doForecast() {
   }
   const t0 = Date.now();
   const recipe = new URLSearchParams({clip_id: r.clip_id, condition: r.condition, seed: S.seed});   // for a final answer if the
-  let misses = 0;                                                                                    // job record cannot be read
+  let misses = 0, downs = 0;                                                                         // job record cannot be read
   const poll = async () => {
     let s = null;
     try { s = await api("/api/forecast/" + data.job_id + "?" + recipe); } catch (e) { s = null; }
@@ -311,7 +313,9 @@ async function doForecast() {
     }
     misses = 0;
     if (s.status === 429) { setTimeout(poll, SLOW_MS); return; }                                    // slow down: neither final nor a miss
-    if (s.status >= 400) { out.textContent = s.data.why || NOT_DONE; end(); return; }               // final: no more polls
+    downs = s.status === 503 ? downs + 1 : 0;
+    if (s.status === 503 && downs < STORE_TRIES) { setTimeout(poll, SLOW_MS); return; }             // the store failed: again, to its cap
+    if (s.status >= 400 && s.status !== 503) { out.textContent = s.data.why || NOT_DONE; end(); return; }   // final: no more polls
     setLanes(s.data.events || []);
     if (s.data.status === "done") { end(); return showResult(s.data.result, data, "Forecast, live", current); }
     if (["failed", "expired"].includes(s.data.status)) {

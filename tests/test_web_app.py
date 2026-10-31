@@ -1531,21 +1531,22 @@ def test_a_store_outage_gives_recorded_runs_and_a_whole_status(live, monkeypatch
     code, _, out = call(app, "POST", "/api/forecast", {"run_id": "0" * 16, **ROUTE, "seed": 20261028}, cookie="", env=env)
     d = json.loads(out); assert code == 200 and d["state"] == "offline" and d["why"] == saved
     assert call(app, "POST", "/api/build", {"old_bug": True}, cookie="", env=env)[0] == 200 and paid == {k: 0 for k in paid}
-    saved_cache(jobs, monkeypatch, tmp_path)                                         # a job's poll: final, the saved forecast, why
+    saved_cache(jobs, monkeypatch, tmp_path)                                         # a job's poll: a 503 (the page polls again) whose
     code, h, out = call(app, "GET", "/api/forecast/" + "0" * 16, env={"QUERY_STRING": "clip_id=alice_ch02&condition=sentence_scramble&seed=2"})
-    d = json.loads(out)
-    assert code == 200 and h["Cache-Control"] == "no-store" and d["status"] == "failed" and d["why"] == saved and d["events"] == []
+    d = json.loads(out)                                                              # body is the final answer: the saved forecast, why
+    assert code == 503 and h["Cache-Control"] == "no-store" and d["status"] == "failed" and d["why"] == saved and d["events"] == []
     assert d["fallback"]["recipe"]["seed"] == 20261028 and d["end_line"] and d["chip"]["short"]
     for q in ("", "clip_id=not_on_the_menu&condition=intact&seed=0"):                # no recipe it can trust: a final state still
         code, _, out = call(app, "GET", "/api/forecast/" + "0" * 16, env={"QUERY_STRING": q}); d = json.loads(out)
-        assert code == 200 and d["status"] == "failed" and d["why"] == saved and d.get("fallback") is None and "end_line" not in d
+        assert code == 503 and d["status"] == "failed" and d["why"] == saved and d.get("fallback") is None and "end_line" not in d
     err = capsys.readouterr().err; assert "ConnectError" in err and "203.0.113.53" not in err and "Plan a story" not in err
 
 
 @pytest.mark.skipif(CHROME is None, reason="headless Chrome is not on this machine")
 def test_the_page_never_shows_undefined_with_the_store_down(web, monkeypatch, tmp_path):
     """Item 4 in the real page: with the store failing, the page shows its status line, menu line and chips, and no "undefined";
-    a FORECAST queued just before the store failed polls once, gets a final answer (the saved forecast and why), and stops."""
+    a FORECAST queued just before the store failed polls on through each 503 (second refuter's review, item E) up to its cap of 20
+    in a row, then shows the last answer's saved forecast and why, and stops."""
     app, jobs, ledger, stations, store = web
     upstash(monkeypatch, store, fail=True); saved_cache(jobs, monkeypatch, tmp_path)
     monkeypatch.setattr(stations, "forecast", lambda run, sid, clip, cond, seed: {**stations._forecast_base(jobs.recipe(clip, cond, seed)),
@@ -1558,13 +1559,13 @@ def test_the_page_never_shows_undefined_with_the_store_down(web, monkeypatch, tm
         if env["PATH_INFO"].startswith("/api/forecast/"):
             polls.append(env.get("QUERY_STRING", ""))
         return page(env, start)
-    out = chrome_dump(wrapper, "/probe.html", tmp_path)
+    out = chrome_dump(wrapper, "/probe.html", tmp_path, budget=90000)
     text = re.sub(r"<[^>]+>", " ", out)
     assert "undefined" not in text and "Loading live status." not in text and "live runs per hour per visitor" in text
     assert re.search(r'id="chips">\s*<button', out), out[:400]
     box = out[out.index('id="forecast-out"'):]
     assert "Cached forecast, computed 2026-10-30T14:00:00Z" in box and "Live runs are paused" in box, box[:500]
-    assert len(polls) == 1 and "clip_id=alice_ch02" in polls[0], polls
+    assert len(polls) == 20 and all("clip_id=alice_ch02" in p for p in polls), polls
 
 
 def test_a_store_error_mid_take_gives_everything_back(web, monkeypatch):
@@ -2516,3 +2517,32 @@ def test_a_job_a_failed_claim_strands_expires_after_twelve_minutes(web, monkeypa
     got = [poll(a), poll(b)]
     assert [g["status"] for g in got] == ["expired", "expired"] and {g["why"] for g in got} == {jobs.FAILED_LINE}
     assert waiting_count(ledger, store) == 0
+
+
+@pytest.mark.skipif(CHROME is None, reason="headless Chrome is not on this machine")
+def test_a_store_blip_on_a_poll_does_not_end_a_running_job(web, monkeypatch, tmp_path):
+    """Second refuter item E in the real page: one store error on a poll answered the paused line and ended a running job's display.
+    A poll's store error is a 503 (its body the saved forecast, for the page's last word after 20 in a row), and the page polls
+    again after 3 s, not final and not a network miss: here three store errors, then the job is done and the live forecast shows.
+    A submit's store error is unchanged (the saved forecast and the paused line)."""
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setattr(stations, "forecast", lambda *a: {**stations._forecast_base(jobs.recipe(*ROUTE.values(), 1)), "state": "queued",
+                                                          "job_id": "1" * 16})
+    blips = [store.StoreError("ReadTimeout")] * 3
+
+    def status(jid):
+        if blips:
+            raise blips.pop()
+        return {"status": "done", "recipe": jobs.recipe(*ROUTE.values(), 1), "events": [], "result": result_for("j" * 64)}
+    monkeypatch.setattr(jobs, "status", status)
+    codes = []
+    page = with_probe(app, b'addEventListener("load", () => { S.route = {kind: "live", clip_id: "alice_ch02", condition: '
+                           b'"sentence_scramble", seed: 1}; S.seed = 1; S.built = true; doForecast(); });')
+
+    def wrapper(env, start):
+        if env["PATH_INFO"].startswith("/api/forecast/"):
+            return page(env, lambda s, h: (codes.append(int(s.split()[0])), start(s, h))[1])
+        return page(env, start)
+    out = chrome_dump(wrapper, "/probe.html", tmp_path, budget=30000)
+    box = section(out, "forecast-out")
+    assert codes == [503, 503, 503, 200] and "Forecast, live" in box and "paused" not in box, (codes, box[:300])
