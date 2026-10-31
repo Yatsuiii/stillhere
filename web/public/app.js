@@ -274,6 +274,8 @@ async function showResult(res, d, label, current = () => true) {   // current():
 let forecastGen = 0;                                           // the latest forecast owns the output; an earlier poll writes nothing
 const POLL_MS = 1500, POLL_MISSES = 20;                        // a poll whose fetch is rejected (the network dropped) is tried again,
 const NOT_DONE = "The live forecast did not finish.";          // 20 times in a row at most (cloud review of Oct 31, 12:20 UTC, item 9)
+const SLOW_MS = 3000;                                          // a poll past the address's GET bucket (429): again after 3 s, not final
+                                                               // (pages on one address share 1 a second; refuter's review, item 2)
 async function doForecast() {
   const gen = ++forecastGen, current = () => gen === forecastGen;
   const end = () => { if (current()) $("forecast-go").disabled = !S.built; };   // every final state gives the button back
@@ -308,6 +310,7 @@ async function doForecast() {
       out.textContent = NOT_DONE; end(); return;
     }
     misses = 0;
+    if (s.status === 429) { setTimeout(poll, SLOW_MS); return; }                                    // slow down: neither final nor a miss
     if (s.status >= 400) { out.textContent = s.data.why || NOT_DONE; end(); return; }               // final: no more polls
     setLanes(s.data.events || []);
     if (s.data.status === "done") { end(); return showResult(s.data.result, data, "Forecast, live", current); }

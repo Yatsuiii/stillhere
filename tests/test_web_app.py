@@ -2227,3 +2227,28 @@ def test_a_path_with_a_trailing_newline_matches_no_route(web, monkeypatch):
     finally:
         srv.shutdown()
     assert got == [429, 404, 404] and sent == []
+
+
+@pytest.mark.skipif(CHROME is None, reason="headless Chrome is not on this machine")
+def test_a_poll_past_the_bucket_slows_down_and_goes_on(web, monkeypatch, tmp_path):
+    """Refuter item 2 in the real page: three pages on one address polling every 1.5 s pass the GET bucket's one a second within a
+    minute, so a poll answered 429 is "slow down": the page polls again after 3 s, not counted as a network failure, and only a final
+    state ends the poll; here three 429s, then the job is done and the live forecast shows."""
+    app, jobs, ledger, stations, store = web
+    monkeypatch.setattr(stations, "forecast", lambda *a: {**stations._forecast_base(jobs.recipe(*ROUTE.values(), 1)), "state": "queued",
+                                                          "job_id": "1" * 16})
+    monkeypatch.setattr(jobs, "status", lambda jid: {"status": "done", "recipe": jobs.recipe(*ROUTE.values(), 1), "events": [],
+                                                     "result": result_for("j" * 64)})
+    page, polls = with_probe(app, b'addEventListener("load", () => { S.route = {kind: "live", clip_id: "alice_ch02", condition: '
+                                  b'"sentence_scramble", seed: 1}; S.seed = 1; S.built = true; doForecast(); });'), []
+
+    def wrapper(env, start):
+        if env["PATH_INFO"].startswith("/api/forecast/"):
+            polls.append(env["PATH_INFO"])
+            if len(polls) <= 3:
+                start("429 Too Many Requests", [("Content-Type", "application/json")]); return [b'{"error": "slow_down"}']
+        return page(env, start)
+    out = chrome_dump(wrapper, "/probe.html", tmp_path, budget=30000)
+    box = section(out, "forecast-out")
+    assert len(polls) == 4 and "Forecast, live" in box and "did not finish" not in box, (len(polls), box[:300])
+    assert not re.search(r'<button id="forecast-go"[^>]*disabled', out)
