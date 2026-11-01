@@ -630,3 +630,29 @@ reads a BOLD value. The code catches up with the registered text; no bar, thresh
   same, and every cell was dry-run on the laptop with a stand-in kernel before use. Earlier tries, all on free Colab, kept no output: try 1
   (05:55 to 05:59 UTC) failed in every feature stage on Colab's MPLBACKEND; try 2 (the MPLBACKEND fix, about 06:00 to 06:40 UTC) finished
   LPP-FR section 8's feature stage in 1,668 s and was stopped by hand to move to the Drive notebook, which the full Drive then ruled out.
+
+## Face test: UNINFORMATIVE on a constant parcel row (Nov 1, before any Emo-FilM BOLD was read)
+
+Cloud ruling of Nov 1, 05:05 UTC, item 3 (`docs/rules/face_map_rule.md`, dated notes, item 3). Made and pushed before `prepare` opened
+any Emo-FilM file. Before it, both runners already refused (never dropped) on a constant or non-finite parcel row, naming the viewers and
+counting the parcels; the ruling says what that refusal means once BOLD is open.
+- `scripts/emofilm_score_runner.py`:
+  - `prepare`'s refusal now names each viewer's rows ("ALL 2 of 400 (17Networks_LH_..., ...)", other sets by row).
+  - On the face path it also writes `results/face_map.json` with outcome UNINFORMATIVE, the named reason, the stage and the ruling
+    (`write_uninformative`, which refuses when the face test is already closed on origin/main).
+  - The read guard opens a new intact mode when an UNINFORMATIVE with a reason is on origin/main; `prepare` then checks and scores AUD,
+    LANG and VIS only, as on the NOT RUN path.
+  - `parcel_index` also keeps the 400 parcel names.
+- `scripts/face_map_runner.py`: `score`'s refusal names each viewer's parcels and writes the same UNINFORMATIVE through
+  `write_uninformative`.
+- No number changes on valid input: these paths run only when a refusal would have stopped the run anyway.
+- Tests: `tests/test_emofilm_score_runner.py`, the refusal's wording per viewer and row, UNINFORMATIVE written on the face path only, and
+  intact mode like the NOT RUN path; `tests/test_face_map.py`, `score` writes UNINFORMATIVE naming the viewer and parcel, the read guard
+  then opens intact mode, and `score` and a second UNINFORMATIVE refuse.
+
+| File | SHA-256 before | SHA-256 after |
+|---|---|---|
+| `scripts/emofilm_score_runner.py` | `06b6c1b3eb600390...` | `fb258efba7c26bb2...` |
+| `scripts/face_map_runner.py` | `fc0acaa1f6f9c9f7...` | `1c25229c49c50887...` |
+| `docs/rules/face_map_rule.md` | `3d760395de027747...` | `f760f18bc56ddbef...` |
+| `docs/rules/edit_check_rule.md` | `b750e2d9a583333e...` | `1ea1aba1f4277b49...` |

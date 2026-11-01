@@ -546,6 +546,21 @@ def d20_html(d) -> str:
 
 
 FILM_FOOT = "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
+# Face-test lines, fixed before the result (cloud ruling of Nov 1, 05:05 UTC, item 5); every result line starts "Exploratory."
+# (face_map_rule.md: every number it produces is labelled exploratory). docs/captions.md carries the same lines.
+FACE_PENDING = ("If the edit check fails or gate 0 stops it, it is NOT RUN; if the viewers' maps are not reliable (gate 1), it is "
+                "UNINFORMATIVE.")
+FACE_VISUAL = "The match was carried by visual-network parcels."
+FACE_B2_NOTE = ("Descriptive: both forecast maps, the control's especially, are concentrated in the seconds around the 51 uncontrolled "
+                "close-ups (61-67 s).")
+B_CRITERIA = (("the Wilcoxon test", lambda b: b["wilcoxon_p"] < 0.05), ("the viewer count", lambda b: b["k_above_0"] >= b["kstar"]),
+              ("the spin test", lambda b: b["spin_p"] < 0.05))
+
+
+def failed_criteria(b: dict) -> str:
+    """The criteria a test (B1 or B2 in results/face_map.json) missed, named as on the page."""
+    bad = [name for name, ok in B_CRITERIA if not ok(b)]
+    return " and ".join(bad) if len(bad) < 3 else "all three criteria"
 FILM_GHOST_CAPTION = "Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"          # ruling of Oct 29, 18:15 IST, item 4
 GHOST_CHIPS = {"d20": {"short": "notthefall: rule 340b74b", "long": "scoring rule committed before these scans were read · 340b74b"}}
 GHOST_COLOURS = {"group": ACCENT, "five": "#f2c27a", "one": "#a8752b"}             # real people: amber tones only
@@ -613,29 +628,34 @@ def film_score_html(fs: dict) -> str:
 
 def film_result_html(fm, fs, ghost: dict = None) -> str:
     if fm is None:
-        return pending("Film face test, 28 real viewers", "Sunday, scored once at the logged onsets. If the edit check fails or a gate "
-                       "stops it, it is NOT RUN and the intact film is scored alone.", f'{SLOTS["face_map"]} and {SLOTS["film_score"]}')
-    o = fm["outcome"]; N = fm.get("viewers"); b1 = fm.get("B1") or {}
-    k, p = b1.get("k_above_0"), b1.get("wilcoxon_p")
+        return pending("Film face test, 28 real viewers", "Sunday, scored once at the logged onsets. " + FACE_PENDING,
+                       f'{SLOTS["face_map"]} and {SLOTS["film_score"]}')
+    o = fm["outcome"]; N = fm.get("viewers"); b1 = fm.get("B1") or {}; b2 = fm.get("B2") or {}
+    k, p = b1.get("k_above_0"), b1.get("wilcoxon_p"); note = ""
     if o == "PASS":
-        txt = (f"SAM filled the faces it masked; TRIBE forecast the change; that forecast lined up with where {N} real viewers' brains "
-               f"tracked faces in the intact film ({k} of {N} viewers, p = {pnum(p)}), and more than for the control.")
+        txt = (f"Exploratory. SAM filled the faces it masked; TRIBE forecast the change; that forecast lined up with where {N} real viewers' "
+               f"brains tracked faces in the intact film ({k} of {N} viewers, p = {pnum(p)}), and more than for the control.")
         if fm.get("caption") == "carried by visual-network parcels":
-            txt += " Most of the match comes from visual-network areas."
+            txt += " " + FACE_VISUAL
+        note = FACE_B2_NOTE
     elif o == "FAIL not face-specific":
-        txt = (f"TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}), but no better than its forecast "
-               "for the control: not specific to faces.")
+        txt = (f"Exploratory. TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}), but not reliably more "
+               f"than its forecast for the control (B2: {b2.get('k_above_0')} of {N}, p = {pnum(b2['wilcoxon_p'])}, spin p = "
+               f"{pnum(b2['spin_p'])}).")
+        note = FACE_B2_NOTE
     elif o == "FAIL":
-        txt = (f"TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces ({k} of {N} viewers, "
-               f"p = {pnum(p)}). We show it because we said we would.")
+        txt = (f"Exploratory. TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces: it "
+               f"missed {failed_criteria(b1)} ({k} of {N} viewers above 0, {b1['kstar']} needed; Wilcoxon p = {pnum(p)}; spin p = "
+               f"{pnum(b1['spin_p'])}). We show it because we said we would.")
     elif o == "UNINFORMATIVE":
-        txt = f"The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."
+        txt = (f"Exploratory. The face test is UNINFORMATIVE: {fm['why']}." if fm.get("why") else
+               f"Exploratory. The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast.")
     elif o == "NOT RUN":
         txt = (f"The face test did not run: {fm['why']}. It was set to run once, by rules written before any brain data was read.")
     else:
         raise ValueError(f"unknown face-map outcome {o!r}")
     kind = "pass" if o == "PASS" else "info" if o == "NOT RUN" else "fail"
-    body = f'<h3>{badge(kind, o)}Film face test</h3><p class="big">{E(txt)}</p>'
+    body = f'<h3>{badge(kind, o)}Film face test</h3><p class="big">{E(txt)}</p>' + (f'<p class="small">{E(note)}</p>' if note else "")
     if fs is not None:
         n = fs["viewers"]["scored"]
         body += f'<h3>The intact film, {n} real viewers</h3>' + film_score_html(fs)
@@ -656,7 +676,7 @@ def film_status(fm) -> dict:
         return {"text": "Face test: not scored yet.", "href": None}
     if fm["outcome"] == "NOT RUN":
         return {"text": f"The face test did not run: {fm['why']}. This station shows the edit it would have used.", "href": None}
-    return {"text": f"Face test: {fm['outcome']}.", "href": "#face-test"}
+    return {"text": f"Face test: {fm['outcome']}. Exploratory.", "href": "#face-test"}
 
 
 # ---- page -------------------------------------------------------------------------------------------------------------------------

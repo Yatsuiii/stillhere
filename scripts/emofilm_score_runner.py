@@ -9,7 +9,9 @@ the committed functions in stillhere/emofilm_score.py (and, through them, stillh
            pial and white) and averaged into Schaefer-400 parcels (AUD, LANG, VIS, and all 400 for the face map). Saved per run to
            CACHE (outside the repo): the raw parcel rows over the whole run, FD and the censoring mask, plus a manifest with every
            input's and cache file's SHA-256. Refuses (drops nothing, writes no manifest) naming every run with a constant or non-finite
-           AUD, LANG or VIS row (and, on the face path, any of the 400). No forecast is needed.
+           AUD, LANG or VIS row (and, on the face path, any of the 400), each by viewer and parcel; on the face path it also writes the
+           face test's UNINFORMATIVE with that reason (cloud ruling of Nov 1, 05:05 UTC, item 3), to be pushed at once, after which the
+           read guard opens intact mode (AUD, LANG, VIS). No forecast is needed.
   score    With the forecast kernel's output (pred_full.npz, pred_audio.npz, words.csv, tierD_bridge_forecast.json): refuses unless the
            forecast files exist, each forecast is one row per second (emofilm_score.load_pred), the words table passes
            emofilm_score.check_words and every cache file's SHA-256 equals the manifest's. Per viewer: scored volumes (no lag search, the
@@ -97,13 +99,17 @@ def face_test_state(rc_repo) -> dict:
 def read_guard(gate_json, rc_repo) -> dict:
     """Whether a BOLD file may be opened, on origin/main of RC_REPO (the private GitHub repo, after a fetch): EITHER the face test's
     NOT RUN with its reason (results/face_map.json) is there, OR gate 0 has passed and results/face_map_RC.json is there with the local
-    copy's blob hash. Returns {ok, mode ("not_run" or "face"), kind (when not ok: "gate", "absent", "fetch", "differs"), why, ...}."""
+    copy's blob hash. An UNINFORMATIVE face test on origin/main (a constant or non-finite parcel row after BOLD was opened; cloud ruling
+    of Nov 1, 05:05 UTC, item 3) opens it in intact mode: AUD, LANG and VIS only. Returns {ok, mode ("not_run", "intact" or "face"), kind
+    (when not ok: "gate", "absent", "fetch", "differs"), why, ...}."""
     f = fetch_origin(rc_repo)
     if f == "fetch":
         return {"ok": False, "kind": "fetch", "why": "git fetch of origin main failed"}
     fm = origin_json(rc_repo, FACE_REL) if f is None else None
     if fm and fm.get("outcome") == "NOT RUN" and str(fm.get("why") or "").strip():
         return {"ok": True, "mode": "not_run", "kind": None, "why": f"face test NOT RUN on origin/main: {fm['why']}"}
+    if fm and fm.get("outcome") == "UNINFORMATIVE" and str(fm.get("why") or "").strip():      # cloud ruling of Nov 1, 05:05 UTC, item 3
+        return {"ok": True, "mode": "intact", "kind": None, "why": f"face test UNINFORMATIVE on origin/main: {fm['why']}"}
     if not os.path.isfile(gate_json) or json.load(open(gate_json)).get("pass") is not True:
         return {"ok": False, "kind": "gate", "why": "gate 0 (collinearity) has not passed and no NOT RUN is on origin/main"}
     if not os.path.isfile(os.path.join(rc_repo, RC_REL)):
@@ -115,6 +121,29 @@ def read_guard(gate_json, rc_repo) -> dict:
         return {"ok": False, "kind": "differs", "why": f"the local {RC_REL} differs from origin/main's"}
     when = _git(rc_repo, "log", "-1", "--format=%cI", "origin/main", "--", RC_REL).stdout.strip()
     return {"ok": True, "mode": "face", "kind": None, "why": None, "rc_blob": remote.stdout.strip(), "rc_commit_utc": when}
+
+
+def write_uninformative(rc_repo, why, stage) -> dict:
+    """RC_REPO/results/face_map.json with outcome UNINFORMATIVE and the named reason (viewer, parcel), when prepare or score refuses on a
+    constant or non-finite parcel row after BOLD was opened (cloud ruling of Nov 1, 05:05 UTC, item 3). It is pushed at once; the read
+    guard then lets prepare score the intact film in intact mode (AUD, LANG, VIS). Never over a face test already closed on origin/main."""
+    st = face_test_state(rc_repo)
+    if st["closed"]:
+        raise SystemExit(f"refused: the face test is closed on origin/main ({st['outcome']}: {st['why']})")
+    res = {"label": FM.LABEL, "rule": "docs/rules/face_map_rule.md", "outcome": "UNINFORMATIVE", "why": why, "stage": stage,
+           "ruling": "cloud ruling of Nov 1, 05:05 UTC, item 3", "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    p = os.path.join(rc_repo, FACE_REL); os.makedirs(os.path.dirname(p), exist_ok=True); json.dump(res, open(p, "w"), indent=1)
+    return res
+
+
+def degenerate_named(rows: dict, names=None) -> str:
+    """'AUD 1 of 7 (row 3), ALL 2 of 400 (17Networks_LH_VisCent_ExStr_1, ...)': per set, the constant or non-finite rows, named."""
+    out = []
+    for k, idx in rows.items():
+        if len(idx[0]):
+            nm = [names[i] for i in idx[0]] if k == "ALL" and names else [f"row {i}" for i in idx[0]]
+            out.append(f"{k} {len(idx[0])} of {idx[1]} ({', '.join(nm)})")
+    return ", ".join(out)
 
 
 # ---- inputs -------------------------------------------------------------------------------------------------------------------
@@ -169,7 +198,8 @@ def mid_meshes():
 def parcel_index(atlas_dir) -> dict:
     lh, rh = (f"{atlas_dir}/{h}.Schaefer2018_400Parcels_17Networks_order.annot" for h in ("lh", "rh"))
     sets = H.parcel_sets(lh, rh); sets["VIS"] = E.visual_sets(lh, rh)
-    sets["ALL"] = FM.all_parcels(lh, rh)["vertices"]                          # all 400 parcels, for the face map (docs/rules/face_map_rule.md)
+    allp = FM.all_parcels(lh, rh)
+    sets["ALL"], sets["ALL_names"] = allp["vertices"], allp["names"]              # all 400 parcels, for the face map (docs/rules/face_map_rule.md)
     return sets
 
 
@@ -193,9 +223,10 @@ def prepare_run(img_path, motion_path, row: dict, runs: list, mriqc_fd_mean: flo
     raw = E.parcel_means(vert, {k: sets[k] for k in NETS})
     if "ALL" in sets:
         raw["ALL"] = E.parcel_means(vert, {"ALL": sets["ALL"]})["ALL"]           # the face map's series; the intact score reads NETS only
-    bad = {k: int(FM.degenerate_rows(raw[k]).sum()) for k in check if k in raw}
+    rows = {k: FM.degenerate_rows(raw[k]) for k in check if k in raw}
     return {"status": "prepared", "n_vols": n, "raw": raw, "fd": fd, "keep": keep, "fd_source": src, "mriqc_fd_mean": mriqc_fd_mean,
-            "degenerate": bad}
+            "degenerate": {k: int(v.sum()) for k, v in rows.items()},
+            "degenerate_rows": {k: (np.where(v)[0].tolist(), int(len(v))) for k, v in rows.items()}}
 
 
 def cmd_prepare(a):
@@ -223,12 +254,17 @@ def cmd_prepare(a):
                        mriqc_fd_mean=res["mriqc_fd_mean"], censored_frames=int((~res["keep"]).sum()),
                        parcels={k: int(v.shape[0]) for k, v in res["raw"].items()})
             if any(res["degenerate"].values()):
-                flat[f"{sub}_{ses}"] = ", ".join(f"{k} {c} of {len(res['raw'][k])}" for k, c in res["degenerate"].items() if c)
+                flat[f"{sub}_{ses}"] = degenerate_named(res["degenerate_rows"], sets.get("ALL_names"))
         man["runs"][f"{sub}_{ses}"] = ent
         print(f"{sub}_{ses}: {ent['status']} ({time.time() - t1:.0f} s)", flush=True)
     if flat:                                                             # refuse, never drop: no manifest, so no score
-        raise SystemExit(f"refused: {len(flat)} of {len(kept)} viewers have constant or non-finite parcel rows (nothing is dropped): "
-                         + "; ".join(f"{k}: {v}" for k, v in flat.items()))
+        msg = (f"{len(flat)} of {len(kept)} viewers have constant or non-finite parcel rows (nothing is dropped): "
+               + "; ".join(f"{k}: {v}" for k, v in flat.items()))
+        if guard["mode"] == "face":                                      # BOLD is open: the face test is UNINFORMATIVE (item 3)
+            write_uninformative(a.rc_repo, f"prepare: {msg}", "prepare")
+            raise SystemExit(f"refused: {msg}. The face test is UNINFORMATIVE: commit and push {FACE_REL} at once, then rerun prepare, "
+                             "which scores the intact film in intact mode (AUD, LANG, VIS)")
+        raise SystemExit(f"refused: {msg}")
     json.dump(man, open(f"{a.cache}/prepare_manifest.json", "w"), indent=1)
     prepared = [v for v in man["runs"].values() if v["status"] == "prepared"]
     print(f"prepared {len(prepared)} of {len(kept)} kept runs; dropped {len(kept) - len(prepared)}; fd sources "

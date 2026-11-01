@@ -81,11 +81,11 @@ Not a diagnosis or medical advice.
 | Planner v2 · 62 held-out requests | Asked 62 requests it had never seen, three times each, planner v2 wrongly accepted 3 of the 132 answers that should have been declines (2.3%), under the 5% bar set before the run. | 2.3% false accepts (3 of 132; exact 95% upper bound 6.5%) | Muse Spark 1.3; Spark Open missed this bar; the live v2.1 is not re-measured | False-accept bar met; first-answer validity missed (83.3%, bar 85%) |
 | Planner R4 · 62 new held-out requests | Planner R4 (rule committed Oct 31, 11:11 UTC), 62 new held-out requests, three repeats, Muse Spark 1.3: first-answer validity 100% with the new prompt against 87.1% with v2's (bar 85%). An improvement by the rule set before the run. | first-answer validity 100% vs 87.1%; decision accuracy 99.5% vs 95.2%; false accepts 0.8% vs 3.0%; decline-reason accuracy 99.2% vs 97.7%; rule-made declines 0% vs 2.2% | one prompt sentence about the analysis field, plus two clarifications, changed on development requests only and frozen before this run; plan calls only; the live v2.1 is not changed yet | Exploratory · requests committed before any prompt change |
 | Stimulus check · Voice Transcribe | Our first word-shuffled control kept only 16% of the story's words; Voice Transcribe caught it before it was used. | 16% of words heard (intact 99%) | LibriVox Alice chapter 1, 75 s | Caught before scanning, not used |
-| Film edit check · Tears of Steel · 62 frames per version | If the edit check fails, the film test does not run. | faces filled: no face seen in 62 of 62 (Spark Open) | controls cover 89% of face area; the 51 largest close-ups have none | Pending · Glimmer decides, Sat Oct 31 |
+| Film edit check · Tears of Steel · 62 frames per version | If the edit check fails, the film test does not run. | faces filled: no face seen in 62 of 62 (Glimmer, which decides; Spark Open also 62 of 62) | the control covers 89% of the face area TRIBE's video model sees; the 51 largest close-ups, and faces outside that view, have none | **Pass** · all four bars (Glimmer, Oct 31; run outside its chain slot, it reads only the frames) |
 | Order map go/no-go · 3 LibriVox Alice clips | The order map did not pass its own rule, so it is not shown. | 1 of 3 clips (bar: 3 of 3) | forecast only, no brain data | No-go · bar set before any forecast |
 | Story picker · Narratives and Le Petit Prince · 37 story families in 4 blocks | TRIBE's predicted response strength ranked the stories with listeners' language readouts (S1), and still did after word rate and the sound envelope were partialled out (S3). | S1 rho 0.54, p = 0.0007; S3 partial rho 0.63, p = 0.0005; S2 (a model-free yardstick from other listeners) rho 0.33, p = 0.031; S4 (each block's top third against all its stories) +0.31 z, 95% CI -0.07 to 0.58 | ranks only within a dataset, language and scanner; 41 of the 42 stories were used before the rule; without the development section, S1 rho 0.58 | **Pass** · S1 and S3 (co-primary) and S2, pre-registered (PREREG section 9); S4 did not pass; S3b <sup>6</sup> |
 | Story wall · the same stories · 33 counted story families | With zero same-clip controls, stock TRIBE v2's language readout followed the story each healthy listener group heard, more than other stories from the same dataset, on 29 of 33 story families not individually scored before this test (English and French; LPP sections counted once per language; 2 public datasets, 4 blocks, 1210 listeners, 2.7-55.6 minutes = 106-2222 TRs per story; wrong-label check 6 of 33). | 29 of 33 (bar: two-thirds); wrong-label check 6 of 33 = 18% | every story we scored stays on the wall, weak ones too; the wrong-label check is above its 7% limit | Bar met · descriptive, write-up only (wrong-label check above 7%) · pre-registered (D19) |
-| Film face test · Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read. | | runs only if the edit check passes | Pending |
+| Film face test · Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read. If the edit check fails or gate 0 stops it, it is NOT RUN; if the viewers' maps are not reliable (gate 1), it is UNINFORMATIVE. | | runs only if the edit check passes; the control covers 89% of the face area TRIBE's video model sees; the 51 largest close-ups, and faces outside that view, have none | Pending · Exploratory. Each outcome's line is fixed in `docs/captions.md` before the result |
 | Sedation case study · OpenNeuro ds003171 | No sedation stage line: two of the three co-primary bars did not pass. | language fell in 9 of 12 (needed 10) | a case study, not a headline | Pre-registered; exploratory variants in the [write-up](docs/writeup_sedation.md) |
 
 <sup>4</sup> A first run used the dataset README's 10-volume offset, which the files do not follow; it is kept in
@@ -178,7 +178,7 @@ numbers come from.
 | Intact vs the coarser scramble · the same story · 21 listeners | The same comparison against a coarser scramble did not pass. | HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735; did not reach p < 0.05 | Fail · the pre-registered secondary, the result of record |
 | Story picker · Narratives and Le Petit Prince · 37 story families in 4 blocks | TRIBE's predicted response strength ranked the stories with listeners' language readouts (S1), and still did after word rate and the sound envelope were partialled out (S3). | S1 rho 0.54, p = 0.0007; S3 partial rho 0.63, p = 0.0005; S2 (a model-free yardstick from other listeners) rho 0.33, p = 0.031; S4 (each block's top third against all its stories) +0.31 z, 95% CI -0.07 to 0.58; S4 did not pass | **Pass** · S1 and S3 (co-primary) and S2, pre-registered (PREREG section 9) <sup>3</sup> |
 | Story wall · the same stories · 33 counted story families | With zero same-clip controls, stock TRIBE v2's language readout followed the story each healthy listener group heard, more than other stories from the same dataset, on 29 of 33 story families not individually scored before this test (English and French; LPP sections counted once per language; 2 public datasets, 4 blocks, 1210 listeners, 2.7-55.6 minutes = 106-2222 TRs per story; wrong-label check 6 of 33). | 29 of 33 (bar: two-thirds); wrong-label check 6 of 33 = 18%, above its 7% limit | Bar met · descriptive, write-up only · pre-registered (D19) <sup>3</sup> |
-| Film face test · Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read. | | Pending |
+| Film face test · Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read. If the edit check fails or gate 0 stops it, it is NOT RUN; if the viewers' maps are not reliable (gate 1), it is UNINFORMATIVE. | | Pending · Exploratory. Each outcome's line is fixed in `docs/captions.md` before the result |
 
 <sup>1</sup> Held out; first measured Oct 22-23. LPP is one of TRIBE v2's own evaluation sets. TRIBE v2 was not trained on Le Petit
 Prince or Narratives; its authors used both as held-out test sets, scored on group averages (d'Ascoli et al. 2026, Table 1). Our tests
@@ -260,12 +260,14 @@ File: `results/conditions_manipulation_check.json`.
 
 | Version | Spark Open (Baseten) | Muse Glimmer 30B, which decides |
 |---|---|---|
-| Intact: a face seen | 54 of 62 | runs Sat Oct 31 |
-| Faces filled: no face seen | 62 of 62 | runs Sat Oct 31 |
-| Same-size control: a face seen | 51 of 62 | runs Sat Oct 31 |
+| Intact: a face seen | 54 of 62 | 58 of 62 (bar 80%) |
+| Faces filled: no face seen | 62 of 62 | 62 of 62 (bar 90%) |
+| Same-size control: a face seen | 51 of 62 | 50 of 62 (bar 80%) |
+| No face in SAM's masks: a face seen | 0 of 31 | 0 of 31 (bar: at most 3) |
 
-The same-size control patch covers 89% of face area; the 51 largest close-ups have none. If the edit check fails, the film test does
-not run. File: `results/edit_check_spark_open.json`.
+The same-size control patch covers 89% of the face area TRIBE's video model sees; the 51 largest close-ups, and faces outside
+that view, have none. If the edit check fails, the film test does
+not run. Glimmer passed all four bars (Oct 31, 05:15 to 06:41 UTC; two of its 217 answers stayed unparsed after the retry and count against the bars). Files: `results/edit_check_glimmer.json` · `results/edit_check_spark_open.json`.
 
 ### Order map go/no-go
 
@@ -323,8 +325,8 @@ What we learned about them:
   brains from a change in TRIBE's forecast, and the run order is not public, so it cannot be separated from an order or
   repeat-listening effect. The secondary comparison did not reach p < 0.05.
 - The private-mode planner (Spark Open) is over its 5% false-accept bar on both hosts; Planner v2.1 is not re-measured.
-- Close-up faces leave no room for an equal-area control: the 51 largest close-ups have none, so the controls cover 88.9% of in-view
-  face pixels.
+- Close-up faces leave no room for an equal-area control: the 51 largest close-ups have none, so the controls cover 88.9% of the
+  face pixels TRIBE's video model sees; faces outside that view have none.
 - Content notes are not a full review; listen before you use a story.
 - A 6 GB laptop GPU runs the live forecast, during set hours only (10:00-14:00 ET, Nov 4-9); outside them a saved forecast is shown
   when one exists.

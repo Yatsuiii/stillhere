@@ -1,0 +1,20 @@
+{
+ "label": "exploratory",
+ "vif_face": 1.1079554753309475,
+ "vif_max": 5.0,
+ "grid_points": 135,
+ "pass": true,
+ "outcome_if_failed": "NOT RUN",
+ "inputs_sha256": {
+  "edits": "bf54760ec038ae168516a02578e3bbdd664c1d1b035d4782715f6ac08132b233",
+  "regressors": "c79573ff5bd05824f9624acbfd9e658b9fbe1a6fae0f848c5e691fb5c54c65d2",
+  "words": "51cffb6b78cebbd07d1d9ca9fce1cf8850107d04423ef9d8c95b52018f2e6468"
+ },
+ "words": {
+  "n": 102,
+  "last_start_s": 137.437,
+  "segment_seconds": 190.0,
+  "max_shift_copies": 1,
+  "at_shift_s": 106.235
+ }
+}

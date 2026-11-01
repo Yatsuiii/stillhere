@@ -66,22 +66,37 @@ On-screen captions:
    - pass: "Edit check: Spark Open and Glimmer saw a face in {k_int} of {N} intact frames, in {k_rem} of {N} filled ones, and in
      {k_am} of {N} control frames."
    - fail: "The edit check failed ({detail}), so the film test did not run."
-4. Forecast against 28 real viewers. Length and caption follow the outcome (the test is scored once, at the logged onsets):
-   - PASS (also outside the visual network; long panel): "SAM filled the faces it masked; TRIBE forecast the change; that forecast lined
-     up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than for the
-     control."
-   - PASS carried by visual-network parcels (long panel): the PASS line, then "Most of the match comes from visual-network areas."
-   - FAIL, not face-specific (short panel): "TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}),
-     but no better than its forecast for the control: not specific to faces."
-   - FAIL (short panel): "TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces ({k} of
-     {N} viewers, p = {p}). We show it because we said we would."
-   - UNINFORMATIVE (short panel): "The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."
+4. Forecast against 28 real viewers. Length and caption follow the outcome (the test is scored once, at the logged onsets). Lines fixed
+   by the cloud ruling of Nov 1, 05:05 UTC (item 5), before the result; every result line starts "Exploratory." (face_map_rule.md:5).
+   {k}, {kstar}, {p} and {spin_p} are B1's (`results/face_map.json`: k_above_0, kstar, wilcoxon_p, spin_p); {k2}, {p2}, {spin_p2}
+   are B2's.
+   - Before the result (pending): "If the edit check fails or gate 0 stops it, it is NOT RUN; if the viewers' maps are not reliable
+     (gate 1), it is UNINFORMATIVE."
+   - PASS (also outside the visual network; long panel): "Exploratory. SAM filled the faces it masked; TRIBE forecast the change; that
+     forecast lined up with where {N} real viewers' brains tracked faces in the intact film ({k} of {N} viewers, p = {p}), and more than
+     for the control."
+   - PASS with the lead check failing (long panel): the PASS line, then the rule's words: "The match was carried by visual-network
+     parcels."
+   - FAIL, not face-specific (short panel): "Exploratory. TRIBE's forecast lined up with where {N} real viewers' brains tracked faces
+     ({k} of {N}), but not reliably more than its forecast for the control (B2: {k2} of {N}, p = {p2}, spin p = {spin_p2})."
+   - Beside B2 (PASS and FAIL, not face-specific; small print, descriptive): "Descriptive: both forecast maps, the control's especially,
+     are concentrated in the seconds around the 51 uncontrolled close-ups (61-67 s)."
+   - FAIL (short panel), naming the missed criterion (the Wilcoxon test, the viewer count, the spin test, or all three criteria) with all
+     three numbers: "Exploratory. TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces:
+     it missed {criterion} ({k} of {N} viewers above 0, {kstar} needed; Wilcoxon p = {p}; spin p = {spin_p}). We show it because we
+     said we would."
+   - UNINFORMATIVE (short panel): "Exploratory. The {N} viewers' own face maps did not agree with each other, so this film cannot test
+     the forecast." If a constant or non-finite parcel row stopped the score after the BOLD was opened: "Exploratory. The face test is
+     UNINFORMATIVE: {reason}." (the viewer and the parcel named).
    - NOT RUN (18 s; the edit and its check have already been shown, and the story beat leads the video): the intact film result,
      "On the intact film, the forecast was worth about {veq_film} real viewers, and at least {veq_film_lo}."; its row "What it had to
      beat: brightness, motion, sound envelope and word rate ({film_beat})."; then "The face test did not run: {reason}. It was set to
      run once, by rules written before any brain data was read." Reasons as logged, e.g. "edit not confirmed by Glimmer", "gate 0:
      VIF > 5", "GPU time ran out".
-   Small print on every film results slide: "Data TRIBE's authors never used: {N} real viewers of the intact film."
+   - The control, wherever its coverage is given: "The same-size patch covers 89% of the face area TRIBE's video model sees; the 51
+     largest close-ups, and faces outside that view, have none."
+   Small print on every film results slide (the page footer's words): "Emo-FilM is in neither TRIBE v2's training list nor its evaluation
+   list: {N} real viewers of the intact film."
 
 ## e. Close
 

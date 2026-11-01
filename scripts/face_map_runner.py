@@ -21,7 +21,8 @@ checks; the chain commits and pushes what it writes. Four commands:
            1 18:00 UTC (otherwise: run not-run, push it, then score the intact film alone). Reads R and C from face_map_RC.json only;
            the forecast's words.csv and pred_full.npz must be the ones gate 0 and maps hashed; cache hashes as prepared; per viewer
            the intact rule's scored volumes, exclusion and clean_full_then_crop on all 400 parcels; M_i (refused, nothing dropped, on
-           any constant or non-finite cleaned row or M_i); gate 1, B1, B2, the outcome; reports the descriptive and the stimulus checks
+           any constant or non-finite cleaned row or M_i, and then written UNINFORMATIVE with the viewers and parcels named, to be pushed
+           at once: cloud ruling of Nov 1, 05:05 UTC, item 3); gate 1, B1, B2, the outcome; reports the descriptive and the stimulus checks
            beside it. Writes RC_REPO/results/face_map.json (group results); per-viewer maps only to CACHE.
 The Emo-FilM download (pilot/emofilm/download_tos_runs.py) started Oct 29 05:45 UTC; it only downloads; nothing reads it before the
 read guard allows. Prints counts, outcomes, p values, hashes and timings only (never BOLD values or per-viewer maps).
@@ -285,8 +286,12 @@ def cmd_score(a):
         Ms[key] = FM.viewer_map(B, cl(FM.face_regressor(per_s["face"], ft)), [cl(regs[b]) for b in ("brightness", "motion", "envelope", "word_rate")])
     M = np.stack([Ms[k] for k in sorted(Ms)]); bad = np.stack([flat[k] for k in sorted(Ms)]) | ~np.isfinite(M)
     if bad.any():                                                       # refuse, never drop: one such row fails gate 1 for good
-        raise SystemExit(f"refused: {int(bad.any(1).sum())} of {len(M)} viewers have a constant or non-finite cleaned BOLD row or M_i, "
-                         f"in {int(bad.any(0).sum())} of {M.shape[1]} parcels; no viewer or parcel is dropped")
+        named = "; ".join(f"{k}: {', '.join(parcels['names'][j] for j in np.where(b)[0])}" for k, b in zip(sorted(Ms), bad) if b.any())
+        msg = (f"{int(bad.any(1).sum())} of {len(M)} viewers have a constant or non-finite cleaned BOLD row or M_i, in "
+               f"{int(bad.any(0).sum())} of {M.shape[1]} parcels; no viewer or parcel is dropped ({named})")
+        ER.write_uninformative(a.rc_repo, f"score: {msg}", "score")    # the face test is UNINFORMATIVE (cloud ruling of Nov 1, 05:05 UTC, item 3)
+        raise SystemExit(f"refused: {msg}. The face test is UNINFORMATIVE: commit and push {ER.FACE_REL} at once, then score the intact "
+                         "film with prepare in intact mode (AUD, LANG, VIS)")
     perms = FM.spin_perms(spin_centroids(parcels), parcels["hemi"])
     res = FM.evaluate(R, C, M, parcels, perms)
     S = np.asarray(parcels["tested"], bool); Mbar = M.mean(0); dsc = rc.get("descriptive", {})

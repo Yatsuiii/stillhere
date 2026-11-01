@@ -310,9 +310,18 @@ def test_score_refuses_a_constant_cleaned_row_and_drops_no_viewer(tmp_path, monk
     cache = Path(a.cache); f = cache / "sub-T03_ses-1.npz"; z = dict(np.load(f)); z["raw_ALL"][7] = 0.0; np.savez(f, **z)
     man = json.load(open(cache / "prepare_manifest.json")); man["runs"]["sub-T03_ses-1"]["cache_sha256"] = RN.sha(f)
     json.dump(man, open(cache / "prepare_manifest.json", "w"))
-    with pytest.raises(SystemExit, match="1 of 8 viewers.* 1 of 400 parcels"):
+    with pytest.raises(SystemExit, match="1 of 8 viewers.* 1 of 400 parcels.*UNINFORMATIVE: commit and push"):
         RN.cmd_score(a)
-    assert not (Path(a.rc_repo) / "results/face_map.json").exists() and not (cache / "face_maps_per_viewer.npz").exists()
+    assert not (cache / "face_maps_per_viewer.npz").exists()
+    fm = json.load(open(Path(a.rc_repo) / "results/face_map.json"))                 # cloud ruling of Nov 1, 05:05 UTC, item 3
+    names = FM.all_parcels(*(Path(a.atlas) / f"{h}.Schaefer2018_400Parcels_17Networks_order.annot" for h in ("lh", "rh")))["names"]
+    assert fm["outcome"] == "UNINFORMATIVE" and fm["stage"] == "score" and f"sub-T03_ses-1: {names[7]}" in fm["why"]
+    push(Path(a.rc_repo), "results/face_map.json")
+    g = RN.ER.read_guard(a.gate, a.rc_repo); assert g["ok"] and g["mode"] == "intact"      # prepare then scores AUD, LANG and VIS only
+    with pytest.raises(SystemExit, match="closed"):
+        RN.cmd_score(a)                                                                # never scored after it
+    with pytest.raises(SystemExit, match="closed"):
+        RN.ER.write_uninformative(a.rc_repo, "again", "score")
 
 
 def test_maps_after_the_cutoff_score_refuses_and_points_to_not_run(tmp_path, monkeypatch):

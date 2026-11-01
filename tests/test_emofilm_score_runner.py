@@ -89,13 +89,18 @@ def test_prepare_refuses_every_degenerate_viewer_and_checks_all_parcels_on_the_f
     monkeypatch.setattr(R, "parcel_index", lambda d: {**SETS, "ALL": [*SETS["AUD"], *SETS["LANG"], *SETS["VIS"], np.arange(60, 70)]})
     monkeypatch.setattr(R, "mid_meshes", lambda: None); monkeypatch.setattr(E, "project", project)
     a = argparse.Namespace(data=str(data), meta=str(meta), runs=str(rt), atlas="unused", cache=str(cache), gate="unused", rc_repo="unused")
-    for mode, match in (("face", "2 of 3 viewers.*sub-A_ses-1: ALL 1 of 7.*sub-B_ses-1: AUD 1 of 2, VIS 1 of 2, ALL 2 of 7"),
-                        ("not_run", "1 of 3 viewers.*sub-B_ses-1: AUD 1 of 2, VIS 1 of 2")):
+    written = []
+    monkeypatch.setattr(R, "write_uninformative", lambda repo, why, stage: written.append((why, stage)))
+    for mode, match in (("face", r"2 of 3 viewers.*sub-A_ses-1: ALL 1 of 7 \(row 6\).*sub-B_ses-1: AUD 1 of 2 \(row 1\), VIS 1 of 2 "
+                                 r"\(row 1\), ALL 2 of 7 \(row 1, row 5\).*UNINFORMATIVE: commit and push"),
+                        ("not_run", r"1 of 3 viewers.*sub-B_ses-1: AUD 1 of 2 \(row 1\), VIS 1 of 2 \(row 1\)$"),
+                        ("intact", r"1 of 3 viewers.*sub-B_ses-1: AUD 1 of 2 \(row 1\), VIS 1 of 2 \(row 1\)$")):
         monkeypatch.setattr(R, "read_guard", lambda g, r, mode=mode: {"ok": True, "mode": mode, "why": None})
         with pytest.raises(SystemExit, match=match) as e:
             R.cmd_prepare(a)
         assert not (cache / "prepare_manifest.json").exists() and (mode == "face" or "sub-A" not in str(e.value))
-    del bad["sub-B"]; R.cmd_prepare(a)                                       # not_run: sub-A's face-map-only parcel does not stop it
+    assert len(written) == 1 and written[0][1] == "prepare" and written[0][0].startswith("prepare: 2 of 3 viewers")   # face path only
+    del bad["sub-B"]; R.cmd_prepare(a)                                       # intact mode: sub-A's face-map-only parcel does not stop it
     assert [v["status"] for v in json.load(open(cache / "prepare_manifest.json"))["runs"].values()] == ["prepared"] * 3
 
 

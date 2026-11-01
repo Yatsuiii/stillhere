@@ -103,8 +103,8 @@ one that happened. On a d20 fail the notthefall scene leaves and the story wall 
 
 - 143.8-149.8 s, one reading per film ending:
   - PASS: "The forecast lined up with where these viewers' brains tracked faces." (11 words, 1.8 words/s)
-  - PASS_VISUAL: "It lined up; most of the match comes from visual-network areas." (11 words, 1.8 words/s)
-  - FAIL_NFS: "It lined up, but no better than its forecast for the control." (12 words, 2.0 words/s)
+  - PASS_VISUAL: "It lined up, carried by visual-network parcels." (7 words, 1.2 words/s)
+  - FAIL_NFS: "It lined up, but not reliably more than its forecast for the control." (13 words, 2.2 words/s)
   - FAIL: "It did not line up. We show it because we said we would." (13 words, 2.2 words/s)
   - UNINFORMATIVE: "The viewers' own face maps did not agree, so this film cannot test the forecast." (15 words, 2.5 words/s)
   - NOT_RUN: "The face test did not run; it was set to run once." (12 words, 2.0 words/s)

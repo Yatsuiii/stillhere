@@ -217,21 +217,38 @@ FILM = {"viewers": {"scored": 28}, "gauges": {"VISUAL": {"median_z": 1.5, "ci95"
         "isc": {"VISUAL": {"volunteer_equivalent": {"point_k": 3.6, "lower_k": 2.2, "claim_k": 2}}},
         "baselines": {"primary": ["VIS:brightness", "VIS:motion"], "VIS": {"brightness": {"verdict": "TRIBE beats"},
                                                                           "motion": {"verdict": "no difference shown"}}}}
-B1 = {"k_above_0": 21, "wilcoxon_p": 0.004}
-ENDINGS = {
-    "PASS": ("SAM filled the faces it masked; TRIBE forecast the change; that forecast lined up with where 28 real viewers' brains tracked "
-             "faces in the intact film (21 of 28 viewers, p = 0.004), and more than for the control."),
-    "FAIL not face-specific": ("TRIBE's forecast lined up with where 28 real viewers' brains tracked faces (21 of 28), but no better than "
-                               "its forecast for the control: not specific to faces."),
-    "FAIL": ("TRIBE's forecast of the filled faces did not line up with where 28 real viewers' brains tracked faces (21 of 28 viewers, "
-             "p = 0.004). We show it because we said we would."),
-    "UNINFORMATIVE": "The 28 viewers' own face maps did not agree with each other, so this film cannot test the forecast."}
+B1 = {"k_above_0": 21, "kstar": 19, "wilcoxon_p": 0.004, "spin_p": 0.012}
+B2 = {"k_above_0": 15, "kstar": 19, "wilcoxon_p": 0.21, "spin_p": 0.31}
+ENDINGS = {        # cloud ruling of Nov 1, 05:05 UTC, item 5: fixed before the result
+    "PASS": ("Exploratory. SAM filled the faces it masked; TRIBE forecast the change; that forecast lined up with where 28 real viewers' "
+             "brains tracked faces in the intact film (21 of 28 viewers, p = 0.004), and more than for the control."),
+    "FAIL not face-specific": ("Exploratory. TRIBE's forecast lined up with where 28 real viewers' brains tracked faces (21 of 28), but not "
+                               "reliably more than its forecast for the control (B2: 15 of 28, p = 0.21, spin p = 0.31)."),
+    "FAIL": ("Exploratory. TRIBE's forecast of the filled faces did not line up with where 28 real viewers' brains tracked faces: it missed "
+             "the spin test (21 of 28 viewers above 0, 19 needed; Wilcoxon p = 0.004; spin p = 0.12). We show it because we said we would."),
+    "UNINFORMATIVE": "Exploratory. The 28 viewers' own face maps did not agree with each other, so this film cannot test the forecast."}
 
 
 @pytest.mark.parametrize("outcome", list(ENDINGS))
 def test_every_face_map_ending(monkeypatch, outcome):
-    t = text(build_with(monkeypatch, {**NONE, "face_map": {"outcome": outcome, "viewers": 28, "B1": B1}}))
+    b1 = dict(B1, spin_p=0.12) if outcome == "FAIL" else B1
+    t = text(build_with(monkeypatch, {**NONE, "face_map": {"outcome": outcome, "viewers": 28, "B1": b1, "B2": B2}}))
     assert ENDINGS[outcome] in t and BP.FILM_FOOT.format(N=28) in t and "never used" not in t
+    assert (BP.FACE_B2_NOTE in t) == (outcome in ("PASS", "FAIL not face-specific")) and "no better than" not in t
+
+
+def test_fail_names_every_missed_criterion():
+    assert BP.failed_criteria({"k_above_0": 12, "kstar": 19, "wilcoxon_p": 0.2, "spin_p": 0.01}) == "the Wilcoxon test and the viewer count"
+    assert BP.failed_criteria({"k_above_0": 12, "kstar": 19, "wilcoxon_p": 0.2, "spin_p": 0.4}) == "all three criteria"
+
+
+def test_uninformative_names_its_reason_and_pending_says_what_stops_it(monkeypatch):
+    fm = {"outcome": "UNINFORMATIVE", "viewers": 28, "why": "a constant cleaned BOLD row (viewer sub-S03_ses-2, parcel 17)"}
+    t = text(build_with(monkeypatch, {**NONE, "face_map": fm}))
+    assert "Exploratory. The face test is UNINFORMATIVE: a constant cleaned BOLD row (viewer sub-S03_ses-2, parcel 17)." in t
+    t = text(build_with(monkeypatch, NONE))
+    assert ("If the edit check fails or gate 0 stops it, it is NOT RUN; if the viewers' maps are not reliable (gate 1), it is "
+            "UNINFORMATIVE.") in t
 
 
 def test_film_headline_never_says_hearing_beats_the_envelope(monkeypatch):
@@ -252,7 +269,8 @@ def test_ghost_lines_keep_the_draw_order():
 
 def test_pass_carried_by_visual_parcels_and_not_run_with_the_intact_film(monkeypatch):
     fm = {"outcome": "PASS", "viewers": 28, "B1": B1, "caption": "carried by visual-network parcels"}
-    assert ENDINGS["PASS"] + " Most of the match comes from visual-network areas." in text(build_with(monkeypatch, {**NONE, "face_map": fm}))
+    t = text(build_with(monkeypatch, {**NONE, "face_map": fm}))
+    assert ENDINGS["PASS"] + " The match was carried by visual-network parcels." in t and "Most of the match" not in t
     fm = {"outcome": "NOT RUN", "why": "edit not confirmed by Glimmer"}
     t = text(build_with(monkeypatch, {**NONE, "face_map": fm}))
     assert ("The face test did not run: edit not confirmed by Glimmer. It was set to run once, by rules written before any brain data "
@@ -334,7 +352,7 @@ def test_film_station_says_why_and_reads_the_face_test_slot():
     assert 'id="film-status"' in page
     assert BP.film_status(None) == {"text": "Face test: not scored yet.", "href": None}
     for o in ("PASS", "FAIL", "FAIL not face-specific", "UNINFORMATIVE"):
-        assert BP.film_status({"outcome": o}) == {"text": f"Face test: {o}.", "href": "#face-test"}
+        assert BP.film_status({"outcome": o}) == {"text": f"Face test: {o}. Exploratory.", "href": "#face-test"}
     assert BP.film_status({"outcome": "NOT RUN", "why": "gate 0 failed"}) == {
         "text": "The face test did not run: gate 0 failed. This station shows the edit it would have used.", "href": None}
     assert 'id="face-test"' in BP.film_result_html({"outcome": "NOT RUN", "why": "gate 0 failed"}, None)

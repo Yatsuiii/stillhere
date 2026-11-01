@@ -1,0 +1,13 @@
+{
+ "label": "exploratory",
+ "vif_face": 1.1209145348074632,
+ "vif_max": 5.0,
+ "grid_points": 135,
+ "pass": true,
+ "outcome_if_failed": "NOT RUN",
+ "inputs_sha256": {
+  "edits": "bf54760ec038ae168516a02578e3bbdd664c1d1b035d4782715f6ac08132b233",
+  "regressors": "c79573ff5bd05824f9624acbfd9e658b9fbe1a6fae0f848c5e691fb5c54c65d2",
+  "words": "663e8763ea1c5bc2fd06f0cf496bf7961573b18d6b32f3785330b45e0908e368"
+ }
+}

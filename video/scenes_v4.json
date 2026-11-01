@@ -673,7 +673,7 @@
     },
     {
      "kind": "small",
-     "text": "The same-size patch covers 89% of face area; the 51 largest close-ups have none."
+     "text": "The same-size patch covers 89% of the face area TRIBE's video model sees; the 51 largest close-ups, and faces outside that view, have none."
     }
    ]
   },
@@ -760,7 +760,7 @@
     },
     {
      "kind": "small",
-     "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+     "text": "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
     }
    ]
   },
@@ -880,7 +880,11 @@
      },
      {
       "kind": "small",
-      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+      "text": "Descriptive: both forecast maps, the control's especially, are concentrated in the seconds around the 51 uncontrolled close-ups (61-67 s)."
+     },
+     {
+      "kind": "small",
+      "text": "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
      }
     ],
     "PASS_VISUAL": [
@@ -899,11 +903,15 @@
      },
      {
       "kind": "text",
-      "text": "Most of the match comes from visual-network areas."
+      "text": "The match was carried by visual-network parcels."
      },
      {
       "kind": "small",
-      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+      "text": "Descriptive: both forecast maps, the control's especially, are concentrated in the seconds around the 51 uncontrolled close-ups (61-67 s)."
+     },
+     {
+      "kind": "small",
+      "text": "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
      }
     ],
     "FAIL_NFS": [
@@ -913,12 +921,20 @@
       "tone": "fail"
      },
      {
+      "kind": "tag",
+      "text": "Exploratory"
+     },
+     {
       "kind": "text",
-      "text": "TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}), but no better than its forecast for the control: not specific to faces."
+      "text": "TRIBE's forecast lined up with where {N} real viewers' brains tracked faces ({k} of {N}), but not reliably more than its forecast for the control (B2: {k2} of {N}, p = {p2}, spin p = {spin_p2})."
      },
      {
       "kind": "small",
-      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+      "text": "Descriptive: both forecast maps, the control's especially, are concentrated in the seconds around the 51 uncontrolled close-ups (61-67 s)."
+     },
+     {
+      "kind": "small",
+      "text": "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
      }
     ],
     "FAIL": [
@@ -928,12 +944,16 @@
       "tone": "fail"
      },
      {
+      "kind": "tag",
+      "text": "Exploratory"
+     },
+     {
       "kind": "text",
-      "text": "TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces ({k} of {N} viewers, p = {p}). We show it because we said we would."
+      "text": "TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces: it missed {criterion} ({k} of {N} viewers above 0, {kstar} needed; Wilcoxon p = {p}; spin p = {spin_p}). We show it because we said we would."
      },
      {
       "kind": "small",
-      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+      "text": "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
      }
     ],
     "UNINFORMATIVE": [
@@ -943,12 +963,16 @@
       "tone": "fail"
      },
      {
+      "kind": "tag",
+      "text": "Exploratory"
+     },
+     {
       "kind": "text",
       "text": "The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast."
      },
      {
       "kind": "small",
-      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+      "text": "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
      }
     ],
     "NOT_RUN": [
@@ -967,7 +991,7 @@
      },
      {
       "kind": "small",
-      "text": "Data TRIBE's authors never used: {N} real viewers of the intact film."
+      "text": "Emo-FilM is in neither TRIBE v2's training list nor its evaluation list: {N} real viewers of the intact film."
      }
     ]
    }
@@ -1225,8 +1249,8 @@
    "text": "{film_vo}",
    "variants": {
     "PASS": "The forecast lined up with where these viewers' brains tracked faces.",
-    "PASS_VISUAL": "It lined up; most of the match comes from visual-network areas.",
-    "FAIL_NFS": "It lined up, but no better than its forecast for the control.",
+    "PASS_VISUAL": "It lined up, carried by visual-network parcels.",
+    "FAIL_NFS": "It lined up, but not reliably more than its forecast for the control.",
     "FAIL": "It did not line up. We show it because we said we would.",
     "UNINFORMATIVE": "The viewers' own face maps did not agree, so this film cannot test the forecast.",
     "NOT_RUN": "The face test did not run; it was set to run once."

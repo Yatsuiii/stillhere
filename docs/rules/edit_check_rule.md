@@ -49,3 +49,8 @@ run in that slot, the face-map test is NOT RUN. Nothing here changes after a fra
 ## Sent
 
 Only Tears of Steel frames (Blender Foundation 2012, CC BY 3.0), each on the public-frame SHA-256 allowlist; nothing from ds003171.
+
+Dated note, Nov 1 2026 (cloud ruling of Nov 1, 05:05 UTC, item 1; the text above is unchanged): Glimmer ran at 05:15 UTC Oct 31, outside
+its chain slot; it reads only SAM frames and does not depend on the forecasts, so this is not "cannot run in that slot". Its record is
+`results/edit_check_glimmer.json`: all four bars pass (intact 58 of 62 yes, faces removed 62 of 62 no, area matched 50 of 62 yes, no-mask
+0 of 31 yes) on the frames MANIFEST fe3d936d....

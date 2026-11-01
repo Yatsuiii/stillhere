@@ -145,3 +145,35 @@ VisPeri, both hemispheres) is also above 0; otherwise the PASS is captioned "car
 ## Wording
 SAM edits the frames; Spark Open and Glimmer run the edit check. A result here is described only as TRIBE's forecast compared with
 viewers' brain responses, with its outcome word from the list above.
+
+## Dated notes, Nov 1 2026 (cloud ruling of Nov 1, 05:05 UTC, a resend of Oct 31, 23:10 UTC); the text above is unchanged
+
+All committed and pushed before `prepare` opens any Emo-FilM file.
+
+1. Glimmer ran at 05:15 UTC Oct 31, outside its chain slot; it reads only SAM frames and does not depend on the forecasts, so this is not
+   "cannot run in that slot". Its record is `results/edit_check_glimmer.json`: the four bars all pass (intact 58 of 62 yes, faces
+   removed 62 of 62 no, area matched 50 of 62 yes, no-mask 0 of 31 yes), on the frames MANIFEST fe3d936d.... Gate 0's record (stimulus
+   only, no BOLD) is `results/face_map_gate0.json`.
+2. d7bba3d's Oct 31 changes add refusals only. The intact scorer is therefore no longer byte-identical to Oct 29's, as "What it inherits"
+   says it runs, but it gives identical numbers on valid input: `docs/frozen_code_changes.md`, "Film forecasts: word table, stitching
+   and audit fixes", lists the hashes before and after (`stillhere/emofilm_score.py` e2b3297a... to ce7d5af6...,
+   `scripts/emofilm_score_runner.py` 30ef93ea... to 06b6c1b3..., `stillhere/face_map.py` 13b4a457... to e8f0122e...,
+   `scripts/face_map_runner.py` 2af1e653... to fc0acaa1...) and the independent review that found every number identical. The Saturday
+   chain was stopped by hand at 05:08 UTC Oct 31 and rerun by hand in its order, except Glimmer (item 1): the intact film forecast
+   (pushed 12:03, ended 13:54 UTC), its record check, gate 0, film-rem and film-am (pushed 13:54-13:55, ended 15:48 UTC), then `maps`
+   (R and C on origin/main at 17:32:58 UTC, 66e427f). Gate 0 was rerun on the corrected word table: VIF(face) 1.12 on the first table
+   (`results/face_map_gate0_first_word_table_discarded.json`, discarded with that table), then 1.11 (`results/face_map_gate0.json`, the
+   gate of record).
+3. Ruling: if `prepare` or `score` refuses on a constant or non-finite parcel row after any BOLD file is opened, the face test is
+   UNINFORMATIVE with the reason named (viewer and parcel), pushed at once; the intact film is then scored by `prepare` in intact mode
+   (AUD, LANG, VIS). Code, before any BOLD is read: both refusals name each viewer and parcel and write `results/face_map.json` with
+   outcome UNINFORMATIVE and that reason (`emofilm_score_runner.write_uninformative`); once it is on origin/main the read guard opens
+   intact mode, and the face test is closed (`docs/frozen_code_changes.md`, "Face test: UNINFORMATIVE on a constant parcel row").
+4. Checked before `prepare`, Nov 1, 05:05 UTC: the run table (`tos_run_table.json`) has SHA-256 3e7219b4..., as
+   `data/film_stim_v2/gate_inputs.sha256`, with exactly 28 kept runs (of 30 rows); `film_regressors.npz` is c79573ff...; film-rem's and
+   film-am's outputs, downloaded again from Kaggle, have `pred_full.npz` 5c0060ce... and 5b62c682..., `face_map_RC.json`'s "removed"
+   and "matched", so R and C are not swapped.
+5. Scoring: from a full clone (`git rev-parse --is-shallow-repository` prints false); `score` runs once and `results/face_map.json` is
+   pushed at once; `maps`, `score` and `not-run` are never rerun after any BOLD file is opened. If a refusal mentions the cutoff, scoring
+   stops and the message goes to the project thread; NOT RUN is never pushed on that basis (R and C reached origin/main at 17:32:58 UTC
+   Oct 31, before Sun Nov 1, 18:00 UTC). After scoring, the run list used (prepared, dropped and why) is committed beside the result.

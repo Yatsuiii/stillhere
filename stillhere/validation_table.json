@@ -1,7 +1,7 @@
 {
  "about": "What StillHere Pilot has checked against real public brain scans or manipulation checks. The planner rebuilds its enums from this table on every request; anything not listed here is declined. Public data only; the sedation case study (ds003171) is reported separately as frozen group statistics and never enters the planner.",
  "population": [
-  {"id": "healthy_adults", "evidence": "LPP (ds003643) English and French listeners; Narratives (ds002345); Emo-FilM (ds004892) viewers", "status": "validated"}
+  {"id": "healthy_adults", "evidence": "LPP (ds003643) English and French listeners; Narratives (ds002345)", "status": "validated"}
  ],
  "language": [
   {"id": "english", "evidence": "LPP English, held-out section 8 (recomputed with code built during the event; first measured Oct 22-23)", "status": "validated"},

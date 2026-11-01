@@ -199,7 +199,7 @@ def test_film_sentences_verbatim_and_neutral():
     assert all(v == [] for v in SC["film_ghost"]["variants"].values())
     for e, items in SC["film_stamp"]["variants"].items():
         tags = [i["text"] for i in items if i["kind"] == "tag"]
-        assert (tags == ["Exploratory"]) == e.startswith("PASS"), e
+        assert (tags == ["Exploratory"]) == (e != "NOT_RUN"), e          # every scored ending (cloud ruling of Nov 1, 05:05 UTC, item 5)
         assert any(i["kind"] == "stamp" and i["text"] == "PASS" for i in items) == e.startswith("PASS"), e
     titles = {i["title"] for st in SC["film_ghost"]["steps"] for i in st["items"] if i["kind"] == "filmghost"}
     assert titles == {"Visual areas: TRIBE forecast (gray), {N} viewers (colour), intact film"}
@@ -373,7 +373,7 @@ def test_numbers_match_their_results():
         assert f"{r[k][0]} of {r[k][1]}" in card
     f = json.loads((ROOT / "results/film_stimulus_checks.json").read_text())["checks"]["control_area_within_1pct"]
     film = all_text(SC["film_edit"])
-    assert f"{round(100 * f['in_view_face_px_with_control'])}% of face area" in film and f"the {f['no_control']} largest" in film
+    assert f"{round(100 * f['in_view_face_px_with_control'])}% of the face area TRIBE's video model sees" in film and f"the {f['no_control']} largest" in film
     m = json.loads((ROOT / "results/conditions_manipulation_check.json").read_text())["conditions"]["word_scramble"]
     bug = all_text(SC["build_bug"])
     assert f"{round(100 * float(m['recall']))}% of its words" in bug and f"{m['n_words_heard']} of its {m['n_words_reference']} words" in bug

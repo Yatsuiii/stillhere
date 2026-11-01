@@ -1,0 +1,2168 @@
+{
+ "label": "exploratory",
+ "rule": "docs/rules/edit_check_rule.md",
+ "model": "Muse Glimmer 30B (Q4_K_M + mmproj, Apache-2.0) on llama.cpp b11946, Kaggle 2x T4",
+ "decides": "yes (edit_check_rule.md: Glimmer decides)",
+ "kernel": "redlotusthepotus/stillhere-pilot-glimmer-editcheck (version 1)",
+ "pushed_utc": "2026-10-31T05:15:17Z",
+ "ended_utc": "2026-10-31T06:41:21Z",
+ "slot_note": "Glimmer ran at 05:15 UTC Oct 31, outside its chain slot; it reads only SAM frames and does not depend on the forecasts, so this is not 'cannot run in that slot' (cloud ruling of Nov 1, 05:05 UTC, item 1).",
+ "frames_manifest_sha256": "fe3d936dcddc6101fe8ef8739a2e4c1bfce9205ad74b137b8641f71c993ae615",
+ "frames_check": "the kernel asserts every attached frame's SHA-256 equals its MANIFEST.sha256 line before any frame is shown; the 217 frames answered are exactly the set in the committed frames.json (62 per version, bridge and new, and 31 no-mask)",
+ "bars": {
+  "intact_with_face_yes": {
+   "count": [
+    58,
+    62
+   ],
+   "share": 0.9355,
+   "bar": ">= 80% yes",
+   "pass": true
+  },
+  "faces_removed_no": {
+   "count": [
+    62,
+    62
+   ],
+   "share": 1.0,
+   "bar": ">= 90% no",
+   "pass": true
+  },
+  "area_matched_yes": {
+   "count": [
+    50,
+    62
+   ],
+   "share": 0.8065,
+   "bar": ">= 80% yes",
+   "pass": true
+  },
+  "no_mask_not_no": {
+   "count": [
+    0,
+    31
+   ],
+   "bar": "at most 3 yes (an unparsed answer or an error counts)",
+   "pass": true
+  }
+ },
+ "rates": {
+  "intact_with_face_yes": [
+   58,
+   62
+  ],
+  "faces_removed_no": [
+   62,
+   62
+  ],
+  "area_matched_yes": [
+   50,
+   62
+  ],
+  "no_mask_yes_or_unparsed": [
+   0,
+   31
+  ],
+  "by_set": {
+   "bridge": {
+    "intact": [
+     29,
+     0,
+     31
+    ],
+    "faces_removed": [
+     0,
+     31,
+     31
+    ],
+    "area_matched": [
+     28,
+     3,
+     31
+    ]
+   },
+   "new": {
+    "intact": [
+     29,
+     2,
+     31
+    ],
+    "faces_removed": [
+     0,
+     31,
+     31
+    ],
+    "area_matched": [
+     22,
+     9,
+     31
+    ]
+   }
+  },
+  "retried": 22,
+  "unparsed": 2,
+  "errors": 0,
+  "pass": {
+   "intact": true,
+   "faces_removed": true,
+   "area_matched": true,
+   "no_mask": true,
+   "all": true
+  }
+ },
+ "pass_all": true,
+ "n_retried": 22,
+ "kernel_output_sha256": "76470c9af79d762ebec21d2edb169e9a81c20c2b2d38eb03de8d2d5116568997",
+ "kernel_output": {
+  "llama_cpp_tag": "b11946",
+  "gpus": [
+   "GPU 0: Tesla T4 (UUID: GPU-ce8d9594-182e-719e-66b2-e0ac22401947)",
+   "GPU 1: Tesla T4 (UUID: GPU-609baca6-3dbb-b01b-ee7b-0f9011334804)"
+  ],
+  "driver": [
+   "580.178.04"
+  ],
+  "devices": [
+   "CUDA0: Tesla T4 (14911 MiB, 14806 MiB free)",
+   "CUDA1: Tesla T4 (14911 MiB, 14806 MiB free)"
+  ],
+  "binary": "prebuilt ubuntu-cuda-12.8",
+  "model_download_s": 85,
+  "hf_revision": "b44f1072cf75e918a1b82a3a17b45c4389b076e7",
+  "model_bytes": 16756683904,
+  "mmproj_bytes": 1400328928,
+  "load_s": 116.1,
+  "server_ok": true,
+  "counts": {
+   "intact_with_face_yes": [
+    58,
+    62
+   ],
+   "faces_removed_no": [
+    62,
+    62
+   ],
+   "area_matched_yes": [
+    50,
+    62
+   ],
+   "no_mask_not_no": [
+    0,
+    31
+   ]
+  },
+  "passed": {
+   "intact": true,
+   "faces_removed": true,
+   "area_matched": true,
+   "no_mask": true
+  },
+  "pass_all": true,
+  "answers": [
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t025.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 113,
+    "had_reasoning": true,
+    "s": 76.06
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t025.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 108,
+    "had_reasoning": true,
+    "s": 11.84
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t026.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 94,
+    "had_reasoning": true,
+    "s": 10.93
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t026.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 98,
+    "s": 53.06
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t027.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 109,
+    "s": 54.43
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t027.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 108,
+    "had_reasoning": true,
+    "s": 12.24
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t028.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 108,
+    "had_reasoning": true,
+    "s": 12.26
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t028.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 288,
+    "s": 67.43
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t029.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 99,
+    "had_reasoning": true,
+    "s": 11.69
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t029.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 115,
+    "had_reasoning": true,
+    "s": 12.8
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t030.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 236,
+    "had_reasoning": true,
+    "s": 21.7
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t030.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 108,
+    "had_reasoning": true,
+    "s": 12.35
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t031.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 107,
+    "had_reasoning": true,
+    "s": 12.24
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t031.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 470,
+    "had_reasoning": true,
+    "s": 38.88
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t032.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 151,
+    "s": 57.51
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t032.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 264,
+    "had_reasoning": true,
+    "s": 23.79
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t033.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 133,
+    "had_reasoning": true,
+    "s": 14.16
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t033.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 635,
+    "s": 93.04
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t034.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 226,
+    "s": 63.03
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t034.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 751,
+    "s": 101.61
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t035.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 121,
+    "had_reasoning": true,
+    "s": 13.34
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t035.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 121,
+    "had_reasoning": true,
+    "s": 13.31
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t036.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 108,
+    "had_reasoning": true,
+    "s": 12.35
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t036.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 156,
+    "s": 57.83
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t037.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 172,
+    "had_reasoning": true,
+    "s": 17.0
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t037.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 108,
+    "s": 54.33
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t038.0.jpg",
+    "answer": "unparsed",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 1024,
+    "s": 121.67
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t038.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 244,
+    "had_reasoning": true,
+    "s": 22.43
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t039.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 91,
+    "had_reasoning": true,
+    "s": 11.1
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t039.5.jpg",
+    "answer": "unparsed",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 1024,
+    "s": 121.88
+   },
+   {
+    "version": "intact",
+    "set": "bridge",
+    "name": "bridge_t040.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 511,
+    "s": 84.05
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t025.0.jpg",
+    "answer": "no",
+    "completion_tokens": 71,
+    "had_reasoning": true,
+    "s": 9.66
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t025.5.jpg",
+    "answer": "no",
+    "completion_tokens": 71,
+    "had_reasoning": true,
+    "s": 9.67
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t026.0.jpg",
+    "answer": "no",
+    "completion_tokens": 69,
+    "had_reasoning": true,
+    "s": 9.51
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t026.5.jpg",
+    "answer": "no",
+    "completion_tokens": 68,
+    "had_reasoning": true,
+    "s": 9.39
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t027.0.jpg",
+    "answer": "no",
+    "completion_tokens": 73,
+    "had_reasoning": true,
+    "s": 9.77
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t027.5.jpg",
+    "answer": "no",
+    "completion_tokens": 77,
+    "had_reasoning": true,
+    "s": 10.04
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t028.0.jpg",
+    "answer": "no",
+    "completion_tokens": 71,
+    "had_reasoning": true,
+    "s": 9.55
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t028.5.jpg",
+    "answer": "no",
+    "completion_tokens": 77,
+    "had_reasoning": true,
+    "s": 10.03
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t029.0.jpg",
+    "answer": "no",
+    "completion_tokens": 68,
+    "had_reasoning": true,
+    "s": 9.38
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t029.5.jpg",
+    "answer": "no",
+    "completion_tokens": 75,
+    "had_reasoning": true,
+    "s": 9.89
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t030.0.jpg",
+    "answer": "no",
+    "completion_tokens": 77,
+    "had_reasoning": true,
+    "s": 10.03
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t030.5.jpg",
+    "answer": "no",
+    "completion_tokens": 90,
+    "had_reasoning": true,
+    "s": 10.99
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t031.0.jpg",
+    "answer": "no",
+    "completion_tokens": 77,
+    "had_reasoning": true,
+    "s": 10.02
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t031.5.jpg",
+    "answer": "no",
+    "completion_tokens": 89,
+    "had_reasoning": true,
+    "s": 10.9
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t032.0.jpg",
+    "answer": "no",
+    "completion_tokens": 87,
+    "had_reasoning": true,
+    "s": 10.74
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t032.5.jpg",
+    "answer": "no",
+    "completion_tokens": 78,
+    "had_reasoning": true,
+    "s": 10.09
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t033.0.jpg",
+    "answer": "no",
+    "completion_tokens": 80,
+    "had_reasoning": true,
+    "s": 10.24
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t033.5.jpg",
+    "answer": "no",
+    "completion_tokens": 69,
+    "had_reasoning": true,
+    "s": 9.46
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t034.0.jpg",
+    "answer": "no",
+    "completion_tokens": 83,
+    "had_reasoning": true,
+    "s": 10.46
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t034.5.jpg",
+    "answer": "no",
+    "completion_tokens": 75,
+    "had_reasoning": true,
+    "s": 9.85
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t035.0.jpg",
+    "answer": "no",
+    "completion_tokens": 76,
+    "had_reasoning": true,
+    "s": 9.91
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t035.5.jpg",
+    "answer": "no",
+    "completion_tokens": 82,
+    "had_reasoning": true,
+    "s": 10.38
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t036.0.jpg",
+    "answer": "no",
+    "completion_tokens": 77,
+    "had_reasoning": true,
+    "s": 10.03
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t036.5.jpg",
+    "answer": "no",
+    "completion_tokens": 75,
+    "had_reasoning": true,
+    "s": 9.87
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t037.0.jpg",
+    "answer": "no",
+    "completion_tokens": 80,
+    "had_reasoning": true,
+    "s": 10.22
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t037.5.jpg",
+    "answer": "no",
+    "completion_tokens": 85,
+    "had_reasoning": true,
+    "s": 10.6
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t038.0.jpg",
+    "answer": "no",
+    "completion_tokens": 98,
+    "had_reasoning": true,
+    "s": 11.53
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t038.5.jpg",
+    "answer": "no",
+    "completion_tokens": 77,
+    "had_reasoning": true,
+    "s": 10.03
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t039.0.jpg",
+    "answer": "no",
+    "completion_tokens": 79,
+    "had_reasoning": true,
+    "s": 10.19
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t039.5.jpg",
+    "answer": "no",
+    "completion_tokens": 71,
+    "had_reasoning": true,
+    "s": 9.57
+   },
+   {
+    "version": "faces_removed",
+    "set": "bridge",
+    "name": "bridge_t040.0.jpg",
+    "answer": "no",
+    "completion_tokens": 73,
+    "had_reasoning": true,
+    "s": 9.76
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t025.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 186,
+    "had_reasoning": true,
+    "s": 18.04
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t025.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 175,
+    "had_reasoning": true,
+    "s": 17.17
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t026.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 191,
+    "had_reasoning": true,
+    "s": 18.44
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t026.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 272,
+    "had_reasoning": true,
+    "s": 24.33
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t027.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 304,
+    "had_reasoning": true,
+    "s": 26.64
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t027.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 322,
+    "s": 70.02
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t028.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 351,
+    "had_reasoning": true,
+    "s": 30.21
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t028.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 302,
+    "had_reasoning": true,
+    "s": 26.6
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t029.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 214,
+    "had_reasoning": true,
+    "s": 20.16
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t029.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 358,
+    "had_reasoning": true,
+    "s": 30.78
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t030.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 390,
+    "had_reasoning": true,
+    "s": 33.07
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t030.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 182,
+    "had_reasoning": true,
+    "s": 17.79
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t031.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 281,
+    "had_reasoning": true,
+    "s": 25.05
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t031.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 265,
+    "had_reasoning": true,
+    "s": 23.87
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t032.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 235,
+    "s": 63.72
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t032.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 279,
+    "had_reasoning": true,
+    "s": 24.91
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t033.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 227,
+    "s": 63.11
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t033.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 168,
+    "had_reasoning": true,
+    "s": 16.76
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t034.0.jpg",
+    "answer": "no",
+    "completion_tokens": 494,
+    "had_reasoning": true,
+    "s": 40.72
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t034.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 250,
+    "had_reasoning": true,
+    "s": 22.77
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t035.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 250,
+    "had_reasoning": true,
+    "s": 22.82
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t035.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 367,
+    "had_reasoning": true,
+    "s": 31.38
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t036.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 277,
+    "had_reasoning": true,
+    "s": 24.79
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t036.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 261,
+    "had_reasoning": true,
+    "s": 23.63
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t037.0.jpg",
+    "answer": "no",
+    "completion_tokens": 233,
+    "had_reasoning": true,
+    "s": 21.55
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t037.5.jpg",
+    "answer": "no",
+    "completion_tokens": 243,
+    "had_reasoning": true,
+    "s": 22.27
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t038.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 397,
+    "had_reasoning": true,
+    "s": 33.58
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t038.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 195,
+    "had_reasoning": true,
+    "s": 18.81
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t039.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 210,
+    "had_reasoning": true,
+    "s": 19.88
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t039.5.jpg",
+    "answer": "yes",
+    "completion_tokens": 255,
+    "had_reasoning": true,
+    "s": 23.12
+   },
+   {
+    "version": "area_matched",
+    "set": "bridge",
+    "name": "bridge_t040.0.jpg",
+    "answer": "yes",
+    "completion_tokens": 477,
+    "had_reasoning": true,
+    "s": 39.49
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f1237.jpg",
+    "answer": "yes",
+    "completion_tokens": 87,
+    "had_reasoning": true,
+    "s": 10.9
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f1301.jpg",
+    "answer": "yes",
+    "completion_tokens": 174,
+    "had_reasoning": true,
+    "s": 17.18
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f1405.jpg",
+    "answer": "no",
+    "completion_tokens": 107,
+    "had_reasoning": true,
+    "s": 12.29
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f1455.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 268,
+    "s": 66.04
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f1488.jpg",
+    "answer": "yes",
+    "completion_tokens": 365,
+    "had_reasoning": true,
+    "s": 31.25
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f1984.jpg",
+    "answer": "yes",
+    "completion_tokens": 349,
+    "had_reasoning": true,
+    "s": 30.08
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f1998.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 206,
+    "s": 61.63
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f2264.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 198,
+    "s": 60.99
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f2368.jpg",
+    "answer": "yes",
+    "completion_tokens": 394,
+    "had_reasoning": true,
+    "s": 33.39
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f2432.jpg",
+    "answer": "yes",
+    "completion_tokens": 229,
+    "had_reasoning": true,
+    "s": 21.28
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f2453.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 214,
+    "s": 62.15
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f2863.jpg",
+    "answer": "yes",
+    "completion_tokens": 424,
+    "had_reasoning": true,
+    "s": 35.57
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f2934.jpg",
+    "answer": "yes",
+    "completion_tokens": 226,
+    "had_reasoning": true,
+    "s": 20.96
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f2951.jpg",
+    "answer": "yes",
+    "completion_tokens": 176,
+    "had_reasoning": true,
+    "s": 17.34
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3014.jpg",
+    "answer": "yes",
+    "completion_tokens": 175,
+    "had_reasoning": true,
+    "s": 17.3
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3086.jpg",
+    "answer": "yes",
+    "completion_tokens": 226,
+    "had_reasoning": true,
+    "s": 21.01
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3113.jpg",
+    "answer": "yes",
+    "completion_tokens": 303,
+    "had_reasoning": true,
+    "s": 26.63
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3167.jpg",
+    "answer": "yes",
+    "completion_tokens": 154,
+    "had_reasoning": true,
+    "s": 15.8
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3216.jpg",
+    "answer": "yes",
+    "completion_tokens": 147,
+    "had_reasoning": true,
+    "s": 15.22
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3276.jpg",
+    "answer": "yes",
+    "completion_tokens": 255,
+    "had_reasoning": true,
+    "s": 23.09
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3337.jpg",
+    "answer": "yes",
+    "completion_tokens": 202,
+    "had_reasoning": true,
+    "s": 19.3
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3410.jpg",
+    "answer": "yes",
+    "completion_tokens": 242,
+    "had_reasoning": true,
+    "s": 22.13
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3459.jpg",
+    "answer": "yes",
+    "completion_tokens": 154,
+    "had_reasoning": true,
+    "s": 15.67
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3486.jpg",
+    "answer": "no",
+    "completion_tokens": 202,
+    "had_reasoning": true,
+    "s": 19.23
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3581.jpg",
+    "answer": "yes",
+    "completion_tokens": 374,
+    "had_reasoning": true,
+    "s": 31.85
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3631.jpg",
+    "answer": "yes",
+    "completion_tokens": 350,
+    "had_reasoning": true,
+    "s": 30.12
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3650.jpg",
+    "answer": "yes",
+    "completion_tokens": 242,
+    "had_reasoning": true,
+    "s": 22.19
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f3937.jpg",
+    "answer": "yes",
+    "completion_tokens": 348,
+    "had_reasoning": true,
+    "s": 29.97
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f4180.jpg",
+    "answer": "yes",
+    "completion_tokens": 199,
+    "had_reasoning": true,
+    "s": 19.09
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f4268.jpg",
+    "answer": "yes",
+    "completion_tokens": 70,
+    "had_reasoning": true,
+    "s": 9.56
+   },
+   {
+    "version": "intact",
+    "set": "new",
+    "name": "f4300.jpg",
+    "answer": "yes",
+    "completion_tokens": 94,
+    "had_reasoning": true,
+    "s": 11.36
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f1237.jpg",
+    "answer": "no",
+    "completion_tokens": 121,
+    "had_reasoning": true,
+    "s": 13.27
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f1301.jpg",
+    "answer": "no",
+    "completion_tokens": 128,
+    "had_reasoning": true,
+    "s": 13.81
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f1405.jpg",
+    "answer": "no",
+    "completion_tokens": 82,
+    "had_reasoning": true,
+    "s": 10.45
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f1455.jpg",
+    "answer": "no",
+    "completion_tokens": 83,
+    "had_reasoning": true,
+    "s": 10.49
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f1488.jpg",
+    "answer": "no",
+    "completion_tokens": 88,
+    "had_reasoning": true,
+    "s": 10.85
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f1984.jpg",
+    "answer": "no",
+    "completion_tokens": 82,
+    "had_reasoning": true,
+    "s": 10.39
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f1998.jpg",
+    "answer": "no",
+    "completion_tokens": 71,
+    "had_reasoning": true,
+    "s": 9.6
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f2264.jpg",
+    "answer": "no",
+    "completion_tokens": 104,
+    "had_reasoning": true,
+    "s": 12.04
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f2368.jpg",
+    "answer": "no",
+    "completion_tokens": 124,
+    "had_reasoning": true,
+    "s": 13.51
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f2432.jpg",
+    "answer": "no",
+    "completion_tokens": 112,
+    "had_reasoning": true,
+    "s": 12.59
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f2453.jpg",
+    "answer": "no",
+    "completion_tokens": 85,
+    "had_reasoning": true,
+    "s": 10.62
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f2863.jpg",
+    "answer": "no",
+    "completion_tokens": 85,
+    "had_reasoning": true,
+    "s": 10.59
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f2934.jpg",
+    "answer": "no",
+    "completion_tokens": 90,
+    "had_reasoning": true,
+    "s": 11.0
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f2951.jpg",
+    "answer": "no",
+    "completion_tokens": 79,
+    "had_reasoning": true,
+    "s": 10.22
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3014.jpg",
+    "answer": "no",
+    "completion_tokens": 92,
+    "had_reasoning": true,
+    "s": 11.14
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3086.jpg",
+    "answer": "no",
+    "completion_tokens": 95,
+    "had_reasoning": true,
+    "s": 11.36
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3113.jpg",
+    "answer": "no",
+    "completion_tokens": 88,
+    "had_reasoning": true,
+    "s": 10.83
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3167.jpg",
+    "answer": "no",
+    "completion_tokens": 86,
+    "had_reasoning": true,
+    "s": 10.71
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3216.jpg",
+    "answer": "no",
+    "completion_tokens": 81,
+    "had_reasoning": true,
+    "s": 10.33
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3276.jpg",
+    "answer": "no",
+    "completion_tokens": 88,
+    "had_reasoning": true,
+    "s": 10.82
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3337.jpg",
+    "answer": "no",
+    "completion_tokens": 108,
+    "had_reasoning": true,
+    "s": 12.32
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3410.jpg",
+    "answer": "no",
+    "completion_tokens": 78,
+    "had_reasoning": true,
+    "s": 10.12
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3459.jpg",
+    "answer": "no",
+    "completion_tokens": 83,
+    "had_reasoning": true,
+    "s": 10.49
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3486.jpg",
+    "answer": "no",
+    "completion_tokens": 120,
+    "had_reasoning": true,
+    "s": 13.18
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3581.jpg",
+    "answer": "no",
+    "completion_tokens": 74,
+    "had_reasoning": true,
+    "s": 9.8
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3631.jpg",
+    "answer": "no",
+    "completion_tokens": 84,
+    "had_reasoning": true,
+    "s": 10.58
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3650.jpg",
+    "answer": "no",
+    "completion_tokens": 83,
+    "had_reasoning": true,
+    "s": 10.48
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f3937.jpg",
+    "answer": "no",
+    "completion_tokens": 154,
+    "had_reasoning": true,
+    "s": 15.65
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f4180.jpg",
+    "answer": "no",
+    "completion_tokens": 115,
+    "had_reasoning": true,
+    "s": 12.84
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f4268.jpg",
+    "answer": "no",
+    "completion_tokens": 70,
+    "had_reasoning": true,
+    "s": 9.52
+   },
+   {
+    "version": "faces_removed",
+    "set": "new",
+    "name": "f4300.jpg",
+    "answer": "no",
+    "completion_tokens": 68,
+    "had_reasoning": true,
+    "s": 9.43
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f1237.jpg",
+    "answer": "yes",
+    "completion_tokens": 397,
+    "had_reasoning": true,
+    "s": 33.45
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f1301.jpg",
+    "answer": "no",
+    "completion_tokens": 268,
+    "had_reasoning": true,
+    "s": 24.08
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f1405.jpg",
+    "answer": "no",
+    "completion_tokens": 122,
+    "had_reasoning": true,
+    "s": 13.38
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f1455.jpg",
+    "answer": "yes",
+    "completion_tokens": 158,
+    "had_reasoning": true,
+    "s": 16.03
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f1488.jpg",
+    "answer": "yes",
+    "completion_tokens": 356,
+    "had_reasoning": true,
+    "s": 26.41
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f1984.jpg",
+    "answer": "no",
+    "completion_tokens": 279,
+    "had_reasoning": true,
+    "s": 25.03
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f1998.jpg",
+    "answer": "no",
+    "completion_tokens": 273,
+    "had_reasoning": true,
+    "s": 24.46
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f2264.jpg",
+    "answer": "yes",
+    "completion_tokens": 301,
+    "had_reasoning": true,
+    "s": 26.57
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f2368.jpg",
+    "answer": "no",
+    "completion_tokens": 431,
+    "had_reasoning": true,
+    "s": 32.02
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f2432.jpg",
+    "answer": "yes",
+    "completion_tokens": 211,
+    "had_reasoning": true,
+    "s": 15.89
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f2453.jpg",
+    "answer": "yes",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 214,
+    "s": 62.18
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f2863.jpg",
+    "answer": "no",
+    "completion_tokens": 232,
+    "had_reasoning": true,
+    "s": 21.44
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f2934.jpg",
+    "answer": "yes",
+    "completion_tokens": 223,
+    "had_reasoning": true,
+    "s": 20.76
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f2951.jpg",
+    "answer": "yes",
+    "completion_tokens": 298,
+    "had_reasoning": true,
+    "s": 26.37
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3014.jpg",
+    "answer": "yes",
+    "completion_tokens": 182,
+    "had_reasoning": true,
+    "s": 17.81
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3086.jpg",
+    "answer": "yes",
+    "completion_tokens": 143,
+    "had_reasoning": true,
+    "s": 14.93
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3113.jpg",
+    "answer": "yes",
+    "completion_tokens": 289,
+    "had_reasoning": true,
+    "s": 25.61
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3167.jpg",
+    "answer": "yes",
+    "completion_tokens": 235,
+    "had_reasoning": true,
+    "s": 21.71
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3216.jpg",
+    "answer": "yes",
+    "completion_tokens": 241,
+    "had_reasoning": true,
+    "s": 22.11
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3276.jpg",
+    "answer": "no",
+    "completion_tokens": 264,
+    "had_reasoning": true,
+    "s": 23.83
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3337.jpg",
+    "answer": "yes",
+    "completion_tokens": 186,
+    "had_reasoning": true,
+    "s": 18.03
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3410.jpg",
+    "answer": "yes",
+    "completion_tokens": 229,
+    "had_reasoning": true,
+    "s": 21.25
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3459.jpg",
+    "answer": "yes",
+    "completion_tokens": 281,
+    "had_reasoning": true,
+    "s": 25.03
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3486.jpg",
+    "answer": "no",
+    "completion_tokens": 203,
+    "had_reasoning": true,
+    "s": 15.24
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3581.jpg",
+    "answer": "yes",
+    "completion_tokens": 468,
+    "had_reasoning": true,
+    "s": 38.89
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3631.jpg",
+    "answer": "yes",
+    "completion_tokens": 252,
+    "had_reasoning": true,
+    "s": 23.0
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3650.jpg",
+    "answer": "yes",
+    "completion_tokens": 412,
+    "had_reasoning": true,
+    "s": 34.72
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f3937.jpg",
+    "answer": "no",
+    "completion_tokens": 192,
+    "had_reasoning": true,
+    "s": 18.53
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f4180.jpg",
+    "answer": "yes",
+    "completion_tokens": 77,
+    "had_reasoning": true,
+    "s": 10.06
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f4268.jpg",
+    "answer": "yes",
+    "completion_tokens": 280,
+    "had_reasoning": true,
+    "s": 24.95
+   },
+   {
+    "version": "area_matched",
+    "set": "new",
+    "name": "f4300.jpg",
+    "answer": "yes",
+    "completion_tokens": 208,
+    "had_reasoning": true,
+    "s": 19.73
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f0288.jpg",
+    "answer": "no",
+    "completion_tokens": 64,
+    "had_reasoning": true,
+    "s": 9.19
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f0333.jpg",
+    "answer": "no",
+    "completion_tokens": 87,
+    "had_reasoning": true,
+    "s": 10.84
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f0371.jpg",
+    "answer": "no",
+    "completion_tokens": 62,
+    "had_reasoning": true,
+    "s": 8.94
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f0469.jpg",
+    "answer": "no",
+    "completion_tokens": 65,
+    "had_reasoning": true,
+    "s": 9.2
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f0507.jpg",
+    "answer": "no",
+    "completion_tokens": 65,
+    "had_reasoning": true,
+    "s": 9.18
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f0569.jpg",
+    "answer": "no",
+    "completion_tokens": 52,
+    "had_reasoning": true,
+    "s": 8.23
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1002.jpg",
+    "answer": "no",
+    "completion_tokens": 79,
+    "had_reasoning": true,
+    "s": 10.24
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1078.jpg",
+    "answer": "no",
+    "completion_tokens": 128,
+    "had_reasoning": true,
+    "s": 13.8
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1152.jpg",
+    "answer": "no",
+    "completion_tokens": 97,
+    "had_reasoning": true,
+    "s": 11.54
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1369.jpg",
+    "answer": "no",
+    "completion_tokens": 175,
+    "had_reasoning": true,
+    "s": 17.25
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1377.jpg",
+    "answer": "no",
+    "completion_tokens": 84,
+    "had_reasoning": true,
+    "s": 10.58
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1613.jpg",
+    "answer": "no",
+    "completion_tokens": 65,
+    "had_reasoning": true,
+    "s": 9.18
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1665.jpg",
+    "answer": "no",
+    "completion_tokens": 65,
+    "had_reasoning": true,
+    "s": 9.18
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1780.jpg",
+    "answer": "no",
+    "completion_tokens": 129,
+    "had_reasoning": true,
+    "s": 13.87
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1808.jpg",
+    "answer": "no",
+    "completion_tokens": 89,
+    "had_reasoning": true,
+    "s": 10.93
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1891.jpg",
+    "answer": "no",
+    "completion_tokens": 100,
+    "had_reasoning": true,
+    "s": 11.7
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f1962.jpg",
+    "answer": "no",
+    "completion_tokens": 270,
+    "had_reasoning": true,
+    "s": 24.16
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f2052.jpg",
+    "answer": "no",
+    "completion_tokens": 149,
+    "had_reasoning": true,
+    "s": 15.33
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f2135.jpg",
+    "answer": "no",
+    "completion_tokens": 98,
+    "had_reasoning": true,
+    "s": 11.61
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f2187.jpg",
+    "answer": "no",
+    "completion_tokens": 63,
+    "had_reasoning": true,
+    "s": 9.07
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f2463.jpg",
+    "answer": "no",
+    "completion_tokens": 68,
+    "had_reasoning": true,
+    "s": 9.41
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f2471.jpg",
+    "answer": "no",
+    "completion_tokens": 115,
+    "had_reasoning": true,
+    "s": 12.79
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f2583.jpg",
+    "answer": "no",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 87,
+    "s": 52.67
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f2598.jpg",
+    "answer": "no",
+    "completion_tokens": 135,
+    "had_reasoning": true,
+    "s": 14.33
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f2673.jpg",
+    "answer": "no",
+    "completion_tokens": 130,
+    "had_reasoning": true,
+    "s": 13.95
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f2719.jpg",
+    "answer": "no",
+    "completion_tokens": 512,
+    "had_reasoning": true,
+    "first_answer": "unparsed",
+    "retry_completion_tokens": 86,
+    "s": 52.6
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f2798.jpg",
+    "answer": "no",
+    "completion_tokens": 119,
+    "had_reasoning": true,
+    "s": 13.16
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f3760.jpg",
+    "answer": "no",
+    "completion_tokens": 104,
+    "had_reasoning": true,
+    "s": 12.06
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f3817.jpg",
+    "answer": "no",
+    "completion_tokens": 44,
+    "had_reasoning": true,
+    "s": 7.62
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f3851.jpg",
+    "answer": "no",
+    "completion_tokens": 46,
+    "had_reasoning": true,
+    "s": 7.76
+   },
+   {
+    "version": "intact",
+    "set": "no_mask",
+    "name": "f4120.jpg",
+    "answer": "no",
+    "completion_tokens": 127,
+    "had_reasoning": true,
+    "s": 13.69
+   }
+  ],
+  "n_retried": 22,
+  "s_per_frame_median": 15.24,
+  "vram_peak_gb": {
+   "0": 9.51,
+   "1": 8.09
+  },
+  "kernel_seconds": 5120
+ }
+}
