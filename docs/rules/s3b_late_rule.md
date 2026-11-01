@@ -147,3 +147,11 @@ Dated note, Nov 1 2026 (cloud review of Nov 1, 06:05 UTC, items 11-16; the text 
   harness could not compare holds an error and no reference hash, and is now refused with that error named.
 - Rechecked after the changes: the scored approximate controls still give rho 0.5610, one-sided p 0.0012, 37 families in 4 blocks, exactly;
   39 synthetic tests pass.
+
+Dated note, Nov 1 2026 (cloud ruling of Nov 1, 08:45 UTC, item 1): run 1 of parts 1 and 2 (started 04:28 and about 04:34 UTC) was stopped
+by hand at about 08:35 UTC and both runtimes deleted, with no output kept: no forecast had been made and no gate reached (part 1 had 10
+of 15 clips' feature stages done, part 2 had 6 of 20). Why: Yatsu travels from 11:30 UTC with the laptop, Colab Pro stops when its tab
+closes, and neither part could finish before then. Part 3 had not started (two GPU sessions at a time). About 18 Colab units were used.
+The cap rises from 45 to 60 Colab units over all S3b notebooks, a hard cap. The rerun of all three parts, from about 03:30 UTC Nov 2, is
+each part's first complete run under 7(e); the stopped runs are listed in the control pins commit's run list. The cutoff stays Mon Nov 2,
+18:00 UTC; anything not done by then is "pre-registered, not run" with the reason.
