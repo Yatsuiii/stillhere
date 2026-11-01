@@ -278,7 +278,14 @@ def test_lines_are_the_rules_words():
 
 
 # ---- refusals ----------------------------------------------------------------------------------------------------------------------
+def unpinned(monkeypatch, mod):
+    """The state before the pins commit (354cab7 filled them)."""
+    for k, v in (("STIM_PINS", {}), ("WORD_PINS", {}), ("SURPRISAL_PIN", ""), ("FORECAST_PINS", {}), ("RECORD_PINS", {}), ("WHISPERX", "")):
+        monkeypatch.setattr(mod, k, v)
+
+
 def test_download_and_scoring_refuse_before_the_pins(tmp_path, monkeypatch):
+    unpinned(monkeypatch, R2)
     with pytest.raises(SystemExit, match="not pinned yet"):
         R2.download(str(tmp_path))
     monkeypatch.setattr(R2, "FORECAST_READ", "section8")

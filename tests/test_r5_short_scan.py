@@ -80,7 +80,9 @@ def test_planted_effect_passes_and_no_effect_does_not():
     assert R5.line(g0).endswith("We show it because we said we would.")
 
 
-def test_inputs_refuse_until_r2s_pins_are_filled(tmp_path):
+def test_inputs_refuse_until_r2s_pins_are_filled(tmp_path, monkeypatch):
+    for k, v in (("STIM_PINS", {}), ("WORD_PINS", {}), ("FORECAST_PINS", {})):     # the state before R2's pins commit (354cab7)
+        monkeypatch.setattr(R2, k, v)
     with pytest.raises(SystemExit, match="not filled"):
         R5.check_inputs(str(tmp_path))
 
