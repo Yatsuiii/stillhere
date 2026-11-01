@@ -64,3 +64,9 @@ volunteers, and R5 says nothing about anyone who cannot respond.
 This rule; the scorer and its synthetic tests (`scripts/r5_short_scan.py`, `tests/test_r5_short_scan.py`); R2's forecasts and pins
 commit (R5 reads R2's pinned stock forecasts and word tables); the download; one scoring run with R2's; the results commit. Same cutoff
 as R2: on origin/main by Mon Nov 2, 12:00 UTC, or "R5: rule committed, not run".
+
+Dated note, Nov 1 2026 (cloud review of Nov 1, 07:15 UTC, item 3; the text above is unchanged): R5 was added at about 05:50 UTC, after
+the face test's result (pushed 05:32 UTC) and before any Paranoia brain data was downloaded or opened. "Whose brain data nobody here has
+seen" is as R2's disclosures say (`docs/rules/r2_paranoia_rule.md`, sections 2 and 10): an earlier agent read the raw files' AFNI header
+statistics, and the data check fetched the first 64 KB of each fsaverage5 GIFTI, which held encoded data never decoded; no brain value
+was read.
