@@ -10,8 +10,9 @@ alice_heldout.py at TR 1 s (tests/test_r2_paranoia.py, synthetic data only).
 
 Timing (rule section 5): run r's volume j is at scan time j s and story time j - 2 s; TRIBE's 5 s offset is unchanged; regressors are
 made at 1 Hz and read at story time j - 2 - L. The forecast read is FORECAST_READ (below): rule section 5 reads "at lag L volume j reads
-story time j - 2 - 5 - L s of run r's forecast", while section 8 and Alice move only the regressors with L. Scoring refuses until a
-commit sets it.
+story time j - 2 - 5 - L s of run r's forecast", while section 8 and Alice move only the regressors with L. Set to "section8" by the rule's
+dated clarification of Nov 1 (Yatsu's decision, about 05:55 UTC, before any Paranoia brain data was downloaded): L moves only the
+word-rate regressor and its derivative; every forecast is read at story time j - 2 - 5 s.
 
 Steps, in the rule's order:
   surprisal  GPT-2 small surprisal of each story's word table (alice_heldout.gpt2_surprisal, p1/surprisal8.py's method)
@@ -54,7 +55,7 @@ LAG_GRID = np.arange(-4, 1.01, 0.25)              # heldout.own_best_lag's grid
 READS = {"section8": "every forecast read at story time j - 2 - 5 s; the lag moves only the regressors (section 8 and Alice)",
          "lagged": "rule section 5 as written: a gauge at lag L reads LANGUAGE's forecasts at story time j - 2 - 5 - L s; HEARING's "
                    "audio-only forecast at lag 0 (section 6); M1's controls at lag 0 (section 8's M1 has no lag)"}
-FORECAST_READ = None   # "section8" or "lagged" (READS); set by a commit before scoring
+FORECAST_READ = "section8"   # rule r2_paranoia_rule.md, dated clarification of Nov 1 (Yatsu, about 05:55 UTC, no Paranoia data downloaded)
 
 # Filled by the forecasts' commit (rule order: forecasts, then a commit with these SHA-256 and nothing else, then the download)
 STIM_PINS = {}         # story -> SHA-256 of stimuli/<story>_audio.wav

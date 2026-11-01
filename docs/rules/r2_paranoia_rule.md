@@ -122,3 +122,30 @@ No other line describes this result. Not a diagnosis or medical advice.
 ## 8. Cutoff
 
 On origin/main by Mon Nov 2, 12:00 UTC, or the page and README list "rule committed, not run".
+
+## 9. Dated amendment and clarification, Nov 1 2026 (Yatsu's decisions, before any Paranoia brain data is downloaded); sections 1-8 unchanged
+
+Clarification, the forecast read (Yatsu, about 05:55 UTC). Section 5's sentence "at lag L volume j reads story time j - 2 - 5 - L s of run
+r's forecast" is read as describing the regressors: the lag L moves only the word-rate regressor and its derivative, and every forecast is
+read at story time j - 2 - 5 s. Reason: section 1 says this rule inherits section 8's gauges and Alice's template and lists every
+difference, and it lists none for the forecast read; Alice, section 8 and the development scripts (`r2/harness_dev/`, dev_grid's best
+forecast shift 0) all read it this way. `scripts/r2_paranoia.py` sets FORECAST_READ = "section8".
+
+Amendment, where the steps run (section 3's "on the laptop (RTX 4050) with the Alice placement" and the order's "the download on Colab"):
+- Speech-to-text. As tribev2 af58661 ships it (`uvx whisperx`, large-v3, float16, batch 16, the English align model), it runs out of GPU
+  memory on the laptop's 6 GB GPU for a full story, even with the GPU otherwise idle (three tries 05:12-05:13 UTC, one at 05:19, and the
+  bare command at about 05:21, out of memory after 21 s). It ran instead on a Kaggle T4 (16 GB): the kernel stillhere-r2-asr
+  (`r2/kaggle_asr/`, code 61b891d0...), tribev2's own `ExtractWordsFromAudio._get_transcript_from_audio`, unchanged, each table written
+  as the transform writes it; whisperx 3.8.6 (uvx's pick, recorded; the same version the laptop's cache holds). Words: 1,348, 1,215 and
+  859 (`r2/kaggle_asr/r2_asr.json`, table SHA-256 1a98288a..., d3d07e7b..., db996815...). These are the stories' word tables.
+- Stock forecasts. On the laptop, the full stage of story 1 ran out of RAM (the 7 GB cap set so the browser holding the Colab runs is never
+  stopped; 05:51 UTC) and the laptop stages were stopped (Yatsu, 05:52 UTC). The nine stock forecasts run on Kaggle T4s instead, in two
+  kernels (`r2/kaggle_forecast/`): stillhere-r2-forecast-a (audio-only and full, story1-3) and stillhere-r2-forecast-b (shuffled,
+  story1-3, after part A). The stage code is `r2/run_r2_forecast.py`'s for a stock stage, its check functions embedded byte for byte;
+  tribe_common as the D22 kernels ran it (build_events, load_model, apply_weights('stock') with the checkpoint pin, stitched_predict); the
+  film kernels' package lock and Hugging Face pins. Placement: every model on the T4 (the text lane through accelerate), instead of the
+  Alice placement (sound extractor and brain model on the CPU, Llama on a 3 GiB GPU budget); the features and the model are the same.
+  Within a story the stages share one stim.wav path, so the sound features are computed once (part B loads part A's). The laptop's one
+  finished stage (stock_story1_audio) is not used: all nine come from the same route.
+- Fine-tuned forecasts: pending Yatsu's decision. The fine-tuned weights stay local, so that line runs on the laptop or not at all.
+- Scoring: on Kaggle CPU instead of Colab (the download and one scoring run in the same kernel).

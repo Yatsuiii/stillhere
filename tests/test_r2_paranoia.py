@@ -141,8 +141,9 @@ def test_window_ends_at_the_last_volume_every_forecast_covers():
     assert R2.last_volume({k: {n: A[:, :300] for n, A in v.items()} for k, v in pp.items()}, 300) == 299
 
 
-def test_forecast_read_must_be_set_before_scoring(monkeypatch):
-    assert R2.FORECAST_READ is None
+def test_forecast_read_is_section8_and_refuses_when_unset(monkeypatch):
+    assert R2.FORECAST_READ == "section8" and R2.fshift(-1.25) == 0.0            # the rule's dated clarification of Nov 1
+    monkeypatch.setattr(R2, "FORECAST_READ", None)
     with pytest.raises(SystemExit, match="rule section 5 and section 8's practice differ"):
         R2.fshift(-1.25)
     monkeypatch.setattr(R2, "FORECAST_READ", "section8"); assert R2.fshift(-1.25) == 0.0
