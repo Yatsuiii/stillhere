@@ -173,7 +173,7 @@ def hero_svg(ghost: dict, brain: bytes) -> str:
          f'B: {ghost["title"]}.">', f'<rect width="{W}" height="{H}" fill="{BG}"/>', crop_marks(W, H),
          T(700, 46, 15, EPIGRAPH, f'{SERIF} font-style="italic" fill="{MUTE}" text-anchor="middle"'),
          T(70, 176, 82, "STILLHERE", f'{SERIF} font-style="italic" font-weight="700" letter-spacing="7" fill="none" stroke="{INK}" stroke-width="1.6"'),
-         T(74, 228, 19, "PILOT THE STORY BEFORE BOOKING THE SCANNER", f'{SERIF} letter-spacing="3.2" fill="{INK}"'),
+         T(74, 228, 19, "A HEALTHY REFERENCE FOR ANY NEW STORY", f'{SERIF} letter-spacing="3.2" fill="{INK}"'),
          T(74, 268, 17, "Plan a listening study, build and check the stimulus,", f'{SERIF} font-style="italic" fill="{MUTE}"'),
          T(74, 296, 17, "forecast the brain response, then see how forecasts did on real scans", f'{SERIF} font-style="italic" fill="{MUTE}"')]
     key = (("STORY", f'<path fill="none" stroke="{INK}" stroke-width="1.5" d="M-16,0 q4,-8 8,0 t8,0 t8,0 t8,0"/>', "LibriVox · public"),

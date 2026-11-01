@@ -4,7 +4,7 @@
 
 # StillHere
 
-### Pilot the story before booking the scanner
+### A healthy-brain reference for any new story, before anyone is scanned
 
 [![tests](https://github.com/Yatsuiii/stillhere/actions/workflows/tests.yml/badge.svg)](https://github.com/Yatsuiii/stillhere/actions/workflows/tests.yml)
 [![licence: MIT](https://img.shields.io/badge/licence-MIT-lightgrey.svg)](LICENSE)
@@ -12,8 +12,9 @@
 [![forecast card](https://img.shields.io/badge/forecast%20card-TRIBE%20v2-lightgrey.svg)](docs/MODEL_CARD.md)
 
 > Labs study people who can't respond after brain injury by playing them stories in the scanner. But every new story needs its own
-> 12-15 healthy volunteers scanned first, in that language. For a new story, StillHere gives labs a first reading with zero volunteer
-> scans, measured against each listener's own brain. It has been tested only in healthy volunteers.
+> 12-15 healthy volunteers scanned first, in that language. So a story in the person's own language, or read by someone they know,
+> usually cannot be used. For a new story, StillHere gives labs a first reading with zero volunteer scans, measured against each
+> listener's own brain. It has been tested only in healthy volunteers.
 
 StillHere is a research tool for brain-imaging labs. It plans a listening study from a tested menu, builds and checks the stimulus
 before anyone is scanned, and forecasts the healthy-adult brain response with Meta's TRIBE v2. On a held-out audiobook, the forecast
@@ -53,7 +54,7 @@ work.
 **Can a brain-response forecast give a lab its first healthy reference for a new story, before any volunteer is scanned, and how far
 can it be trusted?**
 
-**StillHere Pilot lets a lab pilot the story before booking the scanner.** A researcher types the study they want; Muse Spark 1.3
+**StillHere gives a lab a healthy-brain reference for a new story, before anyone is scanned.** A researcher types the study they want; Muse Spark 1.3
 turns it into a plan from a tested menu, or declines with the reason. StillHere builds the conditions, and Muse Voice Transcribe reads
 every one back before anyone is scanned. TRIBE v2 forecasts the brain response, live on a laptop. Gray is the forecast; colour is
 real listeners: on a held-out audiobook, the forecast was worth about 5 real volunteers, and at least 2.
