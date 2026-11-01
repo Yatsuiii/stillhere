@@ -11,15 +11,33 @@
 [![pre-registered: D0-D27](https://img.shields.io/badge/pre--registered-D0--D27-lightgrey.svg)](PREREG.md)
 [![forecast card](https://img.shields.io/badge/forecast%20card-TRIBE%20v2-lightgrey.svg)](docs/MODEL_CARD.md)
 
-> Labs study people who can't respond after brain injury by playing them stories in the scanner. But every new story needs its own
-> 12-15 healthy volunteers scanned first, in that language. So a story in the person's own language, or read by someone they know,
-> usually cannot be used. For a new story, StillHere gives labs a first reading with zero volunteer scans, measured against each
-> listener's own brain. It has been tested only in healthy volunteers.
+> Two kinds of brain scan rest on a person simply listening to a story.
+>
+> **Before epilepsy or tumour surgery**, surgeons map where language lives so they don't cut it. A child too young for the usual
+> tasks, or a patient whose lesion gets in the way, can listen to a story instead.
+>
+> **After a severe brain injury**, a person who cannot respond hears a story while their brain is compared with healthy brains hearing
+> the same recording. One in four people who could not follow commands at the bedside showed command-following brain activity on fMRI
+> or EEG (Bodien et al., NEJM 2024).
+>
+> Both scans need two things: **a story that drives the language areas hard enough for a short scan**, and **a healthy reference for
+> that exact recording**, which still means scanning a dozen healthy volunteers first. So a story in the person's own language, or read
+> by someone they know, usually cannot be used. AI can make that recording in seconds; the healthy reference is what's missing.
+>
+> **StillHere forecasts both before anyone is scanned**, with Meta's TRIBE v2, live on a laptop. It has been tested only in healthy
+> volunteers.
 
-StillHere is a research tool for brain-imaging labs. It plans a listening study from a tested menu, builds and checks the stimulus
-before anyone is scanned, and forecasts the healthy-adult brain response with Meta's TRIBE v2. On a held-out audiobook, the forecast
-was worth **about 5 real volunteers, and at least 2** (49 listeners), and its pre-registered intact-versus-shuffled test **passed on
-22 real listeners** (p = 0.00516).
+What it has shown, in healthy listeners and public scans, each by a rule committed before the brain data was read:
+- **Which stories drive language areas harder:** across 37 story families, TRIBE's predicted response strength ranked the stories the
+  way listeners' language areas responded (rho 0.54, p = 0.0007), and still did with word rate and loudness controlled (rho 0.63,
+  p = 0.0005).
+- **A healthy reference from a forecast:** on a held-out audiobook, the forecast was worth **about 5 real volunteers, and at least 2**
+  (49 listeners), and it followed the story's structure: intact beat sentence-shuffled on 22 real listeners (p = 0.00516).
+- **Where it is weaker:** on recordings far from its training data (one public audiobook: it tracked the listeners, but was worth less
+  than one volunteer at its lower bound), and it has never been tested in children or patients. It does not map left versus right.
+
+StillHere is a research tool for brain-imaging labs: it plans a listening study from a tested menu (Muse Spark), builds and checks the
+stimulus before anyone is scanned (Muse Voice Transcribe), and forecasts the healthy-adult brain response (TRIBE v2).
 
 **Research use. Healthy volunteers and public data only. Not a diagnosis or medical advice.**
 

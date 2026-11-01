@@ -711,10 +711,12 @@ def build(inline: bool = False) -> str:
     picker, pick_css = picker_html(sts, sl["demo_runs"])
     P = [f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
          f'<title>StillHere Pilot</title><style>{CSS}{pick_css}</style></head><body><main>']
-    P.append('<h1>StillHere Pilot</h1><p class="lead">Labs study people who can\'t respond after brain injury by playing them stories in the '
-             'scanner. But every new story needs its own 12-15 healthy volunteers scanned first, in that language. For a new story, StillHere '
-             'gives labs a first reading with zero volunteer scans, measured against each listener\'s own brain. It has been tested only in '
-             'healthy volunteers.</p><p class="small">1 in 4 brain-injured patients who could not follow commands at the bedside showed '
+    P.append('<h1>StillHere Pilot</h1><p class="lead">Two kinds of brain scan rest on a person simply listening to a story: mapping '
+             'where language lives before epilepsy or tumour surgery, when a child is too young for the usual tasks, and comparing a person '
+             'who cannot respond after brain injury with healthy brains hearing the same recording. Both need a story that drives the '
+             'language areas hard enough for a short scan, and a healthy reference for that exact recording, which still means scanning a '
+             'dozen healthy volunteers first. StillHere forecasts both before anyone is scanned. It has been tested only in healthy '
+             'volunteers.</p><p class="small">1 in 4 brain-injured patients who could not follow commands at the bedside showed '
              'command-following brain activity on fMRI or EEG (Bodien et al., NEJM 2024).</p>'
              f'<p class="small">{badge("info", "replay only")}This page replays recorded runs: it calls no model, needs no key, and every number '
              f'comes from a JSON file in <code>results/</code>. Research tool for labs. {E(ND)}</p>')
