@@ -1,0 +1,209 @@
+{
+ "label": "exploratory",
+ "rule": "docs/rules/face_map_rule.md (dated note 5); docs/rules/emofilm_rule.md (the volume check)",
+ "prepare_utc": [
+  "2026-11-01T05:18:53Z",
+  "2026-11-01T05:29:20Z"
+ ],
+ "intact_score_utc": [
+  "2026-11-01T05:29:59Z",
+  "2026-11-01T05:31:54Z"
+ ],
+ "face_score_utc": [
+  "2026-11-01T05:31:54Z",
+  "2026-11-01T05:32:04Z"
+ ],
+ "code_commit": "7e55f24",
+ "run_table_sha256": "3e7219b494593c340e22ea9e4d9558320173e32adf19a832a548b1437c132ef6",
+ "prepare_manifest_sha256": "9f3d1fcc16e3eb8a8340baf0f7cb4fd2e163282fe7d272bc069d6ba6f61092f5",
+ "counts": {
+  "table_rows": 30,
+  "kept_by_the_table": 28,
+  "prepared": 17,
+  "dropped": 11,
+  "excluded_by_motion": 1,
+  "scored": 16
+ },
+ "not_kept_by_the_table": {
+  "sub-S13_ses-2": "volume count off by more than 2 TRs (613 volumes)",
+  "sub-S22_ses-3": "volume count off by more than 2 TRs (613 volumes)"
+ },
+ "dropped_why": "emofilm_rule.md: when a preprocessed image is opened, its number of volumes must equal the raw run's MRIQC count, because the logged onsets count from the raw run's first volume; a mismatch drops the run and is reported. Each dropped image has 1 or 2 more volumes than that count. Run once; no run was reprepared.",
+ "runs": {
+  "sub-S01_ses-4": {
+   "table_volumes": 607,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S02_ses-1": {
+   "table_volumes": 608,
+   "status": "prepared",
+   "fd_source": "motion rows",
+   "censored_frames": 11,
+   "scored": true
+  },
+  "sub-S03_ses-3": {
+   "table_volumes": 607,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S04_ses-1": {
+   "table_volumes": 608,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S05_ses-1": {
+   "table_volumes": 607,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S06_ses-4": {
+   "table_volumes": 609,
+   "status": "prepared",
+   "fd_source": "motion rows",
+   "censored_frames": 27,
+   "scored": true
+  },
+  "sub-S07_ses-1": {
+   "table_volumes": 608,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": false,
+   "excluded_by": "MRIQC fd_mean"
+  },
+  "sub-S08_ses-3": {
+   "table_volumes": 607,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S09_ses-3": {
+   "table_volumes": 606,
+   "status": "dropped",
+   "why": "image has 607 volumes, run table 606"
+  },
+  "sub-S10_ses-4": {
+   "table_volumes": 607,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S11_ses-3": {
+   "table_volumes": 607,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S14_ses-3": {
+   "table_volumes": 607,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S15_ses-1": {
+   "table_volumes": 608,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S16_ses-1": {
+   "table_volumes": 607,
+   "status": "dropped",
+   "why": "image has 608 volumes, run table 607"
+  },
+  "sub-S17_ses-2": {
+   "table_volumes": 606,
+   "status": "dropped",
+   "why": "image has 607 volumes, run table 606"
+  },
+  "sub-S19_ses-2": {
+   "table_volumes": 605,
+   "status": "dropped",
+   "why": "image has 607 volumes, run table 605"
+  },
+  "sub-S20_ses-3": {
+   "table_volumes": 605,
+   "status": "dropped",
+   "why": "image has 607 volumes, run table 605"
+  },
+  "sub-S21_ses-2": {
+   "table_volumes": 605,
+   "status": "dropped",
+   "why": "image has 607 volumes, run table 605"
+  },
+  "sub-S23_ses-1": {
+   "table_volumes": 607,
+   "status": "dropped",
+   "why": "image has 608 volumes, run table 607"
+  },
+  "sub-S24_ses-2": {
+   "table_volumes": 608,
+   "status": "dropped",
+   "why": "image has 609 volumes, run table 608"
+  },
+  "sub-S25_ses-2": {
+   "table_volumes": 606,
+   "status": "dropped",
+   "why": "image has 607 volumes, run table 606"
+  },
+  "sub-S26_ses-3": {
+   "table_volumes": 608,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S27_ses-2": {
+   "table_volumes": 608,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S28_ses-3": {
+   "table_volumes": 607,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S29_ses-2": {
+   "table_volumes": 606,
+   "status": "dropped",
+   "why": "image has 607 volumes, run table 606"
+  },
+  "sub-S30_ses-4": {
+   "table_volumes": 605,
+   "status": "dropped",
+   "why": "image has 607 volumes, run table 605"
+  },
+  "sub-S31_ses-3": {
+   "table_volumes": 607,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  },
+  "sub-S32_ses-2": {
+   "table_volumes": 608,
+   "status": "prepared",
+   "fd_source": "fallback: rows not locatable; no censoring; exclusion by MRIQC fd_mean",
+   "censored_frames": 0,
+   "scored": true
+  }
+ }
+}
