@@ -60,13 +60,54 @@ READS = {"section8": "every forecast read at story time j - 2 - 5 s; the lag mov
 FORECAST_READ = "section8"   # rule r2_paranoia_rule.md, dated clarification of Nov 1 (Yatsu, about 05:55 UTC, no Paranoia data downloaded)
 
 # Filled by the forecasts' commit (rule order: forecasts, then a commit with these SHA-256 and nothing else, then the download)
-STIM_PINS = {}         # story -> SHA-256 of stimuli/<story>_audio.wav
-WORD_PINS = {}         # story -> SHA-256 of forecast/out/words_<story>.tsv
-SURPRISAL_PIN = ""     # SHA-256 of r2/surprisal.json
-FORECAST_PINS = {}     # f"{model}_{story}_{mode}" -> SHA-256 of forecast/out/pred_<that>.npz
-RECORD_PINS = {}       # path under ROOT -> SHA-256: tribe_common as the kernels ran it, p1/surprisal8.py, the launchers and kernel code
+STIM_PINS = {
+    "story1": "e0a674401cd64580aeb50327af4393332f387df87ddbf0a65d68a96eb55a6c3e",
+    "story2": "e8b784671a748ad03f91227d1152d6219d51f713a46d6d6e41c63c17deb98e44",
+    "story3": "a739113b62f1aef92a2ead0fa069d97c4e05e1478123d26f42d223b05f970034",
+}         # story -> SHA-256 of stimuli/<story>_audio.wav
+WORD_PINS = {
+    "story1": "1a98288a1b8d48a468ce0bb6b18cc82a50db6a829d2c5fe0789b9339c185f8aa",
+    "story2": "d3d07e7b93a35dfd44748c16e3f626021d98e6d573206658da5ca06f30b82bb9",
+    "story3": "db9968150bc263c7d1f82f9cf88c31ec41e20f6e486b21e4d717768144a06e6f",
+}         # story -> SHA-256 of forecast/out/words_<story>.tsv
+SURPRISAL_PIN = "735de8dc8b4d1012cbd5885596c62e5b10e70af9950af9abec75dc0a689d6104"     # SHA-256 of r2/surprisal.json
+FORECAST_PINS = {
+    "stock_story1_full": "fd17900cf1be1814fc4fc3f3a2d145a383db53d45ef71e246ddffdb33d1d1db4",
+    "stock_story1_audio": "3b60e1dd9ca24f1e70239c290b60f82a3438841a5e0b45b06edfcd52e7584bde",
+    "stock_story1_shuf": "f2c78b302b68325e996dfb130c52328984d1646de4085a431a6549237a329565",
+    "stock_story2_full": "d347113ae1b5afe909e852606f1832a0274509cb336893bbaac8a5af86cbd569",
+    "stock_story2_audio": "078c50656f124faf2810a56a7d0a123c492df3148900cbe37c2483a653fe5e16",
+    "stock_story2_shuf": "a60011c1a778c61b3c20618343928d998059f384233d44e46b0964a2c449e3e3",
+    "stock_story3_full": "bf94177effa6215654aff50a98f4cf413fe10d9cbb7a851b03654fb67b21bab5",
+    "stock_story3_audio": "b4dd9f7f7a25b1bdb80805b3d35c94ccf29bed9840425a19adbabc4f1c53e7ec",
+    "stock_story3_shuf": "546d932e4a309fc324f9ef8d228506f6f6af01636a5968bab3f46bd6819932a3",
+}     # f"{model}_{story}_{mode}" -> SHA-256 of forecast/out/pred_<that>.npz
+RECORD_PINS = {
+    "p1/surprisal8.py": "e69f6d842131483263bc54370ef5fb20acaba967e9e0f44fa420277875ad0543",
+    "k2/tribe_common.py": "5029b14736b31dd652f9f37ac0b25bc72e9cf978c4e1d6958f6847e4dd459a34",
+    "r2/r2_asr.json": "f44bbbdcd7b9b65fe2744e2e1a9bc5cfafd90679ed6f77dbf87deccc48d01613",
+    "r2/kaggle_asr/stillhere_r2_asr.py": "61b891d080ec897015415ba0ec575db0a1ff0ac5cd2bc480fea37755ad168bf0",
+    "r2/kaggle_asr/r2_asr.json": "f44bbbdcd7b9b65fe2744e2e1a9bc5cfafd90679ed6f77dbf87deccc48d01613",
+    "r2/kaggle_forecast/make_r2_kernels.py": "52e1618cd29ed46435b1961dc3890d22af364a6272083d189b0f566a941c1021",
+    "r2/kaggle_forecast/r2_forecast_tpl.py": "b0964df192b042c2d5eeaa96892edb966a44c8e5abd27b17999c23ef89a1e044",
+    "r2/kaggle_forecast/r2_stage.py": "19a0e6463877aa9f71958458c431c92512af695a127bcaabe05faa8ed1c71ea8",
+    "r2/kaggle_forecast/a/stillhere_r2_forecast_a.py": "c81b03135f340d15fd72ceaf6808fc9787d3fdd06ce4455a0c54349e9f254e2a",
+    "r2/kaggle_forecast/b/stillhere_r2_forecast_b.py": "6955f78dd5efd9b5e81a1beea24712cce281870f2f90264fe35738e949e2d2e7",
+    "r2/kaggle_watch.sh": "089b9c1845ea07cb0badbce01f1a18146d82ffbb7069d6f56709e58760f5bbb6",
+    "r2/forecast/out/r2_forecast_partA.json": "c69be20feae725101cf6f4c13e1e3254eefb7f6563ec95748674f5bb7a4d56fb",
+    "r2/forecast/out/r2_forecast_partB.json": "a683d80ba1e4b5c7f18b445141b1d47e1f3416df447b4341cc843e9c300bb033",
+    "r2/forecast/out/stage_stock_story1_audio.json": "09f84496abc0bb2eb4a8cfd0320612aaedfb47fdb2cebbb00c22681674b3197c",
+    "r2/forecast/out/stage_stock_story1_full.json": "9122ea5e007d5b2420d4121eeadb9f18122180417f2d2376b4353f9fd889b294",
+    "r2/forecast/out/stage_stock_story1_shuf.json": "069709c6324485a4dd0b264d8a330534ea5268ef57e38242ec20e77342e63e1e",
+    "r2/forecast/out/stage_stock_story2_audio.json": "3b626ca8709f80e13ee3a8ea4dfe7f86f7f8ec456e39e30aea20ff6b20b93248",
+    "r2/forecast/out/stage_stock_story2_full.json": "632b6062ce1726462f222321a7cc70dfff1a1d8c872e0e95660de8de5a9c118d",
+    "r2/forecast/out/stage_stock_story2_shuf.json": "3af5ca4c0990b1fed6555435e0a32ce5d317a36be373cf373c1862c2439bae69",
+    "r2/forecast/out/stage_stock_story3_audio.json": "749b3eff3d439e73be473596fc2a8167dc48f7237f4fb45b4407e1bcc52a2562",
+    "r2/forecast/out/stage_stock_story3_full.json": "b4788dd55f97c61bc120e3c7e9b297976b90037ec269219dad4fb24522eda575",
+    "r2/forecast/out/stage_stock_story3_shuf.json": "17e404ceaa4457fc1c471778d510bcf85233010f69f03accfe82568a7da2c750",
+}       # path under ROOT -> SHA-256: tribe_common as the kernels ran it, p1/surprisal8.py, the launchers and kernel code
                        # (speech-to-text and forecasts), r2_asr.json and the stage records (rule section 10, the cloud's item 9)
-WHISPERX = ""          # the whisperx version uvx picked for the speech-to-text, as r2_asr.json records it
+WHISPERX = "3.8.6"          # the whisperx version uvx picked for the speech-to-text, as r2_asr.json records it
 NO_SHARE = "the other listeners' average did not reach the bar (z {zref})"    # rule section 10's addition to section 7 (item 8)
 SHARE_TEXT = "reached {share}% of what the other listeners' average reaches"
 
