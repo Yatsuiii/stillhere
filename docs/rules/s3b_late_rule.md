@@ -80,3 +80,50 @@ that passed the gate; otherwise it is "pre-registered, not run" with the count m
   (`results/picker/tierD_picker_bars.json`); it is descriptive and decides nothing.
 - Budget: the parts' expected extraction is 6.0, 5.7 and 4.8 T4-hours (16.5 in all); at about 2 Colab units per T4-hour that is about 33
   units (an estimate; the cap is 45).
+
+## 7. Dated note, Nov 1 2026 (cloud review of Oct 31, 23:15 UTC); sections 1-6 are unchanged
+
+The cloud's review (a418f6d, 005aa0a, 9748d31; read-only, find then refute, two refuters each) found the hook and the route sound and
+allows S3b to be scored after the notebooks finish, once the following are committed, in or before the control pins commit.
+
+(a) Why S3b is late. The scored parts were fresh extractions, so per-word vectors existed when the scored forecasts were made; S3b was
+left out because no control was built, not because the data were missing. This is said wherever the late S3b is shown (the result
+file's `why_late`).
+
+(b) Beside the result: "decided after the scored record was read, including S4, the wall and the approximate frame-level version
+(descriptive, partial rho 0.56, p 0.0012)" (the result file's `beside`).
+
+(c) Times. The ruling that added the late run reached the server at 20:48:21 UTC on Oct 31 (its text says 21:00). Then 9748d31 (the
+picker's scored results and SCORED.lock), committed 20:51:31 and pushed 20:51:45; the laptop check, 20:57-20:59; a418f6d, committed
+21:04:45 and pushed 21:04:58; 005aa0a, committed 21:14:26 and pushed 21:14:40 (push times from GitHub's push record for the repository).
+
+(d) "Content" in the lines means the language model's word-by-word vectors. The sound lane and the story's average vector are kept.
+
+(e) Which runs count: the first complete run of each part with a passing gate. Every notebook run (reruns, failures, gate fails) is
+listed with its outcome in the control pins commit. How the gate references reached each runtime: `s3b_refs.zip` was uploaded through
+the Files panel in ten pieces (the browser tool takes at most 10 MB at a time) and joined in the Colab terminal; the joined file's
+SHA-256 was 64db8a2e... before the notebook ran, and the third cell checks the two references inside it, as written.
+
+Scorer changes, made before any S3b forecast was read (`scripts/s3b_score.py`, replacing the scorer pinned in section 6, e58939e6...;
+synthetic tests `tests/test_s3b_score.py`):
+- It scores into a new, empty `--out` directory. `overlay()` replaces existing links and refuses if any control in the overlay resolves to
+  a file whose SHA-256 is not a pinned control, so the dry run's approximate controls can never be read.
+- Per part, it checks the run record against section 6: the notebook's code cells and the kernel (each part's hashes), the hook
+  6bf3e671..., the gate references (LPP-FR section 8 53c77a37..., pieman 196be7a9...), kernel exit code 0, a T4; and the gate record:
+  the same hook, each reference passed, the gate passed. Any mismatch refuses.
+- `CONTROL_PINS` covers every file it reads from a part's folder: the notebook's MANIFEST.sha256, the run record, the gate record, and
+  per clip the control, its provenance and the fresh full forecast. Each file must also match its line in the notebook's own
+  MANIFEST.sha256.
+- `parts.json` must have its SHA-256 (ab9086df...); its owns lists must be disjoint and cover every counted stem; two folders for one
+  part refuse; the part is read as text. A missing file or entry is a named refusal.
+- `--check-only` loads and checks every control on the downloaded files (shape and second grid equal to the scored full forecast's, finite
+  values, provenance: stock checkpoint, the exact control, this hook, a passing gate; words recorded equal to word events) and stops
+  before any listener data or statistic. It runs first.
+- Descriptive, not gating: each counted clip's fresh full forecast against the scored one by D26's comparison (`pred_stage.compare`),
+  reported beside S3b, naming any clip that misses the bar.
+- It prints section 5's lines word for word, checked by a test against this file. (The section 6 scorer had put the label in
+  parentheses, "run late (Oct 31-Nov 2, ...)", where section 5 says "run late: Oct 31-Nov 2, ..."; fixed.) A refusal writes section 5's
+  not-run line with the named reason.
+- Checked before this note: given the scored approximate timing forecasts as the control (pins set in memory, never committed), the
+  revised scorer reproduces the scored descriptive `PULA_timing_approx_partial` exactly (rho 0.5610, one-sided p 0.0012, 37 families in
+  4 blocks), and its PULA equals the scored PULA for every counted row; 32 synthetic tests pass.

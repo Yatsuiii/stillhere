@@ -83,7 +83,8 @@ Not a diagnosis or medical advice.
 | Stimulus check · Voice Transcribe | Our first word-shuffled control kept only 16% of the story's words; Voice Transcribe caught it before it was used. | 16% of words heard (intact 99%) | LibriVox Alice chapter 1, 75 s | Caught before scanning, not used |
 | Film edit check · Tears of Steel · 62 frames per version | If the edit check fails, the film test does not run. | faces filled: no face seen in 62 of 62 (Spark Open) | controls cover 89% of face area; the 51 largest close-ups have none | Pending · Glimmer decides, Sat Oct 31 |
 | Order map go/no-go · 3 LibriVox Alice clips | The order map did not pass its own rule, so it is not shown. | 1 of 3 clips (bar: 3 of 3) | forecast only, no brain data | No-go · bar set before any forecast |
-| Story wall and story picker · Narratives and Le Petit Prince · 42 stories | Every story we scored stays on the wall, weak ones too. | | 41 of the 42 stories were used before the rule | Pending · pre-registered (D19), scored once from Sat Oct 31 |
+| Story picker · Narratives and Le Petit Prince · 37 story families in 4 blocks | TRIBE's predicted response strength ranked the stories with listeners' language readouts (S1), and still did after word rate and the sound envelope were partialled out (S3). | S1 rho 0.54, p = 0.0007; S3 partial rho 0.63, p = 0.0005; S2 (a model-free yardstick from other listeners) rho 0.33, p = 0.031; S4 (each block's top third against all its stories) +0.31 z, 95% CI -0.07 to 0.58 | ranks only within a dataset, language and scanner; 41 of the 42 stories were used before the rule; without the development section, S1 rho 0.58 | **Pass** · S1 and S3 (co-primary) and S2, pre-registered (PREREG section 9); S4 did not pass; S3b <sup>6</sup> |
+| Story wall · the same stories · 33 counted story families | With zero same-clip controls, stock TRIBE v2's language readout followed the story each healthy listener group heard, more than other stories from the same dataset, on 29 of 33 story families not individually scored before this test (English and French; LPP sections counted once per language; 2 public datasets, 4 blocks, 1210 listeners, 2.7-55.6 minutes = 106-2222 TRs per story; wrong-label check 6 of 33). | 29 of 33 (bar: two-thirds); wrong-label check 6 of 33 = 18% | every story we scored stays on the wall, weak ones too; the wrong-label check is above its 7% limit | Bar met · descriptive, write-up only (wrong-label check above 7%) · pre-registered (D19) |
 | Film face test · Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read. | | runs only if the edit check passes | Pending |
 | Sedation case study · OpenNeuro ds003171 | No sedation stage line: two of the three co-primary bars did not pass. | language fell in 9 of 12 (needed 10) | a case study, not a headline | Pre-registered; exploratory variants in the [write-up](docs/writeup_sedation.md) |
 
@@ -95,6 +96,12 @@ z and p do not depend on it.
 <sup>5</sup> Each model's volunteer figure sits on its own listener curve, which controls for that model's audio-only forecast; on
 stock's curve the fine-tuned point estimate is 1.50. "About 1" and "about 2" are 1.37 and 1.55 rounded. The one comparison not beaten
 is the sound envelope alone, language areas, 145-volume window (p = 0.13), which stock beat.
+
+<sup>6</sup> S3b, whether the ranking is the words' content and not just their timing, was pre-registered but not run in the scored
+record. The scored parts were fresh extractions, so per-word vectors existed when the scored forecasts were made; S3b was left out
+because no control was built, not because the data were missing. It is pre-registered, run late (Oct 31-Nov 2, after S1-S3 were seen),
+by `docs/rules/s3b_late_rule.md`: decided after the scored record was read, including S4, the wall and the approximate frame-level
+version (descriptive, partial rho 0.56, p 0.0012). It is reported beside S1-S3 whatever it shows and changes nothing above.
 
 ### Reading the results
 
@@ -169,7 +176,8 @@ numbers come from.
 | Held-out audiobook · Le Petit Prince, section 8 · 49 listeners | TRIBE's forecast predicted each listener's language-area response about as well as averaging **5 other real listeners' scans** (at least 2). | volunteer-equivalent 5.0, lower bound 2.58; language result 1.76 z | Held out <sup>1</sup> |
 | Intact vs sentence-shuffled · Narratives notthefall · 22 listeners | TRIBE's forecast matched real listeners' language areas more closely when the story was intact than when its sentences were shuffled. | HL 0.0356 [95% CI 0.0125, 0.0588], p = 0.00516 | **Pass** · pre-registered (D20, words from D27) <sup>2</sup> |
 | Intact vs the coarser scramble · the same story · 21 listeners | The same comparison against a coarser scramble did not pass. | HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735; did not reach p < 0.05 | Fail · the pre-registered secondary, the result of record |
-| Story wall and story picker · Narratives and Le Petit Prince · 42 stories | Every story we scored stays on the wall, weak ones too. | | Pending · pre-registered (D19), scored once from Sat Oct 31 <sup>3</sup> |
+| Story picker · Narratives and Le Petit Prince · 37 story families in 4 blocks | TRIBE's predicted response strength ranked the stories with listeners' language readouts (S1), and still did after word rate and the sound envelope were partialled out (S3). | S1 rho 0.54, p = 0.0007; S3 partial rho 0.63, p = 0.0005; S2 (a model-free yardstick from other listeners) rho 0.33, p = 0.031; S4 (each block's top third against all its stories) +0.31 z, 95% CI -0.07 to 0.58; S4 did not pass | **Pass** · S1 and S3 (co-primary) and S2, pre-registered (PREREG section 9) <sup>3</sup> |
+| Story wall · the same stories · 33 counted story families | With zero same-clip controls, stock TRIBE v2's language readout followed the story each healthy listener group heard, more than other stories from the same dataset, on 29 of 33 story families not individually scored before this test (English and French; LPP sections counted once per language; 2 public datasets, 4 blocks, 1210 listeners, 2.7-55.6 minutes = 106-2222 TRs per story; wrong-label check 6 of 33). | 29 of 33 (bar: two-thirds); wrong-label check 6 of 33 = 18%, above its 7% limit | Bar met · descriptive, write-up only · pre-registered (D19) <sup>3</sup> |
 | Film face test · Emo-FilM, Tears of Steel · 28 viewers | Scored once by a rule committed before any viewer's brain data was read. | | Pending |
 
 <sup>1</sup> Held out; first measured Oct 22-23. LPP is one of TRIBE v2's own evaluation sets. TRIBE v2 was not trained on Le Petit
@@ -181,10 +189,10 @@ per version; the order of their two runs is not public)." For notthefall, each v
 not separate a change in the listeners' brains from a change in TRIBE's forecast, and the run order is not public, so it cannot be
 separated from an order or repeat-listening effect.<br>
 <sup>3</sup> The story wall's scoring rule was committed Oct 28 (340b74b); 41 of the 42 stories were used before then, for development
-or to tune a second model.
+or to tune a second model; scored once, Oct 31, 13:05 UTC (`results/picker/`).
 
-Files: `results/section8.json` · `results/d20_notthefall.json` · `results/story_wall.json` and `results/face_map.json` when they
-land.
+Files: `results/section8.json` · `results/d20_notthefall.json` · `results/picker/` (the picker and the wall) · `results/face_map.json`
+when it lands.
 
 ### Cheap baselines beside every result
 
