@@ -287,7 +287,7 @@ def test_download_and_scoring_refuse_before_the_pins(tmp_path, monkeypatch):
     assert not (tmp_path / "r2/bold").exists()
 
 
-def test_pins_must_cover_all_eighteen_forecasts(tmp_path, monkeypatch):
+def test_pins_must_cover_the_nine_stock_forecasts(tmp_path, monkeypatch):
     d = tmp_path / "r2"; (d / "stimuli").mkdir(parents=True); (d / "forecast/out").mkdir(parents=True)
     for s in R2.STORIES:
         (d / f"stimuli/{s}_audio.wav").write_bytes(s.encode()); (d / f"forecast/out/words_{s}.tsv").write_bytes(b"w" + s.encode())
@@ -299,8 +299,9 @@ def test_pins_must_cover_all_eighteen_forecasts(tmp_path, monkeypatch):
     monkeypatch.setattr(R2, "FORECAST_PINS", {"stock_story1_full": R2.sha(d / "forecast/out/pred_stock_story1_full.npz")})
     (d / "r2_asr.json").write_text('{"whisperx": ["whisperx-3.8.6.dist-info"]}')
     monkeypatch.setattr(R2, "RECORD_PINS", {"r2/r2_asr.json": R2.sha(d / "r2_asr.json")}); monkeypatch.setattr(R2, "WHISPERX", "3.8.6")
-    with pytest.raises(SystemExit, match="pred tuned_story3_shuf not pinned"):
+    with pytest.raises(SystemExit, match="pred stock_story3_shuf not pinned") as e:
         R2.check_pins(str(tmp_path))
+    assert "tuned" not in str(e.value)                                            # rule section 11: the fine-tuned line is not run
     monkeypatch.setattr(R2, "WHISPERX", "3.9.0")
     with pytest.raises(SystemExit, match="whisperx"):
         R2.check_pins(str(tmp_path))
@@ -407,7 +408,7 @@ def test_score_end_to_end_on_a_synthetic_root(tmp_path, monkeypatch, read):
         surp[story] = {"onsets": on.tolist(), "surprisal_bits": rng.uniform(1, 9, len(on)).tolist()}
         (R / f"bold/task-{story}_events.tsv").write_text(f"onset\tduration\tstim_file\n2\t{s_}\t{story}_audio.wav\n")
         sig[story] = np.convolve(rng.standard_normal(s_ + 20), np.ones(5) / 5, "same")[:s_]
-        for m in R2.MODELS:
+        for m in R2.SCORED_MODELS:
             for k in R2.MODES:
                 P = sig[story][:, None] * (1 + 0.1 * rng.standard_normal((1, 15))) + 0.4 * rng.standard_normal((s_, 15))
                 np.savez_compressed(R / f"forecast/out/pred_{m}_{story}_{k}.npz", P=P.astype("float32"), starts=np.arange(s_))
@@ -438,14 +439,15 @@ def test_score_end_to_end_on_a_synthetic_root(tmp_path, monkeypatch, read):
     pub = R2.score(str(tmp_path), str(tmp_path / "out"))
     assert pub["listeners"]["sub-03"]["language"] is False and pub["listeners"]["sub-03"]["hearing"] is True
     assert pub["window"] == {"volumes": {"story1": [20, 71], "story2": [20, 61], "story3": [20, 51]}, "T": 52 + 42 + 32, "minutes": 2.1}
-    assert len(pub["lines"]) == 5 and pub["lines"][2].startswith("Fine-tuned TRIBE v2: On another public story")
+    assert len(pub["lines"]) == 4 and pub["lines"][2] == R2.LINES["tuned_not_run"] == (
+        "Fine-tuned TRIBE v2: rule committed, not run (the stock runs' Llama features were not kept).")
     assert pub["lines"][-1] == R2.LINES["pair"] and "11 listeners, the whole story: 126 volumes = 2.1 minutes at TR 1 s" in pub["lines"][0]
-    for m in R2.MODELS:
+    assert set(pub["models"]) == {"stock"}
+    for m in R2.SCORED_MODELS:
         r = pub["models"][m]["reference"]
         assert r["n"] == 11 and np.isclose(r["share"], r["model_mean_z"] / r["reference_mean_z"])
         assert pub["models"][m]["stage"]["primary"]["n"] == 11 and pub["models"][m]["stage"]["primary"]["n_hearing"] == 12
         assert set(pub["models"][m]["cheap_baselines"]) == {"LANG", "AUD"} and "per_listener" not in pub["models"][m]["stage"]["primary"]
-    assert written["full"]["full"]["stock"]["m1"]["AUD"] == written["full"]["full"]["tuned"]["m1"]["AUD"]   # AUD's M1 is model-free
     read = {Path(k).name for k in R2.READ}                                          # every input read is hashed for the results
-    assert {"words_story1.tsv", "surprisal.json", "task-story3_events.tsv", "pred_tuned_story2_shuf.npz", "story1_audio.wav"} <= read
+    assert {"words_story1.tsv", "surprisal.json", "task-story3_events.tsv", "pred_stock_story2_shuf.npz", "story1_audio.wav"} <= read
     __import__("json").dumps(written["full"], default=float)

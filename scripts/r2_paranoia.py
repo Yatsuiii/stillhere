@@ -46,6 +46,8 @@ DER = "https://openneuro-derivatives.s3.amazonaws.com/fmriprep/ds001338-fmriprep
 SUBS = tuple(json.load(open(os.path.join(REPO, "r2/data_check.json")))["participants"])
 STORIES = ("story1", "story2", "story3")
 MODELS = {"stock": "stock TRIBE v2", "tuned": "fine-tuned TRIBE v2"}
+SCORED_MODELS = ("stock",)   # rule section 11 (Yatsu, Nov 1 08:30 UTC): the fine-tuned line is not run; its stages could not read the stock
+                             # runs' Llama features, which the Kaggle runs did not keep
 PREFIX = {"stock": "", "tuned": "Fine-tuned TRIBE v2: "}
 MODES = ("full", "audio", "shuf")
 TR, ONSET, J0, MIN, HP = 1.0, 2.0, 20, 30, 0.03   # section 5: TR 1 s, story onset 2 s, first 20 volumes dropped, 30-TR null minimum
@@ -83,6 +85,7 @@ LINES = {   # docs/rules/r2_paranoia_rule.md section 7, word for word
     "not_run": "Paranoia: rule committed, not run.",
     "beat": "What it had to beat: word rate and the sound envelope (beaten in {k} of {K} comparisons).",
     "pair": "z is not compared across datasets with different scan timing; the share is.",
+    "tuned_not_run": "Fine-tuned TRIBE v2: rule committed, not run (the stock runs' Llama features were not kept).",   # section 11
 }
 
 
@@ -405,7 +408,7 @@ def check_pins(root) -> dict:
            **{f"pred {k}": sha(f"{R}/forecast/out/pred_{k}.npz") for k in FORECAST_PINS}}
     want = {**{f"stimulus {s}": STIM_PINS.get(s) for s in STORIES}, **{f"words {s}": WORD_PINS.get(s) for s in STORIES},
             "surprisal": SURPRISAL_PIN, **{f"pred {k}": v for k, v in FORECAST_PINS.items()}}
-    need = {f"{m}_{s}_{k}" for m in MODELS for s in STORIES for k in MODES}
+    need = {f"{m}_{s}_{k}" for m in SCORED_MODELS for s in STORIES for k in MODES}
     got.update({f"record {k}": sha(f"{root}/{k}") if os.path.isfile(f"{root}/{k}") else "missing" for k in RECORD_PINS})
     want.update({f"record {k}": v for k, v in RECORD_PINS.items()})
     asr = [k for k in RECORD_PINS if k.endswith("r2_asr.json")]
@@ -456,7 +459,7 @@ def score(root, out_dir):
         story_onset(f"{R}/bold/task-{story}_events.tsv", story)
     for p in ([f"{R}/bold/task-{st}_events.tsv" for st in STORIES] + [f"{R}/stimuli/{st}_audio.wav" for st in STORIES]
               + [f"{R}/forecast/out/words_{st}.tsv" for st in STORIES] + [f"{R}/surprisal.json"]
-              + [f"{R}/forecast/out/pred_{m}_{st}_{k}.npz" for m in MODELS for st in STORIES for k in MODES]
+              + [f"{R}/forecast/out/pred_{m}_{st}_{k}.npz" for m in SCORED_MODELS for st in STORIES for k in MODES]
               + [f"{root}/atlas/{h}.Schaefer2018_400Parcels_17Networks_order.annot" for h in ("lh", "rh")]):
         note(p)
     sets = H.parcel_sets(f"{root}/atlas/lh.Schaefer2018_400Parcels_17Networks_order.annot",
@@ -492,9 +495,9 @@ def score(root, out_dir):
         n_sec = int(max(on.max(), n[story] * TR)) + 40
         stories[story] = {"n": n[story], "onsets": on, "wps": np.bincount(on.astype(int), minlength=n_sec).astype(float),
                           "env": H.envelope_per_second(f"{R}/stimuli/{story}_audio.wav"), "base": baselines(words, surp[story], n_sec)}
-    P = {m: {story: {k: np.load(f"{R}/forecast/out/pred_{m}_{story}_{k}.npz") for k in MODES} for story in STORIES} for m in MODELS}
+    P = {m: {story: {k: np.load(f"{R}/forecast/out/pred_{m}_{story}_{k}.npz") for k in MODES} for story in STORIES} for m in SCORED_MODELS}
     pp = lambda m, story, shift: {k: pred_parcels(d["P"], d["starts"], n[story], ksets, shift) for k, d in P[m][story].items()}
-    W = {story: min(n[story] - 1, min(last_volume(pp(m, story, 0.0), n[story]) for m in MODELS)) for story in STORIES}
+    W = {story: min(n[story] - 1, min(last_volume(pp(m, story, 0.0), n[story]) for m in SCORED_MODELS)) for story in STORIES}
     T = sum(j1 - J0 + 1 for j1 in W.values())
     res["window"] = {"volumes": {story: [J0, j1] for story, j1 in W.items()}, "T": T, "minutes": round(T * TR / 60, 1)}
     scored = sorted(set(elig["AUD"]) | set(elig["LANG"]))
@@ -515,7 +518,7 @@ def score(root, out_dir):
     m1_aud = None
     full, pub = {}, {**res, "own_best_lag": Lown, "models": {}}
     lines = []
-    for m in MODELS:
+    for m in SCORED_MODELS:
         F0 = F(m, 0.0)
         stage = {}
         for lab, L in (("primary", DEV_LAG), ("own_lag", Lown)):
@@ -546,7 +549,7 @@ def score(root, out_dir):
                             "stage": {k: {kk: vv for kk, vv in v.items() if kk != "per_listener"} for k, v in stage.items()},
                             "cheap_baselines": {net: {kk: vv for kk, vv in cheap[net].items() if kk != "per_listener"} for net in ("LANG", "AUD")},
                             "m1_language_curve": dict(zip(map(str, ks), curve)), "lines": ml}
-    pub["lines"] = lines + [LINES["pair"]]
+    pub["lines"] = lines + [LINES["tuned_not_run"], LINES["pair"]]
     pub["own_lag_curve"] = dict(zip(map(str, LAG_GRID.tolist()), lag_curve))
     return _write(pub, {**pub, "full": full}, out_dir)
 

@@ -222,3 +222,19 @@ UTC, before their commit 52424ff (21:31:22 UTC). dev_grid scores volumes 12-275 
 d965e55dd97d8239a2efa4eae1cffd4f9e5eade231093e86404d44c9856abe4e, dev_grid.out.txt
 cad28183f8f3d784c0d510a260bab193f0ff32d6ac2433df60e693bd676579eb. Both scripts import the analysis tree's `p1/` modules and do not run
 from this repository.
+
+## 11. Dated amendment, Nov 1 2026, 08:30 UTC (Yatsu's call; the cloud is informed), before the forecasts' pins commit and before any Paranoia brain data is downloaded; sections 1-10 unchanged
+
+- The fine-tuned line is not run. Section 3 requires its stages to read every sound and Llama feature from the stock runs' cache. The
+  stock forecasts ran on Kaggle T4s (section 9): part A exported its sound cache (Wav2VecBert, 10 files) for part B, but neither part kept
+  its Llama text cache (each wrote 10 HuggingFaceText files that were not exported), so the fine-tuned stages cannot read the stock runs'
+  features, and there is no laptop slot to make them before the cutoff (the fine-tuned weights stay on the laptop). Its line: "Fine-tuned
+  TRIBE v2: rule committed, not run (the stock runs' Llama features were not kept)." Every other line in section 7 is written for stock
+  TRIBE v2 only; the pair line ("z is not compared across datasets with different scan timing; the share is.") stays.
+- The cloud's condition (a) of Nov 1, 07:15 UTC (check_pins with all 18 forecasts) becomes the 9 stock forecasts, with the word tables,
+  surprisal, code and records pinned. The scored window (section 5's last volume with a forecast) comes from the stock forecasts.
+- Scoring runs once on a Kaggle CPU kernel (section 9) while Yatsu is offline (11:30 UTC Nov 1 to about 03:30 UTC Nov 2); the results
+  commit follows at about 03:30-04:00 UTC Nov 2, after the kernel's output is checked. The gap from scoring to the results commit is
+  disclosed here; the kernel's output stays untouched on Kaggle until then. The kernel clones the repository from a git bundle at the pins
+  commit (a full clone, checked not shallow, HEAD checked), reads its inputs from a private dataset checked against the pins, and runs
+  download, score and R5's scorer (`docs/rules/r5_short_scan_rule.md`, which reads the stock forecasts only) once each.
