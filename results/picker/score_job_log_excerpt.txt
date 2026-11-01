@@ -1,0 +1,16 @@
+seconds 529
+2026-10-31T12:54:11Z score_picker rc 0
+Traceback (most recent call last):
+  File "<work>/stillhere-app/scripts/wall_baselines.py", line 16, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+2026-10-31T12:54:54Z wall_baselines rc 1 in score_job.sh: ModuleNotFoundError numpy, because score_job.sh cds into stillhere-app and then passes D21 as a relative path (../../d21/...); score_picker had finished (rc 0) and is not rerun; wall_baselines.py run by hand with the same arguments and D21 made absolute
+[exploratory] wall with tribe (raw): N 29 of M 33, fake-label F 4 of 33
+[exploratory] wall with word_rate (raw): N 15 of M 33, fake-label F 1 of 33
+[exploratory] wall with envelope (raw): N 17 of M 33, fake-label F 5 of 33
+[exploratory] LANG TRIBE vs word_rate: n 1210, HL 0.07395307212415865, CI [0.06833321282239795, 0.07969012867673002], p 4.868989997558736e-106 -> TRIBE beats
+[exploratory] LANG TRIBE vs envelope: n 1210, HL 0.07464501652978021, CI [0.06886168875527292, 0.08036449331930842], p 1.4762142730777237e-105 -> TRIBE beats
+[exploratory] AUD TRIBE vs word_rate: n 1210, HL 0.1335074879118504, CI [0.12433038366611165, 0.1427365432568155], p 6.992728080153561e-99 -> TRIBE beats
+[exploratory] AUD TRIBE vs envelope: n 1210, HL 0.08021503139188928, CI [0.07125636837235941, 0.08909050210753264], p 5.029273704731559e-49 -> TRIBE beats
+2026-10-31T13:11:22Z wall_baselines (by hand) rc 0
+2026-10-31T12:54:11Z wall_baselines rc 1

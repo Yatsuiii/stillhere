@@ -127,3 +127,23 @@ synthetic tests `tests/test_s3b_score.py`):
 - Checked before this note: given the scored approximate timing forecasts as the control (pins set in memory, never committed), the
   revised scorer reproduces the scored descriptive `PULA_timing_approx_partial` exactly (rho 0.5610, one-sided p 0.0012, 37 families in
   4 blocks), and its PULA equals the scored PULA for every counted row; 32 synthetic tests pass.
+
+Dated note, Nov 1 2026 (cloud review of Nov 1, 06:05 UTC, items 11-16; the text above is unchanged):
+- The control pins commit holds CONTROL_PINS and the notebook run list (item (e) above); the order line at the top says that commit holds
+  "nothing else": the run list is the one addition, made at the cloud's request.
+- Scorer changes, before any S3b forecast is read (`scripts/s3b_score.py`, SHA-256 7be6da5039364923de5f0db23c3f7da7a961be75b52f88125e4811da3c01bee9, replacing 671126b6...):
+  every counted clip is checked before refusing, and the not-run line gives how many lack a checked control and why, clip by clip
+  (section 4's "with the count missing"); any error while checking or scoring (a bad npz, a malformed MANIFEST line) writes the not-run
+  line with its type and message instead of stopping with a traceback; --check-only also refuses, by name, when the scored pred_full,
+  pred_audio or provenance the overlay links to is missing; the scoring run happens once (it refuses if results/picker/s3b_late.json or
+  results/picker/S3B.lock exists, and creates S3B.lock first); --check-only and --print-pins parse only manifest/picker_manifest.json,
+  never the per-listener targets (the hash checks stay); the usage order is --print-pins, the pins in the working tree uncommitted,
+  --check-only on the real folders, the pins committed only if it passes, then the one scoring run.
+- The fresh-vs-scored comparison beside S3b covers the counted stems only; the two self-check clips are each part's gate.
+- Checked against the writer (`d22/picker_pred/s3b/make_s3b_colab.py` and the notebooks' cells) before any part output was opened: the
+  run record's keys and types (s3b_part int, gpu, notebook_code_cells_sha256, kernel_sha256, s3b_control_sha256, s3b_refs_sha256 by stem,
+  kernel_rc int), the MANIFEST lines ("<sha256>  <path>", every file but itself, colab_run.json included), the gate record
+  (picker_pred_out/predict_summary.json) and the PRED/<stem>/ layout match what the scorer reads. One gap closed: a gate entry the
+  harness could not compare holds an error and no reference hash, and is now refused with that error named.
+- Rechecked after the changes: the scored approximate controls still give rho 0.5610, one-sided p 0.0012, 37 families in 4 blocks, exactly;
+  39 synthetic tests pass.

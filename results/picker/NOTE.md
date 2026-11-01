@@ -22,3 +22,16 @@ json.dump({"manifest_sha256": t["manifest_sha256"], "per_clip": t["per_clip"],
           open(f"{D}/tierD_picker_targets_per_clip.json", "w"), indent=1)
 PY
 ```
+
+## Dated note, Nov 1 2026 (cloud review of Nov 1, 06:05 UTC, item 16)
+
+- `MANIFEST.sha256`'s header says "as the single scoring call wrote it". That does not hold for `tierD_wall_baselines.json`: the
+  scoring call (`score_picker.py`) wrote the other files; `tierD_wall_baselines.json` was written by the hand run of
+  `scripts/wall_baselines.py` that followed it. Its hash in the MANIFEST is that file's.
+- The log behind "rc 0 at 13:11:22 UTC": `score_job_log_excerpt.txt` (lines 14-29 of `d22/picker/score_job.log`, unchanged except that the local work folder's path is shortened to `<work>/`). In
+  `score_job.sh` the wall baselines step failed at once (rc 1, 12:54:11 UTC: `ModuleNotFoundError: numpy`), because the script changes
+  directory into `stillhere-app` and then puts the analysis environment's site-packages on PYTHONPATH as a relative path that no longer
+  resolves. Run by hand with the same arguments and that path made absolute, numpy imported and the script finished (rc 0, 13:11:22 UTC).
+  Two lines were added by hand: the 12:54:54 UTC line that explains the failure, and the last line, the job's own 12:54:11 rc 1
+  entry, which `score_job.sh`'s log() had written into `stillhere-app/score_job.log` after its change of directory and which was
+  then appended to this log, after the hand run's lines.

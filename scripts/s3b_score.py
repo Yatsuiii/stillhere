@@ -12,21 +12,30 @@ Refuses, with a named reason, unless:
 - each part's run record names section 6's notebook and kernel hashes, the hook's hash and the gate references, with kernel exit code 0
   on a T4; and its gate record passed, on the references pinned in section 6;
 - every counted stem has a control forecast in its owning part's verified PRED folder, from the stock checkpoint, with the exact control's
-  provenance, the right shape, finite values and the scored forecast's second grid;
+  provenance, the right shape, finite values and the scored forecast's second grid, and the scored pred_full, pred_audio and provenance
+  the overlay links to;
 - PULA recomputed here equals the scored PULA for every row (the same code on the same inputs).
---out must be a new, empty directory. --check-only stops after the checks, before any listener data or statistic. A refusal writes the
-rule's not-run line with its reason (to OUT, and in a scoring run also to results/picker/s3b_late.json). Beside S3b, descriptive and
-never gating: each counted clip's fresh full forecast against the scored one by D26's comparison (pred_stage.compare).
+Every counted clip is checked before refusing, and the not-run line gives how many lack a checked control and why, clip by clip (rule
+section 4). Any other error while checking or scoring (a bad npz, a malformed MANIFEST line) also writes the not-run line, with the error's
+type and message. --out must be a new, empty directory. --check-only and --print-pins read the scored files' hashes but parse only
+manifest/picker_manifest.json, never the per-listener targets; --check-only stops after the checks, before any listener data or statistic.
+The scoring run happens once: it refuses if results/picker/s3b_late.json or results/picker/S3B.lock exists and creates S3B.lock before
+anything else. A refusal writes the rule's not-run line with its reason (to OUT, and in the scoring run also to
+results/picker/s3b_late.json). Beside S3b, descriptive and never gating: each counted clip's fresh full forecast against the scored one by
+D26's comparison (pred_stage.compare); counted stems only (the self-check clips are the gate's, in each part's gate record).
 
-usage (from d22/picker):
-  python s3b_score.py --merged ../picker_pred/merged/PRED --s3b DIR1 DIR2 DIR3 --print-pins             (the pins, for their commit)
-  python s3b_score.py --merged ../picker_pred/merged/PRED --s3b DIR1 DIR2 DIR3 --out NEW --check-only    (first)
-  python s3b_score.py --merged ../picker_pred/merged/PRED --s3b DIR1 DIR2 DIR3 --out NEW                 (the one scoring run)"""
+usage (from d22/picker), in this order:
+  1. python s3b_score.py --merged ../picker_pred/merged/PRED --s3b DIR1 DIR2 DIR3 --print-pins
+     then paste the printed pins into CONTROL_PINS in the working tree, uncommitted;
+  2. python s3b_score.py --merged ../picker_pred/merged/PRED --s3b DIR1 DIR2 DIR3 --out NEW --check-only   (on the real folders)
+     and commit the pins, with the notebook run list, only if it passes;
+  3. python s3b_score.py --merged ../picker_pred/merged/PRED --s3b DIR1 DIR2 DIR3 --out NEW2                (the one scoring run)"""
 import argparse
 import hashlib
 import json
 import os
 import sys
+import time
 
 import numpy as np
 
@@ -97,20 +106,32 @@ def compare(a, b):
     return pred_stage.compare(a, b)
 
 
-def scored_inputs():
-    """The single scoring call's files, each checked against the committed MANIFEST.sha256."""
+def scored_inputs(full=True):
+    """The single scoring call's files, each checked against the committed MANIFEST.sha256; returns the manifest and, when full, the
+    per-clip targets and predictors (--check-only and --print-pins parse the manifest only)."""
     want = {}
     for line in open(f"{REPO}/results/picker/MANIFEST.sha256"):
         if line.strip() and not line.startswith("#"):
-            h, n = line.split(); want[n] = h
+            h, n = manifest_line(line, "results/picker/MANIFEST.sha256"); want[n] = h
     for n in ("SCORED.lock", "tierD_picker_targets.json", "tierD_picker_predictors.json"):
         if not os.path.isfile(f"{HERE}/scored/{n}") or sha(f"{HERE}/scored/{n}") != want.get(n):
             raise Refusal(f"scored/{n} differs from results/picker/MANIFEST.sha256")
     lock = open(f"{HERE}/scored/SCORED.lock").read().split()[0]
     if sha(f"{HERE}/manifest/picker_manifest.json") != lock:
         raise Refusal("the manifest is not the one SCORED.lock names")
-    return (json.load(open(f"{HERE}/manifest/picker_manifest.json")), json.load(open(f"{HERE}/scored/tierD_picker_targets.json"))["per_clip"],
+    M = json.load(open(f"{HERE}/manifest/picker_manifest.json"))
+    if not full:
+        return M, None, None
+    return (M, json.load(open(f"{HERE}/scored/tierD_picker_targets.json"))["per_clip"],
             json.load(open(f"{HERE}/scored/tierD_picker_predictors.json"))["predictors"])
+
+
+def manifest_line(line, what) -> tuple:
+    """(SHA-256, path) of one MANIFEST line ("<64 hex>  <path>"); anything else refuses by name."""
+    parts = line.strip().split(None, 1)
+    if len(parts) != 2 or len(parts[0]) != 64 or any(c not in "0123456789abcdef" for c in parts[0]):
+        raise Refusal(f"{what} has a malformed line: {line.strip()[:80]!r}")
+    return parts[0], parts[1].strip()
 
 
 def counted_stems(M) -> list:
@@ -160,7 +181,7 @@ def pinned(part, root, rel) -> str:
         listed = {}
         for line in open(pinned(part, root, "MANIFEST.sha256")):
             if line.strip():
-                h, n = line.split(None, 1); listed[n.strip()] = h
+                h, n = manifest_line(line, f"part{part}/MANIFEST.sha256"); listed[n] = h
         if listed.get(rel) != got:
             raise Refusal(f"{key} differs from the notebook's MANIFEST.sha256")
     return p
@@ -182,6 +203,8 @@ def check_part(part, root) -> dict:
         raise Refusal(f"part {part}'s prediction step names another hook")
     for stem, ref in REFS.items():
         c = (g.get("clips") or {}).get(stem) or {}
+        if c.get("error"):
+            raise Refusal(f"part {part}'s gate could not compare {stem} ({c['error']})")
         if c.get("scored_sha256") != ref:
             raise Refusal(f"part {part}'s gate compared {stem} with another reference")
         if not c.get("pass"):
@@ -191,49 +214,71 @@ def check_part(part, root) -> dict:
     return {"started_utc": run.get("started_utc"), "ended_utc": run.get("ended_utc"), "gate": g, "clips": summ.get("clips") or {}}
 
 
-def controls(dirs, stems, own) -> dict:
-    """stem -> its owning part's control, fresh full forecast and gate-checked part, every file pinned."""
+def clip(s, p, d, part, merged) -> dict:
+    """One counted clip's checked control (every file pinned, provenance, words, the scored files the overlay links, shape, values and
+    second grid) and, descriptive only, D26's comparison of its fresh full forecast with the scored one. No listener data is read."""
+    prov = load_json(pinned(p, d, f"PRED/{s}/provenance.json"), f"{s} provenance")
+    ok = (prov.get("stem") == s and prov.get("ckpt_sha256") == STOCK_PIN and (prov.get("ckpt_sha256_by_mode") or {}).get("timing_exact") == STOCK_PIN
+          and str(prov.get("timing_mode", "")).startswith("exact") and prov.get("s3b_control_sha256") == HOOK
+          and (prov.get("s3b_gate") or {}).get("pass") is True)
+    if not ok:
+        raise Refusal("the control's provenance is not the exact control from the stock checkpoint after a passing gate")
+    c = part["clips"].get(s) or {}
+    if not (c.get("timing_exact_words_recorded") == c.get("timing_exact_word_events") and (c.get("timing_exact_hook_words") or 0) > 0):
+        raise Refusal("words recorded or set differ from the clip's word events")
+    ctl, fresh = pinned(p, d, f"PRED/{s}/pred_timing_exact.npz"), pinned(p, d, f"PRED/{s}/pred_full.npz")
+    gone = [n for n in ("pred_full.npz", "pred_audio.npz", "provenance.json") if not os.path.isfile(f"{merged}/{s}/{n}")]
+    if gone:
+        raise Refusal(f"no scored {' or '.join(gone)} in {merged}")
+    C, F = np.load(ctl), np.load(f"{merged}/{s}/pred_full.npz")
+    P, st = C["P"], C["starts"]
+    shape = P.ndim == 2 and P.shape == F["P"].shape and P.shape[1] == 20484
+    finite = bool(np.isfinite(P).all())
+    grid = bool(np.array_equal(st, F["starts"]) and len(st) == len(P) and st[0] == 0 and (np.diff(st) == 1).all())
+    if not (shape and finite and grid):
+        raise Refusal(f"the control fails the {'shape' if not shape else 'finite' if not finite else 'second grid'} check")
+    return {"part": p, "control": ctl, "report": {
+        "part": p, "shape": list(P.shape), "finite": finite, "second_grid": grid,
+        "words": {k: c.get(f"timing_exact_{k}") for k in ("word_events", "words_recorded", "hook_words")},
+        "control_sha256": sha(ctl), "scored_full_sha256": sha(f"{merged}/{s}/pred_full.npz"), "fresh_full_vs_scored": compare(np.load(fresh), F)}}
+
+
+def controls(dirs, stems, own, merged) -> dict:
+    """Every counted stem's control from the part that owns it, each part's run and gate records checked first. Checks every clip and
+    refuses once, naming how many clips lack a checked control and why (rule section 4)."""
     by = folders(dirs)
-    need = sorted({own[s] for s in stems})
-    if sorted(by) != need:
-        raise Refusal(f"folders for parts {sorted(by)}, need {need}")
-    parts = {p: check_part(p, by[p]) for p in need}
-    found = {}
+    extra = sorted(set(by) - {own[s] for s in stems})
+    if extra:
+        raise Refusal(f"folders for parts no counted clip needs: {extra}")
+    parts, perr = {}, {}
+    for p in sorted({own[s] for s in stems}):
+        try:
+            parts[p] = check_part(p, by[p]) if p in by else None
+            if parts[p] is None:
+                perr[p] = f"no folder for part {p}"
+        except Refusal as e:
+            perr[p] = str(e)
+        except Exception as e:                                         # a malformed file: named, never a traceback
+            perr[p] = f"part {p}: {type(e).__name__}: {e}"
+    found, problems = {}, {}
     for s in stems:
-        p = own[s]; d = by[p]
-        prov = load_json(pinned(p, d, f"PRED/{s}/provenance.json"), f"{s} provenance")
-        ok = (prov.get("stem") == s and prov.get("ckpt_sha256") == STOCK_PIN and (prov.get("ckpt_sha256_by_mode") or {}).get("timing_exact") == STOCK_PIN
-              and str(prov.get("timing_mode", "")).startswith("exact") and prov.get("s3b_control_sha256") == HOOK
-              and (prov.get("s3b_gate") or {}).get("pass") is True)
-        if not ok:
-            raise Refusal(f"{s}: the control's provenance is not the exact control from the stock checkpoint after a passing gate")
-        c = parts[p]["clips"].get(s) or {}
-        if not (c.get("timing_exact_words_recorded") == c.get("timing_exact_word_events") and (c.get("timing_exact_hook_words") or 0) > 0):
-            raise Refusal(f"{s}: words recorded or set differ from the clip's word events")
-        found[s] = {"part": p, "control": pinned(p, d, f"PRED/{s}/pred_timing_exact.npz"), "fresh_full": pinned(p, d, f"PRED/{s}/pred_full.npz"),
-                    "words": {k: c.get(f"timing_exact_{k}") for k in ("word_events", "words_recorded", "hook_words")}}
-    return {"parts": parts, "found": found}
-
-
-def validate(found, merged) -> dict:
-    """Each control's shape, values and second grid against the scored full forecast of its clip; and, descriptive only, D26's comparison of
-    the fresh full forecast with the scored one. No listener data is read."""
-    rep = {}
-    for s, f in sorted(found.items()):
-        ref = f"{merged}/{s}/pred_full.npz"
-        if not os.path.isfile(ref):
-            raise Refusal(f"{s}: no scored full forecast in {merged}")
-        C, F = np.load(f["control"]), np.load(ref)
-        P, st = C["P"], C["starts"]
-        shape = P.ndim == 2 and P.shape == F["P"].shape and P.shape[1] == 20484
-        finite = bool(np.isfinite(P).all())
-        grid = bool(np.array_equal(st, F["starts"]) and len(st) == len(P) and st[0] == 0 and (np.diff(st) == 1).all())
-        if not (shape and finite and grid):
-            raise Refusal(f"{s}: the control fails the {'shape' if not shape else 'finite' if not finite else 'second grid'} check")
-        rep[s] = {"part": f["part"], "shape": list(P.shape), "finite": finite, "second_grid": grid, "words": f["words"],
-                  "control_sha256": sha(f["control"]), "scored_full_sha256": sha(ref),
-                  "fresh_full_vs_scored": compare(np.load(f["fresh_full"]), F)}
-    return rep
+        p = own[s]
+        if p in perr:
+            problems[s] = perr[p]; continue
+        try:
+            found[s] = clip(s, p, by[p], parts[p], merged)
+        except Refusal as e:
+            problems[s] = f"{s}: {e}"
+        except Exception as e:
+            problems[s] = f"{s}: {type(e).__name__}: {e}"
+    if problems:
+        why = {}
+        for s, r in problems.items():
+            why.setdefault(r, []).append(s)
+        raise Refusal(f"{len(problems)} of {len(stems)} counted clips have no checked control: "
+                      + "; ".join(r if r.startswith(tuple(f"{x}: " for x in ss)) else f"{r} ({len(ss)} clips: {', '.join(sorted(ss))})"
+                                  for r, ss in sorted(why.items())))
+    return {"parts": {p: v for p, v in parts.items() if v}, "found": found}
 
 
 def overlay(merged, found, ovl) -> str:
@@ -290,18 +335,25 @@ def pins(dirs, stems, own) -> dict:
 def main(a, results=None):
     results = results or f"{REPO}/results/picker/s3b_late.json"
     if a.print_pins:
-        M, _, _ = scored_inputs(); stems = counted_stems(M)
+        M, _, _ = scored_inputs(full=False); stems = counted_stems(M)
         print(json.dumps(pins(a.s3b, stems, owners(stems)), indent=1, sort_keys=True)); return 0
     if os.path.exists(a.out) and os.listdir(a.out):
         raise SystemExit(f"--out {a.out} is not a new, empty directory")
+    lock = os.path.join(os.path.dirname(os.path.abspath(results)), "S3B.lock")
+    if not a.check_only:                                              # the one scoring run
+        if os.path.exists(results) or os.path.exists(lock):
+            raise SystemExit(f"refused: S3b has already been scored or refused once ({results} or {lock} exists); no second run")
+        fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.write(fd, f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}\n".encode()); os.close(fd)
     os.makedirs(a.out, exist_ok=True)
     try:
         if not CONTROL_PINS:
             raise Refusal("the control forecasts' SHA-256 are not pinned")
-        M, _, _ = scored_inputs(); stems = counted_stems(M)
-        got = controls(a.s3b, stems, owners(stems))
+        M, _, _ = scored_inputs(full=False); stems = counted_stems(M)
+        got = controls(a.s3b, stems, owners(stems), a.merged)
         check = {"parts": {p: {k: v[k] for k in ("started_utc", "ended_utc", "gate")} for p, v in got["parts"].items()},
-                 "clips": validate(got["found"], a.merged)}
+                 "clips": {s: f["report"] for s, f in sorted(got["found"].items())},
+                 "fresh_full_vs_scored_covers": "counted stems only"}
         miss = sorted(s for s, c in check["clips"].items() if not c["fresh_full_vs_scored"].get("pass"))
         check["fresh_full_vs_scored_misses"] = miss
         json.dump(check, open(f"{a.out}/s3b_check.json", "w"), indent=1, default=float)
@@ -310,10 +362,10 @@ def main(a, results=None):
         if a.check_only:
             return 0
         pub, rows = score(a.merged, got["found"], os.path.join(a.out, "overlay"))
-        pub["fresh_full_vs_scored"] = {"descriptive": True, "misses": miss,
+        pub["fresh_full_vs_scored"] = {"descriptive": True, "covers": "counted stems only", "misses": miss,
                                        "clips": {s: c["fresh_full_vs_scored"] for s, c in check["clips"].items()}}
-    except (Refusal, KeyError, StopIteration) as e:
-        why = str(e) if isinstance(e, Refusal) else f"an input lacks an expected entry ({type(e).__name__} {e})"
+    except (Exception, SystemExit) as e:                               # every refusal and error writes the not-run line, named
+        why = str(e) if isinstance(e, Refusal) else f"{type(e).__name__}: {e}"
         pub, rows = {"label": LABEL, "rule": RULE, "why_late": WHY_LATE, "S3b": None, "refused": why, "line": NOT_RUN.format(reason=why)}, {}
         json.dump(pub, open(f"{a.out}/s3b_late.json", "w"), indent=1)
         if not a.check_only:

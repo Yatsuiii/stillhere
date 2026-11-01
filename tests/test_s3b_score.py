@@ -62,9 +62,10 @@ def env(tmp_path, monkeypatch):
         make_part(d, p, rng)
     merged = tmp_path / "merged"
     for s in STEMS:
-        npz(merged / s / "pred_full.npz", rng.normal(size=(T, V)))
+        npz(merged / s / "pred_full.npz", rng.normal(size=(T, V))); npz(merged / s / "pred_audio.npz", rng.normal(size=(T, V)))
+        (merged / s / "provenance.json").write_text(json.dumps({"stem": s, "ckpt_sha256": S.STOCK_PIN}))
     monkeypatch.setattr(S, "PARTS", str(parts)); monkeypatch.setattr(S, "PARTS_SHA", sha(parts))
-    monkeypatch.setattr(S, "scored_inputs", lambda: ({"rows": []}, {}, {}))
+    monkeypatch.setattr(S, "scored_inputs", lambda full=True: ({"rows": []}, {}, {}) if full else ({"rows": []}, None, None))
     monkeypatch.setattr(S, "counted_stems", lambda M: STEMS)
     monkeypatch.setattr(S, "compare", lambda a, b: {"pass": True, "median_vertex_r": 1.0})
     monkeypatch.setattr(S, "CONTROL_PINS", {})
@@ -129,18 +130,19 @@ def test_no_pins_refuses_and_a_scoring_run_writes_the_not_run_line(env):
 
 def test_a_changed_file_refuses_and_check_only_writes_no_result(env):
     npz(env.dirs["1"] / "PRED/a2/pred_timing_exact.npz", np.zeros((T, V)))
-    assert refusal(env) == "part1/PRED/a2/pred_timing_exact.npz differs from its pin"
+    assert refusal(env) == ("1 of 3 counted clips have no checked control: a2: part1/PRED/a2/pred_timing_exact.npz differs from its pin")
     assert not (env.tmp / "results.json").exists()
 
 
 def test_a_file_the_notebook_manifest_disagrees_with_refuses(env):
     npz(env.dirs["2"] / "PRED/b1/pred_full.npz", np.ones((T, V))); env.pin()           # pinned, but not what the notebook listed
-    assert refusal(env) == "part2/PRED/b1/pred_full.npz differs from the notebook's MANIFEST.sha256"
+    assert "b1: part2/PRED/b1/pred_full.npz differs from the notebook's MANIFEST.sha256" in refusal(env)
 
 
 def test_an_unpinned_file_refuses(env):
     del S.CONTROL_PINS["part2/picker_pred_out/predict_summary.json"]
-    assert refusal(env) == "part2/picker_pred_out/predict_summary.json is not pinned"
+    assert refusal(env) == ("1 of 3 counted clips have no checked control: part2/picker_pred_out/predict_summary.json is not pinned "
+                            "(1 clips: b1)")
 
 
 @pytest.mark.parametrize("rel,change,why", [
@@ -185,29 +187,29 @@ def test_parts_json_is_pinned_disjoint_and_covering(env, monkeypatch):
                                     lambda d: d.update(s3b_gate={"pass": False}), lambda d: d.update(stem="a2")])
 def test_control_provenance_is_checked(env, change):
     rewrite(env.dirs["1"], "PRED/a1/provenance.json", change); env.pin()
-    assert refusal(env).startswith("a1: the control's provenance")
+    assert "a1: the control's provenance" in refusal(env)
 
 
 def test_words_recorded_must_equal_word_events(env):
     rewrite(env.dirs["1"], S.SUMMARY, lambda d: d["clips"]["a2"].update(timing_exact_words_recorded=39)); env.pin()
-    assert refusal(env) == "a2: words recorded or set differ from the clip's word events"
+    assert "a2: words recorded or set differ from the clip's word events" in refusal(env)
 
 
 @pytest.mark.parametrize("P,starts,what", [(np.full((T, V), np.nan), None, "finite"), (np.zeros((T - 1, V)), None, "shape"),
                                            (np.zeros((T, V)), np.arange(1, T + 1), "second grid")])
 def test_control_values_shape_and_grid(env, P, starts, what):
     npz(env.dirs["2"] / "PRED/b1/pred_timing_exact.npz", P, starts); manifest(env.dirs["2"]); env.pin()
-    assert refusal(env) == f"b1: the control fails the {what} check"
+    assert f"b1: the control fails the {what} check" in refusal(env)
 
 
 def test_a_missing_summary_entry_is_a_named_refusal(env):
     rewrite(env.dirs["2"], S.SUMMARY, lambda d: d.pop("clips")); env.pin()
-    assert refusal(env) == "b1: words recorded or set differ from the clip's word events"
+    assert "b1: words recorded or set differ from the clip's word events" in refusal(env)
 
 
 def test_a_missing_array_is_a_named_refusal(env):
     np.savez(env.dirs["1"] / "PRED/a1/pred_timing_exact.npz", starts=np.arange(T)); manifest(env.dirs["1"]); env.pin()
-    assert refusal(env).startswith("an input lacks an expected entry (KeyError")
+    assert "a1: KeyError" in refusal(env)
 
 
 def test_a_missing_run_record_is_a_named_refusal(env):
@@ -216,7 +218,7 @@ def test_a_missing_run_record_is_a_named_refusal(env):
 
 
 def test_overlay_replaces_links_and_refuses_unpinned_controls(env):
-    got = S.controls([str(d) for d in env.dirs.values()], STEMS, S.owners(STEMS))["found"]
+    got = S.controls([str(d) for d in env.dirs.values()], STEMS, S.owners(STEMS), str(env.merged))["found"]
     ovl = env.tmp / "ovl"; (ovl / "a1").mkdir(parents=True)
     (ovl / "a1/pred_timing.npz").symlink_to(env.merged / "a1/pred_full.npz")          # a stale link is replaced
     S.overlay(str(env.merged), got, str(ovl))
@@ -225,3 +227,61 @@ def test_overlay_replaces_links_and_refuses_unpinned_controls(env):
     (ovl / "zz").mkdir(); (ovl / "zz/pred_timing.npz").symlink_to(approx)             # e.g. the dry run's approximate control
     with pytest.raises(S.Refusal, match="not a pinned file"):
         S.overlay(str(env.merged), got, str(ovl))
+
+
+# ---- cloud review of Nov 1, 06:05 UTC, items 11-15 ----------------------------------------------------------------------------------
+def test_every_clip_is_checked_and_the_not_run_line_counts_them(env):
+    npz(env.dirs["1"] / "PRED/a2/pred_timing_exact.npz", np.zeros((T, V))); manifest(env.dirs["1"])
+    rewrite(env.dirs["2"], "PRED/b1/provenance.json", lambda d: d.update(timing_mode="none")); env.pin()
+    S.CONTROL_PINS["part1/PRED/a2/pred_timing_exact.npz"] = "0" * 64                       # a2's control is not its pinned file
+    why = refusal(env)
+    assert why.startswith("2 of 3 counted clips have no checked control: ")
+    assert "a2: part1/PRED/a2/pred_timing_exact.npz differs from its pin" in why and "b1: the control's provenance" in why
+
+
+def test_a_part_failure_names_every_clip_it_takes(env):
+    rewrite(env.dirs["1"], S.SUMMARY, lambda d: d["gate"].update(**{"pass": False})); env.pin()
+    assert refusal(env) == "2 of 3 counted clips have no checked control: part 1's gate did not pass (2 clips: a1, a2)"
+    line = json.loads((env.tmp / "out/s3b_late.json").read_text())["line"]
+    assert line.startswith("S3b: pre-registered, not run (2 of 3 counted clips have no checked control")
+
+
+def test_a_malformed_manifest_line_is_named(env):
+    with open(env.dirs["2"] / "MANIFEST.sha256", "a") as f:
+        f.write("onlyonetoken\n")
+    env.pin()
+    assert "part2/MANIFEST.sha256 has a malformed line: 'onlyonetoken'" in refusal(env)
+
+
+def test_a_bad_npz_writes_the_not_run_line_with_its_error(env):
+    (env.dirs["2"] / "PRED/b1/pred_timing_exact.npz").write_bytes(b"not an npz"); manifest(env.dirs["2"]); env.pin()
+    why = refusal(env)
+    assert why.startswith("1 of 3 counted clips have no checked control: b1: ") and "Error" in why
+
+
+def test_check_only_names_a_missing_scored_audio_or_provenance(env):
+    (env.merged / "a1/pred_audio.npz").unlink(); (env.merged / "b1/provenance.json").unlink()
+    why = refusal(env)
+    assert "a1: no scored pred_audio.npz in" in why and "b1: no scored provenance.json in" in why
+
+
+def test_the_scoring_run_happens_once(env, monkeypatch):
+    monkeypatch.setattr(S, "score", lambda merged, found, ovl: ({"S3b": {"pass_": True}, "line": "scored"}, {}))
+    lock = env.tmp / "S3B.lock"
+    assert env.run("c1") == 0 and not lock.exists()                                     # --check-only takes no lock
+    assert env.run("s1", check_only=False) == 0 and lock.exists() and (env.tmp / "results.json").exists()
+    with pytest.raises(SystemExit, match="already been scored or refused once"):
+        env.run("s2", check_only=False)
+    (env.tmp / "results.json").unlink()
+    with pytest.raises(SystemExit, match="already been scored or refused once"):
+        env.run("s3", check_only=False)                                                  # the lock alone refuses
+
+
+def test_check_only_and_pins_parse_only_the_manifest(env, monkeypatch):
+    def only_manifest(full=True):
+        assert not full, "the per-listener targets were parsed"
+        return {"rows": []}, None, None
+    monkeypatch.setattr(S, "scored_inputs", only_manifest)
+    assert env.run() == 0
+    a = SimpleNamespace(merged=str(env.merged), s3b=[str(d) for d in env.dirs.values()], out=None, check_only=False, print_pins=True)
+    assert S.main(a, results=str(env.tmp / "results.json")) == 0 and not (env.tmp / "S3B.lock").exists()
