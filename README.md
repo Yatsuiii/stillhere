@@ -4,7 +4,7 @@
 
 # StillHere
 
-### A healthy-brain reference for any new story, before anyone is scanned
+### A healthy-brain reference for a new story, before anyone is scanned
 
 [![tests](https://github.com/Yatsuiii/stillhere/actions/workflows/tests.yml/badge.svg)](https://github.com/Yatsuiii/stillhere/actions/workflows/tests.yml)
 [![licence: MIT](https://img.shields.io/badge/licence-MIT-lightgrey.svg)](LICENSE)
