@@ -1,0 +1,79 @@
+{
+ "label": "exploratory",
+ "viewers": 16,
+ "parcels_tested": 374,
+ "gate1": {
+  "rhos_median": 0.42570916545999343,
+  "wilcoxon_p": 3.0517578125e-05,
+  "pass": true
+ },
+ "B1": {
+  "n": 16,
+  "k_above_0": 12,
+  "kstar": 12,
+  "wilcoxon_p": 0.0167694091796875,
+  "spin_p": 0.0919080919080919,
+  "median": 0.10708422818310848,
+  "pass": false
+ },
+ "B2": {
+  "n": 16,
+  "k_above_0": 13,
+  "kstar": 12,
+  "wilcoxon_p": 0.000213623046875,
+  "spin_p": 0.015984015984015984,
+  "median": 0.21616137403047983,
+  "pass": true
+ },
+ "outcome": "FAIL",
+ "rule": "docs/rules/face_map_rule.md",
+ "excluded": {
+  "sub-S07_ses-1": "MRIQC fd_mean"
+ },
+ "gate0": {
+  "label": "exploratory",
+  "vif_face": 1.1079554753309475,
+  "vif_max": 5.0,
+  "grid_points": 135,
+  "pass": true,
+  "outcome_if_failed": "NOT RUN",
+  "inputs_sha256": {
+   "edits": "bf54760ec038ae168516a02578e3bbdd664c1d1b035d4782715f6ac08132b233",
+   "regressors": "c79573ff5bd05824f9624acbfd9e658b9fbe1a6fae0f848c5e691fb5c54c65d2",
+   "words": "51cffb6b78cebbd07d1d9ca9fce1cf8850107d04423ef9d8c95b52018f2e6468"
+  },
+  "words": {
+   "n": 102,
+   "last_start_s": 137.437,
+   "segment_seconds": 190.0,
+   "max_shift_copies": 1,
+   "at_shift_s": 106.235
+  }
+ },
+ "descriptive": {
+  "label": "descriptive: never decides",
+  "grid_points_kept": 129,
+  "rho_R_Mbar": 0.021186104858711703,
+  "rho_C_Mbar": -0.3072092443119095,
+  "median_d": 0.21564811974021877
+ },
+ "stimulus_checks": {
+  "found": true,
+  "in_view_face_px_with_control": 0.8894,
+  "faces_in_view": 2717,
+  "no_control": 51,
+  "no_control_note": "the largest close-ups, whose in-view part fits nowhere else in TRIBE's view",
+  "median_eccentricity_view_px": {
+   "faces_removed": 95.09206065702857,
+   "area_matched": 77.69491617860206
+  },
+  "change_energy_ratio_control_over_face": 0.8943
+ },
+ "rc": {
+  "blob": "c48125373d79f27b162a776a1a3529502e3a322e",
+  "commit_utc": "2026-10-31T23:02:58+05:30",
+  "R_sha256": "2cb808251af5fd26e9746a4d5ec34a8868411acffe81cfc4c6ab475f6da334ec",
+  "C_sha256": "b7e63838a636fb947d07d536b1ea7095fd121802c9575230457907b71b99b502"
+ },
+ "seconds": 7
+}
