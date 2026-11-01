@@ -54,7 +54,7 @@ def one(pattern):
 res = {"rule": ["docs/rules/r2_paranoia_rule.md", "docs/rules/r5_short_scan_rule.md"], "dry": DRY,
        "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "steps": {}}
 try:
-    bundle, tarp = one("stillhere.bundle"), one("r2_score_root.tar")
+    bundle, tarp = one("stillhere.bundle"), one("r2_score_root.tar.bin")
     res["inputs"] = {"bundle_sha256": sha(bundle), "root_tar_sha256": sha(tarp)}
     assert res["inputs"]["root_tar_sha256"] == ROOT_TAR_SHA, "the scoring root's tar differs from the one pinned in this kernel"
     repo, root = TMP / "repo", TMP / "root"
