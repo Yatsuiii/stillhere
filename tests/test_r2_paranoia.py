@@ -225,8 +225,28 @@ def test_reference_is_the_other_listeners_average_with_languages_gauge_and_contr
 
 
 def test_share_is_the_models_mean_z_over_the_references_mean_z_on_the_same_listeners():
-    sh = R2.share({"a": 1.0, "b": 3.0, "c": 100.0}, {"a": 2.0, "b": 6.0})
-    assert sh == {"n": 2, "model_mean_z": 2.0, "reference_mean_z": 4.0, "share": 0.5}
+    ref = {k: v for k, v in zip("abcdefgh", (2.0, 6.0, 3.0, 5.0, 4.0, 4.5, 3.5, 4.0))}
+    sh = R2.share({**{k: v / 2 for k, v in ref.items()}, "z": 100.0}, ref)
+    assert sh["n"] == 8 and sh["reference_mean_z"] == 4.0 and sh["model_mean_z"] == 2.0 and sh["share"] == 0.5
+    assert sh["reference_wilcoxon_p"] < 0.05
+
+
+def test_no_share_when_the_reference_does_not_reach_the_bar():
+    """Rule section 10 (the cloud's item 8): a reference with mean z at or below 0, or one-sided Wilcoxon p at or above 0.05, gives no share;
+    the line names the reference's mean z instead, in every branch."""
+    neg = {k: v for k, v in zip("abcdefgh", (-1.0, 0.5, -0.2, 0.1, -0.4, 0.2, -0.3, 0.0))}
+    weak = {k: v for k, v in zip("abcdefgh", (2.0, -1.9, 1.5, -1.6, 0.4, -0.3, 0.2, 0.1))}
+    for ref in (neg, weak):
+        sh = R2.share({k: 1.0 for k in ref}, ref)
+        assert sh["share"] is None and (sh["reference_mean_z"] <= 0 or sh["reference_wilcoxon_p"] >= 0.05)
+    ve = lambda point, claim: {"point_k": point, "claim_k": claim}
+    a = R2.outcome("stock", 21, 1250, ve(3.6, 2), {"z": 1.9, "p": 0.0004}, None, (3, 4), zref=0.31)
+    assert a[0].endswith("and at least 2. The other listeners' average did not reach the bar (z 0.31).") and "%" not in a[0]
+    b = R2.outcome("tuned", 21, 1250, ve(1.4, 0), {"z": 0.61, "p": 0.012}, None, (1, 4), zref=-0.05)
+    assert b[0].endswith("(about 1 at the point estimate). The other listeners' average did not reach the bar (z -0.05).")
+    c = R2.outcome("stock", 21, 1250, ve(0.3, 0), {"z": 0.12, "p": 0.31}, None, (0, 4), zref=0.2)
+    assert c[0].endswith("(z 0.12, p = 0.31); the other listeners' average did not reach the bar (z 0.20). We show it because we said we would.")
+    assert R2.NO_SHARE in " ".join((REPO / R2.RULE).read_text().split())
 
 
 # ---- lines -------------------------------------------------------------------------------------------------------------------------
@@ -277,8 +297,33 @@ def test_pins_must_cover_all_eighteen_forecasts(tmp_path, monkeypatch):
     monkeypatch.setattr(R2, "WORD_PINS", {s: R2.sha(d / f"forecast/out/words_{s}.tsv") for s in R2.STORIES})
     monkeypatch.setattr(R2, "SURPRISAL_PIN", R2.sha(d / "surprisal.json"))
     monkeypatch.setattr(R2, "FORECAST_PINS", {"stock_story1_full": R2.sha(d / "forecast/out/pred_stock_story1_full.npz")})
+    (d / "r2_asr.json").write_text('{"whisperx": ["whisperx-3.8.6.dist-info"]}')
+    monkeypatch.setattr(R2, "RECORD_PINS", {"r2/r2_asr.json": R2.sha(d / "r2_asr.json")}); monkeypatch.setattr(R2, "WHISPERX", "3.8.6")
     with pytest.raises(SystemExit, match="pred tuned_story3_shuf not pinned"):
         R2.check_pins(str(tmp_path))
+    monkeypatch.setattr(R2, "WHISPERX", "3.9.0")
+    with pytest.raises(SystemExit, match="whisperx"):
+        R2.check_pins(str(tmp_path))
+    monkeypatch.setattr(R2, "WHISPERX", "3.8.6"); (d / "r2_asr.json").write_text('{"whisperx": []}')
+    with pytest.raises(SystemExit, match="record r2/r2_asr.json"):
+        R2.check_pins(str(tmp_path))
+
+
+def test_download_refuses_a_gifti_whose_size_differs_from_the_data_check(tmp_path, monkeypatch):
+    sub = R2.SUBS[0]
+    monkeypatch.setattr(R2, "check_pins", lambda root: {}); monkeypatch.setattr(R2, "SUBS", (sub,))
+    monkeypatch.setattr(R2.urllib.request, "urlretrieve", lambda url, dst: open(dst, "wb").write(b"not the file"))
+    with pytest.raises(SystemExit, match=f"refused: {sub}_task-story1_hemi-L_space-fsaverage5_bold.func.gii is 12 bytes; r2/data_check.json"):
+        R2.download(str(tmp_path))
+
+
+def test_a_gifti_must_match_the_downloads_hashes(tmp_path):
+    g = tmp_path / "x.func.gii"; g.write_bytes(b"gifti")
+    (tmp_path / "SHA256.json").write_text('{"x.func.gii": "%s"}' % R2.sha(g))
+    assert R2.note(str(g)) == R2.sha(g)
+    g.write_bytes(b"changed")
+    with pytest.raises(SystemExit, match="differs from the download's SHA256.json"):
+        R2.note(str(g))
 
 
 def test_events_onset_must_be_two_seconds(tmp_path):
@@ -383,6 +428,11 @@ def test_score_end_to_end_on_a_synthetic_root(tmp_path, monkeypatch, read):
     monkeypatch.setattr(R2, "WORD_PINS", {s: R2.sha(R / f"forecast/out/words_{s}.tsv") for s in R2.STORIES})
     monkeypatch.setattr(R2, "SURPRISAL_PIN", R2.sha(R / "surprisal.json"))
     monkeypatch.setattr(R2, "FORECAST_PINS", {p.stem[5:]: R2.sha(p) for p in (R / "forecast/out").glob("pred_*.npz")})
+    (R / "r2_asr.json").write_text('{"whisperx": ["whisperx-3.8.6.dist-info"]}')
+    monkeypatch.setattr(R2, "RECORD_PINS", {"r2/r2_asr.json": R2.sha(R / "r2_asr.json")}); monkeypatch.setattr(R2, "WHISPERX", "3.8.6")
+    atl = tmp_path / "atlas"; atl.mkdir()
+    for h in ("lh", "rh"):
+        (atl / f"{h}.Schaefer2018_400Parcels_17Networks_order.annot").write_bytes(h.encode())
     written = {}
     monkeypatch.setattr(R2, "_write", lambda pub, full, out: written.update(pub=pub, full=full) or pub)
     pub = R2.score(str(tmp_path), str(tmp_path / "out"))
@@ -396,4 +446,6 @@ def test_score_end_to_end_on_a_synthetic_root(tmp_path, monkeypatch, read):
         assert pub["models"][m]["stage"]["primary"]["n"] == 11 and pub["models"][m]["stage"]["primary"]["n_hearing"] == 12
         assert set(pub["models"][m]["cheap_baselines"]) == {"LANG", "AUD"} and "per_listener" not in pub["models"][m]["stage"]["primary"]
     assert written["full"]["full"]["stock"]["m1"]["AUD"] == written["full"]["full"]["tuned"]["m1"]["AUD"]   # AUD's M1 is model-free
+    read = {Path(k).name for k in R2.READ}                                          # every input read is hashed for the results
+    assert {"words_story1.tsv", "surprisal.json", "task-story3_events.tsv", "pred_tuned_story2_shuf.npz", "story1_audio.wav"} <= read
     __import__("json").dumps(written["full"], default=float)

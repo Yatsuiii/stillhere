@@ -62,6 +62,11 @@ STIM_PINS = {}         # story -> SHA-256 of stimuli/<story>_audio.wav
 WORD_PINS = {}         # story -> SHA-256 of forecast/out/words_<story>.tsv
 SURPRISAL_PIN = ""     # SHA-256 of r2/surprisal.json
 FORECAST_PINS = {}     # f"{model}_{story}_{mode}" -> SHA-256 of forecast/out/pred_<that>.npz
+RECORD_PINS = {}       # path under ROOT -> SHA-256: tribe_common as the kernels ran it, p1/surprisal8.py, the launchers and kernel code
+                       # (speech-to-text and forecasts), r2_asr.json and the stage records (rule section 10, the cloud's item 9)
+WHISPERX = ""          # the whisperx version uvx picked for the speech-to-text, as r2_asr.json records it
+NO_SHARE = "the other listeners' average did not reach the bar (z {zref})"    # rule section 10's addition to section 7 (item 8)
+SHARE_TEXT = "reached {share}% of what the other listeners' average reaches"
 
 LINES = {   # docs/rules/r2_paranoia_rule.md section 7, word for word
     "claim": "On another public story, outside TRIBE v2's training and evaluation sets (Paranoia, Finn et al. 2018; {n} listeners, the "
@@ -166,12 +171,27 @@ def _structure(img) -> str:
     return None
 
 
+READ = {}   # path -> SHA-256 of every input the scoring run read (written with the results, rule section 10)
+
+
+def note(path) -> str:
+    """Record an input the scoring run reads; a GIFTI must match the download's bold/SHA256.json when that file exists."""
+    h = sha(path); READ[os.path.abspath(path)] = h
+    ref = os.path.join(os.path.dirname(path), "SHA256.json")
+    if path.endswith(".func.gii") and os.path.isfile(ref):
+        want = json.load(open(ref)).get(os.path.basename(path))
+        if want != h:
+            raise SystemExit(f"refused: {os.path.basename(path)} differs from the download's SHA256.json")
+    return h
+
+
 def load_run(bold_dir, s, story) -> np.ndarray:
     """(20484, T) float32: the run's left then right fsaverage5 GIFTI, TRIBE's vertex order. Refuses a hemisphere that is not 10,242
     vertices of CortexLeft (L) or CortexRight (R), and hemispheres that differ in volume count."""
     import nibabel as nb
     out = []
     for hemi, want in (("L", "CortexLeft"), ("R", "CortexRight")):
+        note(os.path.join(bold_dir, gifti_name(s, story, hemi)))
         img = nb.load(os.path.join(bold_dir, gifti_name(s, story, hemi)))
         a = np.column_stack([d.data for d in img.darrays]).astype(np.float32)
         if a.shape[0] != 10242 or _structure(img) != want:
@@ -327,10 +347,15 @@ def reference(Bj: dict, subs: list, controls: list) -> dict:
 
 
 def share(model_z: dict, ref_z: dict) -> dict:
-    """The model's mean LANGUAGE z over the reference's listeners divided by the reference's mean z there (both reported)."""
+    """The model's mean LANGUAGE z over the reference's listeners divided by the reference's mean z there (both reported). No share (None)
+    when the reference itself did not reach the bar: its mean z at or below 0, or its one-sided Wilcoxon p (z > 0 across listeners) at
+    or above 0.05 (rule section 10, item 8)."""
+    from scipy import stats
     subs = sorted(ref_z)
     m, r = float(np.mean([model_z[s] for s in subs])), float(np.mean([ref_z[s] for s in subs]))
-    return {"n": len(subs), "model_mean_z": m, "reference_mean_z": r, "share": m / r}
+    p = float(stats.wilcoxon([ref_z[s] for s in subs], alternative="greater").pvalue)
+    ok = r > 0 and p < 0.05
+    return {"n": len(subs), "model_mean_z": m, "reference_mean_z": r, "reference_wilcoxon_p": p, "share": m / r if ok else None}
 
 
 def last_volume(pp_runs: dict, n: int) -> int:
@@ -343,26 +368,37 @@ def last_volume(pp_runs: dict, n: int) -> int:
     return int(idx.max())
 
 
-def outcome(model: str, n: int, T: int = 0, ve: dict = None, lang: dict = None, sh: float = None, beats: tuple = None) -> list:
-    """The rule's lines for one model (section 7); numbers copied from the output. Fine-tuned lines start with its prefix."""
+def with_share(template: str, sh) -> str:
+    """The template as written, or, when there is no share (share() returned None), its share clause replaced by NO_SHARE."""
+    if sh is not None:
+        return template
+    return (template.replace("It " + SHARE_TEXT + ".", NO_SHARE[0].upper() + NO_SHARE[1:] + ".")
+                    .replace("it " + SHARE_TEXT + ".", NO_SHARE + "."))
+
+
+def outcome(model: str, n: int, T: int = 0, ve: dict = None, lang: dict = None, sh: float = None, beats: tuple = None,
+            zref: float = None) -> list:
+    """The rule's lines for one model (section 7); numbers copied from the output. Fine-tuned lines start with its prefix. sh None: the
+    reference did not reach the bar, and the share clause names its mean z (zref) instead (section 10)."""
     if n < MIN_N:
         return [LINES["coverage"].format(n=n)]
-    f = {"n": n, "T": f"{T:,}", "M": f"{T * TR / 60:.1f}", "model": MODELS[model], "share": f"{100 * sh:.0f}"}
+    f = {"n": n, "T": f"{T:,}", "M": f"{T * TR / 60:.1f}", "model": MODELS[model],
+         "share": f"{100 * sh:.0f}" if sh is not None else None, "zref": f"{zref:.2f}" if zref is not None else None}
     if ve["claim_k"] >= 1:
-        line = LINES["claim"].format(point=round(ve["point_k"]), claim=ve["claim_k"], **f)
+        line = with_share(LINES["claim"], sh).format(point=round(ve["point_k"]), claim=ve["claim_k"], **f)
     elif lang["p"] < 0.05:
-        line = LINES["below_one"].format(z=f"{lang['z']:.2f}", p=f"{lang['p']:.2g}", point=round(ve["point_k"]), **f)
+        line = with_share(LINES["below_one"], sh).format(z=f"{lang['z']:.2f}", p=f"{lang['p']:.2g}", point=round(ve["point_k"]), **f)
     else:
-        line = LINES["no_bar"].format(z=f"{lang['z']:.2f}", p=f"{lang['p']:.2g}", **f)
+        line = with_share(LINES["no_bar"], sh).format(z=f"{lang['z']:.2f}", p=f"{lang['p']:.2g}", **f)
     return [PREFIX[model] + line, PREFIX[model] + LINES["beat"].format(k=beats[0], K=beats[1])]
 
 
 # ---- the steps ---------------------------------------------------------------------------------------------------------------------
 def check_pins(root) -> dict:
     """Refuses unless the forecasts' commit has filled every pin and every input matches it."""
-    if not (STIM_PINS and WORD_PINS and SURPRISAL_PIN and FORECAST_PINS):
-        raise SystemExit("refused: the stimuli', word tables', surprisal file's and forecasts' SHA-256 are not pinned yet (the forecasts' "
-                         "commit comes before the download and the scoring run)")
+    if not (STIM_PINS and WORD_PINS and SURPRISAL_PIN and FORECAST_PINS and RECORD_PINS and WHISPERX):
+        raise SystemExit("refused: the stimuli', word tables', surprisal file's, forecasts' and records' SHA-256 (and the whisperx version) "
+                         "are not pinned yet (the forecasts' commit comes before the download and the scoring run)")
     R = f"{root}/r2"
     got = {**{f"stimulus {s}": sha(f"{R}/stimuli/{s}_audio.wav") for s in STORIES},
            **{f"words {s}": sha(f"{R}/forecast/out/words_{s}.tsv") for s in STORIES}, "surprisal": sha(f"{R}/surprisal.json"),
@@ -370,6 +406,11 @@ def check_pins(root) -> dict:
     want = {**{f"stimulus {s}": STIM_PINS.get(s) for s in STORIES}, **{f"words {s}": WORD_PINS.get(s) for s in STORIES},
             "surprisal": SURPRISAL_PIN, **{f"pred {k}": v for k, v in FORECAST_PINS.items()}}
     need = {f"{m}_{s}_{k}" for m in MODELS for s in STORIES for k in MODES}
+    got.update({f"record {k}": sha(f"{root}/{k}") if os.path.isfile(f"{root}/{k}") else "missing" for k in RECORD_PINS})
+    want.update({f"record {k}": v for k, v in RECORD_PINS.items()})
+    asr = [k for k in RECORD_PINS if k.endswith("r2_asr.json")]
+    if not asr or any(WHISPERX not in " ".join(json.load(open(f"{root}/{k}")).get("whisperx", [])) for k in asr if os.path.isfile(f"{root}/{k}")):
+        want["whisperx"], got["whisperx"] = WHISPERX, "not the pinned version, or no r2_asr.json among the records"
     bad = sorted(k for k in want if got[k] != want[k]) + sorted(f"pred {k} not pinned" for k in need - set(FORECAST_PINS))
     if bad:
         raise SystemExit(f"refused: inputs differ from the pins: {bad}")
@@ -377,7 +418,10 @@ def check_pins(root) -> dict:
 
 
 def download(root):
+    """The events files and the 132 GIFTIs; refuses any GIFTI whose size differs from r2/data_check.json (rule section 10, item 9);
+    writes bold/SHA256.json, which the scoring run checks every GIFTI it reads against."""
     check_pins(root)
+    sizes = json.load(open(os.path.join(REPO, "r2/data_check.json")))["runs"]
     d = f"{root}/r2/bold"; os.makedirs(d, exist_ok=True); got = {}
     for story in STORIES:
         name = f"task-{story}_events.tsv"
@@ -388,6 +432,9 @@ def download(root):
                 name = gifti_name(s, story, hemi); dst = f"{d}/{name}"
                 if not os.path.exists(dst):
                     urllib.request.urlretrieve(f"{DER}{s}/func/{name}", dst)
+                want = sizes[f"{s} {story}"][hemi]["bytes"]
+                if os.path.getsize(dst) != want:
+                    raise SystemExit(f"refused: {name} is {os.path.getsize(dst)} bytes; r2/data_check.json recorded {want}")
                 got[name] = sha(dst)
         print(f"{s}: 6 files", flush=True)
     json.dump(got, open(f"{d}/SHA256.json", "w"), indent=1)
@@ -404,9 +451,14 @@ def score(root, out_dir):
     assert not os.path.abspath(out_dir).startswith(REPO), "OUT must be outside the repo (per-listener z)"
     fshift(0.0)                                                       # refuses until FORECAST_READ is set
     pins = check_pins(root)
-    R = f"{root}/r2"; os.makedirs(out_dir, exist_ok=True)
+    R = f"{root}/r2"; os.makedirs(out_dir, exist_ok=True); READ.clear()
     for story in STORIES:
         story_onset(f"{R}/bold/task-{story}_events.tsv", story)
+    for p in ([f"{R}/bold/task-{st}_events.tsv" for st in STORIES] + [f"{R}/stimuli/{st}_audio.wav" for st in STORIES]
+              + [f"{R}/forecast/out/words_{st}.tsv" for st in STORIES] + [f"{R}/surprisal.json"]
+              + [f"{R}/forecast/out/pred_{m}_{st}_{k}.npz" for m in MODELS for st in STORIES for k in MODES]
+              + [f"{root}/atlas/{h}.Schaefer2018_400Parcels_17Networks_order.annot" for h in ("lh", "rh")]):
+        note(p)
     sets = H.parcel_sets(f"{root}/atlas/lh.Schaefer2018_400Parcels_17Networks_order.annot",
                          f"{root}/atlas/rh.Schaefer2018_400Parcels_17Networks_order.annot")
     medial = medial_wall(f"{root}/atlas/lh.Schaefer2018_400Parcels_17Networks_order.annot",
@@ -485,7 +537,8 @@ def score(root, out_dir):
         curve = [float(np.mean([z for z, _ in m1["LANG"][k]])) for k in ks]
         ve = H.volunteer_equivalent(stage["primary"]["per_listener"]["language"], ks, curve)
         verdicts = [c["verdict"] for net in ("LANG", "AUD") for c in cheap[net]["tribe_vs"].values()]
-        ml = outcome(m, n_lang, T, ve, stage["primary"]["language"], shr["share"], (verdicts.count("TRIBE beats"), len(verdicts)))
+        ml = outcome(m, n_lang, T, ve, stage["primary"]["language"], shr["share"], (verdicts.count("TRIBE beats"), len(verdicts)),
+                     zref=shr["reference_mean_z"])
         lines += ml
         full[m] = {"stage": stage, "reference": {**shr, "per_listener": ref}, "cheap": cheap, "m1": {net: {str(k): v for k, v in r.items()} for net, r in m1.items()},
                    "volunteer_equivalent_language": ve}
@@ -501,6 +554,9 @@ def score(root, out_dir):
 def _write(pub, full, out_dir):
     json.dump(full, open(f"{out_dir}/r2_paranoia.json", "w"), indent=1, default=float)
     json.dump(pub, open(f"{REPO}/results/r2_paranoia.json", "w"), indent=1, default=float)
+    read = {os.path.basename(k): v for k, v in sorted(READ.items())}                  # every input read (rule section 10, item 9)
+    for f in (f"{out_dir}/SHA256.json", f"{REPO}/results/r2_paranoia_SHA256.json"):
+        json.dump(read, open(f, "w"), indent=1)
     for line in pub["lines"]:
         print(line, flush=True)
     return pub
