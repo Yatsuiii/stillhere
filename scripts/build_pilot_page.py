@@ -356,7 +356,7 @@ def film_html(media: dict, spark: dict, glimmer) -> str:
         gl = pending("Glimmer's edit check, which decides", "Saturday, same frames and bars. If Glimmer fails any bar, or cannot run in its "
                      "slot, the film face test is NOT RUN.", SLOTS["glimmer"])
     elif (glimmer.get("pass") or glimmer.get("rates", {}).get("pass") or {}).get("all"):
-        gl = panel(f'<h3>{badge("pass", "decides: pass")}{E(edit_check_line("Spark Open and Glimmer", glimmer))}</h3>'
+        gl = panel(f'<h3>{badge("pass", "decides: pass")}{E(edit_check_line("Glimmer", glimmer))}</h3>'
                    f'<p class="small">Glimmer\'s counts; <code>{SLOTS["glimmer"]}</code>.</p>')
     else:
         gl = panel(f'<h3>{badge("fail", "decides: fail")}{E(f"The edit check failed ({failed_bars(glimmer)}), so the film test did not run.")}</h3>')
@@ -553,6 +553,11 @@ FACE_PENDING = ("If the edit check fails or gate 0 stops it, it is NOT RUN; if t
 FACE_VISUAL = "The match was carried by visual-network parcels."
 FACE_B2_NOTE = ("Descriptive: both forecast maps, the control's especially, are concentrated in the seconds around the 51 uncontrolled "
                 "close-ups (61-67 s).")
+# Beside B2 when B1 failed (cloud ruling of Nov 1, 06:05 UTC, item 3; written after the result, descriptive, never decides): the observed
+# group statistics recomputed from the scored maps (results/face_map_runs.json) and the descriptive maps (results/face_map.json).
+FACE_B2_MARGIN = ("B2, more than the control, passed, but it is not used once B1 fails; part of its margin came from the control's map "
+                  "running opposite to the viewers' (rho with the viewers' average map: R 0.20, C -0.11; on the descriptive controlled-grid "
+                  "maps, R 0.02, C -0.31; descriptive, never decides).")
 B_CRITERIA = (("the Wilcoxon test", lambda b: b["wilcoxon_p"] < 0.05), ("the viewer count", lambda b: b["k_above_0"] >= b["kstar"]),
               ("the spin test", lambda b: b["spin_p"] < 0.05))
 
@@ -613,22 +618,37 @@ def film_score_html(fs: dict) -> str:
         ve = v["volunteer_equivalent"]; gz = fs["gauges"][g]
         rows.append(f'<tr><td>{E(g)}</td><td>about {round(ve["point_k"])}, at least {ve["claim_k"]}</td>'
                     f'<td>{gz["median_z"]:.2f} [{gz["ci95"][0]:.2f}, {gz["ci95"][1]:.2f}]</td></tr>')
-    bl = fs.get("baselines") or {}; names = {"word_rate": "word rate", "envelope": "sound envelope", "brightness": "brightness", "motion": "motion"}
-    prim = []
-    for pair in bl.get("primary", []):
-        net, base = pair.split(":"); r = bl.get(net)
-        if net in ("AUD", "HEARING") and base == "envelope":                      # ruling of Oct 29, 18:15 IST, item 4: the headline
-            continue                                                              # never says hearing beats the sound envelope
-        if isinstance(r, dict) and base in r:
-            prim.append(f"{net} vs {names.get(base, base)}: {r[base]['verdict']}")
+    bl = fs.get("baselines") or {}
+    beaten = sum(1 for pair in bl.get("primary", []) if (bl.get(pair.split(":")[0]) or {}).get(pair.split(":")[1], {}).get("verdict") == "TRIBE beats")
     return (f'<details><summary>Every gauge that ran</summary><div class="tbl"><table><tr><th>Gauge</th><th>Worth (real viewers)</th>'
             f'<th>Median z [95% CI]</th></tr>{"".join(rows)}</table></div></details>'
-            f'<p>What it had to beat: brightness, motion, sound envelope and word rate ({E("; ".join(prim) or "comparisons pending")}).</p>')
+            f'<p>What it had to beat: word rate, the sound envelope, brightness and motion (beaten in {beaten} of {len(bl.get("primary", []))} '
+            f'primary comparisons; every pair in <code>{SLOTS["film_score"]}</code>).</p>')
+
+
+def film_intact_line(fs: dict) -> str:
+    """The intact film's line (cloud ruling of Nov 1, 06:05 UTC, item 2), written from emofilm_rule.md's reporting conventions after the
+    result: it claims only what TRIBE beat and states the misses. It supersedes the Oct 29 headline rule that kept hearing-versus-envelope
+    out of the headline. Every claim is checked against the file; a file that does not support every claim gets no line (None)."""
+    b, g, isc = fs.get("baselines") or {}, fs.get("gauges") or {}, fs.get("isc") or {}
+    beats = lambda net, base: ((b.get(net) or {}).get(base) or {}).get("verdict") == "TRIBE beats"
+    has = lambda net, base: base in (b.get(net) or {})
+    ok = (all(has(n, x) for n in ("AUD", "VIS") for x in ("envelope", "brightness", "motion")) and has("LANG", "word_rate")
+          and all(k in g for k in ("HEARING", "VISUAL", "LANGUAGE")) and isc
+          and all(beats(net, base) for net in ("AUD", "VIS") for base in ("envelope", "brightness", "motion")) and not beats("LANG", "word_rate")
+          and all(v["volunteer_equivalent"]["claim_k"] == 0 and round(v["volunteer_equivalent"]["point_k"]) == 0 for v in isc.values()))
+    if not ok:
+        return None
+    return (f"Exploratory. On a film clip in neither TRIBE v2's training list nor its evaluation list (Tears of Steel, film seconds 10-185; "
+            f"Emo-FilM, {fs['viewers']['scored']} viewers), TRIBE v2's forecast followed the viewers' hearing areas (median z "
+            f"{g['HEARING']['median_z']:.2f}) and visual areas ({g['VISUAL']['median_z']:.2f}) more closely than the sound envelope, brightness "
+            f"or motion did. In language areas ({g['LANGUAGE']['median_z']:.2f}) it did no better than word rate. In every area it was worth "
+            f"less than one real viewer.")
 
 
 def film_result_html(fm, fs, ghost: dict = None) -> str:
     if fm is None:
-        return pending("Film face test, 28 real viewers", "Sunday, scored once at the logged onsets. " + FACE_PENDING,
+        return pending("Film face test", "Sunday, scored once at the logged onsets. " + FACE_PENDING,
                        f'{SLOTS["face_map"]} and {SLOTS["film_score"]}')
     o = fm["outcome"]; N = fm.get("viewers"); b1 = fm.get("B1") or {}; b2 = fm.get("B2") or {}
     k, p = b1.get("k_above_0"), b1.get("wilcoxon_p"); note = ""
@@ -647,6 +667,8 @@ def film_result_html(fm, fs, ghost: dict = None) -> str:
         txt = (f"Exploratory. TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces: it "
                f"missed {failed_criteria(b1)} ({k} of {N} viewers above 0, {b1['kstar']} needed; Wilcoxon p = {pnum(p)}; spin p = "
                f"{pnum(b1['spin_p'])}). We show it because we said we would.")
+        if b2.get("pass"):
+            note = FACE_B2_MARGIN + " " + FACE_B2_NOTE
     elif o == "UNINFORMATIVE":
         txt = (f"Exploratory. The face test is UNINFORMATIVE: {fm['why']}." if fm.get("why") else
                f"Exploratory. The {N} viewers' own face maps did not agree with each other, so this film cannot test the forecast.")
@@ -658,7 +680,9 @@ def film_result_html(fm, fs, ghost: dict = None) -> str:
     body = f'<h3>{badge(kind, o)}Film face test</h3><p class="big">{E(txt)}</p>' + (f'<p class="small">{E(note)}</p>' if note else "")
     if fs is not None:
         n = fs["viewers"]["scored"]
-        body += f'<h3>The intact film, {n} real viewers</h3>' + film_score_html(fs)
+        line = film_intact_line(fs)
+        body += (f'<h3>The intact film, {n} real viewers</h3>' + (f'<p class="big">{E(line)}</p>' if line else "") + film_score_html(fs)
+                 + f'<p class="small">Rule: <code>docs/rules/emofilm_rule.md</code>. {E(ND)}</p>')
         N = N or n
     elif o == "NOT RUN":
         body += f'<p class="small">The intact film\'s score fills from <code>{SLOTS["film_score"]}</code> when it lands.</p>'

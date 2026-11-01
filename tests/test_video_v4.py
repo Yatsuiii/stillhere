@@ -343,7 +343,8 @@ def test_every_slot_ending_resolves():
     film_vo = next(c for c in SPEC["vo"] if c.get("slot") == "film")
     assert set(film_vo["variants"]) == FILM_ENDINGS
     assert "It was set to run once, by rules written before any brain data was read." in all_text(SC["film_stamp"]["variants"]["NOT_RUN"])
-    assert "On the intact film, the forecast was worth about {veq_film} real viewers, and at least {veq_film_lo}." in all_text(SC["film_stamp"]["common"])
+    assert "In language areas (0.80) it did no better than word rate. In every area it was worth less than one real viewer." in all_text(SC["film_stamp"]["common"])
+    assert all_text(SC["film_stamp"]["common"]).startswith("Exploratory.") and film_vo["variants"]["FAIL"].startswith("Exploratory. It missed the spin test.")
     assert V.vo_cues(SPEC, {"film": "FAIL"})[[c.get("slot") for c in SPEC["vo"]].index("film")]["text"] == film_vo["variants"]["FAIL"]
 
 

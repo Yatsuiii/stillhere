@@ -62,7 +62,10 @@ real listeners: on a held-out audiobook, the forecast was worth about 5 real vol
 StillHere answers the second half with evidence, not a claim. Held-out forecasts are drawn against real public scans, beside cheap
 baselines. Pre-registered tests are scored once, by rules committed before their brain data was read, and misses stay on the page.
 So far: one held-out audiobook (about 5 real volunteers' worth, at least 2) and one pre-registered pass (Narratives notthefall); its
-pre-registered secondary did not pass. The story wall and the film face test are scored once, from Sat Oct 31.
+pre-registered secondary did not pass. The story wall met its pre-set bar (29 of 33 story families; descriptive, because its wrong-label
+check ran above 7%). The film face test failed (exploratory). On the intact film, TRIBE's forecast followed viewers' hearing and visual
+areas more closely than sound, brightness or motion did, did no better than word rate in language areas, and was worth less than one
+real viewer in every area (exploratory).
 
 A first healthy reference for a new story, before any scans, and evidence for how far to trust it.
 
@@ -86,7 +89,8 @@ Not a diagnosis or medical advice.
 | Order map go/no-go · 3 LibriVox Alice clips | The order map did not pass its own rule, so it is not shown. | 1 of 3 clips (bar: 3 of 3) | forecast only, no brain data | No-go · bar set before any forecast |
 | Story picker · Narratives and Le Petit Prince · 37 story families in 4 blocks | TRIBE's predicted response strength ranked the stories with listeners' language readouts (S1), and still did after word rate and the sound envelope were partialled out (S3). | S1 rho 0.54, p = 0.0007; S3 partial rho 0.63, p = 0.0005; S2 (a model-free yardstick from other listeners) rho 0.33, p = 0.031; S4 (each block's top third against all its stories) +0.31 z, 95% CI -0.07 to 0.58 | ranks only within a dataset, language and scanner; 41 of the 42 stories were used before the rule; without the development section, S1 rho 0.58 | **Pass** · S1 and S3 (co-primary) and S2, pre-registered (PREREG section 9); S4 did not pass; S3b <sup>6</sup> |
 | Story wall · the same stories · 33 counted story families | With zero same-clip controls, stock TRIBE v2's language readout followed the story each healthy listener group heard, more than other stories from the same dataset, on 29 of 33 story families not individually scored before this test (English and French; LPP sections counted once per language; 2 public datasets, 4 blocks, 1210 listeners, 2.7-55.6 minutes = 106-2222 TRs per story; wrong-label check 6 of 33). | 29 of 33 (bar: two-thirds); wrong-label check 6 of 33 = 18% | every story we scored stays on the wall, weak ones too; the wrong-label check is above its 7% limit | Bar met · descriptive, write-up only (wrong-label check above 7%) · pre-registered (D19) |
-| Film face test · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. TRIBE's forecast of the filled faces did not line up with where 16 real viewers' brains tracked faces: it missed the spin test (12 of 16 viewers above 0, 12 needed; Wilcoxon p = 0.017; spin p = 0.092). We show it because we said we would. | B1: 12 of 16 above 0 (12 needed), Wilcoxon p = 0.017, spin p = 0.092; gate 1 passed; B2 (more than the control) 13 of 16, p = 0.0002, spin p = 0.016, not used once B1 fails | 28 runs kept; 11 dropped by the volume check (the preprocessed image has 1 or 2 more volumes than the raw run), 1 excluded for motion; the control covers 89% of the face area TRIBE's video model sees; the 51 largest close-ups, and faces outside that view, have none | **Fail** · Exploratory · scored once, Nov 1 |
+| Film face test · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. TRIBE's forecast of the filled faces did not line up with where 16 real viewers' brains tracked faces: it missed the spin test (12 of 16 viewers above 0, 12 needed; Wilcoxon p = 0.017; spin p = 0.092). We show it because we said we would. | B1: 12 of 16 above 0 (12 needed), Wilcoxon p = 0.017, spin p = 0.092; gate 1 passed; B2 (more than the control) 13 of 16, p = 0.0002, spin p = 0.016, not used once B1 fails; part of B2's margin came from the control's map running opposite to the viewers' (rho with the viewers' average map: R 0.20, C -0.11; on the descriptive controlled-grid maps, R 0.02, C -0.31; descriptive, never decides); both maps, C especially, are concentrated in the seconds around the 51 uncontrolled close-ups (61-67 s) | 28 runs kept; 11 dropped by the volume check (the preprocessed image has 1 or 2 more volumes than the raw run), 1 excluded for motion; the control covers 89% of the face area TRIBE's video model sees; the 51 largest close-ups, and faces outside that view, have none | **Fail** · Exploratory · scored once, Nov 1 |
+| Intact film · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. On a film clip in neither TRIBE v2's training list nor its evaluation list (Tears of Steel, film seconds 10-185; Emo-FilM, 16 viewers), TRIBE v2's forecast followed the viewers' hearing areas (median z 3.23) and visual areas (2.77) more closely than the sound envelope, brightness or motion did. In language areas (0.80) it did no better than word rate. In every area it was worth less than one real viewer.<br>What it had to beat: word rate, the sound envelope, brightness and motion (beaten in 3 of 4 primary comparisons; every pair in `results/emofilm_film_score.json`). | median z: hearing 3.23, visual 2.77, language 0.80; worth less than one real viewer in each | film seconds 10-185; 28 kept, 11 dropped by the volume check, 1 for motion | Exploratory · `docs/rules/emofilm_rule.md` |
 | Sedation case study · OpenNeuro ds003171 | No sedation stage line: two of the three co-primary bars did not pass. | language fell in 9 of 12 (needed 10) | a case study, not a headline | Pre-registered; exploratory variants in the [write-up](docs/writeup_sedation.md) |
 
 <sup>4</sup> A first run used the dataset README's 10-volume offset, which the files do not follow; it is kept in
@@ -180,6 +184,7 @@ numbers come from.
 | Story picker · Narratives and Le Petit Prince · 37 story families in 4 blocks | TRIBE's predicted response strength ranked the stories with listeners' language readouts (S1), and still did after word rate and the sound envelope were partialled out (S3). | S1 rho 0.54, p = 0.0007; S3 partial rho 0.63, p = 0.0005; S2 (a model-free yardstick from other listeners) rho 0.33, p = 0.031; S4 (each block's top third against all its stories) +0.31 z, 95% CI -0.07 to 0.58; S4 did not pass | **Pass** · S1 and S3 (co-primary) and S2, pre-registered (PREREG section 9) <sup>3</sup> |
 | Story wall · the same stories · 33 counted story families | With zero same-clip controls, stock TRIBE v2's language readout followed the story each healthy listener group heard, more than other stories from the same dataset, on 29 of 33 story families not individually scored before this test (English and French; LPP sections counted once per language; 2 public datasets, 4 blocks, 1210 listeners, 2.7-55.6 minutes = 106-2222 TRs per story; wrong-label check 6 of 33). | 29 of 33 (bar: two-thirds); wrong-label check 6 of 33 = 18%, above its 7% limit | Bar met · descriptive, write-up only · pre-registered (D19) <sup>3</sup> |
 | Film face test · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. TRIBE's forecast of the filled faces did not line up with where 16 real viewers' brains tracked faces: it missed the spin test (12 of 16 viewers above 0, 12 needed; Wilcoxon p = 0.017; spin p = 0.092). We show it because we said we would. | B1: 12 of 16 above 0 (12 needed), Wilcoxon p = 0.017, spin p = 0.092 | **Fail** · Exploratory · scored once, Nov 1 |
+| Intact film · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. On a film clip in neither TRIBE v2's training list nor its evaluation list (Tears of Steel, film seconds 10-185; Emo-FilM, 16 viewers), TRIBE v2's forecast followed the viewers' hearing areas (median z 3.23) and visual areas (2.77) more closely than the sound envelope, brightness or motion did. In language areas (0.80) it did no better than word rate. In every area it was worth less than one real viewer.<br>What it had to beat: word rate, the sound envelope, brightness and motion (beaten in 3 of 4 primary comparisons; every pair in `results/emofilm_film_score.json`). | median z: hearing 3.23, visual 2.77, language 0.80 | Exploratory · `docs/rules/emofilm_rule.md` |
 
 <sup>1</sup> Held out; first measured Oct 22-23. LPP is one of TRIBE v2's own evaluation sets. TRIBE v2 was not trained on Le Petit
 Prince or Narratives; its authors used both as held-out test sets, scored on group averages (d'Ascoli et al. 2026, Table 1). Our tests
@@ -190,7 +195,7 @@ per version; the order of their two runs is not public)." For notthefall, each v
 not separate a change in the listeners' brains from a change in TRIBE's forecast, and the run order is not public, so it cannot be
 separated from an order or repeat-listening effect.<br>
 <sup>3</sup> The story wall's scoring rule was committed Oct 28 (340b74b); 41 of the 42 stories were used before then, for development
-or to tune a second model; scored once, Oct 31, 13:05 UTC (`results/picker/`).
+or to tune a second model; scored once, Oct 31, 12:45-12:54 UTC (SCORED.lock 12:45:21Z, 529 s; `results/picker/`).
 
 Files: `results/section8.json` · `results/d20_notthefall.json` · `results/picker/` (the picker and the wall) · `results/face_map.json`
 (run list `results/face_map_runs.json`).
@@ -291,8 +296,8 @@ Frozen group statistics, with exploratory variants labelled: [docs/writeup_sedat
 - **Gray is the forecast; colour is real listeners.** Held-out forecasts are drawn against real public scans, beside cheap
   baselines.
 - **Rules first.** Pre-registered tests are scored once by rules committed before their brain data was read; misses stay on the page.
-- **The same loop on film.** SAM 3.1 masks the faces, Glimmer decides the edit check, and the scans of 28 real viewers are the
-  test.
+- **The same loop on film.** SAM 3.1 masks the faces, Glimmer decides the edit check, and the scans of 16 real viewers are the
+  test (28 kept, 11 dropped by the volume check, 1 for motion).
 - **Nothing private leaves.** One typed egress layer, keys on the server, receipts with no request text, a hygiene scan before every
   push.
 
@@ -331,8 +336,6 @@ What we learned about them:
 - Content notes are not a full review; listen before you use a story.
 - A 6 GB laptop GPU runs the live forecast, during set hours only (10:00-14:00 ET, Nov 4-9); outside them a saved forecast is shown
   when one exists.
-- GPU time: if all 42 picker stories are not ready by Sun Nov 1, 18:00 UTC, the picker and the wall are reported "pre-registered, not
-  run", with no partial scoring.
 
 ## Built during the event
 
@@ -489,7 +492,7 @@ prereg_registry.json   SHA-256 of every entry point that scores a registered tes
 | [PREREG.md](PREREG.md) | The frozen pre-registration (D0-D27) |
 | [docs/MODEL_CARD.md](docs/MODEL_CARD.md) | The forecast card: TRIBE v2 as StillHere uses it, intended use, configuration, data, limits |
 | [CITATION.cff](CITATION.cff) | How to cite this repository |
-| [docs/rules/](docs/rules/) | One rule per test, each committed before the result it scores; where the brain data had been read before (fine-tuned Alice, R3 on LPP section 1), the rule says so: cheap baselines, the ghost-line display, the edit check, Emo-FilM, the face map, the film stimuli, Glimmer's face-edit check, the order-map go/no-go, the planner evaluations (v2 and R4), Spark Open's face check, the story menu, Alice (stock and fine-tuned), the R3 variants, R2 (Paranoia) and S3b's late run. Notes added after a result are dated and appended; a rule's original text is never edited |
+| [docs/rules/](docs/rules/) | One rule per test, each committed before the result it scores; where the brain data had been read before (fine-tuned Alice, R3 on LPP section 1), the rule says so: cheap baselines, the ghost-line display, the edit check, Emo-FilM, the face map, the film stimuli, Glimmer's face-edit check, the order-map go/no-go, the planner evaluations (v2 and R4), Spark Open's face check, the story menu, Alice (stock and fine-tuned), the R3 variants, R2 (Paranoia) and S3b's late run. Notes added after a result are dated and appended; the exceptions are two edits to `alice_heldout_rule.md`'s text after its runs (ea92b11, 89dddd5), in its history |
 | [docs/frozen_code_changes.md](docs/frozen_code_changes.md) | Every change to frozen code, with its timing and why |
 | [docs/deploy_checklist.md](docs/deploy_checklist.md) | Deploying the hosted Pilot app: accounts, environment variables, smoke checks, redeploys |
 | [docs/jobs_api.md](docs/jobs_api.md) | The jobs API between the hosted page and the laptop worker |

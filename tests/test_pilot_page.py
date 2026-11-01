@@ -175,7 +175,8 @@ SPARK = BP.load("results/edit_check_spark_open.json")
 
 def test_glimmer_pass_and_fail(monkeypatch):
     t = text(build_with(monkeypatch, {**NONE, "glimmer": {k: SPARK[k] for k in ("rates", "label")}}))
-    assert "Edit check: Spark Open and Glimmer saw a face in 54 of 62 intact frames, in 0 of 62 filled ones, and in 51 of 62 control frames." in t
+    assert "Edit check: Glimmer saw a face in 54 of 62 intact frames, in 0 of 62 filled ones, and in 51 of 62 control frames." in t
+    assert "Spark Open and Glimmer saw" not in t                               # each checker's counts credited to it alone (cloud, Nov 1 06:30)
     bad = copy.deepcopy({k: SPARK[k] for k in ("rates", "label")})
     bad["rates"]["faces_removed_no"] = [40, 62]; bad["rates"]["pass"].update(faces_removed=False, all=False)
     t = text(build_with(monkeypatch, {**NONE, "glimmer": bad}))
@@ -251,10 +252,19 @@ def test_uninformative_names_its_reason_and_pending_says_what_stops_it(monkeypat
             "UNINFORMATIVE.") in t
 
 
-def test_film_headline_never_says_hearing_beats_the_envelope(monkeypatch):
-    fs = copy.deepcopy(FILM); fs["baselines"]["primary"].append("AUD:envelope"); fs["baselines"]["AUD"] = {"envelope": {"verdict": "TRIBE beats"}}
-    t = text(build_with(monkeypatch, {**NONE, "face_map": {"outcome": "NOT RUN", "why": "x"}, "film_score": fs}))
-    assert "AUD vs sound envelope" not in t and "VIS vs brightness: TRIBE beats" in t
+def test_intact_film_line_only_when_the_file_supports_every_claim(monkeypatch):
+    """Cloud ruling of Nov 1, 06:05 UTC, item 2: the intact film's line claims only what TRIBE beat and states the misses."""
+    real = BP.load("results/emofilm_film_score.json")
+    line = BP.film_intact_line(real)
+    assert line.startswith("Exploratory. On a film clip in neither TRIBE v2's training list nor its evaluation list (Tears of Steel")
+    assert "hearing areas (median z 3.23) and visual areas (2.77)" in line and "In language areas (0.80) it did no better than word rate." in line
+    assert BP.film_intact_line(FILM) is None                                    # a file without every claim's numbers gets no line
+    bad = copy.deepcopy(real); bad["baselines"]["LANG"]["word_rate"]["verdict"] = "TRIBE beats"
+    assert BP.film_intact_line(bad) is None                                     # the line would understate it: no line
+    t = text(build_with(monkeypatch, {**NONE, "face_map": {"outcome": "FAIL", "viewers": 16, "B1": {**B1, "spin_p": 0.09}, "B2": {**B1, "pass": True}},
+                                       "film_score": real}))
+    assert line in t and "beaten in 3 of 4 primary comparisons" in t and "Not a diagnosis or medical advice." in t
+    assert "part of its margin came from the control's map running opposite" in t
 
 
 def test_ghost_lines_keep_the_draw_order():
@@ -279,8 +289,8 @@ def test_pass_carried_by_visual_parcels_and_not_run_with_the_intact_film(monkeyp
     assert "VISUAL about 4, at least 2 1.50 [1.10, 1.90]" in t and "Every gauge that ran" in t
     page = build_with(monkeypatch, {**NONE, "face_map": fm, "film_score": FILM})
     assert all(page.rfind("<details", 0, m.start()) > page.rfind("</details>", 0, m.start()) for m in re.finditer("<table", page))
-    assert "What it had to beat: brightness, motion, sound envelope and word rate (VIS vs brightness: TRIBE beats; VIS vs motion: no " \
-           "difference shown)." in t and "28 real viewers of the intact film" in t
+    assert "What it had to beat: word rate, the sound envelope, brightness and motion (beaten in 1 of 2 primary comparisons; every pair " \
+           "in" in t and "28 real viewers of the intact film" in t
 
 
 # ---- phone viewport -------------------------------------------------------------------------------------------------------------------

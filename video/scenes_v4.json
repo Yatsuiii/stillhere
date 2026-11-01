@@ -860,7 +860,7 @@
    "common": [
     {
      "kind": "text",
-     "text": "On the intact film, the forecast was worth about {veq_film} real viewers, and at least {veq_film_lo}."
+     "text": "Exploratory. On a film clip in neither TRIBE v2's training list nor its evaluation list (Tears of Steel, film seconds 10-185; Emo-FilM, 16 viewers), TRIBE v2's forecast followed the viewers' hearing areas (median z 3.23) and visual areas (2.77) more closely than the sound envelope, brightness or motion did. In language areas (0.80) it did no better than word rate. In every area it was worth less than one real viewer."
     }
    ],
    "variants": {
@@ -949,7 +949,7 @@
      },
      {
       "kind": "text",
-      "text": "TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces: it missed {criterion} ({k} of {N} viewers above 0, {kstar} needed; Wilcoxon p = {p}; spin p = {spin_p}). We show it because we said we would."
+      "text": "Exploratory. TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces: it missed {criterion} ({k} of {N} viewers above 0, {kstar} needed; Wilcoxon p = {p}; spin p = {spin_p}). We show it because we said we would."
      },
      {
       "kind": "small",
@@ -983,7 +983,7 @@
      },
      {
       "kind": "small",
-      "text": "What it had to beat: brightness, motion, sound envelope and word rate ({film_beat})."
+      "text": "What it had to beat: word rate, the sound envelope, brightness and motion (beaten in 3 of 4 primary comparisons; every pair in results/emofilm_film_score.json)."
      },
      {
       "kind": "text",
@@ -1251,7 +1251,7 @@
     "PASS": "The forecast lined up with where these viewers' brains tracked faces.",
     "PASS_VISUAL": "It lined up, carried by visual-network parcels.",
     "FAIL_NFS": "It lined up, but not reliably more than its forecast for the control.",
-    "FAIL": "It did not line up. We show it because we said we would.",
+    "FAIL": "Exploratory. It missed the spin test. We show it because we said we would.",
     "UNINFORMATIVE": "The viewers' own face maps did not agree, so this film cannot test the forecast.",
     "NOT_RUN": "The face test did not run; it was set to run once."
    }

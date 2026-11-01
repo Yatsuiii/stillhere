@@ -177,3 +177,17 @@ All committed and pushed before `prepare` opens any Emo-FilM file.
    pushed at once; `maps`, `score` and `not-run` are never rerun after any BOLD file is opened. If a refusal mentions the cutoff, scoring
    stops and the message goes to the project thread; NOT RUN is never pushed on that basis (R and C reached origin/main at 17:32:58 UTC
    Oct 31, before Sun Nov 1, 18:00 UTC). After scoring, the run list used (prepared, dropped and why) is committed beside the result.
+
+## Dated disclosure, Nov 1 2026 (cloud conformance check of Nov 1, 06:30 UTC; no rerun, the outcome stands)
+
+The scored run (7e55f24, 400c3f4, ccb9c1b) was checked against the Oct 29 rules with no result-changing deviation found. Disclosed:
+- Spin test: within each hemisphere the rotated centroids are matched to the original ones by maximising the summed dot products (the
+  rule says "Hungarian assignment" and names no cost).
+- The intact film's ISC grid interpolates censored frames, where the rule says they are ignored (38 frames, intact film only; the face
+  map does not use the ISC).
+- Motion rows were located from scans.tsv order and MRIQC counts; 15 of the 17 prepared runs used the rule's MRIQC fd_mean fallback.
+- Code and rule text changed after the Fri Oct 30, 20:00 UTC no-GPU cutoff: refusals only (d7bba3d; 7e55f24's UNINFORMATIVE path),
+  with hashes in `docs/frozen_code_changes.md`.
+- The observed spin statistics (B1: rho(R, Mbar) 0.2006; B2: rho(R, Mbar) - rho(C, Mbar) 0.3095, with rho(C, Mbar) -0.1089) and the
+  package versions are in `results/face_map_runs.json`, recomputed from the scored per-viewer maps after the result (no rerun).
+- After the result, metadata only: why 11 runs were dropped (dated note in `results/face_map_runs.json`).

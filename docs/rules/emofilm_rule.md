@@ -130,3 +130,13 @@ each run's own logged onset, the run table printed from metadata, the volume-cou
 - Version 1 (commit 2762956): scored volumes from film time 10 s to the end of the 588 s cut, TRIBE gauges and ISC only.
 - Bridge-window amendment (commit 53d14b4, `emofilm_bridge_rule.md`): film time 30.00 to 45.25 s, 11 or 12 volumes per viewer, a
   wrong-segment null. Replaced because 11 or 12 volumes are too few to test a forecast.
+
+Dated note, Nov 1 2026 (cloud ruling of Nov 1, 06:05 UTC, item 2; the text above is unchanged): the intact film's public line was written
+after the result (`results/emofilm_film_score.json`, scored once, Nov 1, 05:29:59-05:31:54 UTC) from this rule's reporting conventions: it
+claims only what TRIBE beat and states the misses, with the numbers copied from the file. "Exploratory. On a film clip in neither TRIBE v2's
+training list nor its evaluation list (Tears of Steel, film seconds 10-185; Emo-FilM, 16 viewers), TRIBE v2's forecast followed the
+viewers' hearing areas (median z 3.23) and visual areas (2.77) more closely than the sound envelope, brightness or motion did. In language
+areas (0.80) it did no better than word rate. In every area it was worth less than one real viewer." Beside it: "What it had to beat: word
+rate, the sound envelope, brightness and motion (beaten in 3 of 4 primary comparisons; every pair in results/emofilm_film_score.json)."
+This line names hearing against the sound envelope, which the page's Oct 29 headline rule kept out; the Nov 1 ruling supersedes it for
+this line.

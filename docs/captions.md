@@ -63,10 +63,10 @@ On-screen captions:
 2. Edit: "SAM filled the faces it masked with the surrounding colour. The control fills the same area somewhere else, with exactly the
    same fill."
 3. Edit check, one per ending:
-   - pass: "Edit check: Spark Open and Glimmer saw a face in {k_int} of {N} intact frames, in {k_rem} of {N} filled ones, and in
-     {k_am} of {N} control frames."
+   - pass: "Edit check: Glimmer saw a face in {k_int} of {N} intact frames, in {k_rem} of {N} filled ones, and in {k_am} of {N}
+     control frames." (Glimmer's counts only; Spark Open's are given as Spark Open's.)
    - fail: "The edit check failed ({detail}), so the film test did not run."
-4. Forecast against 28 real viewers. Length and caption follow the outcome (the test is scored once, at the logged onsets). Lines fixed
+4. Forecast against 16 real viewers (28 kept, 11 dropped by the volume check, 1 for motion). Length and caption follow the outcome (the test is scored once, at the logged onsets). Lines fixed
    by the cloud ruling of Nov 1, 05:05 UTC (item 5), before the result; every result line starts "Exploratory." (face_map_rule.md:5).
    {k}, {kstar}, {p} and {spin_p} are B1's (`results/face_map.json`: k_above_0, kstar, wilcoxon_p, spin_p); {k2}, {p2}, {spin_p2}
    are B2's.
@@ -84,13 +84,23 @@ On-screen captions:
    - FAIL (short panel), naming the missed criterion (the Wilcoxon test, the viewer count, the spin test, or all three criteria) with all
      three numbers: "Exploratory. TRIBE's forecast of the filled faces did not line up with where {N} real viewers' brains tracked faces:
      it missed {criterion} ({k} of {N} viewers above 0, {kstar} needed; Wilcoxon p = {p}; spin p = {spin_p}). We show it because we
-     said we would."
+     said we would." Spoken: "Exploratory. It missed the spin test. We show it because we said we would." (the criterion it missed).
+     Beside it when B2 passed (small print; written after the result, cloud ruling of Nov 1, 06:05 UTC, item 3): "B2, more than the
+     control, passed, but it is not used once B1 fails; part of its margin came from the control's map running opposite to the
+     viewers' (rho with the viewers' average map: R 0.20, C -0.11; on the descriptive controlled-grid maps, R 0.02, C -0.31;
+     descriptive, never decides)." and the close-up sentence above.
    - UNINFORMATIVE (short panel): "Exploratory. The {N} viewers' own face maps did not agree with each other, so this film cannot test
      the forecast." If a constant or non-finite parcel row stopped the score after the BOLD was opened: "Exploratory. The face test is
      UNINFORMATIVE: {reason}." (the viewer and the parcel named).
-   - NOT RUN (18 s; the edit and its check have already been shown, and the story beat leads the video): the intact film result,
-     "On the intact film, the forecast was worth about {veq_film} real viewers, and at least {veq_film_lo}."; its row "What it had to
-     beat: brightness, motion, sound envelope and word rate ({film_beat})."; then "The face test did not run: {reason}. It was set to
+   - The intact film, with every outcome (cloud ruling of Nov 1, 06:05 UTC, item 2; written after the result from emofilm_rule.md's
+     conventions, numbers copied from `results/emofilm_film_score.json`): "Exploratory. On a film clip in neither TRIBE v2's training
+     list nor its evaluation list (Tears of Steel, film seconds 10-185; Emo-FilM, 16 viewers), TRIBE v2's forecast followed the viewers'
+     hearing areas (median z 3.23) and visual areas (2.77) more closely than the sound envelope, brightness or motion did. In language
+     areas (0.80) it did no better than word rate. In every area it was worth less than one real viewer." Beside it: "What it had to
+     beat: word rate, the sound envelope, brightness and motion (beaten in 3 of 4 primary comparisons; every pair in
+     results/emofilm_film_score.json)." and "Not a diagnosis or medical advice."
+   - NOT RUN (18 s; the edit and its check have already been shown, and the story beat leads the video): the intact film line above;
+     then "The face test did not run: {reason}. It was set to
      run once, by rules written before any brain data was read." Reasons as logged, e.g. "edit not confirmed by Glimmer", "gate 0:
      VIF > 5", "GPU time ran out".
    - The control, wherever its coverage is given: "The same-size patch covers 89% of the face area TRIBE's video model sees; the 51

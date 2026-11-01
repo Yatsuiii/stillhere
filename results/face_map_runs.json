@@ -205,5 +205,26 @@
    "censored_frames": 0,
    "scored": true
   }
+ },
+ "record": {
+  "note": "added after the result (cloud rulings of Nov 1, 06:05 UTC item 1 and 06:30 UTC); no rerun, the outcome stands",
+  "observed_spin_statistics": {
+   "B1_rho_R_Mbar": 0.2005938839586529,
+   "B2_rho_R_minus_rho_C": 0.309486028874138,
+   "rho_C_Mbar": -0.10889214491548509,
+   "spin_p": {
+    "B1": "92/1001",
+    "B2": "16/1001"
+   },
+   "how": "recomputed from the scored per-viewer maps (CACHE/face_maps_per_viewer.npz, 16 viewers) over the 374 tested parcels"
+  },
+  "package_versions": {
+   "python": "3.12.13",
+   "numpy": "2.2.6",
+   "scipy": "1.18.1",
+   "nibabel": "5.4.2",
+   "nilearn": "0.14.1"
+  },
+  "why_dropped_metadata_note": "Metadata only, after scoring. The derivative sidecars are dataset-wide templates with no volume information. For sub-S16, sub-S17 and sub-S23 the authors' FEAT motion file is the Tears of Steel run (no other run in the session has its length), and its rows equal the preprocessed image's volume count (608, 607, 608), not the published raw run's (607, 606, 607): the authors preprocessed a copy 1 to 2 volumes longer than the raw they published; sub-S15's rest run shows the same +1 (motion 460, raw 459). Kept and dropped runs are otherwise alike (dcm2niix v2.2.10, TR 1.3 s, header toffset 0, events ending at about 773 s). Whether the extra volumes are at the start or the end cannot be told without the brain data; not pursued. This changes nothing."
  }
 }
