@@ -173,6 +173,21 @@ video or any post before then; every response is `noindex`. Repeat checks 1, 2, 
    with no saved run, FORECAST: the lane bars move on the worker's events and the forecast lands with its receipt. Then
    `sudo systemctl stop stillhere-worker` and `sudo rm /etc/stillhere-worker/worker.env`.
 
+## Before Nov 4, 15:00 UTC (cloud ruling of Nov 2, 14:05 UTC, item 4)
+
+1. Reinstall the worker once, after the hardening (worker/engine.py, worker/labels.py and the service file changed on Nov 2), from
+   the laptop's repository at origin/main: `sudo bash worker/install_worker.sh https://stillhere-deploy.vercel.app`. Its step 5 runs
+   the self-test inside the sandbox and must print SELF-TEST PASS; it enables the timer only (the worker itself does not start). It
+   keeps `/etc/stillhere-worker/job_token`, so Vercel's `STILLHERE_WORKER_TOKEN` stays as it is. The service now sets
+   `STILLHERE_WORKER_LABEL=the laptop`, so the page's running line reads as before.
+   Pre-checked Nov 2, about 16:10 UTC, without sudo: the installer's file checks and `link_models.py --audit` pass on the Windows
+   partition as now mounted (ntfs-3g): models 16 files, 9.47 GB; site-packages 37,219 files; spaCy 41 files; nothing unexpected.
+   The timer's next start is Wed Nov 4, 15:00 UTC.
+2. Production for the web changes (web/stations.py, web/public/app.js, web/jobs.py, web/app.py), preview first: the preview of
+   8791901 (stillhere-deploy-2ywneos7p-cave2) showed the R2 and R5 panels, the new app.js, `local_gpu: false` and the hosted saved
+   line. Then, in `~/stillhere-deploy` after `git pull --ff-only` (its local .gitignore lines `.vercel` and `.env*` stay uncommitted):
+   `vercel deploy --prod --yes`, and repeat checks 1, 2, 9, 10 and 11 of 8c on production.
+
 ## Redeploys
 
 Git is not connected, so nothing deploys on a push. After any commit the hosted app needs (a results file from the Saturday chain
