@@ -76,15 +76,18 @@ def cache_key(r: dict) -> str:
     R = _recipe(); return R.cache_key(r, R.load_index())
 
 
-def cached(key: str, from_store: bool = True):
+def cached(key: str, from_store: bool = True, precompute: bool = True):
     """A worker's result for this cache key, else the committed precompute's, else None; from_store False: the precompute only (an
-    answer that must cost no store command, such as a refusal past the address's bucket)."""
+    answer that must cost no store command, such as a refusal past the address's bucket); precompute False: this server's worker's
+    results only (a local GPU run, STILLHERE_LOCAL_GPU, so the visitor's own GPU computes it)."""
     try:
         v = get_store().get(f"result:{key}") if from_store else None
     except StoreError:                                      # the store is failing: the committed precompute still answers
         v = None
     if v:
         return {**json.loads(v), "source": "worker"}
+    if not precompute:
+        return None
     d = _load(CACHE) or {}                                  # the worker fork's precompute: entries by cache key, at the top level or under
     for pre in (d.get("entries"), d.get("results"), d):    # "entries" / "results", beside its "models" and "default_seed"
         if isinstance(pre, dict) and isinstance(pre.get(key), dict):
@@ -123,13 +126,13 @@ def _unwait(addr: str, job_id: str) -> None:
             s.incrbyfloat(_waiting(addr), -v)
 
 
-def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None) -> dict:
+def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None, precompute: bool = True) -> dict:
     """Cached result, a queued job, or the cached default-seed forecast when the worker is offline, the queue is full, or the
     network address `addr` already has ADDRESS_WAITING jobs waiting; past FORECAST's hourly cap (or the address's slice of it), which
     counts only jobs that reach the laptop, ledger.Refused and nothing written. The hour and the address's waiting count go into
     `claimed`, so the caller, ending without a queued job (busy, a lost queue race, a refusal, a store error), gives them back; once
     RPUSH has queued the job they stand (claimed.paid), as the worker will claim and run it."""
-    key = cache_key(r); hit = cached(key)
+    key = cache_key(r); hit = cached(key, precompute=precompute)
     if hit:
         return {"state": "cached", "result": hit}
     s, sh = get_store(), hashlib.sha256(sid.encode()).hexdigest()[:16]

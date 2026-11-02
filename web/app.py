@@ -19,6 +19,8 @@ if str(REPO) not in sys.path:
 _bl = os.environ.get("STILLHERE_QUESTION_BLOCKLIST")      # read by stillhere/egress.py at import: a relative path is the repository's
 if _bl and not os.path.isabs(_bl):
     os.environ["STILLHERE_QUESTION_BLOCKLIST"] = str(REPO / _bl)
+if os.environ.get("STILLHERE_LOCAL_GPU") == "1" and (os.environ.get("VERCEL_ENV") or os.environ.get("VERCEL")):
+    raise SystemExit("STILLHERE_LOCAL_GPU is for a local server only (scripts/run_local_gpu.sh), never on Vercel")
 if os.environ.get("VERCEL"):                               # only /tmp is writable there; the usage log holds counts and times, no text
     os.environ.setdefault("STILLHERE_USAGE_LOG", "/tmp/stillhere_usage.jsonl")
 
@@ -167,7 +169,8 @@ def status(req, m):
         print(f"stillhere: store error ({e}) in status", file=sys.stderr, flush=True)
         online, live = False, {"meta": False, "fireworks": False}
     return 200, {"worker_online": online, "worker_hours_et": stations.hours_et(), "saved_line": stations.SAVED_LINE.format(
-        hours=stations.hours_et()), "live": live, "runs_per_hour": ledger.RUNS_PER_HOUR, "menu": stations.menu()}
+        hours=stations.hours_et()), "live": live, "runs_per_hour": ledger.RUNS_PER_HOUR, "menu": stations.menu(),
+        "local_gpu": stations.local_gpu()}
 
 
 @route("POST", "/api/plan", bucket="BUCKET")

@@ -587,9 +587,12 @@ def forecast(run_id: str, sid: str, clip_id: str, condition: str, seed: int) -> 
         with ledger.Claimed() as t:                              # the run's use and the hours stand only for a job that reaches the queue
             if condition in ("sentence_scramble", "word_scramble") and r["seed"] not in RESHUFFLE_SEEDS:
                 raise ledger.Refused("seed_not_offered")       # BUILD's seeds only; the saved run, not a 400 (the page keeps its built state)
-            planned(run_id, r["clip_id"], r["condition"])
-            addr = ledger.use(run_id, sid, "forecast", max_uses=4, claimed=t)
-            out = jobs.submit(r, sid, claimed=t, addr=addr)
+            if local_gpu() and not (run_id and get_store().get(f"runspec:{run_id}")):
+                addr = None                                    # the visitor's own GPU: a recorded plan's clip runs live, no run needed
+            else:
+                planned(run_id, r["clip_id"], r["condition"])
+                addr = ledger.use(run_id, sid, "forecast", max_uses=4, claimed=t)
+            out = jobs.submit(r, sid, claimed=t, addr=addr, precompute=not local_gpu())
             if out["state"] != "queued":                       # cached, busy, offline or a lost queue race: no laptop time
                 t.give_back()
     except ledger.Refused as e:                                # no live run (a recorded plan), used up or past the hour: the saved run
@@ -614,6 +617,13 @@ def slowed(station: str, b: dict) -> dict:
     if station == "build":
         return old_bug() if b.get("old_bug") else recorded_build(b.get("clip_id"), b.get("condition"), "slow_down")
     return {"plan": recorded_plan, "audit": recorded_audit, "film": recorded_film}[station]("slow_down")
+
+
+def local_gpu() -> bool:
+    """STILLHERE_LOCAL_GPU=1 (scripts/run_local_gpu.sh; cloud review of Nov 2, 12:15 UTC, item 5): a local server whose worker is the
+    visitor's own GPU. FORECAST then runs live on a recorded plan (no API key needed) and skips the committed precompute. Never on
+    Vercel: web/app.py refuses to start with it there, and this answers False there regardless."""
+    return os.environ.get("STILLHERE_LOCAL_GPU") == "1" and not os.environ.get("VERCEL_ENV") and not os.environ.get("VERCEL")
 
 
 def hours_et() -> str:

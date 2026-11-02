@@ -506,6 +506,35 @@ def test_worker_label_shows_while_its_job_runs(web):
     assert '"Running on " + (s.data.worker_label || "the laptop")' in (REPO / "web/public/app.js").read_text()
 
 
+def test_local_gpu_forecasts_a_recorded_plan_live(web, monkeypatch, tmp_path):
+    """STILLHERE_LOCAL_GPU=1 (cloud review of Nov 2, 12:15 UTC, item 5): with no live plan (no API key), FORECAST queues the recorded
+    plan's recipe for the visitor's own GPU and skips the committed precompute; without the flag the same request gets the saved run."""
+    app, jobs, ledger, stations, store = web
+    rec = {"clip_id": "alice_ch02", "condition": "sentence_scramble", "seed": 7}
+    cache = tmp_path / "pre.json"; cache.write_text(json.dumps({"entries": {jobs.cache_key(jobs.recipe(**rec)): result_for("x" * 64)}}))
+    monkeypatch.setattr(jobs, "CACHE", cache)
+    call(app, "POST", "/api/worker/claim", {}, auth=W)                               # the local worker is online
+    code, _, out = call(app, "POST", "/api/forecast", {"run_id": None, **rec}); d = json.loads(out)
+    assert code == 200 and d["state"] == "offline" and d["why"] == "Cached forecast only."   # no flag: no live plan, the saved run
+    assert json.loads(call(app, "GET", "/api/status")[2])["local_gpu"] is False
+    monkeypatch.setenv("STILLHERE_LOCAL_GPU", "1")
+    assert json.loads(call(app, "GET", "/api/status")[2])["local_gpu"] is True
+    code, _, out = call(app, "POST", "/api/forecast", {"run_id": None, **rec}); d = json.loads(out)
+    assert code == 202 and d["state"] == "queued" and d["job_id"]                 # live on the local GPU, the precompute skipped
+    _, _, out = call(app, "POST", "/api/worker/claim", {"worker_label": "local GPU"}, auth=W)
+    assert json.loads(out)["job"]["recipe"] == rec
+    monkeypatch.setenv("VERCEL_ENV", "production")                                  # never on Vercel, whatever the flag says
+    assert stations.local_gpu() is False
+
+
+def test_local_gpu_flag_refuses_to_start_on_vercel():
+    env = {**__import__("os").environ, "STILLHERE_LOCAL_GPU": "1", "VERCEL_ENV": "production"}
+    p = subprocess.run([sys.executable, "-c", "import web.app"], cwd=REPO, env=env, capture_output=True, text=True)
+    assert p.returncode != 0 and "local server only" in p.stderr
+    js = (REPO / "web/public/app.js").read_text()
+    assert "S.localGpu = data.local_gpu === true" in js and "function canForecast()" in js
+
+
 def test_jobs_expire_and_fall_back(web, monkeypatch):
     app, jobs, ledger, stations, store = web
     call(app, "POST", "/api/worker/claim", {}, auth=W)

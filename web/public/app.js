@@ -51,13 +51,23 @@ function setRoute(route, story, label) {
   const box = $("build-recipe"); box.textContent = label + "clip " + route.clip_id + ", intact against " + route.condition.replace("_", " ") + ", seed " + route.seed + ".";
   if (S.story) box.append(storyCard(S.story));
   $("build-go").disabled = false; $("audit-go").disabled = false;
+  if (S.localGpu && !S.run) {                                 // STILLHERE_LOCAL_GPU: the visitor's own GPU forecasts a recorded plan live
+    $("forecast-go").disabled = false;
+    $("reshuffle").disabled = !["sentence_scramble", "word_scramble"].includes(route.condition);
+  }
+}
+function canForecast() { return S.built || (S.localGpu && !S.run); }
+function localReshuffle() {                                   // local GPU, recorded plan: a new seed for the forecast, no transcription
+  S.seed = nextSeed();
+  $("build-out").textContent = "";
+  $("build-out").append(el("p", "small", "Seed " + S.seed + ": the forecast runs on your GPU. The transcription check needs a Meta key and is not run."));
 }
 function done(station) { document.querySelector('.rail a[href="#' + station + '"]').classList.add("done"); }
 
 // ---- status and menu ---------------------------------------------------------------------------------------------------------
 async function loadStatus() {
   const {data} = await api("/api/status");
-  S.menu = data.menu || {};
+  S.menu = data.menu || {}; S.localGpu = data.local_gpu === true;
   $("menu-text").textContent = S.menu.text || "";
   const chips = $("chips"); chips.textContent = "";
   for (const c of S.menu.chips || []) {
@@ -159,7 +169,7 @@ async function doBuild(seed) {
   if (data.mode === "live") S.seed = data.seed;               // a recorded build never sets the seed
   S.lastBuild = data; S.built = data.mode === "live" ? data.pass !== false : data.pass === true;
   out.append(checklistView(data));
-  $("forecast-go").disabled = !S.built;
+  $("forecast-go").disabled = !canForecast();
   $("reshuffle").disabled = !["sentence_scramble", "word_scramble"].includes(S.route.condition);
   if (S.built) done("build");
 }
@@ -280,7 +290,7 @@ const STORE_TRIES = 20;                                        // a poll the sto
                                                                // then its body (the saved forecast, why) is final (second refuter, item E)
 async function doForecast() {
   const gen = ++forecastGen, current = () => gen === forecastGen;
-  const end = () => { if (current()) $("forecast-go").disabled = !S.built; };   // every final state gives the button back
+  const end = () => { if (current()) $("forecast-go").disabled = !canForecast(); };   // every final state gives the button back
   $("forecast-go").disabled = true; resetLanes();                                  // the old job's lanes go back to idle
   const out = $("forecast-out"); out.textContent = "Queued.";
   const r = S.route;
@@ -375,7 +385,7 @@ async function doFilm() {
 
 $("plan-go").addEventListener("click", doPlan);
 $("build-go").addEventListener("click", () => doBuild(S.seed));
-$("reshuffle").addEventListener("click", () => doBuild(nextSeed()));
+$("reshuffle").addEventListener("click", () => (S.localGpu && !S.run) ? localReshuffle() : doBuild(nextSeed()));
 $("old-bug").addEventListener("click", doOldBug);
 $("audit-go").addEventListener("click", doAudit);
 $("forecast-go").addEventListener("click", doForecast);
