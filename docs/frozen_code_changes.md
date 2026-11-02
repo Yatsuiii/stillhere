@@ -707,3 +707,6 @@ that ignores ranges, a final 404, giving up with the part file kept) and the R2 
 Nov 2 2026, 16:05 UTC, the same download step: the GIFTIs still missing are fetched STILLHERE_DOWNLOAD_THREADS at a time (default 4),
 since one stream on a long, slow link is latency-bound (about 160 KB/s on the laptop's 110 ms link); the size and hash checks then run
 in order, as before. scripts/r2_paranoia.py SHA-256 before ed8e9793239f4a8330fb503340d6eda1fdab682530dab50e73126d6f5dc536b9, after 125949548121b45b4b2b8fadb0a34edd41b904dca484990b593e64e1d9e49c73.
+
+Nov 2 2026, 16:10 UTC, the same download step: a running count while the GIFTIs arrive (every 6 files and at the end), since a judge
+otherwise sees nothing for the hours a slow link takes. scripts/r2_paranoia.py SHA-256 before 125949548121b45b4b2b8fadb0a34edd41b904dca484990b593e64e1d9e49c73, after a779a7c8a52958468086206e7fdd716f4b6c5608f9e64243721048a752638d89.
