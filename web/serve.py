@@ -2,12 +2,16 @@
 calls only where keys are in the environment (STILLHERE_LIVE=0 forces the recorded runs). Request lines are not logged.
 usage: python web/serve.py [--port 8780]"""
 import argparse
+import os
 import socketserver
 import sys
 from pathlib import Path
 from wsgiref.simple_server import WSGIRequestHandler, WSGIServer, make_server
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+# A fresh clone has no ~/.config/stillhere/question_blocklist.txt, and stillhere/egress.py refuses every typed request without a list,
+# so PLAN, BUILD and FORECAST could not be reached; unset, the local server uses the hosted server's list, as production does.
+os.environ.setdefault("STILLHERE_QUESTION_BLOCKLIST", "web/server_question_blocklist.txt")
 from web.app import app  # noqa: E402
 
 
