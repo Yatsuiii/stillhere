@@ -1,0 +1,137 @@
+{
+ "label": "exploratory",
+ "rule": "docs/rules/r5_short_scan_rule.md",
+ "dataset": "OpenNeuro ds001338 v1.0.0 (Finn et al. 2018; CC BY-NC 4.0), fMRIPrep 22.0.2 fsaverage5 derivative",
+ "inputs_sha256": {
+  "stimulus story1": "e0a674401cd64580aeb50327af4393332f387df87ddbf0a65d68a96eb55a6c3e",
+  "stimulus story2": "e8b784671a748ad03f91227d1152d6219d51f713a46d6d6e41c63c17deb98e44",
+  "stimulus story3": "a739113b62f1aef92a2ead0fa069d97c4e05e1478123d26f42d223b05f970034",
+  "words story1": "1a98288a1b8d48a468ce0bb6b18cc82a50db6a829d2c5fe0789b9339c185f8aa",
+  "words story2": "d3d07e7b93a35dfd44748c16e3f626021d98e6d573206658da5ca06f30b82bb9",
+  "words story3": "db9968150bc263c7d1f82f9cf88c31ec41e20f6e486b21e4d717768144a06e6f",
+  "pred stock_story1_full": "fd17900cf1be1814fc4fc3f3a2d145a383db53d45ef71e246ddffdb33d1d1db4",
+  "pred stock_story1_audio": "3b60e1dd9ca24f1e70239c290b60f82a3438841a5e0b45b06edfcd52e7584bde",
+  "pred stock_story1_shuf": "f2c78b302b68325e996dfb130c52328984d1646de4085a431a6549237a329565",
+  "pred stock_story2_full": "d347113ae1b5afe909e852606f1832a0274509cb336893bbaac8a5af86cbd569",
+  "pred stock_story2_audio": "078c50656f124faf2810a56a7d0a123c492df3148900cbe37c2483a653fe5e16",
+  "pred stock_story2_shuf": "a60011c1a778c61b3c20618343928d998059f384233d44e46b0964a2c449e3e3",
+  "pred stock_story3_full": "bf94177effa6215654aff50a98f4cf413fe10d9cbb7a851b03654fb67b21bab5",
+  "pred stock_story3_audio": "b4dd9f7f7a25b1bdb80805b3d35c94ccf29bed9840425a19adbabc4f1c53e7ec",
+  "pred stock_story3_shuf": "546d932e4a309fc324f9ef8d228506f6f6af01636a5968bab3f46bd6819932a3"
+ },
+ "listeners_language": 22,
+ "window_volumes": {
+  "story1": [
+   20,
+   525
+  ],
+  "story2": [
+   20,
+   451
+  ],
+  "story3": [
+   20,
+   331
+  ]
+ },
+ "tribe": {
+  "n": 22,
+  "k_above_0": 17,
+  "kstar": 16,
+  "wilcoxon_p": 0.00040459632873535156,
+  "median": 0.06472976481540582,
+  "pass": true
+ },
+ "word_rate": {
+  "n": 22,
+  "k_above_0": 8,
+  "kstar": 16,
+  "wilcoxon_p": 0.9396612644195557,
+  "median": -0.018951226200851906,
+  "pass": false
+ },
+ "envelope": {
+  "n": 22,
+  "k_above_0": 11,
+  "kstar": 16,
+  "wilcoxon_p": 0.23138880729675293,
+  "median": 0.0017443236045781782,
+  "pass": false
+ },
+ "tribe_top_vs_word_rate_top": {
+  "n": 22,
+  "k_above_0": 17,
+  "kstar": 16,
+  "wilcoxon_p": 0.0002963542938232422,
+  "median": 0.05793957426683629,
+  "pass": true
+ },
+ "minutes_each_side": 7,
+ "windows": {
+  "story1": {
+   "n": 8,
+   "kept_each_end": 3,
+   "tribe_top": [
+    0,
+    3,
+    4
+   ],
+   "tribe_bottom": [
+    1,
+    5,
+    7
+   ],
+   "pula": [
+    0.8254805847549367,
+    0.7059243822871263,
+    0.7631015692412431,
+    0.8619884882390857,
+    1.0236972286948154,
+    0.6821120485919961,
+    0.8170974738897369,
+    0.7162715125614606
+   ]
+  },
+  "story2": {
+   "n": 7,
+   "kept_each_end": 2,
+   "tribe_top": [
+    2,
+    5
+   ],
+   "tribe_bottom": [
+    1,
+    6
+   ],
+   "pula": [
+    0.7127009076515991,
+    0.6139348813314861,
+    0.9424713588408212,
+    0.8570582785029641,
+    0.8219773639873735,
+    1.0098975575597695,
+    0.6626942011358984
+   ]
+  },
+  "story3": {
+   "n": 5,
+   "kept_each_end": 2,
+   "tribe_top": [
+    0,
+    3
+   ],
+   "tribe_bottom": [
+    2,
+    4
+   ],
+   "pula": [
+    0.9200154620361309,
+    0.8935240369536133,
+    0.6725899691404565,
+    0.9432471256768773,
+    0.7780393976543191
+   ]
+  }
+ },
+ "line": "Exploratory. On another public story (Paranoia, Finn et al. 2018; 22 listeners, outside TRIBE v2's training and evaluation sets), listeners' language areas followed TRIBE's forecast more closely in the 7 minutes it ranked highest than in the 7 minutes it ranked lowest (17 of 22 listeners, one-sided p = 0.0004). Ranking the same minutes by word rate alone: 8 of 22, p = 0.94."
+}

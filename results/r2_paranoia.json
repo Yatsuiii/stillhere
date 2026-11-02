@@ -1,0 +1,606 @@
+{
+ "label": "exploratory",
+ "rule": "docs/rules/r2_paranoia_rule.md",
+ "dataset": "OpenNeuro ds001338 v1.0.0 (Finn et al. 2018; CC BY-NC 4.0), fMRIPrep 22.0.2 fsaverage5 derivative",
+ "listeners": {
+  "sub-tb2994": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3132": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3240": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3279": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9972
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3512": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3592": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3602": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3626": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3646": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3744": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3757": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3784": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3810": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3846": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3858": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3920": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3929": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3964": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb3977": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb4450": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb4547": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  },
+  "sub-tb4572": {
+   "volumes": {
+    "story1": 526,
+    "story2": 452,
+    "story3": 332
+   },
+   "covered_share": {
+    "AUD": 1.0,
+    "LANG": 1.0,
+    "cortex": 0.9983
+   },
+   "language": true,
+   "hearing": true
+  }
+ },
+ "forecast_read": {
+  "section8": "every forecast read at story time j - 2 - 5 s; the lag moves only the regressors (section 8 and Alice)"
+ },
+ "not_run": "section 8's M2 (hybrid) and M3 (wrong story)",
+ "inputs_sha256": {
+  "stimulus story1": "e0a674401cd64580aeb50327af4393332f387df87ddbf0a65d68a96eb55a6c3e",
+  "stimulus story2": "e8b784671a748ad03f91227d1152d6219d51f713a46d6d6e41c63c17deb98e44",
+  "stimulus story3": "a739113b62f1aef92a2ead0fa069d97c4e05e1478123d26f42d223b05f970034",
+  "words story1": "1a98288a1b8d48a468ce0bb6b18cc82a50db6a829d2c5fe0789b9339c185f8aa",
+  "words story2": "d3d07e7b93a35dfd44748c16e3f626021d98e6d573206658da5ca06f30b82bb9",
+  "words story3": "db9968150bc263c7d1f82f9cf88c31ec41e20f6e486b21e4d717768144a06e6f",
+  "surprisal": "735de8dc8b4d1012cbd5885596c62e5b10e70af9950af9abec75dc0a689d6104",
+  "pred stock_story1_full": "fd17900cf1be1814fc4fc3f3a2d145a383db53d45ef71e246ddffdb33d1d1db4",
+  "pred stock_story1_audio": "3b60e1dd9ca24f1e70239c290b60f82a3438841a5e0b45b06edfcd52e7584bde",
+  "pred stock_story1_shuf": "f2c78b302b68325e996dfb130c52328984d1646de4085a431a6549237a329565",
+  "pred stock_story2_full": "d347113ae1b5afe909e852606f1832a0274509cb336893bbaac8a5af86cbd569",
+  "pred stock_story2_audio": "078c50656f124faf2810a56a7d0a123c492df3148900cbe37c2483a653fe5e16",
+  "pred stock_story2_shuf": "a60011c1a778c61b3c20618343928d998059f384233d44e46b0964a2c449e3e3",
+  "pred stock_story3_full": "bf94177effa6215654aff50a98f4cf413fe10d9cbb7a851b03654fb67b21bab5",
+  "pred stock_story3_audio": "b4dd9f7f7a25b1bdb80805b3d35c94ccf29bed9840425a19adbabc4f1c53e7ec",
+  "pred stock_story3_shuf": "546d932e4a309fc324f9ef8d228506f6f6af01636a5968bab3f46bd6819932a3",
+  "record p1/surprisal8.py": "e69f6d842131483263bc54370ef5fb20acaba967e9e0f44fa420277875ad0543",
+  "record k2/tribe_common.py": "5029b14736b31dd652f9f37ac0b25bc72e9cf978c4e1d6958f6847e4dd459a34",
+  "record r2/r2_asr.json": "f44bbbdcd7b9b65fe2744e2e1a9bc5cfafd90679ed6f77dbf87deccc48d01613",
+  "record r2/kaggle_asr/stillhere_r2_asr.py": "61b891d080ec897015415ba0ec575db0a1ff0ac5cd2bc480fea37755ad168bf0",
+  "record r2/kaggle_asr/r2_asr.json": "f44bbbdcd7b9b65fe2744e2e1a9bc5cfafd90679ed6f77dbf87deccc48d01613",
+  "record r2/kaggle_forecast/make_r2_kernels.py": "52e1618cd29ed46435b1961dc3890d22af364a6272083d189b0f566a941c1021",
+  "record r2/kaggle_forecast/r2_forecast_tpl.py": "b0964df192b042c2d5eeaa96892edb966a44c8e5abd27b17999c23ef89a1e044",
+  "record r2/kaggle_forecast/r2_stage.py": "19a0e6463877aa9f71958458c431c92512af695a127bcaabe05faa8ed1c71ea8",
+  "record r2/kaggle_forecast/a/stillhere_r2_forecast_a.py": "c81b03135f340d15fd72ceaf6808fc9787d3fdd06ce4455a0c54349e9f254e2a",
+  "record r2/kaggle_forecast/b/stillhere_r2_forecast_b.py": "6955f78dd5efd9b5e81a1beea24712cce281870f2f90264fe35738e949e2d2e7",
+  "record r2/kaggle_watch.sh": "089b9c1845ea07cb0badbce01f1a18146d82ffbb7069d6f56709e58760f5bbb6",
+  "record r2/forecast/out/r2_forecast_partA.json": "c69be20feae725101cf6f4c13e1e3254eefb7f6563ec95748674f5bb7a4d56fb",
+  "record r2/forecast/out/r2_forecast_partB.json": "a683d80ba1e4b5c7f18b445141b1d47e1f3416df447b4341cc843e9c300bb033",
+  "record r2/forecast/out/stage_stock_story1_audio.json": "09f84496abc0bb2eb4a8cfd0320612aaedfb47fdb2cebbb00c22681674b3197c",
+  "record r2/forecast/out/stage_stock_story1_full.json": "9122ea5e007d5b2420d4121eeadb9f18122180417f2d2376b4353f9fd889b294",
+  "record r2/forecast/out/stage_stock_story1_shuf.json": "069709c6324485a4dd0b264d8a330534ea5268ef57e38242ec20e77342e63e1e",
+  "record r2/forecast/out/stage_stock_story2_audio.json": "3b626ca8709f80e13ee3a8ea4dfe7f86f7f8ec456e39e30aea20ff6b20b93248",
+  "record r2/forecast/out/stage_stock_story2_full.json": "632b6062ce1726462f222321a7cc70dfff1a1d8c872e0e95660de8de5a9c118d",
+  "record r2/forecast/out/stage_stock_story2_shuf.json": "3af5ca4c0990b1fed6555435e0a32ce5d317a36be373cf373c1862c2439bae69",
+  "record r2/forecast/out/stage_stock_story3_audio.json": "749b3eff3d439e73be473596fc2a8167dc48f7237f4fb45b4407e1bcc52a2562",
+  "record r2/forecast/out/stage_stock_story3_full.json": "b4788dd55f97c61bc120e3c7e9b297976b90037ec269219dad4fb24522eda575",
+  "record r2/forecast/out/stage_stock_story3_shuf.json": "17e404ceaa4457fc1c471778d510bcf85233010f69f03accfe82568a7da2c750"
+ },
+ "parcels_kept": {
+  "AUD": "7 of 7",
+  "LANG": "19 of 19"
+ },
+ "window": {
+  "volumes": {
+   "story1": [
+    20,
+    525
+   ],
+   "story2": [
+    20,
+    451
+   ],
+   "story3": [
+    20,
+    331
+   ]
+  },
+  "T": 1250,
+  "minutes": 20.8
+ },
+ "own_best_lag": -0.5,
+ "models": {
+  "stock": {
+   "model": "stock TRIBE v2",
+   "volunteer_equivalent_language": {
+    "z": 4.008705025782098,
+    "ci95": [
+     3.328567601614285,
+     4.6998481909634
+    ],
+    "point_k": 2.9993515158100483,
+    "lower_k": 1.8775313221177976,
+    "claim_k": 1
+   },
+   "reference": {
+    "n": 22,
+    "model_mean_z": 4.008705025782098,
+    "reference_mean_z": 6.831737121428708,
+    "reference_wilcoxon_p": 2.384185791015625e-07,
+    "share": 0.5867768262347549
+   },
+   "stage": {
+    "primary": {
+     "L": -1.25,
+     "volumes": {
+      "story1": [
+       20,
+       525
+      ],
+      "story2": [
+       20,
+       451
+      ],
+      "story3": [
+       20,
+       331
+      ]
+     },
+     "n": 22,
+     "n_hearing": 22,
+     "hearing": {
+      "z": 5.0472959873049055,
+      "detect_pct": 95.45454545454545
+     },
+     "envelope": {
+      "z": 4.329521544444847,
+      "detect_pct": 95.45454545454545,
+      "p_tribe_gt_envelope": 0.006363630294799805
+     },
+     "language": {
+      "z": 4.008705025782098,
+      "detect_pct": 95.45454545454545,
+      "p": 2.384185791015625e-07,
+      "pass": true
+     },
+     "shuffled": {
+      "z": 1.409098954665198,
+      "p_real_gt_shuffled": 1.6689300537109375e-05,
+      "pass": true
+     },
+     "baselines": {
+      "B_freq": -0.3473785096144851,
+      "surprisal": 1.1966819861192122
+     },
+     "best_baseline": "surprisal",
+     "p_tribe_gt_best": 2.384185791015625e-07,
+     "tribe_beats_best": true
+    },
+    "own_lag": {
+     "L": -0.5,
+     "volumes": {
+      "story1": [
+       20,
+       525
+      ],
+      "story2": [
+       20,
+       451
+      ],
+      "story3": [
+       20,
+       331
+      ]
+     },
+     "n": 22,
+     "n_hearing": 22,
+     "hearing": {
+      "z": 5.0472959873049055,
+      "detect_pct": 95.45454545454545
+     },
+     "envelope": {
+      "z": 4.981560823395072,
+      "detect_pct": 100.0,
+      "p_tribe_gt_envelope": 0.42429685592651367
+     },
+     "language": {
+      "z": 4.003813277379503,
+      "detect_pct": 95.45454545454545,
+      "p": 2.384185791015625e-07,
+      "pass": true
+     },
+     "shuffled": {
+      "z": 1.3464952315951129,
+      "p_real_gt_shuffled": 1.3113021850585938e-05,
+      "pass": true
+     },
+     "baselines": {
+      "B_freq": -0.288082195283838,
+      "surprisal": 1.6087222348459909
+     },
+     "best_baseline": "surprisal",
+     "p_tribe_gt_best": 2.384185791015625e-07,
+     "tribe_beats_best": true
+    }
+   },
+   "cheap_baselines": {
+    "LANG": {
+     "mean_z": {
+      "tribe": 4.227775342745779,
+      "word_rate": 0.0189372635233808,
+      "envelope": 0.4820348081137441
+     },
+     "tribe_vs": {
+      "word_rate": {
+       "n": 22,
+       "k_tribe_higher": 22,
+       "hl": 4.263720086960076,
+       "hl_ci95": [
+        3.45075035698912,
+        5.120764304403174
+       ],
+       "p_two_sided": 4.76837158203125e-07,
+       "verdict": "TRIBE beats"
+      },
+      "envelope": {
+       "n": 22,
+       "k_tribe_higher": 22,
+       "hl": 3.721029910727246,
+       "hl_ci95": [
+        2.93433392238713,
+        4.653653337281173
+       ],
+       "p_two_sided": 4.76837158203125e-07,
+       "verdict": "TRIBE beats"
+      }
+     }
+    },
+    "AUD": {
+     "mean_z": {
+      "tribe": 5.0472959873049055,
+      "word_rate": 3.8217136662742033,
+      "envelope": 4.329521544444847
+     },
+     "tribe_vs": {
+      "word_rate": {
+       "n": 22,
+       "k_tribe_higher": 19,
+       "hl": 1.3609721687262857,
+       "hl_ci95": [
+        0.7955529180822678,
+        1.8672796558011067
+       ],
+       "p_two_sided": 0.0006937980651855469,
+       "verdict": "TRIBE beats"
+      },
+      "envelope": {
+       "n": 22,
+       "k_tribe_higher": 15,
+       "hl": 0.6926645810412664,
+       "hl_ci95": [
+        0.21187690156146857,
+        1.2377343695278142
+       ],
+       "p_two_sided": 0.01272726058959961,
+       "verdict": "TRIBE beats"
+      }
+     }
+    }
+   },
+   "m1_language_curve": {
+    "1": 2.670878098666816,
+    "2": 3.4203550533585627,
+    "3": 4.009086809017766,
+    "4": 4.452292159825783,
+    "6": 5.05531273266638,
+    "8": 5.44329850218695,
+    "12": 6.0257396299056385,
+    "15": 6.339107738313663,
+    "21": 6.736643346843698
+   },
+   "lines": [
+    "On another public story, outside TRIBE v2's training and evaluation sets (Paranoia, Finn et al. 2018; 22 listeners, the whole story: 1,250 volumes = 20.8 minutes at TR 1 s), stock TRIBE v2's forecast was worth about 3 real volunteers, and at least 1. It reached 59% of what the other listeners' average reaches.",
+    "What it had to beat: word rate and the sound envelope (beaten in 4 of 4 comparisons)."
+   ]
+  }
+ },
+ "lines": [
+  "On another public story, outside TRIBE v2's training and evaluation sets (Paranoia, Finn et al. 2018; 22 listeners, the whole story: 1,250 volumes = 20.8 minutes at TR 1 s), stock TRIBE v2's forecast was worth about 3 real volunteers, and at least 1. It reached 59% of what the other listeners' average reaches.",
+  "What it had to beat: word rate and the sound envelope (beaten in 4 of 4 comparisons).",
+  "Fine-tuned TRIBE v2: rule committed, not run (the stock runs' Llama features were not kept).",
+  "z is not compared across datasets with different scan timing; the share is."
+ ],
+ "own_lag_curve": {
+  "-4.0": 0.06254150575792777,
+  "-3.75": 0.2760295951646568,
+  "-3.5": 0.5428899761392085,
+  "-3.25": 0.8587040058927368,
+  "-3.0": 1.2260682323735543,
+  "-2.75": 1.6389399566570517,
+  "-2.5": 2.0913716335681096,
+  "-2.25": 2.567447637224052,
+  "-2.0": 3.056519704551321,
+  "-1.75": 3.5409202102700803,
+  "-1.5": 3.999512731611082,
+  "-1.25": 4.408140500426503,
+  "-1.0": 4.741799547557257,
+  "-0.75": 4.979685672397792,
+  "-0.5": 5.095350530960298,
+  "-0.25": 5.076453297468615,
+  "0.0": 4.907029933538001,
+  "0.25": 4.586140409020899,
+  "0.5": 4.1186983369984835,
+  "0.75": 3.530179597612107,
+  "1.0": 2.84158802472328
+ }
+}

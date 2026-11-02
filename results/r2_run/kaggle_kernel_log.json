@@ -1,0 +1,66 @@
+[{"stream_name":"stdout","time":5.7315865,"data":"2026-11-01T08:48:11Z clone {\"head\": \"bfbda2baf93dbd54f0b0462242f5edf53e52d09d\", \"shallow\": \"false\", \"commits\": 213, \"code_equals_pins_commit\": true}\n"}
+,{"stream_name":"stdout","time":6.134220978,"data":"2026-11-01T08:48:12Z root extracted 41 files\n"}
+,{"stream_name":"stdout","time":11.733635383,"data":"2026-11-01T08:48:17Z environment 6 s\n"}
+,{"stream_name":"stdout","time":11.733868774,"data":"2026-11-01T08:48:17Z step download start\n"}
+,{"stream_name":"stdout","time":21.983410774,"data":"sub-tb2994: 6 files\n"}
+,{"stream_name":"stdout","time":30.602340288,"data":"sub-tb3132: 6 files\n"}
+,{"stream_name":"stdout","time":41.472622591,"data":"sub-tb3240: 6 files\n"}
+,{"stream_name":"stdout","time":50.119451405,"data":"sub-tb3279: 6 files\n"}
+,{"stream_name":"stdout","time":57.980010057,"data":"sub-tb3512: 6 files\n"}
+,{"stream_name":"stdout","time":76.677291175,"data":"sub-tb3592: 6 files\n"}
+,{"stream_name":"stdout","time":95.633045281,"data":"sub-tb3602: 6 files\n"}
+,{"stream_name":"stdout","time":104.314136832,"data":"sub-tb3626: 6 files\n"}
+,{"stream_name":"stdout","time":112.404967474,"data":"sub-tb3646: 6 files\n"}
+,{"stream_name":"stdout","time":122.021076208,"data":"sub-tb3744: 6 files\n"}
+,{"stream_name":"stdout","time":130.160520796,"data":"sub-tb3757: 6 files\n"}
+,{"stream_name":"stdout","time":138.655018657,"data":"sub-tb3784: 6 files\n"}
+,{"stream_name":"stdout","time":147.143285351,"data":"sub-tb3810: 6 files\n"}
+,{"stream_name":"stdout","time":155.026003964,"data":"sub-tb3846: 6 files\n"}
+,{"stream_name":"stdout","time":163.609512522,"data":"sub-tb3858: 6 files\n"}
+,{"stream_name":"stdout","time":172.16256538,"data":"sub-tb3920: 6 files\n"}
+,{"stream_name":"stdout","time":180.254475246,"data":"sub-tb3929: 6 files\n"}
+,{"stream_name":"stdout","time":190.6494902,"data":"sub-tb3964: 6 files\n"}
+,{"stream_name":"stdout","time":198.68629456,"data":"sub-tb3977: 6 files\n"}
+,{"stream_name":"stdout","time":207.516552885,"data":"sub-tb4450: 6 files\n"}
+,{"stream_name":"stdout","time":215.965649452,"data":"sub-tb4547: 6 files\n"}
+,{"stream_name":"stdout","time":224.983971898,"data":"sub-tb4572: 6 files\n"}
+,{"stream_name":"stdout","time":225.015139422,"data":"2026-11-01T08:51:51Z step download rc 0 213 s\n"}
+,{"stream_name":"stdout","time":225.015645742,"data":"2026-11-01T08:51:51Z step score start\n"}
+,{"stream_name":"stdout","time":231.40389801,"data":"sub-tb2994: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":234.211349536,"data":"sub-tb3132: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":237.020095122,"data":"sub-tb3240: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":239.758177703,"data":"sub-tb3279: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":242.595664083,"data":"sub-tb3512: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":245.365576374,"data":"sub-tb3592: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":248.170830305,"data":"sub-tb3602: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":250.928893217,"data":"sub-tb3626: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":253.698086957,"data":"sub-tb3646: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":256.491059821,"data":"sub-tb3744: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":259.243504578,"data":"sub-tb3757: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":262.030613916,"data":"sub-tb3784: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":264.80705224,"data":"sub-tb3810: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":267.584065467,"data":"sub-tb3846: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":270.305804615,"data":"sub-tb3858: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":273.110175972,"data":"sub-tb3920: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":275.837676751,"data":"sub-tb3929: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":278.601346716,"data":"sub-tb3964: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":281.345999124,"data":"sub-tb3977: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":284.065057913,"data":"sub-tb4450: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":286.848328132,"data":"sub-tb4547: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":289.618108604,"data":"sub-tb4572: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000\n"}
+,{"stream_name":"stdout","time":4358.22595588,"data":"On another public story, outside TRIBE v2's training and evaluation sets (Paranoia, Finn et al. 2018; 22 listeners, the whole story: 1,250 volumes = 20.8 minutes at TR 1 s), stock TRIBE v2's forecast was worth about 3 real volunteers, and at least 1. It reached 59% of what the other listeners' average reaches.\n"}
+,{"stream_name":"stdout","time":4358.226247207,"data":"What it had to beat: word rate and the sound envelope (beaten in 4 of 4 comparisons).\n"}
+,{"stream_name":"stdout","time":4358.226264791,"data":"Fine-tuned TRIBE v2: rule committed, not run (the stock runs' Llama features were not kept).\n"}
+,{"stream_name":"stdout","time":4358.226269683,"data":"z is not compared across datasets with different scan timing; the share is.\n"}
+,{"stream_name":"stdout","time":4358.723100814,"data":"2026-11-01T10:00:44Z step score rc 0 4134 s\n"}
+,{"stream_name":"stdout","time":4358.728679886,"data":"2026-11-01T10:00:44Z step r5 start\n"}
+,{"stream_name":"stdout","time":4457.030724637,"data":"Exploratory. On another public story (Paranoia, Finn et al. 2018; 22 listeners, outside TRIBE v2's training and evaluation sets), listeners' language areas followed TRIBE's forecast more closely in the 7 minutes it ranked highest than in the 7 minutes it ranked lowest (17 of 22 listeners, one-sided p = 0.0004). Ranking the same minutes by word rate alone: 8 of 22, p = 0.94.\n"}
+,{"stream_name":"stdout","time":4457.405920201,"data":"2026-11-01T10:02:23Z step r5 rc 0 99 s\n"}
+,{"stream_name":"stdout","time":4457.422320152,"data":"2026-11-01T10:02:23Z done {\"steps\": {\"download\": {\"rc\": 0, \"seconds\": 213}, \"score\": {\"rc\": 0, \"seconds\": 4134}, \"r5\": {\"rc\": 0, \"seconds\": 99}}} \n"}
+,{"stream_name":"stderr","time":4460.19318764,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":4460.193227519,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":4460.606005015,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":4460.606033922,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":4461.780157053,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":4463.084859778,"data":"[NbConvertApp] Writing 311739 bytes to __results__.html\n"}
+]

@@ -1,0 +1,26 @@
+sub-tb2994: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3132: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3240: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3279: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3512: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3592: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3602: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3626: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3646: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3744: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3757: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3784: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3810: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3846: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3858: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3920: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3929: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3964: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb3977: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb4450: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb4547: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+sub-tb4572: volumes {'story1': 526, 'story2': 452, 'story3': 332}, covered LANG 1.000 AUD 1.000
+On another public story, outside TRIBE v2's training and evaluation sets (Paranoia, Finn et al. 2018; 22 listeners, the whole story: 1,250 volumes = 20.8 minutes at TR 1 s), stock TRIBE v2's forecast was worth about 3 real volunteers, and at least 1. It reached 59% of what the other listeners' average reaches.
+What it had to beat: word rate and the sound envelope (beaten in 4 of 4 comparisons).
+Fine-tuned TRIBE v2: rule committed, not run (the stock runs' Llama features were not kept).
+z is not compared across datasets with different scan timing; the share is.

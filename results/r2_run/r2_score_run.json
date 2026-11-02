@@ -1,0 +1,59 @@
+{
+ "rule": [
+  "docs/rules/r2_paranoia_rule.md",
+  "docs/rules/r5_short_scan_rule.md"
+ ],
+ "dry": false,
+ "started_utc": "2026-11-01T08:48:07Z",
+ "steps": {
+  "download": {
+   "rc": 0,
+   "seconds": 213
+  },
+  "score": {
+   "rc": 0,
+   "seconds": 4134
+  },
+  "r5": {
+   "rc": 0,
+   "seconds": 99
+  }
+ },
+ "inputs": {
+  "bundle_sha256": "455f2a5c853ccb5d997b3ac83e6885deeb670a6727e30c71df5fcd35f5424196",
+  "root_tar_sha256": "ba6a090b67a6180fd44bc001ce78b6a8de763e867ef5ecdf4a61e69b4b9f5f89"
+ },
+ "clone": {
+  "head": "bfbda2baf93dbd54f0b0462242f5edf53e52d09d",
+  "shallow": "false",
+  "commits": 213,
+  "code_equals_pins_commit": true
+ },
+ "pip_freeze": [
+  "certifi==2026.10.23",
+  "cffi==2.1.1",
+  "charset-normalizer==3.5.2",
+  "cloudpickle==3.1.2",
+  "idna==3.20",
+  "jinja2==3.1.6",
+  "joblib==1.6.0",
+  "markupsafe==3.0.4",
+  "narwhals==2.28.0",
+  "nibabel==5.4.2",
+  "nilearn==0.14.1",
+  "numpy==2.2.6",
+  "packaging==26.3",
+  "pandas==3.0.6",
+  "pycparser==3.12",
+  "python-dateutil==4.0.0",
+  "requests==2.34.2",
+  "scikit-learn==1.9.1",
+  "scipy==1.18.1",
+  "soundfile==0.14.0",
+  "threadpoolctl==3.7.0",
+  "typing-extensions==4.16.0",
+  "tzdata==2026.6",
+  "urllib3==2.8.0"
+ ],
+ "ended_utc": "2026-11-01T10:02:23Z"
+}
