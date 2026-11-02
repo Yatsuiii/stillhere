@@ -311,7 +311,23 @@ def refused_post(req):
     return None
 
 
+LOCAL_HOSTS = ("127.0.0.1", "localhost", "::1")
+
+
+def foreign_host(env) -> bool:
+    """Under web/serve.py (STILLHERE_LOCAL_SERVER), a request whose Host is not this machine's: a page on another site whose name was
+    rebound to 127.0.0.1 would otherwise count as this page's own origin (Req.own_origin reads the Host) and could queue jobs on the
+    visitor's GPU. Not used on Vercel, where the Host is the deployment's name."""
+    if os.environ.get("STILLHERE_LOCAL_SERVER") != "1":
+        return False
+    host = (env.get("HTTP_HOST") or "").strip().lower()
+    host = host[1:host.index("]")] if host.startswith("[") and "]" in host else host.rsplit(":", 1)[0] if host.count(":") == 1 else host
+    return host not in LOCAL_HOSTS
+
+
 def app(env, start):
+    if foreign_host(env):
+        return respond(start, 403, {"error": "host"})
     req, where = Req(env), "static"
     try:
         for method, rx, fn, cache, limit in ROUTES:

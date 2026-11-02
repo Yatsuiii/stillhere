@@ -168,11 +168,18 @@ def submit(r: dict, sid: str, claimed: "ledger.Claimed", addr: str = None, preco
     return {"state": "queued", "job_id": job_id}
 
 
+def local_gpu() -> bool:
+    """STILLHERE_LOCAL_GPU=1 (scripts/run_local_gpu.sh): a local server whose worker is the visitor's own GPU. Never on Vercel (web/app.py
+    refuses to start with it there, and this answers False there regardless). Then nothing falls back to the committed precompute,
+    which our laptop computed: the visitor sees their own GPU's results or none."""
+    return os.environ.get("STILLHERE_LOCAL_GPU") == "1" and not os.environ.get("VERCEL_ENV") and not os.environ.get("VERCEL")
+
+
 def fallback(r: dict, from_store: bool = True):
     """The saved forecast for this clip and condition at the default seed, or None; when the visitor asked for another seed it says
     so (ruling of Oct 29, 17:35 UTC, item 7). from_store: as for cached()."""
     d = {**r, "seed": RESEED.get(r["condition"], default_seed())}
-    hit = cached(cache_key(d), from_store)
+    hit = cached(cache_key(d), from_store, precompute=not local_gpu())
     if not hit:
         return None
     note = None if d["seed"] == r["seed"] else f"No saved run for seed {r['seed']}; shown: the saved run at seed {d['seed']}."

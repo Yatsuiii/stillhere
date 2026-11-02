@@ -99,3 +99,56 @@ def test_file_urls_work_for_a_local_release_folder(tmp_path):
     dst = tmp_path / "out" / "words_story1.tsv"
     netfetch.get(src.as_uri(), str(dst), log=quiet)                # STILLHERE_RELEASE_URL=file:///... while the repository is private
     assert dst.read_bytes() == BODY and not (tmp_path / "out" / "words_story1.tsv.part").exists()
+
+
+def serve_raw(handler):
+    class H(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_GET(self):
+            handler(self)
+
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv, f"http://127.0.0.1:{srv.server_address[1]}"
+
+
+def test_a_416_completes_only_a_whole_part_file(tmp_path):
+    def h(self):
+        if self.headers.get("Range"):
+            self.send_response(416); self.send_header("Content-Range", f"bytes */{len(BODY)}"); self.end_headers(); return
+        self.send_response(200); self.send_header("Content-Length", str(len(BODY))); self.end_headers(); self.wfile.write(BODY)
+    srv, base = serve_raw(h)
+    try:
+        whole = tmp_path / "whole.bin"; (tmp_path / "whole.bin.part").write_bytes(BODY)
+        netfetch.get(base + "/f", str(whole), sleep=lambda s: None, log=quiet)
+        assert whole.read_bytes() == BODY
+        big = tmp_path / "big.bin"; (tmp_path / "big.bin.part").write_bytes(BODY + b"extra")   # longer than the file: starts over
+        netfetch.get(base + "/f", str(big), sleep=lambda s: None, log=quiet)
+        assert big.read_bytes() == BODY
+    finally:
+        srv.shutdown()
+
+
+def test_a_206_from_another_offset_is_not_appended(tmp_path):
+    def h(self):
+        rng = self.headers.get("Range")
+        if rng:                                                       # a broken server: always answers from byte 0
+            self.send_response(206); self.send_header("Content-Range", f"bytes 0-{len(BODY) - 1}/{len(BODY)}")
+            self.send_header("Content-Length", str(len(BODY))); self.end_headers(); self.wfile.write(BODY); return
+        self.send_response(200); self.send_header("Content-Length", str(len(BODY))); self.end_headers(); self.wfile.write(BODY)
+    srv, base = serve_raw(h)
+    try:
+        dst = tmp_path / "f.bin"; (tmp_path / "f.bin.part").write_bytes(BODY[:1000])
+        netfetch.get(base + "/f", str(dst), sleep=lambda s: None, log=quiet)
+    finally:
+        srv.shutdown()
+    assert dst.read_bytes() == BODY
+
+
+def test_a_missing_local_file_fails_at_once(tmp_path):
+    waits = []
+    with pytest.raises(Exception):
+        netfetch.get((tmp_path / "nope.tsv").as_uri(), str(tmp_path / "out.tsv"), sleep=waits.append, log=quiet)
+    assert waits == []

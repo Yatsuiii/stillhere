@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 # server's list; the laptop's own home list, which holds terms the hosted list does not, still applies wherever it exists.
 if not os.environ.get("STILLHERE_QUESTION_BLOCKLIST") and not (Path.home() / ".config/stillhere/question_blocklist.txt").is_file():
     os.environ["STILLHERE_QUESTION_BLOCKLIST"] = "web/server_question_blocklist.txt"
+os.environ["STILLHERE_LOCAL_SERVER"] = "1"     # web/app.py then answers only Host 127.0.0.1, localhost or ::1 (no DNS rebinding)
 from web.app import app  # noqa: E402
 
 

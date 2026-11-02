@@ -623,10 +623,9 @@ def slowed(station: str, b: dict) -> dict:
 
 
 def local_gpu() -> bool:
-    """STILLHERE_LOCAL_GPU=1 (scripts/run_local_gpu.sh; cloud review of Nov 2, 12:15 UTC, item 5): a local server whose worker is the
-    visitor's own GPU. FORECAST then runs live on a recorded plan (no API key needed) and skips the committed precompute. Never on
-    Vercel: web/app.py refuses to start with it there, and this answers False there regardless."""
-    return os.environ.get("STILLHERE_LOCAL_GPU") == "1" and not os.environ.get("VERCEL_ENV") and not os.environ.get("VERCEL")
+    """STILLHERE_LOCAL_GPU (jobs.local_gpu; cloud review of Nov 2, 12:15 UTC, item 5): FORECAST runs live on a recorded plan (no API key
+    needed), and neither it nor any fallback uses the committed precompute."""
+    return jobs.local_gpu()
 
 
 def hours_et() -> str:

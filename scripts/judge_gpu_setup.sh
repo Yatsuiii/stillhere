@@ -29,7 +29,7 @@ need() {                                       # stop before a long download tha
 command -v nvidia-smi >/dev/null && nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader | sed 's/^/   GPU: /' \
   || echo "   no nvidia-smi on PATH: the forecasts need an NVIDIA GPU and driver (route 4b, --no-gpu, does not)"
 [ -x "$VENV/bin/python" ] || need "$(dirname "$VENV")" 8 "the TRIBE environment (about 7 GB)"
-[ -n "${STILLHERE_HF_SOURCE:-}" ] || need "$MODELS" 10 "the models (9.47 GB)"
+[ -n "${STILLHERE_HF_SOURCE:-}" ] || [ -d "$MODELS/download/hub" ] || need "$MODELS" 10 "the models (9.47 GB)"   # a rerun downloads none again
 
 echo "== 1. the TRIBE environment: $VENV"
 if [ -x "$VENV/bin/python" ] && "$VENV/bin/python" -c "import tribev2, spacy, en_core_web_lg" 2>/dev/null; then

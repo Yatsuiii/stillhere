@@ -65,6 +65,11 @@ else
   echo "== the harness: tribe_common from the R2 kernel (checked), the runner and the Alice harness"
   python3 "$F" common "$DATA"
   python3 "$F" layout "$DATA"
+  mkdir -p "$OWN"
+  if [ -f "$OWN/WORDS" ] && [ "$(cat "$OWN/WORDS")" != "$WORDS" ]; then   # forecasts from one word source scored with the other's tables
+    echo "refused: $OWN holds forecasts made with STILLHERE_WORDS=$(cat "$OWN/WORDS"); use a new DATA_DIR for $WORDS" >&2; exit 2
+  fi
+  echo "$WORDS" > "$OWN/WORDS"
   if [ "$WORDS" = ours ]; then
     python3 "$F" fetch-release "$OWN"
     python3 "$F" seed-words "$DATA" "$OWN"
@@ -75,7 +80,7 @@ else
     for m in audio full shuf; do
       st="stock_${s}_${m}"
       if [ -f "$OWN/stage_$st.json" ] && [ -f "$OWN/pred_$st.npz" ]; then echo "$st: done earlier"; continue; fi
-      HF_HOME="$MODELS" CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0} "$TRIBE_PY" "$DATA/r2/run_r2_forecast.py" "$st"
+      HF_HOME="$MODELS" HF_HUB_CACHE="$MODELS/hub" CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0} "$TRIBE_PY" "$DATA/r2/run_r2_forecast.py" "$st"
     done
   done
   if [ "$WORDS" = asr ]; then

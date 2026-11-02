@@ -710,3 +710,8 @@ in order, as before. scripts/r2_paranoia.py SHA-256 before ed8e9793239f4a8330fb5
 
 Nov 2 2026, 16:10 UTC, the same download step: a running count while the GIFTIs arrive (every 6 files and at the end), since a judge
 otherwise sees nothing for the hours a slow link takes. scripts/r2_paranoia.py SHA-256 before 125949548121b45b4b2b8fadb0a34edd41b904dca484990b593e64e1d9e49c73, after 9bf96b2d8013d8e3f0033076b0b5b161ab20ea75250ee72c185bc68199b8724d (corrected in the next commit: the count reads each file's known path).
+
+Nov 2 2026, 16:40 UTC, after an independent review of the judge path: in `download`, an error or Ctrl-C cancels the GIFTIs still queued
+instead of fetching them first (up to an hour on a slow link); under --verify-own, `download` refuses a ROOT inside the repository and
+`surprisal` an OWN inside it (both write there). The default scoring path is unchanged. scripts/r2_paranoia.py SHA-256 before 9bf96b2d8013d8e3f0033076b0b5b161ab20ea75250ee72c185bc68199b8724d,
+after 36e1077f970fefb6c550fb01e8571d84244367dfb64856ea91a932b10457361e.

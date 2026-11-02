@@ -6,6 +6,7 @@ Standard library only."""
 import http.client
 import os
 import socket
+import ssl
 import time
 import urllib.error
 import urllib.request
@@ -23,15 +24,31 @@ def expected_total(r, offset: int):
     return offset + int(n) if n and n.isdigit() else None
 
 
+def range_start(r):
+    """The first byte a 206 answer carries (its Content-Range), or None."""
+    cr = r.headers.get("Content-Range", "") if hasattr(r, "headers") else ""
+    try:
+        return int(cr.split()[1].split("-")[0])
+    except (IndexError, ValueError):
+        return None
+
+
 def get(url: str, dst: str, tries: int = TRIES, timeout: float = 60, sleep=time.sleep, log=print) -> str:
     part = dst + ".part"
     os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
+    if url.startswith("file:"):                                  # a local folder: nothing to wait for, a missing file is final
+        tries = 1
     for attempt in range(1, tries + 1):
         have = os.path.getsize(part) if os.path.exists(part) else 0
         req = urllib.request.Request(url, headers={"Range": f"bytes={have}-"} if have else {})
         try:
             with urllib.request.urlopen(req, timeout=timeout) as r:
-                resumed = have > 0 and getattr(r, "status", None) == 206   # a server that ignores the range sends the whole file
+                # a resume only if the server answers 206 from exactly our offset; a 200 (range ignored) or another offset restarts
+                resumed = have > 0 and getattr(r, "status", None) == 206 and range_start(r) == have
+                if getattr(r, "status", None) == 206 and not resumed:     # a part of the file we did not ask for: start over
+                    if os.path.exists(part):
+                        os.remove(part)
+                    raise ConnectionError(f"the server answered from byte {range_start(r)}, not {have}")
                 total = expected_total(r, have if resumed else 0)
                 with open(part, "ab" if resumed else "wb") as f:
                     while True:
@@ -45,13 +62,16 @@ def get(url: str, dst: str, tries: int = TRIES, timeout: float = 60, sleep=time.
             os.replace(part, dst)
             return dst
         except urllib.error.HTTPError as e:
-            if e.code == 416 and have:                    # nothing left to send: the part file is already whole
-                os.replace(part, dst)
-                return dst
-            if 400 <= e.code < 500 and e.code not in (408, 429):
+            if e.code == 416 and have:                    # no bytes at our offset: whole if the server's total says so, else start over
+                total = (e.headers.get("Content-Range") or "").rsplit("/", 1)[-1] if e.headers else ""
+                if total.isdigit() and int(total) == have:
+                    os.replace(part, dst)
+                    return dst
+                os.remove(part)
+            elif 400 <= e.code < 500 and e.code not in (408, 429):
                 raise
             err = e
-        except (urllib.error.URLError, ConnectionError, http.client.HTTPException, socket.timeout, TimeoutError) as e:
+        except (urllib.error.URLError, ConnectionError, http.client.HTTPException, socket.timeout, TimeoutError, ssl.SSLError) as e:
             err = e
         if attempt == tries:
             raise err

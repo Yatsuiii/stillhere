@@ -504,6 +504,8 @@ def download(root, own=None):
     pins are not needed first, and every file must equal our download's (results/r2_bold_SHA256.json)."""
     if own is None:
         check_pins(root)
+    else:
+        refuse_results(root)                                         # a judge's run writes ROOT/r2/bold: never into the repository
     sizes = json.load(open(os.path.join(REPO, "r2/data_check.json")))["runs"]
     d = f"{root}/r2/bold"; os.makedirs(d, exist_ok=True); got = {}
     for story in STORIES:
@@ -522,7 +524,8 @@ def download(root, own=None):
         import concurrent.futures
         threads = max(1, int(os.environ.get("STILLHERE_DOWNLOAD_THREADS", "4")))
         print(f"downloading {len(todo)} GIFTIs, {threads} at a time", flush=True)
-        with concurrent.futures.ThreadPoolExecutor(threads) as pool:
+        pool = concurrent.futures.ThreadPoolExecutor(threads)
+        try:
             futures = {pool.submit(netfetch.get, url, dst): dst for url, dst in todo}
             done_mb = 0.0
             for k, f in enumerate(concurrent.futures.as_completed(futures), 1):
@@ -530,6 +533,10 @@ def download(root, own=None):
                 done_mb += os.path.getsize(futures[f]) / 1e6
                 if k % 6 == 0 or k == len(todo):
                     print(f"  {k} of {len(todo)} GIFTIs, {done_mb:,.0f} MB", flush=True)
+        except BaseException:                                        # an error or Ctrl-C: the queued files are not fetched first
+            pool.shutdown(wait=False, cancel_futures=True)
+            raise
+        pool.shutdown()
     for s in SUBS:
         for story in STORIES:
             for hemi in ("L", "R"):
@@ -710,6 +717,8 @@ def _write_own(pub, full, out_dir):
 
 
 def surprisal(root, own=None):
+    if own is not None:
+        refuse_results(own)                                          # a judge's run writes OWN/surprisal.json: never into the repository
     R = f"{root}/r2"; FO = f"{R}/forecast/out" if own is None else own
     out = {story: AH.gpt2_surprisal([(w, t, None) for w, t in word_table(f"{FO}/words_{story}.tsv")]) for story in STORIES}
     json.dump(out, open(f"{R}/surprisal.json" if own is None else f"{own}/surprisal.json", "w"))

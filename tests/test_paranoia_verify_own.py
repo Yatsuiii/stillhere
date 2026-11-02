@@ -197,3 +197,12 @@ def test_r2_score_under_verify_own_end_to_end(tmp_path, monkeypatch, capsys):
     with pytest.raises(SystemExit, match="lh.Schaefer2018_400Parcels_17Networks_order.annot differs from the file our scoring run read"):
         R2.score(str(tmp_path), str(out), str(own))
     R2.VERIFY.clear()
+
+
+def test_verify_own_download_and_surprisal_never_write_into_the_repository(tmp_path):
+    """Review of Nov 2, item 6: the judge's download writes ROOT/r2/bold and surprisal writes OWN/surprisal.json; neither may be in
+    the repository."""
+    with pytest.raises(SystemExit, match="inside the repository"):
+        R2.download(str(REPO), own=str(tmp_path))
+    with pytest.raises(SystemExit, match="inside the repository"):
+        R2.surprisal(str(tmp_path), own=str(REPO / "results"))

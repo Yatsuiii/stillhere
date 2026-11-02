@@ -129,8 +129,11 @@ def fetch_release(dest, forecasts):
     for f in names:
         try:
             fetch(RELEASE_URL + f, os.path.join(dest, f), p[f])
-        except urllib.error.HTTPError as e:
-            if e.code != 404:
+        except urllib.error.URLError as e:
+            if RELEASE_URL.startswith("file:"):
+                raise SystemExit(f"refused: {RELEASE_URL}{f} is missing (STILLHERE_RELEASE_URL must end in '/' and name the folder "
+                                 "holding the release's files)")
+            if getattr(e, "code", None) != 404:
                 raise
             raise SystemExit(f"refused: {RELEASE_URL}{f} answered 404. The release {RELEASE_TAG} is public once the repository is; "
                              "until then, set STILLHERE_RELEASE_URL to a folder holding its files (file:///path/to/folder/).")

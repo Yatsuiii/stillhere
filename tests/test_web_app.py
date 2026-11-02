@@ -544,6 +544,32 @@ def test_local_gpu_wording_and_hosted_wording(web, monkeypatch):
     assert stations.chip("alice_ch02")["short"] == "Forecast only · audio-only, laptop"
 
 
+def test_local_gpu_never_falls_back_to_our_precompute(web, monkeypatch, tmp_path):
+    """Review of Nov 2, item 2: in local GPU mode a fallback (worker not connected, expired, busy) never shows the committed
+    precompute, which our laptop computed; the visitor sees their own GPU's results or none."""
+    app, jobs, ledger, stations, store = web
+    rec = {"clip_id": "alice_ch02", "condition": "sentence_scramble", "seed": 20261028}
+    cache = tmp_path / "pre.json"; cache.write_text(json.dumps({"entries": {jobs.cache_key(jobs.recipe(**rec)): result_for("x" * 64)}}))
+    monkeypatch.setattr(jobs, "CACHE", cache)
+    assert jobs.fallback(jobs.recipe(**rec)) is not None                             # hosted: the saved forecast
+    monkeypatch.setenv("STILLHERE_LOCAL_GPU", "1")
+    assert jobs.fallback(jobs.recipe(**rec)) is None
+    code, _, out = call(app, "POST", "/api/forecast", {"run_id": None, **rec}); d = json.loads(out)   # no worker connected yet
+    assert d["state"] == "offline" and d["fallback"] is None and d["why"] == "The local worker is not connected yet."
+
+
+def test_the_local_server_answers_only_its_own_host(web, monkeypatch):
+    """Review of Nov 2: under web/serve.py a page on another site rebound to 127.0.0.1 would pass the Origin check (it reads the Host)."""
+    app, jobs, ledger, stations, store = web
+    assert call(app, "GET", "/api/status", env={"HTTP_HOST": "evil.example:8780"})[0] == 200        # not the local server: unchanged
+    monkeypatch.setenv("STILLHERE_LOCAL_SERVER", "1")
+    for host in ("evil.example:8780", "evil.example", "127.0.0.1.evil.example:8780"):
+        code, _, out = call(app, "POST", "/api/forecast", {}, env={"HTTP_HOST": host, "HTTP_ORIGIN": f"http://{host}"})
+        assert code == 403 and json.loads(out) == {"error": "host"}, host
+    for host in ("127.0.0.1:8780", "localhost:8780", "[::1]:8780", "localhost"):
+        assert call(app, "GET", "/api/status", env={"HTTP_HOST": host})[0] == 200, host
+
+
 def test_local_gpu_flag_refuses_to_start_on_vercel():
     env = {**__import__("os").environ, "STILLHERE_LOCAL_GPU": "1", "VERCEL_ENV": "production"}
     p = subprocess.run([sys.executable, "-c", "import web.app"], cwd=REPO, env=env, capture_output=True, text=True)

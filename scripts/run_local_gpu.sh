@@ -25,13 +25,14 @@ if [ "$(stat -c %a "$TOKEN_FILE")" != 600 ]; then              # e.g. an NTFS or
 fi
 
 cleanup() {
-  pkill -P "${WORKER_PID:-0}" 2>/dev/null || true                     # the worker's python, under its restart loop
+  [ -z "${WORKER_PID:-}" ] || pkill -P "$WORKER_PID" 2>/dev/null || true   # the worker's python, under its restart loop
   kill "${WEB_PID:-}" "${WORKER_PID:-}" 2>/dev/null || true; wait 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
 
 cd "$REPO"
-STILLHERE_WORKER_TOKEN=$(cat "$TOKEN_FILE") STILLHERE_LOCAL_GPU=1 WORKER_HOURS_ET="any time (your GPU)" \
+# JOB_EXPIRY_S: the hosted page gives a job 120 s; a slower GPU than our laptop's (52-66 s a job) needs longer
+STILLHERE_WORKER_TOKEN=$(cat "$TOKEN_FILE") STILLHERE_LOCAL_GPU=1 WORKER_HOURS_ET="any time (your GPU)" JOB_EXPIRY_S=${JOB_EXPIRY_S:-900} \
   "$WEB_PY" web/serve.py --port "$PORT" &
 WEB_PID=$!
 for _ in $(seq 50); do
