@@ -76,7 +76,7 @@ def test_no_banned_wording_em_dash_scripts_or_remote_resources():
 def test_results_panels_carry_the_footer_and_film_frames_the_credit():
     results = PAGE[PAGE.index('id="check"'):PAGE.index("<footer")]
     ps = panels(results)
-    assert len(ps) == 9                                                               # check, film, Glimmer, forecast, LPP, Alice, wall, D20, film
+    assert len(ps) == 11                                                              # check, film, Glimmer, forecast, LPP, R2, R5, Alice, wall, D20, film
     for p in ps:
         assert p.rstrip().endswith(f'<p class="nd">{html.escape(BP.ND)}</p></div>'), re.sub(r"<[^>]+>", " ", p)[:120]
     for p in panels(PAGE):
@@ -135,6 +135,7 @@ def test_media_match_their_manifest_and_stay_small():
 
 # ---- slots ----------------------------------------------------------------------------------------------------------------------------
 def test_missing_files_show_labelled_pending_slots(monkeypatch):
+    monkeypatch.setattr(BP, "WALL_CUTOFF_UTC", datetime.datetime.max.replace(tzinfo=datetime.timezone.utc))   # before the wall's cutoff
     page = build_with(monkeypatch, NONE); t = text(page)
     for rel in (BP.SLOTS["demo_runs"], BP.SLOTS["glimmer"], BP.SLOTS["story_wall"], BP.SLOTS["d20"]):
         assert f"Fills from {rel} when it lands." in t, rel
@@ -201,7 +202,7 @@ def test_story_wall_and_notthefall(monkeypatch):
     assert BP.PREREG_NOTE in t and f'href="{BP.PREREG_URL}"' in build_with(monkeypatch, {**NONE, "d20": d20})
     assert not re.search(r"\b1[35] of 2[12]\b", t)                                # D23(b): no k of N for D20
     d20["baselines"]["matches_frozen"] = False
-    assert "word rate alone" not in text(build_with(monkeypatch, {**NONE, "d20": d20}))
+    assert "same test, language areas: word rate alone" not in text(build_with(monkeypatch, {**NONE, "d20": d20}))   # R5's line also says "word rate alone"
     for status in ("fail", "not run"):                                               # any other ending: the panel leaves the page
         d20["primary"]["status"] = status
         t = text(build_with(monkeypatch, {**NONE, "d20": d20}))

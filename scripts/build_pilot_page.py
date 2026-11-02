@@ -12,7 +12,7 @@ script) that walks one demo study through StillHere, with wording from docs/capt
      in results/live_tribe_librivox.json): a forecast, not checked against scans.
   6. Did the forecasts hold up? LPP section 8 (results/section8.json) with its "what it had to beat" row (results/
      section8_baselines.json); the Alice Datasets (results/alice_heldout.json; no file, no panel); slots for the story wall
-     (results/story_wall.json), notthefall (results/d20_notthefall.json) and the film (results/face_map.json,
+     (results/picker/tierD_picker_wall.json, the wall's scored file), notthefall (results/d20_notthefall.json) and the film (results/face_map.json,
      results/emofilm_film_score.json). A missing file is a labelled pending slot.
   The sedation case study is one link to docs/writeup_sedation.md. Stored card wording is shown in plain words (DISPLAY). Media come from demo/media/ (scripts/build_pilot_media.py, built once).
 Standard library only, so a clean clone builds it. The build refuses banned wording.
@@ -39,7 +39,7 @@ BANNED = ("aware", "awareness", "conscious", "consciousness", "hospital", "detec
           "diagnose", "a test for patients", "before anyone looked", "face check", "detects faces", "blur", "validated", "understanding",
           "comprehension")
 SLOTS = {"demo_requests": "eval/demo_requests.json", "demo_runs": "results/demo_runs.json", "glimmer": "results/edit_check_glimmer.json",
-         "story_wall": "results/story_wall.json", "d20": "results/d20_notthefall.json", "face_map": "results/face_map.json",
+         "story_wall": "results/picker/tierD_picker_wall.json", "d20": "results/d20_notthefall.json", "face_map": "results/face_map.json",
          "film_score": "results/emofilm_film_score.json", "live_conditions": "results/demo_live_tribe_conditions.json"}
 ASKS = ({"id": "story", "text": "Build a test from this new story, with a scrambled control."},          # docs/captions.md c.1 and d.1
         {"id": "film", "text": "If the faces in this film scene are filled in, what changes in the brain?"})
@@ -476,6 +476,36 @@ def alice_html(d) -> str:
                  f'<p class="small"><code>{ALICE[0]}</code>, <code>{ALICE[1]}</code>.</p>')
 
 
+PARANOIA = ("results/r2_paranoia.json", "results/r5_short_scan.json")
+PARANOIA_CITE = ("Finn, Corlett, Chen, Bandettini and Constable, Nature Communications 2018; OpenNeuro ds001338 v1.0.0, CC BY-NC 4.0; "
+                 "the fMRIPrep fsaverage5 derivative.")
+
+
+def paranoia_html(r2, r5) -> str:
+    """R2 and R5 on Paranoia (docs/rules/r2_paranoia_rule.md, docs/rules/r5_short_scan_rule.md; cloud ruling of Nov 2, 04:45 UTC, item
+    5): each rule's lines from its results file, byte for byte, then the numbers. No file, no panel."""
+    out = ""
+    if r2:
+        ve, ref = r2["models"]["stock"]["volunteer_equivalent_language"], r2["models"]["stock"]["reference"]
+        small = (f'Volunteer-equivalent {ve["point_k"]:.1f}, lower bound {ve["lower_k"]:.2f}; language result {ve["z"]:.2f} z against '
+                 f'{ref["reference_mean_z"]:.2f} z for the other listeners\' average, {ref["n"]} listeners, {r2["window"]["minutes"]} '
+                 'minutes. The rule and the forecasts were committed before the brain data was downloaded; scored once. ' + PARANOIA_CITE)
+        out += panel(f'<h3>{badge("info", "exploratory")}Paranoia, a story outside TRIBE v2\'s training and evaluation sets</h3>'
+                     f'<p class="big">{E(r2["lines"][0], quote=False)}</p>'
+                     + "".join(f"<p>{E(ln, quote=False)}</p>" for ln in r2["lines"][1:])
+                     + f'<p class="small">{E(small)}</p><p class="small"><code>{PARANOIA[0]}</code>, <code>results/r2_run/RUN.md</code>.</p>')
+    if r5:
+        t, w, e = r5["tribe"], r5["word_rate"], r5["envelope"]
+        small = (f'{t["k_above_0"]} of {t["n"]} listeners above 0 (bar {t["kstar"]}), one-sided p = {t["wilcoxon_p"]:.4f}. Ranked by word '
+                 f'rate: {w["k_above_0"]} of {w["n"]}, p = {w["wilcoxon_p"]:.2f}; by the sound envelope: {e["k_above_0"]} of {e["n"]}, '
+                 f'p = {e["wilcoxon_p"]:.2f}. {r5["minutes_each_side"]} minutes each side, ranked by the forecast alone. Healthy listeners; it '
+                 'says nothing about anyone who cannot respond.')
+        out += panel(f'<h3>{badge("pass" if t["pass"] else "fail", "pass" if t["pass"] else "fail")}Which minutes to play in a short '
+                     f'scan</h3><p class="big">{E(r5["line"], quote=False)}</p><p class="small">{E(small)}</p>'
+                     f'<p class="small"><code>{PARANOIA[1]}</code>.</p>')
+    return out
+
+
 WALL_CUTOFF_UTC = datetime.datetime(2026, 11, 1, 18, 0, tzinfo=datetime.timezone.utc)   # saturday_chain.sh: 42/42 predictions by then
 
 
@@ -734,7 +764,7 @@ def build(inline: bool = False) -> str:
     P.append('<h2 id="held">6. Did the forecasts hold up?</h2><p class="muted">Each forecast against real scans it never saw. Results land one '
              'at a time; a slot without its file says so.</p>')
     P.append(lpp_html(load("results/section8.json"), load("results/section8_baselines.json"), load("results/ghostline_lpp_s8.json")))
-    P.append(alice_html(load(ALICE[0])))
+    P.append(paranoia_html(load(PARANOIA[0]), load(PARANOIA[1])) + alice_html(load(ALICE[0])))
     P.append(wall_html(sl["story_wall"]) + d20_html(sl["d20"])
              + film_result_html(sl["face_map"], sl["film_score"], load("results/ghostline_film.json")))
     P.append(f'<p class="small" id="sedation">Sedation case study (not in the video): <a href="{SEDATION_URL}">the write-up, '
@@ -747,7 +777,7 @@ def build(inline: bool = False) -> str:
              "<li>SAM 3.1 through Meta's Model API, decoded with meta-sam-parser under Meta's SAM License; we acknowledge the use of SAM in "
              "this work.</li>"
              "<li>Data: Emo-FilM (Morgenroth et al. 2025; OpenNeuro ds004892 and ds004872, CC0), Le Petit Prince (ds003643), Narratives "
-             "(ds002345), LibriVox (public domain), Tears of Steel (Blender Foundation, CC BY 3.0).</li>"
+             "(ds002345), Paranoia (ds001338, CC BY-NC 4.0), LibriVox (public domain), Tears of Steel (Blender Foundation, CC BY 3.0).</li>"
              f"<li>{E(CREDIT)}</li>"
              "<li>Research tool for labs. Tested only in healthy volunteers and public data. Not a diagnosis or medical advice.</li>"
              f"<li>{E(DISPLAY_NOTE)}</li>"

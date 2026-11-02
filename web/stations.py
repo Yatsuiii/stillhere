@@ -738,7 +738,7 @@ def evidence() -> dict:
     outcome, and which tile sits beside a live gray line: the notthefall pair only if D20 passed, else the LPP ghost line (ruling 3)."""
     bp, sl = guard._bp, {k: _load(v) for k, v in guard._bp.SLOTS.items()}
     html = (bp.lpp_html(_load("results/section8.json"), _load("results/section8_baselines.json"), _load("results/ghostline_lpp_s8.json"))
-            + bp.alice_html(_load(bp.ALICE[0]))
+            + bp.paranoia_html(_load(bp.PARANOIA[0]), _load(bp.PARANOIA[1])) + bp.alice_html(_load(bp.ALICE[0]))
             + bp.wall_html(sl["story_wall"])
             + bp.d20_html(sl["d20"]) + bp.film_result_html(sl["face_map"], sl["film_score"], _load("results/ghostline_film.json")))
     d20 = bp.d20_status(sl["d20"])
