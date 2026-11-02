@@ -14,8 +14,9 @@ set -euo pipefail
 
 [ $# -eq 1 ] || { echo "usage: bash scripts/judge_gpu_setup.sh <models_dir>"; exit 2; }
 REPO=$(cd "$(dirname "$0")/.." && pwd -P)
-MODELS=$(mkdir -p "$1" && cd "$1" && pwd -P)
+MODELS=$(realpath -m "$1")
 case "$MODELS/" in "$REPO"/*) echo "put <models_dir> outside the repository (about 9.5 GB)"; exit 2;; esac
+mkdir -p "$MODELS"
 VENV=${STILLHERE_TRIBE_VENV:-$REPO/.venv-tribe}
 EN_CORE="https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl"
 export HF_HUB_DISABLE_TELEMETRY=1

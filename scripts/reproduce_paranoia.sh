@@ -43,11 +43,13 @@ WORDS=${STILLHERE_WORDS:-ours}
 case "$WORDS" in ours|asr) ;; *) echo "STILLHERE_WORDS must be ours or asr" >&2; exit 2 ;; esac
 F="$REPO/scripts/paranoia_files.py"
 
+if [ "$DRY" = 0 ]; then                       # first, before any network use: the scorers' packages
+  "$SCORE_PY" -c "import numpy, scipy, nibabel, nilearn, soundfile, pandas, sklearn" 2>/dev/null || {
+    echo "refused before any download: $SCORE_PY lacks the scorers' packages. python3 -m venv .venv-score &&" \
+         ".venv-score/bin/pip install -r requirements-score.txt, then STILLHERE_SCORE_PYTHON=.venv-score/bin/python" >&2; exit 2; }
+fi
 if [ "$NO_GPU" = 1 ]; then python3 "$F" sizes "$DATA" --no-gpu; else python3 "$F" sizes "$DATA"; fi
 [ "$DRY" = 1 ] && { echo "dry run: nothing fetched"; exit 0; }
-"$SCORE_PY" -c "import numpy, scipy, nibabel, nilearn, soundfile, pandas, sklearn" 2>/dev/null || {
-  echo "refused before any download: $SCORE_PY lacks the scorers' packages. python3 -m venv .venv-score &&" \
-       ".venv-score/bin/pip install -r requirements-score.txt, then STILLHERE_SCORE_PYTHON=.venv-score/bin/python" >&2; exit 2; }
 mkdir -p "$DATA"
 
 echo "== stimuli, full text and atlas"
