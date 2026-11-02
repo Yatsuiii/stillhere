@@ -95,7 +95,9 @@ From a fresh clone in a new folder, with a new venv and a new models folder (lin
   is `docs/proof/verify_rtx4050_laptop.json` (driver 615.78.08, CUDA 12.4, torch 2.6.0, tribev2 at af58661). Not exercised: installing `requirements-tribe.txt` from scratch (about 3 GB at 287 KB/s); the new venv
   reused the tested packages, and all 131 pinned lines equal them.
 - Route 3: `run_local_gpu.sh` with an empty HOME and no keys: "Live models: off", the default plan's recorded run opened FORECAST,
-  "Running on local GPU", then "Forecast, live" on the RTX 4050 in 46 s; the job token was 0600 in a 0700 folder.
+  "Running on local GPU", then "Forecast, live" on the RTX 4050 in 46 s; the job token was 0600 in a 0700 folder. Again after the
+  review fixes (8eca1d3), from another fresh clone: "Forecast, live" in 54 s under the chip "Forecast only · audio-only, your GPU"
+  and the line "Local GPU mode: every forecast runs on your GPU; saved forecasts are not used."; a request with another Host got 403.
 - Route 4b: a fresh `requirements-score.txt` venv installed every pin; the end-to-end run is in progress on a slow connection.
 
 ## What cannot be reproduced here
