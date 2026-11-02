@@ -155,3 +155,16 @@ closes, and neither part could finish before then. Part 3 had not started (two G
 The cap rises from 45 to 60 Colab units over all S3b notebooks, a hard cap. The rerun of all three parts, from about 03:30 UTC Nov 2, is
 each part's first complete run under 7(e); the stopped runs are listed in the control pins commit's run list. The cutoff stays Mon Nov 2,
 18:00 UTC; anything not done by then is "pre-registered, not run" with the reason.
+
+Dated note, Nov 2 2026 (cloud ruling of Nov 2, 14:05 UTC, item 1; pushed before 18:00 UTC and before any part's output was opened; the
+text above is unchanged): the cutoff moves to Tue Nov 3, 06:00 UTC, and the cap becomes 50 Colab compute units over all S3b notebooks,
+a hard cap. Why: Colab Pro runs two GPU sessions at a time. This morning's start failed before any kernel ran (the reference zip could
+not be uploaded over the travel connection, about 85 KB/s up; part 2's third cell waited at its upload prompt from about 06:27 to 09:15
+UTC; both runtimes deleted). Run 2: part 1 from about 10:26 UTC and part 2 from about 10:50 UTC; part 3 starts in part 2's slot when
+part 2 ends, about 16:35 UTC, and ends about 21:40 UTC, after the old cutoff. No S3b forecast existed when the cutoff moved. The cap: when
+this note was written S3b had used about 32.7 units (Colab showed 67.26 available at about 14:05 UTC, from 100 at the month's start:
+about 18 in run 1, 5.15 this morning, 9.58 in run 2 by then, at a measured 1.37 units an hour per session); part 3's projection is about
+7.0 units (4.8 h of kernel and about 0.3 h connected for its upload, at 1.37 an hour); 32.7 + 7.0 + 10 = 49.7, so 50 (the ruling's limit
+is 80). Parts 1 and 2 run until about 16:30 UTC (about 6.6 more units), so the projected total is about 46. Section 5's "Oct 31-Nov 2"
+changes to "Oct 31-Nov 3" only if a part lands after 00:00 UTC Nov 3. Nothing else changes: the gate, the one scoring run, and the
+advance scoring go with its conditions.
