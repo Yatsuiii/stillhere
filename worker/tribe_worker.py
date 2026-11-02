@@ -292,13 +292,47 @@ def verify(args):
         res = engine.run(R.build_condition(rec, index), STATE / "jobs", lambda *a: None)
         cmp = compare(rec, res, index); ok &= bool(cmp and cmp["ok"])
         (l_m, l_r), (h_m, h_r) = cmp["regions"]["language"], cmp["regions"]["hearing"]
-        rows.append((rec["condition"], rec["clip_id"], res["seconds"], l_m, l_r, h_m, h_r, res["timings_s"]["total"], res["peak_vram_gb"],
+        rows.append((rec["condition"], rec["clip_id"], res["seconds"], l_m, l_r, h_m, h_r, res["timings_s"]["total"], res.get("peak_vram_gb"),
                      "PASS" if cmp["ok"] else "FAIL"))
     print(f"{'condition':18} {'clip':12} {'clip s':>6} {'lang max':>9} {'lang r':>8} {'hear max':>9} {'hear r':>8} {'job s':>6} {'peak GB':>7}  result")
     for r in rows:
         print(f"{r[0]:18} {r[1]:12} {r[2]:6d} {r[3]:9.4f} {r[4]:8.5f} {r[5]:9.4f} {r[6]:8.5f} {r[7]:6.1f} {r[8]!s:>7}  {r[9]}")
     print(f"tolerance: max abs {TOL_MAXABS}, r {TOL_R}; GPU {engine.gpu}; " + ("VERIFY PASS" if ok else "VERIFY FAIL"))
+    if args.out:                                       # one file a judge can send back: the table and the environment it ran in
+        keys = ("condition", "clip_id", "clip_s", "language_max_abs", "language_r", "hearing_max_abs", "hearing_r", "job_s", "peak_vram_gb",
+                "result")
+        doc = {"verify": "PASS" if ok else "FAIL", "tolerance": {"max_abs": TOL_MAXABS, "r": TOL_R}, "rows": [dict(zip(keys, r)) for r in rows],
+               "environment": environment(engine), "worker_label": WORKER_LABEL,
+               "utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+        Path(args.out).write_text(json.dumps(doc, indent=1) + "\n"); log(f"verify table written to {args.out}")
     return 0 if ok else 1
+
+
+def environment(engine) -> dict:
+    """What the forecasts ran on: GPU, driver, CUDA, torch, tribev2's commit, Python. Names and versions only."""
+    import importlib.metadata as M
+    import platform
+    out = {"gpu": getattr(engine, "gpu", None), "python": platform.python_version(), "engine_load_s": getattr(engine, "load_s", None)}
+    for dist in ("torch", "tribev2", "transformers", "neuralset"):
+        try:
+            d = M.distribution(dist); out[dist] = d.version
+            vcs = json.loads(d.read_text("direct_url.json") or "{}").get("vcs_info", {})
+            if vcs.get("commit_id"):
+                out[dist] += f" @ {vcs['commit_id'][:7]}"
+        except M.PackageNotFoundError:
+            out[dist] = None
+    try:
+        import torch
+        out["cuda"] = torch.version.cuda
+    except ImportError:
+        out["cuda"] = None
+    try:
+        import subprocess
+        out["driver"] = subprocess.run(["nvidia-smi", "--query-gpu=driver_version", "--format=csv,noheader"], capture_output=True,
+                                       text=True, timeout=10).stdout.strip() or None
+    except (OSError, subprocess.SubprocessError):
+        out["driver"] = None
+    return out
 
 
 def main(argv=None):
@@ -311,7 +345,7 @@ def main(argv=None):
     r = sub.add_parser("run"); r.add_argument("--clip", required=True); r.add_argument("--condition", required=True, choices=R.CONDITIONS)
     r.add_argument("--seed", type=int, default=None, help="default: the page's default seed (ignored for intact and reversed)")
     r.add_argument("--out", help="write the region values as JSON")
-    sub.add_parser("verify")
+    v = sub.add_parser("verify"); v.add_argument("--out", help="also write the table and the environment as JSON (to send back)")
     a = ap.parse_args(argv)
     if a.cmd == "run" and a.seed is None:
         a.seed = 0 if a.condition in R.SEEDLESS else R.load_index()["default_seed"]

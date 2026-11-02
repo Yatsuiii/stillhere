@@ -353,3 +353,15 @@ def test_local_runs_default_to_one_gpu_and_the_judges_models(tmp_path):
     out = subprocess.run([sys.executable, "-c", code], cwd=REPO, env=env, capture_output=True, text=True, check=True).stdout.split()
     assert out[:3] == ["0", str(tmp_path / "hub"), "1"] and " ".join(out[3:]) == "local GPU"
     assert 'Environment="STILLHERE_WORKER_LABEL=the laptop"' in UNIT
+
+
+def test_verify_writes_its_table_and_environment(monkeypatch, tmp_path):
+    import worker.engine
+    from worker import tribe_worker as T
+    monkeypatch.setattr(worker.engine, "Engine", StubEngine); monkeypatch.setattr(T, "STATE", tmp_path)
+    out = tmp_path / "verify.json"
+    assert T.main(["verify", "--out", str(out)]) == 1                                   # the stand-in's values are not ours: FAIL
+    d = json.loads(out.read_text())
+    assert d["verify"] == "FAIL" and [r["condition"] for r in d["rows"]] == list(R.CONDITIONS)
+    assert set(d["rows"][0]) >= {"clip_id", "language_max_abs", "hearing_r", "job_s", "result"} and d["tolerance"]["max_abs"] == 0.002
+    assert d["environment"]["gpu"] == "stub" and "python" in d["environment"] and "torch" in d["environment"]

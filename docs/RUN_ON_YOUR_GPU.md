@@ -39,7 +39,7 @@ computed on your machine.
 ```sh
 bash scripts/judge_gpu_setup.sh ~/stillhere-models     # a venv (.venv-tribe), the 3 models (about 9.5 GB), then an audit
 export STILLHERE_TRIBE_PYTHON=$PWD/.venv-tribe/bin/python STILLHERE_MODELS_DIR=~/stillhere-models/worker   # as the script prints
-$STILLHERE_TRIBE_PYTHON worker/tribe_worker.py verify
+$STILLHERE_TRIBE_PYTHON worker/tribe_worker.py verify --out verify.json     # the table, plus the GPU, driver and versions it ran on
 $STILLHERE_TRIBE_PYTHON worker/tribe_worker.py run --clip alice_ch01 --condition word_scramble --seed 7 --out my_forecast.json
 ```
 

@@ -21,6 +21,16 @@ VENV=${STILLHERE_TRIBE_VENV:-$REPO/.venv-tribe}
 EN_CORE="https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl"
 export HF_HUB_DISABLE_TELEMETRY=1
 
+free_gb() { df -Pk "$1" | awk 'NR == 2 {print int($4 / 1048576)}'; }
+need() {                                       # stop before a long download that cannot fit, rather than in the middle of it
+  local dir=$1 gb=$2 what=$3 have; mkdir -p "$dir"; have=$(free_gb "$dir")
+  [ "$have" -ge "$gb" ] || { echo "not enough disk for $what: $have GB free under $dir, about $gb GB needed"; exit 1; }
+}
+command -v nvidia-smi >/dev/null && nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader | sed 's/^/   GPU: /' \
+  || echo "   no nvidia-smi on PATH: the forecasts need an NVIDIA GPU and driver (route 4b, --no-gpu, does not)"
+[ -x "$VENV/bin/python" ] || need "$(dirname "$VENV")" 8 "the TRIBE environment (about 7 GB)"
+[ -n "${STILLHERE_HF_SOURCE:-}" ] || need "$MODELS" 10 "the models (9.47 GB)"
+
 echo "== 1. the TRIBE environment: $VENV"
 if [ -x "$VENV/bin/python" ] && "$VENV/bin/python" -c "import tribev2, spacy, en_core_web_lg" 2>/dev/null; then
   echo "   already installed"
