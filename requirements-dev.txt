@@ -1,5 +1,6 @@
 # Tests and the analysis modules (stillhere/heldout.py, face_map.py, cheap_baselines.py and face_edit.py import scipy), on top of the
-# hosted app's runtime. The CI workflow installs this file; nilearn, nibabel and pandas are optional (their tests skip without them).
+# hosted app's runtime. The CI workflow installs this file and requirements-score.txt (nibabel, nilearn, pandas, soundfile: the
+# scorers' pins); without the latter, their tests skip.
 -r requirements.txt
 pytest==9.2.0
 scipy==1.18.1
