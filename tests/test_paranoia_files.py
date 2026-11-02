@@ -63,3 +63,12 @@ def test_only_our_pinned_files_are_staged(tmp_path):
         PF.stage_release(str(tmp_path), str(tmp_path / "stage"), None, False)
     assert not (tmp_path / "stage").exists()
     assert "CC BY-NC 4.0" in PF.README and "d'Ascoli et al. 2026" in PF.README and "ds001338" in PF.README
+
+
+def test_a_release_that_answers_404_says_why(tmp_path, monkeypatch):
+    import urllib.error
+    def missing(url, dst, *a, **k):
+        raise urllib.error.HTTPError(url, 404, "Not Found", {}, None)
+    monkeypatch.setattr(PF.netfetch, "get", missing)
+    with pytest.raises(SystemExit, match="answered 404. The release paranoia-forecasts-v1 is public once the repository is"):
+        PF.fetch_release(str(tmp_path / "rel"), forecasts=False)

@@ -127,7 +127,13 @@ def fetch_release(dest, forecasts):
     names = [f"words_{s}.tsv" for s in STORIES] + ["surprisal.json"]
     names += [f"pred_stock_{s}_{k}.npz" for s in STORIES for k in MODES] if forecasts else []
     for f in names:
-        fetch(RELEASE_URL + f, os.path.join(dest, f), p[f])
+        try:
+            fetch(RELEASE_URL + f, os.path.join(dest, f), p[f])
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                raise
+            raise SystemExit(f"refused: {RELEASE_URL}{f} answered 404. The release {RELEASE_TAG} is public once the repository is; "
+                             "until then, set STILLHERE_RELEASE_URL to a folder holding its files (file:///path/to/folder/).")
 
 
 def common(data):
