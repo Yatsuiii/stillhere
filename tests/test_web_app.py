@@ -486,6 +486,26 @@ def test_fake_worker_round_trip(web):
     assert json.loads(out)["state"] == "cached"                                     # reversed ignores the seed: same cache key
 
 
+def test_worker_label_shows_while_its_job_runs(web):
+    """The page says which worker runs a job (cloud review of Nov 2, 12:15 UTC, item 4): the claim's worker_label, checked; none from
+    an older worker (the laptop's service then still reads "the laptop" in app.js)."""
+    app, jobs, ledger, stations, store = web
+    call(app, "POST", "/api/worker/claim", {}, auth=W)
+    for label, shown in (("local GPU", "local GPU"), ("<script>", None), (None, None)):
+        clip, sid = {"local GPU": ("alice_ch02", "b"), "<script>": ("alice_ch03", "c"), None: ("alice_ch01", "d")}[label]
+        store.get_store().set("visitor:" + sid * 32, "1")                            # one session each: one forecast at a time per session
+        run = planned_run(ledger, store, sid * 32, clip, "reversed")
+        _, _, out = call(app, "POST", "/api/forecast", {"run_id": run, "clip_id": clip, "condition": "reversed", "seed": 99},
+                         cookie="sh_sid=" + sid * 32)
+        assert "job_id" in json.loads(out), (label, json.loads(out).get("state"), json.loads(out).get("why"))
+        jid = json.loads(out)["job_id"]
+        body = {"worker": "x"} if label is None else {"worker_label": label}
+        call(app, "POST", "/api/worker/claim", body, auth=W)
+        _, _, out = call(app, "GET", f"/api/forecast/{jid}"); s = json.loads(out)
+        assert s["status"] == "running" and s.get("worker_label") == shown, (label, s.get("worker_label"))
+    assert '"Running on " + (s.data.worker_label || "the laptop")' in (REPO / "web/public/app.js").read_text()
+
+
 def test_jobs_expire_and_fall_back(web, monkeypatch):
     app, jobs, ledger, stations, store = web
     call(app, "POST", "/api/worker/claim", {}, auth=W)

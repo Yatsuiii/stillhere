@@ -19,6 +19,8 @@ from pathlib import Path
 
 import numpy as np
 
+from worker.labels import WORKER_LABEL
+
 HERE = Path(__file__).resolve().parent
 REGIONS = json.loads((HERE / "regions.json").read_text())
 STOCK_CKPT_SHA256 = "9c79ffff6b642b7b0c71d558c935fb3fa33f2788bfb509feead94fafbba2f321"   # as stillhere/live_tribe.py
@@ -211,5 +213,5 @@ class Engine:
                 "n_words_text_lane": int((ev.type == "Word").sum()), "llama_placement": self.last_placement, "input_sha256": built.wav_sha256, "models": self.models(),
                 "gpu": self.gpu, "peak_vram_gb": peak, "timings_s": t,
                 "first_start_s": float(segs[0].start) if len(segs) else 0.0, "worker_version": WORKER_VERSION,
-                "label": "Forecast, not a scan: TRIBE v2 on the laptop, audio only, no brain data",
+                "label": f"Forecast, not a scan: TRIBE v2 on {WORKER_LABEL}, audio only, no brain data",
                 "computed_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}

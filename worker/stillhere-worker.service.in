@@ -53,6 +53,7 @@ Environment=MPLCONFIGDIR=/var/lib/stillhere-worker/cache/mpl
 Environment=HF_HOME=/var/lib/stillhere-worker/hf
 Environment=HF_HUB_CACHE=/opt/stillhere-worker/models/hub
 Environment=HF_HUB_OFFLINE=1
+Environment="STILLHERE_WORKER_LABEL=the laptop"
 Environment=TRANSFORMERS_OFFLINE=1
 Environment=HF_HUB_DISABLE_TELEMETRY=1
 Environment=PYTHONNOUSERSITE=1

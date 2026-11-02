@@ -246,7 +246,7 @@ def _worker(req):
 def claim(req, m):
     if not _worker(req):
         return 401, None
-    req.json(); j = jobs.claim({})
+    j = jobs.claim(req.json() or {})
     return (200, {"job": j}) if j else (204, None)
 
 

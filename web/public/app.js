@@ -327,7 +327,7 @@ async function doForecast() {
       }
       out.textContent = s.data.why || NOT_DONE; return;
     }
-    out.textContent = (s.data.status === "running" ? "Running on the laptop" : "Queued") + ", " + Math.round((Date.now() - t0) / 1000) + " s.";
+    out.textContent = (s.data.status === "running" ? "Running on " + (s.data.worker_label || "the laptop") : "Queued") + ", " + Math.round((Date.now() - t0) / 1000) + " s.";
     setTimeout(poll, POLL_MS);
   };
   poll();

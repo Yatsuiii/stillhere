@@ -7,6 +7,7 @@ import hmac
 import json
 import math
 import os
+import re
 import secrets
 import sys
 import time
@@ -187,6 +188,8 @@ def status(job_id: str):
         if was == "queued":
             _unwait(j.get("addr"), job_id)
     out = {"status": j["status"], "recipe": j["recipe"], "events": [json.loads(e) for e in s.lrange(f"events:{job_id}")]}
+    if j.get("worker_label"):
+        out["worker_label"] = j["worker_label"]
     if j["status"] == "done":
         out["result"] = cached(j["cache_key"])
     if j["status"] in ("expired", "failed"):
@@ -221,6 +224,9 @@ def claim(body: dict):
         if j["status"] != "queued":
             continue
         j.update(status="running", claimed_utc=_now(), claimed_t=time.time())
+        lbl = body.get("worker_label") if isinstance(body, dict) else None   # what the page says while it runs (worker/labels.py)
+        if isinstance(lbl, str) and re.fullmatch(r"[A-Za-z0-9 ._()-]{1,40}", lbl):
+            j["worker_label"] = lbl
         try:                                               # first, so a failed write below never leaves the count up (item 8); best
             _unwait(j.get("addr"), job_id)                 # effort, so a failure here never strands the popped job as "queued" (it
         except StoreError as e:                            # would poll "Queued" for 6 h): the count over-counts at worst (refuter's

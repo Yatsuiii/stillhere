@@ -307,3 +307,48 @@ def test_serve_exits_for_a_fresh_restart_when_the_feature_cache_is_full(monkeypa
         srv.shutdown()
     assert code == T.EXIT_RESTART != 0                                 # non-zero, so Restart=on-failure starts a fresh worker
     assert set(st.results) == {"j1"} and [j["id"] for j in st.queue] == ["j2"]
+
+
+# ---- run and verify on a judge's GPU (cloud review of Nov 2, 12:15 UTC, item 4) ---------------------------------------------------
+CACHE = json.loads((REPO / "data/forecast_cache.json").read_text())["entries"]
+
+
+def test_verify_picks_one_cached_recipe_per_condition():
+    from worker import tribe_worker as T
+    picks = T.verify_picks(CACHE, IDX)
+    assert [p["condition"] for p in picks] == list(R.CONDITIONS)
+    assert all(R.cache_key(p, IDX) in CACHE for p in picks)
+
+
+def test_compare_against_the_cache():
+    from worker import tribe_worker as T
+    e = next(v for v in CACHE.values() if v["recipe"]["condition"] == "word_scramble")
+    same = {"regions": {k: list(v) for k, v in e["regions"].items()}, "n_words_text_lane": e["n_words_text_lane"]}
+    c = T.compare(e["recipe"], same, IDX)
+    assert c["ok"] and all(m == 0 and r > 0.99999 for m, r in c["regions"].values()) and T.cmp_line(c).startswith("PASS")
+    off = {**same, "regions": {**same["regions"], "hearing": [v + 0.01 for v in same["regions"]["hearing"]]}}
+    c = T.compare(e["recipe"], off, IDX)
+    assert not c["ok"] and c["regions"]["hearing"][0] > T.TOL_MAXABS and T.cmp_line(c).startswith("FAIL")
+    assert T.compare({**e["recipe"], "seed": 424242}, same, IDX) is None                 # not cached: nothing to compare
+
+
+def test_run_writes_region_values_and_exits_1_off_the_cache(monkeypatch, tmp_path):
+    import worker.engine
+    from worker import tribe_worker as T
+    monkeypatch.setattr(worker.engine, "Engine", StubEngine); monkeypatch.setattr(T, "STATE", tmp_path)
+    out = tmp_path / "r.json"
+    assert T.main(["run", "--clip", "alice_ch01", "--condition", "word_scramble", "--out", str(out)]) == 1   # stub values: FAIL
+    r = json.loads(out.read_text())
+    assert r["recipe"] == {"clip_id": "alice_ch01", "condition": "word_scramble", "seed": IDX["default_seed"]}
+    assert len(r["regions"]["language"]) == 40 and r["worker_label"] == T.WORKER_LABEL
+    assert T.main(["run", "--clip", "alice_ch01", "--condition", "word_scramble", "--seed", "424242"]) == 0       # not cached
+
+
+def test_local_runs_default_to_one_gpu_and_the_judges_models(tmp_path):
+    code = ("import os; os.environ.pop('CUDA_VISIBLE_DEVICES', None); os.environ['STILLHERE_MODELS_DIR'] = %r; "
+            "import worker.tribe_worker as T; print(os.environ['CUDA_VISIBLE_DEVICES'], os.environ['HF_HUB_CACHE'], "
+            "os.environ['HF_HUB_OFFLINE'], T.WORKER_LABEL)" % str(tmp_path))
+    env = {k: v for k, v in __import__("os").environ.items() if k not in ("STILLHERE_WORKER_LABEL", "HF_HUB_CACHE", "HF_HUB_OFFLINE")}
+    out = subprocess.run([sys.executable, "-c", code], cwd=REPO, env=env, capture_output=True, text=True, check=True).stdout.split()
+    assert out[:3] == ["0", str(tmp_path / "hub"), "1"] and " ".join(out[3:]) == "local GPU"
+    assert 'Environment="STILLHERE_WORKER_LABEL=the laptop"' in UNIT
