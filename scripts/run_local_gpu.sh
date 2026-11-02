@@ -19,6 +19,10 @@ case "$STATE/" in /tmp/*|/var/tmp/*) echo "keep the state dir out of /tmp (it ho
 mkdir -p "$STATE/worker"; chmod 0700 "$STATE"
 TOKEN_FILE="$STATE/job_token"
 (umask 077; "$WEB_PY" -c 'import secrets; print(secrets.token_hex(32))' > "$TOKEN_FILE")
+if [ "$(stat -c %a "$TOKEN_FILE")" != 600 ]; then              # e.g. an NTFS or FAT mount that ignores permissions
+  rm -f "$TOKEN_FILE"; echo "the state dir's file system ignores permissions; set STILLHERE_STATE_DIR to a folder on a Linux file system"
+  exit 2
+fi
 
 cleanup() { kill "${WEB_PID:-}" "${WORKER_PID:-}" 2>/dev/null || true; wait 2>/dev/null || true; }
 trap cleanup EXIT INT TERM
