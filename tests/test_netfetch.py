@@ -92,3 +92,10 @@ def test_gives_up_after_its_tries_without_a_final_file(tmp_path):
         srv.shutdown()
     assert len(calls) == 3 and waits == [2, 4] and not (tmp_path / "f.bin").exists()
     assert os.path.getsize(tmp_path / "f.bin.part") == 3000            # kept, so the next run resumes from it
+
+
+def test_file_urls_work_for_a_local_release_folder(tmp_path):
+    src = tmp_path / "release" / "words_story1.tsv"; src.parent.mkdir(); src.write_bytes(BODY)
+    dst = tmp_path / "out" / "words_story1.tsv"
+    netfetch.get(src.as_uri(), str(dst), log=quiet)                # STILLHERE_RELEASE_URL=file:///... while the repository is private
+    assert dst.read_bytes() == BODY and not (tmp_path / "out" / "words_story1.tsv.part").exists()
