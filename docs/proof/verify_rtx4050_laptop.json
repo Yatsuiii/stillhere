@@ -1,0 +1,70 @@
+{
+ "verify": "PASS",
+ "tolerance": {
+  "max_abs": 0.002,
+  "r": 0.9999
+ },
+ "rows": [
+  {
+   "condition": "intact",
+   "clip_id": "alice_ch01",
+   "clip_s": 40,
+   "language_max_abs": 0.0002899999999999986,
+   "language_r": 0.9999996161409035,
+   "hearing_max_abs": 0.00028500000000000747,
+   "hearing_r": 0.9999996676234056,
+   "job_s": 66.29,
+   "peak_vram_gb": 5.29,
+   "result": "PASS"
+  },
+  {
+   "condition": "sentence_scramble",
+   "clip_id": "alice_ch01",
+   "clip_s": 40,
+   "language_max_abs": 0.00012099999999999611,
+   "language_r": 0.9999998878895726,
+   "hearing_max_abs": 0.00024199999999996447,
+   "hearing_r": 0.9999997497434884,
+   "job_s": 59.69,
+   "peak_vram_gb": 5.29,
+   "result": "PASS"
+  },
+  {
+   "condition": "word_scramble",
+   "clip_id": "alice_ch01",
+   "clip_s": 40,
+   "language_max_abs": 8.099999999999774e-05,
+   "language_r": 0.9999999084388538,
+   "hearing_max_abs": 0.00018600000000001948,
+   "hearing_r": 0.9999998984193698,
+   "job_s": 58.47,
+   "peak_vram_gb": 5.29,
+   "result": "PASS"
+  },
+  {
+   "condition": "reversed",
+   "clip_id": "alice_ch01",
+   "clip_s": 40,
+   "language_max_abs": 0.0,
+   "language_r": 1.0,
+   "hearing_max_abs": 0.0,
+   "hearing_r": 1.0,
+   "job_s": 19.34,
+   "peak_vram_gb": 0.01,
+   "result": "PASS"
+  }
+ ],
+ "environment": {
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "python": "3.11.17",
+  "engine_load_s": 1.15,
+  "torch": "2.6.0",
+  "tribev2": "0.1.0 @ af58661",
+  "transformers": "5.20.2",
+  "neuralset": "0.0.2",
+  "cuda": "12.4",
+  "driver": "615.78.08"
+ },
+ "worker_label": "local GPU",
+ "utc": "2026-11-02T16:09:03Z"
+}
