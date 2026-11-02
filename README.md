@@ -542,7 +542,6 @@ prereg_registry.json   SHA-256 of every entry point that scores a registered tes
 - A lab's own new story, with its own listeners, intact vs shuffled, scored once by a rule written first.
 - Bring the private-mode planner under its 5% false-accept bar before it is offered as a default, and measure v2.1.
 - More held-out stories and films, in more languages.
-- Let a lab run the forecast on its own GPU (TRIBE v2 is CC BY-NC 4.0 and is not included in the repository).
 
 ## Licences and credits
 
