@@ -85,6 +85,18 @@ your numbers print beside ours (volunteer-equivalent, lower bound, share, baseli
 T4s with every model on the GPU; `run_r2_forecast.py` keeps the sound and brain models on the CPU, so small numeric differences are
 possible. Our own scoring took 69 minutes on a Kaggle CPU (R5 another 2), after a 4-minute download.
 
+## What we ran ourselves, on the laptop (Nov 2 2026)
+
+From a fresh clone in a new folder, with a new venv and a new models folder (linked from an existing download):
+
+- Route 2: `judge_gpu_setup.sh` (STILLHERE_HF_SOURCE set): 16 model files, 9.47 GB, audit clean, in 15 s. `verify` on the RTX 4050
+  Laptop GPU: PASS for all four conditions, largest difference at most 0.0002 against our saved forecasts, r 1.00000; jobs 52 to 61 s
+  (reversed 13 s), peak 5.29 GB. Not exercised: installing `requirements-tribe.txt` from scratch (about 3 GB at 287 KB/s); the new venv
+  reused the tested packages, and all 131 pinned lines equal them.
+- Route 3: `run_local_gpu.sh` with an empty HOME and no keys: "Live models: off", the default plan's recorded run opened FORECAST,
+  "Running on local GPU", then "Forecast, live" on the RTX 4050 in 46 s; the job token was 0600 in a 0700 folder.
+- Route 4b: a fresh `requirements-score.txt` venv installed every pin; the end-to-end run is in progress on a slow connection.
+
 ## What cannot be reproduced here
 
 Only Paranoia (R2 and R5) and the live worker reproduce here.
