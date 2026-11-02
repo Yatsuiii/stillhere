@@ -523,10 +523,11 @@ def download(root, own=None):
         threads = max(1, int(os.environ.get("STILLHERE_DOWNLOAD_THREADS", "4")))
         print(f"downloading {len(todo)} GIFTIs, {threads} at a time", flush=True)
         with concurrent.futures.ThreadPoolExecutor(threads) as pool:
-            futures = [pool.submit(netfetch.get, url, dst) for url, dst in todo]
+            futures = {pool.submit(netfetch.get, url, dst): dst for url, dst in todo}
             done_mb = 0.0
             for k, f in enumerate(concurrent.futures.as_completed(futures), 1):
-                done_mb += os.path.getsize(f.result()) / 1e6         # DST only once complete; each resumes after a dropped connection
+                f.result()                                           # DST only once complete; each resumes after a dropped connection
+                done_mb += os.path.getsize(futures[f]) / 1e6
                 if k % 6 == 0 or k == len(todo):
                     print(f"  {k} of {len(todo)} GIFTIs, {done_mb:,.0f} MB", flush=True)
     for s in SUBS:
