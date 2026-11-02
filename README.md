@@ -474,14 +474,13 @@ python scripts/build_readme_art.py        # docs/assets/: the README's hero and 
 Every number on the static page comes from a committed JSON file. The README images need nilearn, nibabel, matplotlib, scipy and
 `rsvg-convert` (see the script's docstring); nothing is downloaded.
 
-### 5. The live worker (optional, a laptop with an NVIDIA GPU)
+### 5. TRIBE v2 on your own GPU
 
-```sh
-sudo bash worker/install_worker.sh <page-url>
-```
+[docs/RUN_ON_YOUR_GPU.md](docs/RUN_ON_YOUR_GPU.md): `scripts/judge_gpu_setup.sh` (the tested environment and the pinned models),
+`worker/tribe_worker.py verify` against our saved forecasts, and `scripts/run_local_gpu.sh` for the whole page on your GPU.
 
-A systemd service with a dynamic user and a sandbox pulls jobs from the page over HTTPS and runs TRIBE v2 on the local GPU during the
-set hours. See `docs/worker.md` and `docs/jobs_api.md`.
+The hosted page's own worker is a sandboxed systemd service on our laptop (`worker/install_worker.sh`, `docs/worker.md`,
+`docs/jobs_api.md`); its installer expects that laptop's folders and is not meant for another machine.
 
 ## Deployment
 
