@@ -527,6 +527,23 @@ def test_local_gpu_forecasts_a_recorded_plan_live(web, monkeypatch, tmp_path):
     assert stations.local_gpu() is False
 
 
+def test_local_gpu_wording_and_hosted_wording(web, monkeypatch):
+    """Cloud ruling of Nov 2, 14:05 UTC, item 3, and review of 14:35 UTC, item 3: the chip, the status line and the offline line say
+    "your GPU" / local in local mode; the hosted site keeps its own wording."""
+    app, jobs, ledger, stations, store = web
+    hosted = json.loads(call(app, "GET", "/api/status")[2])
+    assert stations.chip("alice_ch02")["short"] == "Forecast only · audio-only, laptop"
+    assert hosted["saved_line"] == stations.SAVED_LINE.format(hours=stations.hours_et())
+    assert stations.why_line("worker_offline", shown=stations.SAVED_SHOWN).startswith("The laptop worker is offline")
+    monkeypatch.setenv("STILLHERE_LOCAL_GPU", "1")
+    local = json.loads(call(app, "GET", "/api/status")[2])
+    assert stations.chip("alice_ch02")["short"] == "Forecast only · audio-only, your GPU"
+    assert local["saved_line"] == "Local GPU mode: every forecast runs on your GPU; saved forecasts are not used."
+    assert stations.why_line("worker_offline", shown=stations.SAVED_SHOWN) == "The local worker is not connected yet."
+    monkeypatch.setenv("VERCEL_ENV", "production")                                  # never the local wording on Vercel
+    assert stations.chip("alice_ch02")["short"] == "Forecast only · audio-only, laptop"
+
+
 def test_local_gpu_flag_refuses_to_start_on_vercel():
     env = {**__import__("os").environ, "STILLHERE_LOCAL_GPU": "1", "VERCEL_ENV": "production"}
     p = subprocess.run([sys.executable, "-c", "import web.app"], cwd=REPO, env=env, capture_output=True, text=True)

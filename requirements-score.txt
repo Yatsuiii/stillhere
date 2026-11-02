@@ -1,0 +1,12 @@
+# The scorers' packages for Paranoia (scripts/r2_paranoia.py and scripts/r5_short_scan.py; docs/RUN_ON_YOUR_GPU.md, route 4), pinned as
+# the R2 and R5 scoring kernel installed them (r2/kaggle_score/stillhere_r2_score.py, PKGS; Python 3.13 on Kaggle, 3.11 or newer).
+# Cloud review of Nov 2, 14:35 UTC, item 2. Install: python3 -m venv .venv-score && .venv-score/bin/pip install -r requirements-score.txt
+# STILLHERE_WORDS=asr also computes GPT-2 surprisal, which needs torch and transformers: the TRIBE environment has both.
+numpy==2.2.6
+scipy==1.18.1
+nibabel==5.4.2
+nilearn==0.14.1
+soundfile==0.14.0
+pandas==3.0.6
+scikit-learn==1.9.1
+joblib==1.6.0

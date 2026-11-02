@@ -12,15 +12,18 @@ TRIBE v2 (Meta FAIR, CC BY-NC 4.0) is not in this repository: the setup script d
 | 1. The page, no GPU | none | the repository | none |
 | 2. One forecast and `verify` | NVIDIA, 6 GB or more | models 9.47 GB, TRIBE environment about 7 GB | a Hugging Face login with Llama 3.2 access |
 | 3. The page on your GPU | as route 2 | as route 2 | as route 2 |
-| 4. Paranoia end to end | as route 2 (we used 16 GB T4s) | route 2 plus 2.6 GB of public data | as route 2 |
+| 4a. Paranoia with your forecasts | as route 2 (we used 16 GB T4s) | route 2 plus 2.6 GB of public data | as route 2 |
+| 4b. Paranoia re-scored (`--no-gpu`) | none | 2.9 GB: the public scans and our released forecasts | none |
 
-- Python 3.12 for the page and the scorers (`requirements-dev.txt`), Python 3.11 for TRIBE v2 (`requirements-tribe.txt`, the laptop
+- Python 3.12 for the page (`requirements-dev.txt`) and the scorers (`requirements-score.txt`, the R2 and R5 scoring kernel's pins),
+  Python 3.11 for TRIBE v2 (`requirements-tribe.txt`, the laptop
   worker's environment as installed: tribev2 at af58661, torch 2.6.0 with CUDA 12.4). tribev2 needs torch below 2.7, so RTX 50-series
   GPUs, which need a newer CUDA build, are likely unsupported. Your NVIDIA driver must support CUDA 12.4.
 - Llama 3.2 3B is gated: accept Meta's licence at https://huggingface.co/meta-llama/Llama-3.2-3B, then log in with `hf auth login`.
-  The setup script checks this before it downloads anything and stops with one sentence if access is missing.
-- RAM: the live worker runs in an 11 GB memory cap on a 14 GB laptop. The Paranoia forecasts did not fit that laptop's RAM; we made
-  them on Kaggle T4s.
+  The setup script checks this before it downloads any model (the TRIBE packages install first) and stops with one sentence if
+  access is missing.
+- RAM: the live worker runs in an 11 GB memory cap on a 14 GB laptop. On the laptop, under a 7 GB memory cap, the full stage of story
+  1 ran out of RAM (the audio-only stage finished); we did not measure the RAM route 4 needs, and made the forecasts on Kaggle T4s.
 
 ## 1. The page, no GPU
 
@@ -48,6 +51,8 @@ each region's largest absolute difference from our saved forecast and the correl
 (largest difference 0.002 in raw units, r 0.9999; `tests/test_worker_gpu.py`). It exits 1 if any row is out of tolerance. `run`
 computes one recipe in the foreground (no network, no hours, no token), writes the region values with `--out`, and compares them with
 our saved forecast when that recipe is in `data/forecast_cache.json`. Only one GPU is used (`CUDA_VISIBLE_DEVICES=0` unless you set it).
+The tolerance comes from repeats on our RTX 4050; `verify` has not run on any other GPU, so a small excess on another card may be the
+hardware, not the setup.
 
 On our 6 GB RTX 4050 laptop GPU a job took 35 to 56 s (intact or scrambled) and 14 to 15 s (reversed), with a peak of about 5.3 GB.
 
@@ -65,9 +70,11 @@ FORECAST runs on your GPU (Reshuffle picks another offered seed). The page names
 ## 4. Paranoia end to end (R2 and R5)
 
 ```sh
+python3 -m venv .venv-score && .venv-score/bin/pip install -r requirements-score.txt
+export STILLHERE_SCORE_PYTHON=$PWD/.venv-score/bin/python   # checked before anything is downloaded
 bash scripts/reproduce_paranoia.sh --dry-run ~/paranoia      # sizes only
-bash scripts/reproduce_paranoia.sh ~/paranoia                # data, your forecasts, then both scorers on them
-bash scripts/reproduce_paranoia.sh --no-gpu ~/paranoia       # no GPU: re-score our released forecasts from the public scans
+bash scripts/reproduce_paranoia.sh ~/paranoia                # 4a: data, your forecasts (route 2's setup), then both scorers on them
+bash scripts/reproduce_paranoia.sh --no-gpu ~/paranoia       # 4b: no GPU, no models, no login: re-score our released forecasts
 ```
 
 It fetches the ds001338 fMRIPrep fsaverage5 derivative (132 GIFTIs, 2.5 GB), the three recordings and the atlas, makes the 9 stock
@@ -80,6 +87,9 @@ possible. Our own scoring took 69 minutes on a Kaggle CPU (R5 another 2), after 
 
 ## What cannot be reproduced here
 
-- Le Petit Prince section 8, the notthefall intact-vs-shuffled test (D20), the story picker and wall, and the film face test: they ran
-  in Kaggle notebooks and the pre-event harness, not from this repository's scripts.
+Only Paranoia (R2 and R5) and the live worker reproduce here.
+
+- Le Petit Prince section 8, the Alice held-out line, the notthefall intact-vs-shuffled test (D20), the story picker and wall, R3, the
+  intact film and the film face test: their inputs (pre-event caches, Kaggle kernel outputs, the film edits) are not published, and the
+  face test's scorer refuses a second run.
 - The fine-tuned TRIBE v2 line: its weights are not public.

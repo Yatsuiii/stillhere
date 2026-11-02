@@ -168,8 +168,7 @@ def status(req, m):
     except StoreError as e:
         print(f"stillhere: store error ({e}) in status", file=sys.stderr, flush=True)
         online, live = False, {"meta": False, "fireworks": False}
-    return 200, {"worker_online": online, "worker_hours_et": stations.hours_et(), "saved_line": stations.SAVED_LINE.format(
-        hours=stations.hours_et()), "live": live, "runs_per_hour": ledger.RUNS_PER_HOUR, "menu": stations.menu(),
+    return 200, {"worker_online": online, "worker_hours_et": stations.hours_et(), "saved_line": stations.saved_line(), "live": live, "runs_per_hour": ledger.RUNS_PER_HOUR, "menu": stations.menu(),
         "local_gpu": stations.local_gpu()}
 
 

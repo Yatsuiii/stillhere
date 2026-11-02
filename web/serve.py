@@ -10,8 +10,10 @@ from wsgiref.simple_server import WSGIRequestHandler, WSGIServer, make_server
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 # A fresh clone has no ~/.config/stillhere/question_blocklist.txt, and stillhere/egress.py refuses every typed request without a list,
-# so PLAN, BUILD and FORECAST could not be reached; unset, the local server uses the hosted server's list, as production does.
-os.environ.setdefault("STILLHERE_QUESTION_BLOCKLIST", "web/server_question_blocklist.txt")
+# so PLAN, BUILD and FORECAST could not be reached. Only then (the variable unset and no home list) does the local server use the hosted
+# server's list; the laptop's own home list, which holds terms the hosted list does not, still applies wherever it exists.
+if not os.environ.get("STILLHERE_QUESTION_BLOCKLIST") and not (Path.home() / ".config/stillhere/question_blocklist.txt").is_file():
+    os.environ["STILLHERE_QUESTION_BLOCKLIST"] = "web/server_question_blocklist.txt"
 from web.app import app  # noqa: E402
 
 

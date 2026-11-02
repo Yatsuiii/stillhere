@@ -163,10 +163,11 @@ DATA_DIR` re-scores R2 and R5 without a GPU and prints the numbers beside ours.
 
 Forecast, not a scan. Research use. Not a diagnosis or medical advice.
 
-- TRIBE v2: Meta FAIR, d'Ascoli et al. 2026, CC BY-NC 4.0. These forecast arrays are TRIBE v2 outputs and are shared under the same
-  licence (non-commercial use, with attribution).
+- TRIBE v2: Meta FAIR, d'Ascoli et al. 2026, CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/). These forecast arrays
+  are TRIBE v2 outputs and are shared under the same licence (non-commercial use, with attribution).
 - Stimuli and brain data: Finn, Corlett, Chen, Bandettini and Constable, Nature Communications 2018; OpenNeuro ds001338 v1.0.0
-  (DOI 10.18112/openneuro.ds001338.v1.0.0), CC BY-NC 4.0. The word tables and surprisal are derived from its recordings.
+  (DOI 10.18112/openneuro.ds001338.v1.0.0), CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/). The word tables and
+  surprisal are derived from its recordings and shared under the same licence (non-commercial use, with attribution).
 - Each pred_*.npz holds P (seconds x 20,484 fsaverage5 vertices, float32) and starts (the second of each row).
 """
 

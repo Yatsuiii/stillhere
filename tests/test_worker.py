@@ -348,7 +348,8 @@ def test_local_runs_default_to_one_gpu_and_the_judges_models(tmp_path):
     code = ("import os; os.environ.pop('CUDA_VISIBLE_DEVICES', None); os.environ['STILLHERE_MODELS_DIR'] = %r; "
             "import worker.tribe_worker as T; print(os.environ['CUDA_VISIBLE_DEVICES'], os.environ['HF_HUB_CACHE'], "
             "os.environ['HF_HUB_OFFLINE'], T.WORKER_LABEL)" % str(tmp_path))
-    env = {k: v for k, v in __import__("os").environ.items() if k not in ("STILLHERE_WORKER_LABEL", "HF_HUB_CACHE", "HF_HUB_OFFLINE")}
+    env = {**{k: v for k, v in __import__("os").environ.items() if k != "STILLHERE_WORKER_LABEL"},
+           "HF_HUB_CACHE": "/elsewhere", "HF_HUB_OFFLINE": "0"}                   # a judge's own exports cannot override the pinned folder
     out = subprocess.run([sys.executable, "-c", code], cwd=REPO, env=env, capture_output=True, text=True, check=True).stdout.split()
     assert out[:3] == ["0", str(tmp_path / "hub"), "1"] and " ".join(out[3:]) == "local GPU"
     assert 'Environment="STILLHERE_WORKER_LABEL=the laptop"' in UNIT

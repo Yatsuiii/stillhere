@@ -239,6 +239,8 @@ SAVED_SHOWN = "a saved forecast is shown where one exists"          # what FOREC
 
 def why_line(code: str, shown: str = "this station shows its recorded run") -> str:
     """The page's line for a refusal code; `shown` ends the lines that say what the station shows instead (FORECAST: SAVED_SHOWN)."""
+    if code == "worker_offline" and local_gpu():
+        return LOCAL_WORKER_OFFLINE
     return {"session_limit": "This session has used its 5 live runs for this hour.", "spend_cap": "The daily live budget is used up.",
             "no_key": "Live calls are off on this server.", "api_error": "The live call failed, so this station shows its recorded run.", "no_run": "Start with a plan first.",
             "station_used": "This run already used this station.", "provider_not_offered": "That model is not offered live.",
@@ -548,6 +550,7 @@ WORD_RATE_LINE = "Flat by construction: a word-rate model cannot see order."
 GRAY_LINE = "No public scan of this clip. Forecast, not a scan."
 SCANNED_LINE = "A public scan of this chapter exists ({dataset}, {accession}); not compared here. Forecast, not a scan."
 CHIP_SHORT = "Forecast only · audio-only, laptop"
+LOCAL_CHIP_SHORT = "Forecast only · audio-only, your GPU"           # STILLHERE_LOCAL_GPU (cloud ruling of Nov 2, 14:05 UTC, item 3)
 
 
 def end_line(clip_id: str) -> str:
@@ -561,7 +564,7 @@ def end_line(clip_id: str) -> str:
 
 
 def chip(clip_id: str) -> dict:
-    return {"short": CHIP_SHORT, "long": end_line(clip_id)}
+    return {"short": LOCAL_CHIP_SHORT if local_gpu() else CHIP_SHORT, "long": end_line(clip_id)}
 
 
 def saved_forecast(clip_id: str, condition: str, seed: int, why: str) -> dict:
@@ -631,6 +634,13 @@ def hours_et() -> str:
 
 
 SAVED_LINE = "A saved forecast is shown whenever one exists for your choice. New seeds run live on the laptop, {hours}."   # ruling 8
+LOCAL_SAVED_LINE = "Local GPU mode: every forecast runs on your GPU; saved forecasts are not used."   # cloud review of Nov 2, 14:35 UTC, item 3
+LOCAL_WORKER_OFFLINE = "The local worker is not connected yet."
+
+
+def saved_line() -> str:
+    """The page's status line under the stations: the hosted wording, or the local GPU mode's (STILLHERE_LOCAL_GPU)."""
+    return LOCAL_SAVED_LINE if local_gpu() else SAVED_LINE.format(hours=hours_et())
 
 
 # ---- FILM -----------------------------------------------------------------------------------------------------------------------

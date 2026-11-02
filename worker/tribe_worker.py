@@ -29,9 +29,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 os.environ.setdefault("CUDA_VISIBLE_DEVICES", "0")                 # before torch loads: accelerate spreads Llama over every visible GPU
-if os.environ.get("STILLHERE_MODELS_DIR"):                           # a judge's models (scripts/judge_gpu_setup.sh), read offline
-    os.environ.setdefault("HF_HUB_CACHE", str(Path(os.environ["STILLHERE_MODELS_DIR"]) / "hub"))
-    os.environ.setdefault("HF_HUB_OFFLINE", "1")
+if os.environ.get("STILLHERE_MODELS_DIR"):                           # a judge's models (scripts/judge_gpu_setup.sh), read offline: set,
+    os.environ["HF_HUB_CACHE"] = str(Path(os.environ["STILLHERE_MODELS_DIR"]) / "hub")   # not defaulted, so an exported HF_HUB_CACHE
+    os.environ["HF_HUB_OFFLINE"] = "1"                                                 # cannot point the worker past the pinned folder
 from worker import recipe as R  # noqa: E402
 from worker.labels import WORKER_LABEL  # noqa: E402
 

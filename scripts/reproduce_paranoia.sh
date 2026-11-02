@@ -6,18 +6,20 @@
 # ours, nothing is written into this repository, and your numbers print beside ours. --no-gpu skips the forecasts and re-scores ours
 # (the release asset, checked against the pins) from the public scans.
 #
-# usage: scripts/reproduce_paranoia.sh [--dry-run] [--no-gpu] DATA_DIR      (DATA_DIR outside this repository; about 2.6 GB)
+# usage: scripts/reproduce_paranoia.sh [--dry-run] DATA_DIR            4a: your forecasts on your GPU (route 2's setup, plus about 2.6 GB)
+#        scripts/reproduce_paranoia.sh [--dry-run] --no-gpu DATA_DIR   4b: ours re-scored; no GPU, no models, no login (about 2.9 GB)
+#   DATA_DIR outside this repository. Scoring needs requirements-score.txt (checked before anything is fetched).
 # environment:
 #   STILLHERE_MODELS_DIR    the models folder scripts/judge_gpu_setup.sh made (holding hub/); default DATA_DIR/models
 #   STILLHERE_TRIBE_PYTHON  the TRIBE environment's python (judge_gpu_setup.sh's venv); default: python
-#   STILLHERE_SCORE_PYTHON  a python with numpy, scipy, nibabel and nilearn for scoring; default: python3
+#   STILLHERE_SCORE_PYTHON  a python with requirements-score.txt installed, for scoring; default: python3
 #   STILLHERE_WORDS         ours (default: our word tables as stim.tsv, no speech-to-text) or asr (TRIBE's own speech-to-text,
 #                           uvx whisperx, online; then GPT-2 small surprisal is computed from your words, also online)
 #   STILLHERE_RELEASE_URL   where our word tables, surprisal and forecasts are published (default: the paranoia-forecasts-v1 release)
 # Prints sizes, counts, hashes, timings and the scorers' lines; never word text. Research use; not a diagnosis or medical advice.
 set -euo pipefail
 
-usage() { sed -n '9,17p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '9,19p' "$0" | sed 's/^# \{0,1\}//'; }
 DRY=0; NO_GPU=0; DATA=""
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -43,6 +45,9 @@ F="$REPO/scripts/paranoia_files.py"
 
 if [ "$NO_GPU" = 1 ]; then python3 "$F" sizes "$DATA" --no-gpu; else python3 "$F" sizes "$DATA"; fi
 [ "$DRY" = 1 ] && { echo "dry run: nothing fetched"; exit 0; }
+"$SCORE_PY" -c "import numpy, scipy, nibabel, nilearn, soundfile, pandas, sklearn" 2>/dev/null || {
+  echo "refused before any download: $SCORE_PY lacks the scorers' packages. python3 -m venv .venv-score &&" \
+       ".venv-score/bin/pip install -r requirements-score.txt, then STILLHERE_SCORE_PYTHON=.venv-score/bin/python" >&2; exit 2; }
 mkdir -p "$DATA"
 
 echo "== stimuli, full text and atlas"

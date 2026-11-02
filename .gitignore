@@ -9,3 +9,4 @@ out/
 *.nii.gz
 .env
 .venv-tribe/
+.venv-score/

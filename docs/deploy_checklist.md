@@ -182,6 +182,9 @@ included: `results/story_wall.json`, `results/face_map.json`, `results/emofilm_f
 ## Nov 3: listing the URL (ruling of Oct 30, 07:40 UTC, a), in this order
 
 1. Make the repository public (Yatsu): GitHub, Yatsuiii/stillhere, Settings, Danger Zone, Change visibility, Public.
+   Then fetch one release asset anonymously (cloud review of Nov 2, 14:35 UTC, item 7): `curl -fsSLI
+   https://github.com/Yatsuiii/stillhere/releases/download/paranoia-forecasts-v1/SHA256SUMS` must end in 200. While the repository is
+   private, route 4 of docs/RUN_ON_YOUR_GPU.md cannot fetch the release (404).
 2. Open every github.com link on the hosted page (the PREREG.md link in Evidence, the write-up link) logged out, in a private
    window: each must load. `tests/test_pilot_page.py` checks that every repository path the page links to exists at HEAD.
 3. Then list the URL: the README (its "Try it" line), the submission, the video's end card, and the repository's About website

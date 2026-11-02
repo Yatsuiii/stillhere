@@ -24,7 +24,10 @@ if [ "$(stat -c %a "$TOKEN_FILE")" != 600 ]; then              # e.g. an NTFS or
   exit 2
 fi
 
-cleanup() { kill "${WEB_PID:-}" "${WORKER_PID:-}" 2>/dev/null || true; wait 2>/dev/null || true; }
+cleanup() {
+  pkill -P "${WORKER_PID:-0}" 2>/dev/null || true                     # the worker's python, under its restart loop
+  kill "${WEB_PID:-}" "${WORKER_PID:-}" 2>/dev/null || true; wait 2>/dev/null || true
+}
 trap cleanup EXIT INT TERM
 
 cd "$REPO"
@@ -36,8 +39,15 @@ for _ in $(seq 50); do
   sleep 0.2
 done
 
-STATE_DIRECTORY="$STATE/worker" STILLHERE_JOBS_URL="http://127.0.0.1:$PORT" STILLHERE_HOURS_ET=00:00-24:00 \
-  "$TRIBE_PY" worker/tribe_worker.py serve --token-file "$TOKEN_FILE" &
+worker() {                                   # exit 75: the feature cache passed its 2 GB limit; a fresh worker carries on, any other exit
+  while true; do                              # stops the page too
+    STATE_DIRECTORY="$STATE/worker" STILLHERE_JOBS_URL="http://127.0.0.1:$PORT" STILLHERE_HOURS_ET=00:00-24:00 \
+      "$TRIBE_PY" worker/tribe_worker.py serve --token-file "$TOKEN_FILE" && return 0 || rc=$?
+    [ "$rc" = 75 ] || return "$rc"
+    echo "worker: feature cache full (exit 75); starting a fresh worker"
+  done
+}
+worker &
 WORKER_PID=$!
 
 echo "StillHere (local GPU): open http://127.0.0.1:$PORT/ once the worker logs 'engine loaded'. Ctrl-C stops both."
