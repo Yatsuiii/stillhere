@@ -426,6 +426,10 @@ lines follow pre-event code (language-area parcel list, lag and resampling, one 
 
 ## Quickstart
 
+> **For judges:** [docs/RUN_ON_YOUR_GPU.md](docs/RUN_ON_YOUR_GPU.md) runs StillHere on your own machine: the page with no GPU, one
+> forecast plus `verify` against our saved forecasts on your NVIDIA GPU, the whole page on your GPU with no API key, and Paranoia (R2
+> and R5) end to end, with disk sizes, times from our runs, the Llama access step and what cannot be reproduced here.
+
 ### 1. Install
 
 Python 3.12.
