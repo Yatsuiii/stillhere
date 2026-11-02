@@ -703,3 +703,7 @@ final. In `download`, a GIFTI already on disk with the wrong size (from an older
 download whose size differs from r2/data_check.json is still refused, and every hash check is unchanged. Nothing in `score` changed,
 and results/ is untouched. scripts/r2_paranoia.py SHA-256 before 01e7099052b11e8b43ac17c13ac9fc43c5cafd787734ebec968c0941b73b02d0, after ed8e9793239f4a8330fb503340d6eda1fdab682530dab50e73126d6f5dc536b9. Tests: tests/test_netfetch.py (drops, a server
 that ignores ranges, a final 404, giving up with the part file kept) and the R2 size-refusal test, now patching netfetch.get.
+
+Nov 2 2026, 16:05 UTC, the same download step: the GIFTIs still missing are fetched STILLHERE_DOWNLOAD_THREADS at a time (default 4),
+since one stream on a long, slow link is latency-bound (about 160 KB/s on the laptop's 110 ms link); the size and hash checks then run
+in order, as before. scripts/r2_paranoia.py SHA-256 before ed8e9793239f4a8330fb503340d6eda1fdab682530dab50e73126d6f5dc536b9, after 125949548121b45b4b2b8fadb0a34edd41b904dca484990b593e64e1d9e49c73.

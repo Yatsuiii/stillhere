@@ -509,15 +509,27 @@ def download(root, own=None):
     for story in STORIES:
         name = f"task-{story}_events.tsv"
         netfetch.get(RAW + name, f"{d}/{name}"); got[name] = sha(f"{d}/{name}")
+    todo = []
+    for s in SUBS:
+        for story in STORIES:
+            for hemi in ("L", "R"):
+                name = gifti_name(s, story, hemi); dst = f"{d}/{name}"
+                if os.path.exists(dst) and os.path.getsize(dst) != sizes[f"{s} {story}"][hemi]["bytes"]:
+                    os.remove(dst)                                   # a half file from an older interrupted run: fetched again
+                if not os.path.exists(dst):
+                    todo.append((f"{DER}{s}/func/{name}", dst))
+    if todo:                                                         # several at once: on a long, slow link one stream is latency-bound
+        import concurrent.futures
+        threads = max(1, int(os.environ.get("STILLHERE_DOWNLOAD_THREADS", "4")))
+        print(f"downloading {len(todo)} GIFTIs, {threads} at a time", flush=True)
+        with concurrent.futures.ThreadPoolExecutor(threads) as pool:
+            for f in concurrent.futures.as_completed([pool.submit(netfetch.get, url, dst) for url, dst in todo]):
+                f.result()                                           # DST only once complete; each resumes after a dropped connection
     for s in SUBS:
         for story in STORIES:
             for hemi in ("L", "R"):
                 name = gifti_name(s, story, hemi); dst = f"{d}/{name}"
                 want = sizes[f"{s} {story}"][hemi]["bytes"]
-                if os.path.exists(dst) and os.path.getsize(dst) != want:
-                    os.remove(dst)                                   # a half file from an older interrupted run: fetched again
-                if not os.path.exists(dst):
-                    netfetch.get(f"{DER}{s}/func/{name}", dst)       # DST only once complete; resumes after a dropped connection
                 if os.path.getsize(dst) != want:
                     raise SystemExit(f"refused: {name} is {os.path.getsize(dst)} bytes; r2/data_check.json recorded {want}")
                 got[name] = sha(dst)
