@@ -320,7 +320,7 @@ def test_pins_must_cover_the_nine_stock_forecasts(tmp_path, monkeypatch):
 def test_download_refuses_a_gifti_whose_size_differs_from_the_data_check(tmp_path, monkeypatch):
     sub = R2.SUBS[0]
     monkeypatch.setattr(R2, "check_pins", lambda root: {}); monkeypatch.setattr(R2, "SUBS", (sub,))
-    monkeypatch.setattr(R2.urllib.request, "urlretrieve", lambda url, dst: open(dst, "wb").write(b"not the file"))
+    monkeypatch.setattr(R2.netfetch, "get", lambda url, dst: open(dst, "wb").write(b"not the file"))
     with pytest.raises(SystemExit, match=f"refused: {sub}_task-story1_hemi-L_space-fsaverage5_bold.func.gii is 12 bytes; r2/data_check.json"):
         R2.download(str(tmp_path))
 

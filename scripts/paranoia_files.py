@@ -18,9 +18,14 @@ import json
 import os
 import shutil
 import sys
+import time
+import urllib.error
 import urllib.request
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(REPO, "scripts"))
+import netfetch  # noqa: E402
+
 STORIES, MODES = ("story1", "story2", "story3"), ("audio", "full", "shuf")
 STIM_URL = "https://s3.amazonaws.com/openneuro.org/ds001338/stimuli/"
 ATLAS_URL = ("https://raw.githubusercontent.com/ThomasYeoLab/CBIG/master/stable_projects/brain_parcellation/Schaefer2018_LocalGlobal/"
@@ -70,7 +75,7 @@ def fetch(url, dst, want):
     """Download url to dst unless dst already holds the expected bytes; refuse (and remove the file) on any other SHA-256."""
     if not (os.path.isfile(dst) and sha(dst) == want):
         os.makedirs(os.path.dirname(dst), exist_ok=True)
-        tmp = dst + ".part"; urllib.request.urlretrieve(url, tmp); os.replace(tmp, dst)
+        netfetch.get(url, dst)                                      # resumes after a dropped connection; DST only once complete
     got = sha(dst)
     if got != want:
         os.remove(dst)
@@ -78,10 +83,15 @@ def fetch(url, dst, want):
     print(f"{os.path.basename(dst)}: {os.path.getsize(dst):,} bytes, SHA-256 {want[:16]}... ok", flush=True)
 
 
-def head(url) -> int:
-    req = urllib.request.Request(url, method="HEAD")
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return int(r.headers.get("Content-Length", 0))
+def head(url, tries=4) -> int:
+    for attempt in range(1, tries + 1):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, method="HEAD"), timeout=30) as r:
+                return int(r.headers.get("Content-Length", 0))
+        except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
+            if attempt == tries or (isinstance(e, urllib.error.HTTPError) and 400 <= e.code < 500):
+                raise
+            time.sleep(2 ** attempt)
 
 
 def sizes(data, no_gpu):

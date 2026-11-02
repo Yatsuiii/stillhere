@@ -692,3 +692,14 @@ new check in `note()` is armed only by `--verify-own`.
 | `scripts/r5_short_scan.py` | `8eea35bf0668053a...` | `d4f09770ff68a91b...` |
 | `docs/rules/r2_paranoia_rule.md` | `e031cd51b8ef75af...` | dated note appended |
 | `docs/rules/r5_short_scan_rule.md` | `f60783423c5d402d...` | dated note appended |
+
+## Nov 2 2026, 16:00 UTC: resumable downloads for scripts/r2_paranoia.py (after its result; the scoring path is unchanged)
+
+The first laptop run of route 4b (docs/RUN_ON_YOUR_GPU.md) died on a connection reset while fetching a stimulus, and the scorer's
+download step wrote each GIFTI straight to its final name, so an interrupted run left a half file that the rerun refused as "size
+differs". Both downloaders now use scripts/netfetch.py: each file goes to DST.part, resumes with an HTTP Range request after a dropped
+connection (a short transfer counts as one), retries with backoff, and becomes DST only when complete; a 4xx other than 408 and 429 is
+final. In `download`, a GIFTI already on disk with the wrong size (from an older interrupted run) is fetched again once; a fresh
+download whose size differs from r2/data_check.json is still refused, and every hash check is unchanged. Nothing in `score` changed,
+and results/ is untouched. scripts/r2_paranoia.py SHA-256 before 01e7099052b11e8b43ac17c13ac9fc43c5cafd787734ebec968c0941b73b02d0, after ed8e9793239f4a8330fb503340d6eda1fdab682530dab50e73126d6f5dc536b9. Tests: tests/test_netfetch.py (drops, a server
+that ignores ranges, a final 404, giving up with the part file kept) and the R2 size-refusal test, now patching netfetch.get.

@@ -34,13 +34,13 @@ import json
 import os
 import string
 import sys
-import urllib.request
 
 import numpy as np
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO); sys.path.insert(0, os.path.join(REPO, "scripts"))
 import alice_heldout as AH  # noqa: E402
+import netfetch  # noqa: E402
 from stillhere import heldout as H  # noqa: E402
 
 RULE = "docs/rules/r2_paranoia_rule.md"
@@ -508,14 +508,16 @@ def download(root, own=None):
     d = f"{root}/r2/bold"; os.makedirs(d, exist_ok=True); got = {}
     for story in STORIES:
         name = f"task-{story}_events.tsv"
-        urllib.request.urlretrieve(RAW + name, f"{d}/{name}"); got[name] = sha(f"{d}/{name}")
+        netfetch.get(RAW + name, f"{d}/{name}"); got[name] = sha(f"{d}/{name}")
     for s in SUBS:
         for story in STORIES:
             for hemi in ("L", "R"):
                 name = gifti_name(s, story, hemi); dst = f"{d}/{name}"
-                if not os.path.exists(dst):
-                    urllib.request.urlretrieve(f"{DER}{s}/func/{name}", dst)
                 want = sizes[f"{s} {story}"][hemi]["bytes"]
+                if os.path.exists(dst) and os.path.getsize(dst) != want:
+                    os.remove(dst)                                   # a half file from an older interrupted run: fetched again
+                if not os.path.exists(dst):
+                    netfetch.get(f"{DER}{s}/func/{name}", dst)       # DST only once complete; resumes after a dropped connection
                 if os.path.getsize(dst) != want:
                     raise SystemExit(f"refused: {name} is {os.path.getsize(dst)} bytes; r2/data_check.json recorded {want}")
                 got[name] = sha(dst)
