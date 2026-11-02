@@ -238,3 +238,11 @@ from this repository.
   disclosed here; the kernel's output stays untouched on Kaggle until then. The kernel clones the repository from a git bundle at the pins
   commit (a full clone, checked not shallow, HEAD checked), reads its inputs from a private dataset checked against the pins, and runs
   download, score and R5's scorer (`docs/rules/r5_short_scan_rule.md`, which reads the stock forecasts only) once each.
+
+Dated note, Nov 2 2026 (cloud review of Nov 2, 12:15 UTC, item 6; after the result, results commit 13e93c0; sections 1-11 unchanged):
+`scripts/r2_paranoia.py` gains `--verify-own DIR` so anyone can score their own Paranoia forecasts with this rule's code
+(`scripts/reproduce_paranoia.sh`). Under it, the forecasts, word tables and surprisal come from DIR and are not held to the pins; the
+stimuli must equal STIM_PINS; every other input must equal what our scoring run read; nothing is written into `results/`; and the numbers
+print beside ours. It is not part of this rule's result. Our scoring path is unchanged (`docs/frozen_code_changes.md`, entry of Nov 2).
+Our nine stock forecasts, word tables and surprisal are to be published as a release asset whose SHA-256 equal the pins
+(`scripts/make_paranoia_release.sh`).

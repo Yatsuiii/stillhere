@@ -20,7 +20,11 @@ Steps, in the rule's order:
              only after the cloud's go)
   score      one scoring run; writes OUT/r2_paranoia.json (per-listener z, so OUT is outside this repo) and results/r2_paranoia.json
              (group numbers, the lines, and per listener only volumes, coverage and the areas scored)
-usage: python scripts/r2_paranoia.py {surprisal|download|score} --root ../stillhere [--out ../stillhere/r2/score]"""
+A judge's own run (--verify-own DIR; dated note of Nov 2 in the rule; scripts/reproduce_paranoia.sh): the forecasts, word tables and
+surprisal come from DIR and are hashed, not checked against our pins; the stimuli must still match STIM_PINS and every other input
+(GIFTIs, events, atlas) must equal what our scoring run read (results/r2_paranoia_SHA256.json, results/r2_bold_SHA256.json). Nothing is
+written into results/: OUT gets the judge's files, and the judge's numbers are printed beside ours. Our own scoring (no flag) is unchanged.
+usage: python scripts/r2_paranoia.py {surprisal|download|score} --root ../stillhere [--out ../stillhere/r2/score] [--verify-own DIR]"""
 import argparse
 import collections
 import contextlib
@@ -216,16 +220,24 @@ def _structure(img) -> str:
 
 
 READ = {}   # path -> SHA-256 of every input the scoring run read (written with the results, rule section 10)
+VERIFY = {}   # --verify-own only: basename -> SHA-256 of what our scoring run read; empty in our own scoring
+OURS = {"results": os.path.join(REPO, "results/r2_paranoia.json"), "read": os.path.join(REPO, "results/r2_paranoia_SHA256.json"),
+        "bold": os.path.join(REPO, "results/r2_bold_SHA256.json")}
+OWN_MADE = ("words_", "pred_", "surprisal.json")   # the judge's own files under --verify-own; every other input must equal ours
 
 
 def note(path) -> str:
-    """Record an input the scoring run reads; a GIFTI must match the download's bold/SHA256.json when that file exists."""
+    """Record an input the scoring run reads; a GIFTI must match the download's bold/SHA256.json when that file exists. Under
+    --verify-own, every input but the judge's own forecasts, word tables and surprisal must also equal the file our scoring run read."""
     h = sha(path); READ[os.path.abspath(path)] = h
     ref = os.path.join(os.path.dirname(path), "SHA256.json")
     if path.endswith(".func.gii") and os.path.isfile(ref):
         want = json.load(open(ref)).get(os.path.basename(path))
         if want != h:
             raise SystemExit(f"refused: {os.path.basename(path)} differs from the download's SHA256.json")
+    name = os.path.basename(path)
+    if VERIFY and not name.startswith(OWN_MADE) and VERIFY.get(name) != h:
+        raise SystemExit(f"refused: {name} differs from the file our scoring run read (results/r2_paranoia_SHA256.json)")
     return h
 
 
@@ -461,10 +473,37 @@ def check_pins(root) -> dict:
     return got
 
 
-def download(root):
+def refuse_results(out_dir):
+    """--verify-own never writes into results/ (or anywhere in the repository): the judge's numbers go to OUT only."""
+    out, repo = os.path.realpath(out_dir), os.path.realpath(REPO)
+    if out == repo or out.startswith(repo + os.sep):
+        raise SystemExit(f"refused: --out {out_dir} is inside the repository (results/ holds our scored record; use a folder outside it)")
+
+
+def own_inputs(root, own) -> dict:
+    """--verify-own: the judge's own forecasts, word tables and surprisal in OWN, hashed and recorded, never compared with our pins; the
+    stimuli still against STIM_PINS (ds001338's recordings); arms note()'s check that every other input equals what our run read."""
+    R = f"{root}/r2"
+    got = {f"stimulus {s}": sha(f"{R}/stimuli/{s}_audio.wav") for s in STORIES}
+    bad = sorted(k for k in got if got[k] != STIM_PINS.get(k.split()[1]))
+    if bad:
+        raise SystemExit(f"refused: the stimuli differ from ds001338's recordings (STIM_PINS): {bad}")
+    files = ({f"words {s}": f"{own}/words_{s}.tsv" for s in STORIES} | {"surprisal": f"{own}/surprisal.json"}
+             | {f"pred {m}_{s}_{k}": f"{own}/pred_{m}_{s}_{k}.npz" for m in SCORED_MODELS for s in STORIES for k in MODES})
+    missing = sorted(k for k, p in files.items() if not os.path.isfile(p))
+    if missing:
+        raise SystemExit(f"refused: {own} lacks {missing}")
+    got.update({k: sha(p) for k, p in files.items()})
+    VERIFY.clear(); VERIFY.update(json.load(open(OURS["read"])))
+    return got
+
+
+def download(root, own=None):
     """The events files and the 132 GIFTIs; refuses any GIFTI whose size differs from r2/data_check.json (rule section 10, item 9);
-    writes bold/SHA256.json, which the scoring run checks every GIFTI it reads against."""
-    check_pins(root)
+    writes bold/SHA256.json, which the scoring run checks every GIFTI it reads against. Under --verify-own (a judge's run) the forecast
+    pins are not needed first, and every file must equal our download's (results/r2_bold_SHA256.json)."""
+    if own is None:
+        check_pins(root)
     sizes = json.load(open(os.path.join(REPO, "r2/data_check.json")))["runs"]
     d = f"{root}/r2/bold"; os.makedirs(d, exist_ok=True); got = {}
     for story in STORIES:
@@ -482,6 +521,12 @@ def download(root):
                 got[name] = sha(dst)
         print(f"{s}: 6 files", flush=True)
     json.dump(got, open(f"{d}/SHA256.json", "w"), indent=1)
+    if own is not None:
+        ours = json.load(open(OURS["bold"]))
+        bad = sorted(k for k in ours if got.get(k) != ours[k])
+        if bad:
+            raise SystemExit(f"refused: {len(bad)} downloaded files differ from ours (results/r2_bold_SHA256.json), e.g. {bad[:3]}")
+        print(f"all {len(ours)} files equal our download (results/r2_bold_SHA256.json)", flush=True)
 
 
 def story_onset(events_path, story) -> float:
@@ -491,16 +536,22 @@ def story_onset(events_path, story) -> float:
     return float(r["onset"])
 
 
-def score(root, out_dir):
+def score(root, out_dir, own=None):
+    if own is not None:
+        refuse_results(out_dir)
     assert not os.path.abspath(out_dir).startswith(REPO), "OUT must be outside the repo (per-listener z)"
     fshift(0.0)                                                       # refuses until FORECAST_READ is set
-    pins = check_pins(root)
+    VERIFY.clear()
+    pins = check_pins(root) if own is None else own_inputs(root, own)
     R = f"{root}/r2"; os.makedirs(out_dir, exist_ok=True); READ.clear()
+    FO = f"{R}/forecast/out" if own is None else own                  # the forecasts and word tables
+    SP = f"{R}/surprisal.json" if own is None else f"{own}/surprisal.json"
+    write = _write if own is None else _write_own
     for story in STORIES:
         story_onset(f"{R}/bold/task-{story}_events.tsv", story)
     for p in ([f"{R}/bold/task-{st}_events.tsv" for st in STORIES] + [f"{R}/stimuli/{st}_audio.wav" for st in STORIES]
-              + [f"{R}/forecast/out/words_{st}.tsv" for st in STORIES] + [f"{R}/surprisal.json"]
-              + [f"{R}/forecast/out/pred_{m}_{st}_{k}.npz" for m in SCORED_MODELS for st in STORIES for k in MODES]
+              + [f"{FO}/words_{st}.tsv" for st in STORIES] + [SP]
+              + [f"{FO}/pred_{m}_{st}_{k}.npz" for m in SCORED_MODELS for st in STORIES for k in MODES]
               + [f"{root}/atlas/{h}.Schaefer2018_400Parcels_17Networks_order.annot" for h in ("lh", "rh")]):
         note(p)
     sets = H.parcel_sets(f"{root}/atlas/lh.Schaefer2018_400Parcels_17Networks_order.annot",
@@ -522,21 +573,21 @@ def score(root, out_dir):
     n_lang = len(elig["LANG"])
     if n_lang < MIN_N:
         res["lines"] = outcome("stock", n_lang)
-        return _write(res, res, out_dir)
+        return write(res, res, out_dir)
     keep = AH.kept_parcels(covs, sets, elig); ksets = AH.subset(sets, keep)
     res["parcels_kept"] = {net: f"{len(idx)} of {len(sets[net])}" for net, idx in keep.items()}
     n = {story: min(vert[s][story].shape[1] for s in SUBS) for story in STORIES}
     bold = {s: {story: {net: A[:, :n[story]] for net, A in AH.parcel_series(vert[s][story], covs[s], sets, keep).items()}
                 for story in STORIES} for s in SUBS}
     del vert
-    surp = json.load(open(f"{R}/surprisal.json"))
+    surp = json.load(open(SP))
     stories = {}
     for story in STORIES:
-        words = word_table(f"{R}/forecast/out/words_{story}.tsv"); on = np.array([t for _, t in words])
+        words = word_table(f"{FO}/words_{story}.tsv"); on = np.array([t for _, t in words])
         n_sec = int(max(on.max(), n[story] * TR)) + 40
         stories[story] = {"n": n[story], "onsets": on, "wps": np.bincount(on.astype(int), minlength=n_sec).astype(float),
                           "env": H.envelope_per_second(f"{R}/stimuli/{story}_audio.wav"), "base": baselines(words, surp[story], n_sec)}
-    P = {m: {story: {k: np.load(f"{R}/forecast/out/pred_{m}_{story}_{k}.npz") for k in MODES} for story in STORIES} for m in SCORED_MODELS}
+    P = {m: {story: {k: np.load(f"{FO}/pred_{m}_{story}_{k}.npz") for k in MODES} for story in STORIES} for m in SCORED_MODELS}
     pp = lambda m, story, shift: {k: pred_parcels(d["P"], d["starts"], n[story], ksets, shift) for k, d in P[m][story].items()}
     W = {story: min(n[story] - 1, min(last_volume(pp(m, story, 0.0), n[story]) for m in SCORED_MODELS)) for story in STORIES}
     T = sum(j1 - J0 + 1 for j1 in W.values())
@@ -592,7 +643,7 @@ def score(root, out_dir):
                             "m1_language_curve": dict(zip(map(str, ks), curve)), "lines": ml}
     pub["lines"] = lines + [LINES["tuned_not_run"], LINES["pair"]]
     pub["own_lag_curve"] = dict(zip(map(str, LAG_GRID.tolist()), lag_curve))
-    return _write(pub, {**pub, "full": full}, out_dir)
+    return write(pub, {**pub, "full": full}, out_dir)
 
 
 def _write(pub, full, out_dir):
@@ -606,10 +657,43 @@ def _write(pub, full, out_dir):
     return pub
 
 
-def surprisal(root):
-    R = f"{root}/r2"
-    out = {story: AH.gpt2_surprisal([(w, t, None) for w, t in word_table(f"{R}/forecast/out/words_{story}.tsv")]) for story in STORIES}
-    json.dump(out, open(f"{R}/surprisal.json", "w"))
+def beaten(pub, m="stock") -> tuple:
+    """(k, K): the cheap-baseline comparisons TRIBE beat, over both areas (the "What it had to beat" line's numbers)."""
+    v = [c["verdict"] for net in ("LANG", "AUD") for c in pub["models"][m]["cheap_baselines"][net]["tribe_vs"].values()]
+    return v.count("TRIBE beats"), len(v)
+
+
+def side_by_side(theirs, ours, m="stock") -> list:
+    """The judge's numbers beside ours, one row each: volunteer-equivalent point, lower bound, claim, share, language z, baselines."""
+    def row(d):
+        if m not in d.get("models", {}):
+            return ["not scored"] * 6
+        ve, ref = d["models"][m]["volunteer_equivalent_language"], d["models"][m]["reference"]
+        k, K = beaten(d, m)
+        return [f"{ve['point_k']:.1f}", f"{ve['lower_k']:.2f}", str(ve["claim_k"]), f"{round(100 * ref['share'])}%",
+                f"{ve['z']:.2f}", f"{k} of {K}"]
+    names = ["volunteer-equivalent (point)", "lower bound", "at least", "share", "language z", "baselines beaten"]
+    a, b = row(theirs), row(ours)
+    return [f"{'':30}{'yours':>14}{'ours':>14}"] + [f"{n:30}{x:>14}{y:>14}" for n, x, y in zip(names, a, b)]
+
+
+def _write_own(pub, full, out_dir):
+    """--verify-own: the judge's results to OUT only (never results/), then their numbers beside ours."""
+    refuse_results(out_dir)
+    json.dump(full, open(f"{out_dir}/r2_paranoia.json", "w"), indent=1, default=float)
+    json.dump(pub, open(f"{out_dir}/r2_paranoia_public.json", "w"), indent=1, default=float)
+    json.dump({os.path.basename(k): v for k, v in sorted(READ.items())}, open(f"{out_dir}/SHA256.json", "w"), indent=1)
+    for line in pub["lines"]:
+        print(line, flush=True)
+    print("\n".join(["", "Your forecasts beside ours (results/r2_paranoia.json):"] + side_by_side(pub, json.load(open(OURS["results"])))),
+          flush=True)
+    return pub
+
+
+def surprisal(root, own=None):
+    R = f"{root}/r2"; FO = f"{R}/forecast/out" if own is None else own
+    out = {story: AH.gpt2_surprisal([(w, t, None) for w, t in word_table(f"{FO}/words_{story}.tsv")]) for story in STORIES}
+    json.dump(out, open(f"{R}/surprisal.json" if own is None else f"{own}/surprisal.json", "w"))
     print({story: len(v["onsets"]) for story, v in out.items()}, "words", flush=True)
 
 
@@ -617,6 +701,9 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("step", choices=("surprisal", "download", "score"))
     ap.add_argument("--root", required=True); ap.add_argument("--out", default=None)
+    ap.add_argument("--verify-own", default=None, metavar="DIR", help="a judge's own forecasts, word tables and surprisal (not our pins)")
     a = ap.parse_args()
-    {"surprisal": lambda: surprisal(a.root), "download": lambda: download(a.root),
-     "score": lambda: score(a.root, a.out or f"{a.root}/r2/score")}[a.step]()
+    if a.verify_own is not None and a.step == "score" and a.out is None:
+        ap.error("--verify-own needs --out (a folder outside this repository)")
+    {"surprisal": lambda: surprisal(a.root, a.verify_own), "download": lambda: download(a.root, a.verify_own),
+     "score": lambda: score(a.root, a.out or f"{a.root}/r2/score", a.verify_own)}[a.step]()

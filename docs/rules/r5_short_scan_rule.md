@@ -70,3 +70,9 @@ the face test's result (pushed 05:32 UTC) and before any Paranoia brain data was
 seen" is as R2's disclosures say (`docs/rules/r2_paranoia_rule.md`, sections 2 and 10): an earlier agent read the raw files' AFNI header
 statistics, and the data check fetched the first 64 KB of each fsaverage5 GIFTI, which held encoded data never decoded; no brain value
 was read.
+
+Dated note, Nov 2 2026 (cloud review of Nov 2, 12:15 UTC, item 6; after the result, results commit 13e93c0; the text above is unchanged):
+`scripts/r5_short_scan.py` gains `--verify-own DIR` (with `--out`) so anyone can run this rule's test on their own stock Paranoia
+forecasts (`scripts/reproduce_paranoia.sh`). Under it, the forecasts and word tables come from DIR and are not held to R2's pins; the
+stimuli, scans and atlas must equal what our scoring run read; nothing is written into `results/`; and the numbers print beside ours. It
+is not part of this rule's result. Our scoring path is unchanged (`docs/frozen_code_changes.md`, entry of Nov 2).

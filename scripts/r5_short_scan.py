@@ -5,7 +5,12 @@ PASS needs a one-sided exact Wilcoxon p < 0.05 and at least k*(n) listeners abov
 envelope's SD is reported beside it. Data, coverage, cleaning, forecasts and the gauge are R2's (scripts/r2_paranoia.py, imported); R5
 reads only R2's pinned stock forecasts and word tables, so it does not depend on the fine-tuned line. Scored in R2's one scoring run.
 Writes OUT/r5_short_scan.json (per listener; outside the repo) and results/r5_short_scan.json (group).
-usage: python scripts/r5_short_scan.py ROOT OUT_DIR   (ROOT as for r2_paranoia.py score)"""
+A judge's own run (--verify-own DIR; dated note of Nov 2 in the rule; scripts/reproduce_paranoia.sh): the stock forecasts and word tables
+come from DIR and are hashed, not checked against R2's pins; the stimuli must still match R2's STIM_PINS and the brain data and atlas must
+equal what our scoring run read (R2's check). Nothing is written into results/; the judge's numbers are printed beside ours.
+usage: python scripts/r5_short_scan.py ROOT OUT_DIR   (ROOT as for r2_paranoia.py score)
+       python scripts/r5_short_scan.py ROOT --verify-own DIR --out OUT_DIR"""
+import argparse
 import json
 import math
 import os
@@ -163,14 +168,40 @@ def check_inputs(root) -> dict:
     return {k: h for k, (_, h) in need.items()}
 
 
-def score(root, out_dir):
+def own_inputs(root, own) -> dict:
+    """--verify-own: the judge's stock forecasts and word tables in OWN, hashed and recorded, never compared with R2's pins; the stimuli
+    still against R2's STIM_PINS; arms R2's check that the brain data and atlas equal what our scoring run read."""
+    R = f"{root}/r2"
+    got = {f"stimulus {s}": R2.sha(f"{R}/stimuli/{s}_audio.wav") for s in R2.STORIES}
+    bad = sorted(k for k in got if got[k] != R2.STIM_PINS.get(k.split()[1]))
+    if bad:
+        raise SystemExit(f"refused: the stimuli differ from ds001338's recordings (R2's STIM_PINS): {bad}")
+    files = ({f"words {s}": f"{own}/words_{s}.tsv" for s in R2.STORIES}
+             | {f"pred stock_{s}_{k}": f"{own}/pred_stock_{s}_{k}.npz" for s in R2.STORIES for k in R2.MODES})
+    missing = sorted(k for k, p in files.items() if not os.path.isfile(p))
+    if missing:
+        raise SystemExit(f"refused: {own} lacks {missing}")
+    got.update({k: R2.sha(p) for k, p in files.items()})
+    R2.VERIFY.clear(); R2.VERIFY.update(json.load(open(R2.OURS["read"])))
+    return got
+
+
+def score(root, out_dir, own=None):
     """R2's loading (scripts/r2_paranoia.py score: coverage, kept parcels, the scored window, each run cleaned then joined), stock only,
     then evaluate()."""
+    if own is not None:
+        R2.refuse_results(out_dir)
     assert not os.path.abspath(out_dir).startswith(REPO), "OUT must be outside the repo (per-listener values)"
     R2.fshift(0.0)                                                    # refuses until R2's FORECAST_READ is set
-    pins = check_inputs(root)
+    R2.VERIFY.clear()
+    pins = check_inputs(root) if own is None else own_inputs(root, own)
     R = f"{root}/r2"; os.makedirs(out_dir, exist_ok=True)
+    FO = f"{R}/forecast/out" if own is None else own                  # the forecasts and word tables
+    write = _write if own is None else _write_own
     annot = [f"{root}/atlas/{h}.Schaefer2018_400Parcels_17Networks_order.annot" for h in ("lh", "rh")]
+    if own is not None:
+        for a in annot:
+            R2.note(a)                                                # the judge's atlas must be ours
     sets = H.parcel_sets(*annot); medial = R2.medial_wall(*annot)
     vert, covs, table = {}, {}, {}
     for s in R2.SUBS:
@@ -181,17 +212,17 @@ def score(root, out_dir):
     res = {"label": "exploratory", "rule": RULE, "dataset": R2.DATASET, "inputs_sha256": pins, "listeners_language": len(elig["LANG"])}
     if len(elig["LANG"]) < R2.MIN_N:
         res["line"] = LINES["not_run"].format(reason="coverage")
-        return _write(res, res, out_dir)
+        return write(res, res, out_dir)
     keep = AH.kept_parcels(covs, {"LANG": sets["LANG"]}, {"LANG": elig["LANG"]}); ksets = AH.subset({"LANG": sets["LANG"]}, keep)
     n = {st: min(vert[s][st].shape[1] for s in R2.SUBS) for st in R2.STORIES}
     stories = {}
     for st in R2.STORIES:
-        words = R2.word_table(f"{R}/forecast/out/words_{st}.tsv"); on = np.array([t for _, t in words])
+        words = R2.word_table(f"{FO}/words_{st}.tsv"); on = np.array([t for _, t in words])
         n_sec = int(max(on.max(), n[st] * R2.TR)) + 40
         stories[st] = {"n": n[st], "onsets": on, "wps": np.bincount(on.astype(int), minlength=n_sec).astype(float),
                        "env": H.envelope_per_second(f"{R}/stimuli/{st}_audio.wav"), "base": {}}
     models = ["stock"] + (["tuned"] if any(k.startswith("pred tuned_") for k in pins) else [])
-    rd = lambda m, st, k: np.load(f"{R}/forecast/out/pred_{m}_{st}_{k}.npz")
+    rd = lambda m, st, k: np.load(f"{FO}/pred_{m}_{st}_{k}.npz")
     pp = {m: {st: {k: R2.pred_parcels(rd(m, st, k)["P"], rd(m, st, k)["starts"], n[st], ksets, 0.0) for k in R2.MODES}
               for st in R2.STORIES} for m in models}
     W = {st: min(n[st] - 1, min(R2.last_volume(pp[m][st], n[st]) for m in models)) for st in R2.STORIES}   # R2's scored window
@@ -204,7 +235,7 @@ def score(root, out_dir):
     ev = evaluate(Bj, F0, reg, stories, W, elig["LANG"])
     pub = {**res, "window_volumes": {st: [R2.J0, j1] for st, j1 in W.items()}, **ev["group"]}
     pub["line"] = line(ev["group"])
-    return _write(pub, {**pub, "per_listener": ev["per_listener"]}, out_dir)
+    return write(pub, {**pub, "per_listener": ev["per_listener"]}, out_dir)
 
 
 def _write(pub, full, out_dir):
@@ -214,5 +245,38 @@ def _write(pub, full, out_dir):
     return pub
 
 
+OURS = os.path.join(REPO, "results/r5_short_scan.json")
+
+
+def side_by_side(theirs, ours) -> list:
+    """The judge's R5 numbers beside ours: TRIBE's k of n and p, word rate's, the minutes each side, PASS or FAIL."""
+    def row(d):
+        if "tribe" not in d:
+            return ["not scored"] * 5
+        t, w = d["tribe"], d["word_rate"]
+        return [f"{t['k_above_0']} of {t['n']}", f"{t['wilcoxon_p']:.2g}", f"{w['k_above_0']} of {w['n']}, p = {w['wilcoxon_p']:.2g}",
+                str(d["minutes_each_side"]), "PASS" if t["pass"] else "FAIL"]
+    names = ["TRIBE: listeners above 0", "TRIBE: one-sided p", "word rate", "minutes each side", "verdict"]
+    a, b = row(theirs), row(ours)
+    return [f"{'':26}{'yours':>18}{'ours':>18}"] + [f"{n:26}{x:>18}{y:>18}" for n, x, y in zip(names, a, b)]
+
+
+def _write_own(pub, full, out_dir):
+    """--verify-own: the judge's results to OUT only (never results/), then their numbers beside ours."""
+    R2.refuse_results(out_dir)
+    json.dump(full, open(f"{out_dir}/r5_short_scan.json", "w"), indent=1, default=float)
+    json.dump(pub, open(f"{out_dir}/r5_short_scan_public.json", "w"), indent=1, default=float)
+    print(pub["line"], flush=True)
+    print("\n".join(["", "Your forecasts beside ours (results/r5_short_scan.json):"] + side_by_side(pub, json.load(open(OURS)))), flush=True)
+    return pub
+
+
 if __name__ == "__main__":
-    score(sys.argv[1], sys.argv[2])
+    ap = argparse.ArgumentParser()
+    ap.add_argument("root"); ap.add_argument("out_dir", nargs="?", default=None); ap.add_argument("--out", default=None)
+    ap.add_argument("--verify-own", default=None, metavar="DIR", help="a judge's own stock forecasts and word tables (not R2's pins)")
+    a = ap.parse_args()
+    out = a.out or a.out_dir
+    if out is None:
+        ap.error("OUT_DIR (or --out) is required")
+    score(a.root, out, a.verify_own)

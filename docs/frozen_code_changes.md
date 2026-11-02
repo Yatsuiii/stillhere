@@ -656,3 +656,39 @@ counting the parcels; the ruling says what that refusal means once BOLD is open.
 | `scripts/face_map_runner.py` | `fc0acaa1f6f9c9f7...` | `1c25229c49c50887...` |
 | `docs/rules/face_map_rule.md` | `3d760395de027747...` | `f760f18bc56ddbef...` |
 | `docs/rules/edit_check_rule.md` | `b750e2d9a583333e...` | `1ea1aba1f4277b49...` |
+
+## R2 and R5 scorers: a judge's own forecasts, `--verify-own` (Nov 2, after both results; our scored path unchanged)
+
+Cloud review of Nov 2, 12:15 UTC, item 6. Made after R2's and R5's one scoring run (results commit 13e93c0). It changes no number in
+`results/`, and our scoring is not rerun. Without the flag the scorers do exactly what they did: the same pins, reads and writes. The one
+new check in `note()` is armed only by `--verify-own`.
+- `scripts/r2_paranoia.py`: `--verify-own DIR` on `surprisal`, `download` and `score`.
+  - The judge's forecasts, word tables and surprisal are read from DIR and hashed. They are recorded, never compared with
+    FORECAST_PINS, WORD_PINS, SURPRISAL_PIN, RECORD_PINS or the whisperx record.
+  - The stimuli must still equal STIM_PINS (ds001338's recordings).
+  - Every other input the scoring reads (the 132 GIFTIs, the events files, the atlas) must equal what our scoring run read
+    (`results/r2_paranoia_SHA256.json`). The judge's download must equal ours (`results/r2_bold_SHA256.json`); the forecast pins are
+    not required before it.
+  - `--out` must be outside the repository (symbolic links resolved). The judge's files go to OUT only: `r2_paranoia.json`,
+    `r2_paranoia_public.json` and `SHA256.json`.
+  - The judge's numbers print beside ours (`side_by_side`: point, lower bound, claim, share, language z, baselines beaten).
+- `scripts/r5_short_scan.py`: the same for R5's inputs, stock forecasts only, with the atlas checked against ours.
+  - `--out` and argparse are added. The positional `ROOT OUT_DIR` call that the scoring kernel used still works.
+  - The printout shows k of n, p, word rate, minutes and the verdict, beside ours.
+- New files:
+  - `scripts/paranoia_files.py`: fetch, layout and staging, with every expected SHA-256 read from the committed scorer, runner and our
+    scoring record.
+  - `scripts/reproduce_paranoia.sh`: the end-to-end route on a judge's GPU, or `--no-gpu` from our released forecasts.
+  - `scripts/make_paranoia_release.sh`: stages the release asset and does not upload it.
+  - `tribe_common.py` is written only into the judge's data folder, from the R2 forecast kernel's embedded COMMON (SHA-256
+    `8df0380c...`). No new copy of pre-event code enters the repository.
+- Tests:
+  - `tests/test_paranoia_verify_own.py` and `tests/test_paranoia_files.py` are synthetic and offline; no Paranoia data is read.
+  - `tests/test_r2_paranoia.py` and `tests/test_r5_short_scan.py` pass unchanged.
+
+| File | SHA-256 before | SHA-256 after |
+|---|---|---|
+| `scripts/r2_paranoia.py` | `aea61245dc92e0c1...` | `01e7099052b11e8b...` |
+| `scripts/r5_short_scan.py` | `8eea35bf0668053a...` | `d4f09770ff68a91b...` |
+| `docs/rules/r2_paranoia_rule.md` | `e031cd51b8ef75af...` | dated note appended |
+| `docs/rules/r5_short_scan_rule.md` | `f60783423c5d402d...` | dated note appended |
