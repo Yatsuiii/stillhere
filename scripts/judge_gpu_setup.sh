@@ -34,14 +34,19 @@ command -v nvidia-smi >/dev/null && nvidia-smi --query-gpu=name,driver_version,m
 echo "== 1. the TRIBE environment: $VENV"
 if [ -x "$VENV/bin/python" ] && "$VENV/bin/python" -c "import tribev2, spacy, en_core_web_lg" 2>/dev/null; then
   echo "   already installed"
-elif command -v uv >/dev/null; then
-  uv venv -q --python 3.11 "$VENV"
-  uv pip install -q --python "$VENV/bin/python" -r "$REPO/requirements-tribe.txt" "en_core_web_lg @ $EN_CORE"
-elif command -v python3.11 >/dev/null; then
-  python3.11 -m venv "$VENV"
-  "$VENV/bin/pip" install -q -r "$REPO/requirements-tribe.txt" "en_core_web_lg @ $EN_CORE"
 else
-  echo "needs Python 3.11 (python3.11 on PATH, or uv: https://docs.astral.sh/uv/)"; exit 1
+  # About 3 GB of wheels (torch's alone is about 800 MB): a long read timeout, and a rerun keeps what an earlier attempt installed.
+  installed=0
+  if command -v uv >/dev/null; then
+    uv venv -q --allow-existing --python 3.11 "$VENV" && UV_HTTP_TIMEOUT=${UV_HTTP_TIMEOUT:-300} \
+      uv pip install -q --python "$VENV/bin/python" -r "$REPO/requirements-tribe.txt" "en_core_web_lg @ $EN_CORE" && installed=1
+  elif command -v python3.11 >/dev/null; then
+    python3.11 -m venv "$VENV" && "$VENV/bin/pip" install -q --timeout 300 --retries 10 -r "$REPO/requirements-tribe.txt" \
+      "en_core_web_lg @ $EN_CORE" && installed=1
+  else
+    echo "needs Python 3.11 (python3.11 on PATH, or uv: https://docs.astral.sh/uv/)"; exit 1
+  fi
+  [ "$installed" = 1 ] || { echo "the TRIBE environment did not finish installing (the error is above); run this script again: it carries on"; exit 1; }
 fi
 PY="$VENV/bin/python"
 "$PY" - <<'EOF'
