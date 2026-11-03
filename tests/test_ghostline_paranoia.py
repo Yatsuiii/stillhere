@@ -71,3 +71,14 @@ def test_the_committed_file_is_what_the_script_makes(G, tmp_path, monkeypatch):
     doc = json.loads((tmp_path / "g.json").read_text())
     for k in ("lines", "chip", "caption", "volumes", "short_view", "n_parcels", "time_s"):
         assert doc[k] == DOC[k], k
+
+
+def test_the_pages_paranoia_panel_draws_the_short_view_in_the_rules_order_with_the_caption():
+    spec = importlib.util.spec_from_file_location("bp_paranoia", ROOT / "scripts/build_pilot_page.py")
+    BP = importlib.util.module_from_spec(spec); spec.loader.exec_module(BP)
+    r2, r5 = (json.loads((ROOT / p).read_text()) for p in BP.PARANOIA[:2])
+    html = BP.paranoia_html(r2, r5, DOC)
+    i_f, i_c, i_g = html.index('class="g-forecast"'), html.index(DOC["chip"]["short"].replace("'", "&#x27;")), html.index('class="g-group"')
+    assert i_f < i_c < i_g and 'class="g-one"' not in html and 'class="g-five"' not in html
+    assert html.count("<polyline") == 2 and DOC["caption"]["text"].replace("'", "&#x27;") in html and DOC["chip"]["long"] in html
+    assert BP.short_view(DOC)["time_s"] == DOC["time_s"][:120] and BP.paranoia_html(r2, r5) == BP.paranoia_html(r2, r5, None)

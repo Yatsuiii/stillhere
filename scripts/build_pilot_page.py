@@ -501,21 +501,33 @@ def alice_html(d) -> str:
                  f'<p class="small"><code>{ALICE[0]}</code>, <code>{ALICE[1]}</code>.</p>')
 
 
-PARANOIA = ("results/r2_paranoia.json", "results/r5_short_scan.json")
+PARANOIA = ("results/r2_paranoia.json", "results/r5_short_scan.json", "results/ghostline_paranoia_s1.json")
 PARANOIA_CITE = ("Finn, Corlett, Chen, Bandettini and Constable, Nature Communications 2018; OpenNeuro ds001338 v1.0.0, CC BY-NC 4.0; "
                  "the fMRIPrep fsaverage5 derivative.")
 
 
-def paranoia_html(r2, r5) -> str:
+def short_view(doc: dict) -> dict:
+    """A ghost-line file cropped to its short view (display rule: the crop of the z-scored window, never re-scaled)."""
+    i0, i1 = doc["short_view"]["index"]
+    return {**doc, "time_s": doc["time_s"][i0:i1], "lines": {k: {**v, "values": v["values"][i0:i1]} for k, v in doc["lines"].items()}}
+
+
+def paranoia_html(r2, r5, ghost: dict = None) -> str:
     """R2 and R5 on Paranoia (docs/rules/r2_paranoia_rule.md, docs/rules/r5_short_scan_rule.md; cloud ruling of Nov 2, 04:45 UTC, item
-    5): each rule's lines from its results file, byte for byte, then the numbers. No file, no panel."""
+    5): each rule's lines from its results file, byte for byte, then the numbers. No file, no panel. With
+    results/ghostline_paranoia_s1.json (display rule, Paranoia section; ruling of Nov 3, 19:05 UTC, item 2): its short view, forecast
+    then chip then the 22-listener group, captioned with R2's committed numbers only."""
     out = ""
     if r2:
         ve, ref = r2["models"]["stock"]["volunteer_equivalent_language"], r2["models"]["stock"]["reference"]
         small = (f'Volunteer-equivalent {ve["point_k"]:.1f}, lower bound {ve["lower_k"]:.2f}; language result {ve["z"]:.2f} z against '
                  f'{ref["reference_mean_z"]:.2f} z for the other listeners\' average, {ref["n"]} listeners, {r2["window"]["minutes"]} '
                  'minutes. The rule and the forecasts were committed before the brain data was downloaded; scored once. ' + PARANOIA_CITE)
-        out += panel(f'<h3>{badge("info", "exploratory")}Paranoia, a story outside TRIBE v2\'s training and evaluation sets</h3>'
+        g = ""
+        if ghost:
+            g = (f'<div class="tbl">{ghost_svg(short_view(ghost), ("group",))}</div><p class="small">{E(ghost["chip"]["long"])}. '
+                 f'{E(ghost["caption"]["text"])} Exploratory.</p>')
+        out += panel(f'<h3>{badge("info", "exploratory")}Paranoia, a story outside TRIBE v2\'s training and evaluation sets</h3>{g}'
                      f'<p class="big">{E(r2["lines"][0], quote=False)}</p>'
                      + "".join(f"<p>{E(ln, quote=False)}</p>" for ln in r2["lines"][1:])
                      + f'<p class="small">{E(small)}</p><p class="small"><code>{PARANOIA[0]}</code>, <code>results/r2_run/RUN.md</code>.</p>')
@@ -795,7 +807,7 @@ def build(inline: bool = False) -> str:
     P.append('<h2 id="held">6. Did the forecasts hold up?</h2><p class="muted">Each forecast against real scans it never saw. Results land one '
              'at a time; a slot without its file says so.</p>')
     P.append(lpp_html(load("results/section8.json"), load("results/section8_baselines.json"), load("results/ghostline_lpp_s8.json")))
-    P.append(paranoia_html(load(PARANOIA[0]), load(PARANOIA[1])) + alice_html(load(ALICE[0])))
+    P.append(paranoia_html(load(PARANOIA[0]), load(PARANOIA[1]), load(PARANOIA[2])) + alice_html(load(ALICE[0])))
     P.append(wall_html(sl["story_wall"]) + d20_html(sl["d20"])
              + film_result_html(sl["face_map"], sl["film_score"], load("results/ghostline_film.json")))
     P.append(f'<p class="small" id="sedation">Sedation case study (not in the video): <a href="{SEDATION_URL}">the write-up, '
