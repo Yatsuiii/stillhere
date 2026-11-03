@@ -83,8 +83,16 @@ def vo_cues(spec: dict, endings: dict) -> list:
 
 
 def auto_values() -> dict:
-    """Values read from committed files rather than typed in: the number of screened stories on the live menu."""
-    return {"n_screened": json.loads(MENU.read_text())["screen_summary"]["n_on_menu"]}
+    """Values read from committed files rather than typed in: the number of screened stories on the live menu; once the film ghost
+    line's data exists, its viewer count N (the intact score's scored viewers; filled only while it equals the face test's count, the
+    film beat's other N) and its {film_commit}."""
+    out = {"n_screened": json.loads(MENU.read_text())["screen_summary"]["n_on_menu"]}
+    if FILM_GHOST.exists():
+        g = json.loads(FILM_GHOST.read_text()); fm = REPO / "results/face_map.json"
+        out["film_commit"] = g["film_rule"]["commit"]
+        if not fm.exists() or json.loads(fm.read_text()).get("viewers") == g["N"]:
+            out["N"] = g["N"]
+    return out
 
 
 def clip_title(clip_id: str) -> str:

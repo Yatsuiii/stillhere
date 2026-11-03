@@ -242,6 +242,10 @@ def test_part4_lines():
     menu = json.loads((ROOT / "stillhere/live_menu.json").read_text())
     n = menu["screen_summary"]["n_on_menu"]
     assert V.auto_values()["n_screened"] == n == sum(c["id"].startswith("story_") for c in menu["clips"])
+    g = ROOT / "results/ghostline_film.json"
+    if g.exists():                                                   # the film beat's N and chip commit come from the committed data file
+        doc = json.loads(g.read_text())
+        assert V.auto_values()["film_commit"] == doc["film_rule"]["commit"] and V.auto_values()["N"] == doc["N"]
     assert f"A judge picks one of {n} screened public stories" in (ROOT / "docs/vo_script.md").read_text()
     assert SC["build_audit"]["items"] == [{"kind": "storycard", "clip": "story_black_cat"}]
     assert "Advisory" not in all_text(SC["build_audit"]) and "audit_line" not in all_text(SC["build_audit"])

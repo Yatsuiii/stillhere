@@ -97,7 +97,7 @@ one that happened. On a d20 fail the notthefall scene leaves and the story wall 
 
 ## 138-144 s · film_ghost · headline: "Viewers drawn over the forecast"
 
-- 137.8-143.8 s: "{N} real viewers of the intact film are the test." (10 words, 1.7 words/s)
+- 137.8-143.8 s: "16 real viewers of the intact film are the test." (10 words, 1.7 words/s)
 
 ## 144-150 s · film_stamp · headline: "The film test, scored once"
 
