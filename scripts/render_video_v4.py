@@ -85,14 +85,38 @@ def vo_cues(spec: dict, endings: dict) -> list:
 def auto_values() -> dict:
     """Values read from committed files rather than typed in: the number of screened stories on the live menu; once the film ghost
     line's data exists, its viewer count N (the intact score's scored viewers; filled only while it equals the face test's count, the
-    film beat's other N) and its {film_commit}."""
+    film beat's other N) and its {film_commit}; Glimmer's edit-check counts (results/edit_check_glimmer.json); and the face test's
+    numbers for its FAIL line, worded by the page's own formatter (build_pilot_page.failed_criteria and pnum), so page and video match."""
     out = {"n_screened": json.loads(MENU.read_text())["screen_summary"]["n_on_menu"]}
     if FILM_GHOST.exists():
         g = json.loads(FILM_GHOST.read_text()); fm = REPO / "results/face_map.json"
         out["film_commit"] = g["film_rule"]["commit"]
         if not fm.exists() or json.loads(fm.read_text()).get("viewers") == g["N"]:
             out["N"] = g["N"]
+    ec = REPO / "results/edit_check_glimmer.json"
+    if ec.exists():
+        r = json.loads(ec.read_text())["rates"]
+        out.update(ec_int=r["intact_with_face_yes"][0], ec_rem=r["faces_removed_no"][0], ec_am=r["area_matched_yes"][0],
+                   ec_N=r["intact_with_face_yes"][1])
+    fm = REPO / "results/face_map.json"
+    b1 = (json.loads(fm.read_text()).get("B1") or {}) if fm.exists() else {}
+    if b1:
+        out.update(k=b1["k_above_0"], kstar=b1["kstar"], **face_words(b1))
     return out
+
+
+def face_words(b1: dict) -> dict:
+    """The face test's criterion and p values as the page words them (build_pilot_page.failed_criteria and pnum); that module needs
+    Python 3.12, so an older interpreter runs it in the product's, as story_card_text does."""
+    try:
+        import build_pilot_page as BP
+        return {"criterion": BP.failed_criteria(b1), "p": BP.pnum(b1["wilcoxon_p"]), "spin_p": BP.pnum(b1["spin_p"])}
+    except SyntaxError:
+        py = sorted(Path.home().glob(".local/share/uv/python/cpython-3.12*/bin/python3.12"))[0]
+        code = ("import json, sys; sys.path[:0] = ['scripts', '.']; import build_pilot_page as BP; b = json.loads(sys.argv[1]); "
+                "print(json.dumps({'criterion': BP.failed_criteria(b), 'p': BP.pnum(b['wilcoxon_p']), 'spin_p': BP.pnum(b['spin_p'])}))")
+        out = subprocess.run([str(py), "-c", code, json.dumps(b1)], cwd=REPO, capture_output=True, text=True, check=True)
+        return json.loads(out.stdout.strip().splitlines()[-1])
 
 
 def clip_title(clip_id: str) -> str:
@@ -405,14 +429,12 @@ def item_html(it: dict, values: dict, ctx: dict) -> str:
     if k == "karaoke":
         m = json.loads((REPO / "results/conditions_manipulation_check.json").read_text())["conditions"]["sentence_scramble"]
         w = m["transcript"].split()[:46]
-        return ('<div class="small">Voice Transcribe, reading the built sentence scramble back:</div>'
-                f'<div class="kara"><b>{E(" ".join(w[:14]))}</b> {E(" ".join(w[14:]))} ...</div>'
-                '<div class="phbox">PLACEHOLDER: word-by-word highlight from Voice Transcribe word times (Friday)</div>')
+        return ('<div class="small">Voice Transcribe, reading the built sentence scramble back:</div>'      # no word times exist (its
+                f'<div class="kara"><b>{E(" ".join(w[:14]))}</b> {E(" ".join(w[14:]))} ...</div>')    # transcripts are text only)
     if k == "checklist":
         m = json.loads((REPO / "results/conditions_manipulation_check.json").read_text())["conditions"]
         ss, rv = m["sentence_scramble"], m["reversed"]
-        rows = [("Every sentence present once", "{sentences_once}"),
-                ("Words heard, of the original", f"{float(ss['recall']):.0%}"),
+        rows = [("Words heard, of the original", f"{float(ss['recall']):.0%}"),          # the build checklist's own rows only
                 ("Order changed", f"matches the new order {float(ss['order_vs_expected']):.0%}, the original {float(ss['order_vs_original']):.0%}"),
                 ("Reversed: words heard", str(int(rv["n_words_heard"])))]
         done = it["state"] == "done"

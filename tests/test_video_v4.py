@@ -391,6 +391,23 @@ def test_numbers_match_their_results():
     assert badge in items and items[0].startswith("Planner v2 · ")                     # the 2.3% stays v2's; v2.1 is not re-measured
 
 
+def test_committed_results_fill_the_film_beat_and_the_build_check_shows_only_backed_rows():
+    """Nov 3: Glimmer's edit-check counts and the face test's FAIL numbers come from their results files (not a typed values file),
+    worded by the page's own formatter, so the slide's FAIL line equals the page's; the build check's slide shows no placeholder (no
+    Voice Transcribe word times exist) and only rows a check computes."""
+    v = V.auto_values()
+    r = json.loads((ROOT / "results/edit_check_glimmer.json").read_text())["rates"]
+    assert (v["ec_int"], v["ec_rem"], v["ec_am"], v["ec_N"]) == (r["intact_with_face_yes"][0], r["faces_removed_no"][0],
+                                                                   r["area_matched_yes"][0], 62)
+    line = next(i["text"] for i in SC["film_stamp"]["variants"]["FAIL"] if i["kind"] == "text")
+    filled = V.fill(line, v)
+    assert "{" not in filled and "it missed the spin test (12 of 16 viewers above 0, 12 needed; Wilcoxon p = 0.017; spin p = 0.092)" in filled
+    assert "the spin test (12 of 16 viewers above 0, 12 needed; Wilcoxon p = 0.017; spin p = 0.092)" in (ROOT / "README.md").read_text()
+    for kind in ("karaoke", "checklist"):
+        out = V.item_html({"kind": kind, "state": "done"}, v, {})
+        assert "PLACEHOLDER" not in out and "{" not in out and "Every sentence present once" not in out, kind
+
+
 def test_voice_over_script_is_generated():
     script = (ROOT / "docs/vo_script.md").read_text()
     assert script == V.vo_markdown(SPEC) and "Open question" not in script
