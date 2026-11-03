@@ -98,7 +98,12 @@ From a fresh clone in a new folder, with a new venv and a new models folder (lin
   "Running on local GPU", then "Forecast, live" on the RTX 4050 in 46 s; the job token was 0600 in a 0700 folder. Again after the
   review fixes (8eca1d3), from another fresh clone: "Forecast, live" in 54 s under the chip "Forecast only · audio-only, your GPU"
   and the line "Local GPU mode: every forecast runs on your GPU; saved forecasts are not used."; a request with another Host got 403.
-- Route 4b: a fresh `requirements-score.txt` venv installed every pin; the end-to-end run is in progress on a slow connection.
+- Route 4b (`reproduce_paranoia.sh --no-gpu`, from a fresh clone, a fresh `requirements-score.txt` venv and our released forecasts
+  read from a local copy of the release while the repository was private): all 135 downloaded files (132 GIFTIs, 3 events files)
+  equal our download, and both scorers gave exactly our numbers: R2 about 3 volunteers, lower bound 1.88, at least 1, share 59%,
+  language z 4.01, baselines beaten 4 of 4; R5 17 of 22, p = 0.0004, word rate 8 of 22, p = 0.94, PASS. Scoring took about 17 minutes
+  on the laptop's CPU. The download ran across two connections (at about 160 KB/s, then about 3 MB/s); one dropped transfer resumed
+  where it stopped.
 
 ## What cannot be reproduced here
 
