@@ -32,6 +32,7 @@ mimetypes.add_type("font/woff2", ".woff2")                     # not in every ru
 MEDIA = {"/media/old_bug.wav": REPO / stations.OLD_BUG["audio"]}
 MAX_BODY = 8192
 ROUTES = []
+CDN_DAY = "max-age=86400"
 COOKIE = "sh_sid"
 
 
@@ -73,13 +74,14 @@ def slowed(req) -> dict:
     return stations.slowed(name, req.json()) if req.method == "POST" and name != "visitor" else {"error": "slow_down"}
 
 
-def route(method: str, pattern: str, cache: str = None, bucket: str = None):
+def route(method: str, pattern: str, cache: str = None, bucket: str = None, cdn: str = None):
     """`pattern` matches the whole path (fullmatch: "$" also matched before a trailing newline, so "/api/plan" and a newline reached
     the route and missed its bucket; refuter's review of Oct 31, item 1). `cache`: a Cache-Control for an answer that is the same for
-    every visitor (see respond). `bucket`: the name of the token bucket the request passes before the route runs, so before any store
-    command ("BUCKET" or "GET_BUCKET"), read per request so a test can swap it."""
+    every visitor (see respond). `cdn`: a Vercel-CDN-Cache-Control for such an answer (see respond). `bucket`: the name of the token
+    bucket the request passes before the route runs, so before any store command ("BUCKET" or "GET_BUCKET"), read per request so a
+    test can swap it."""
     def deco(fn):
-        ROUTES.append((method, re.compile(pattern), fn, cache, bucket)); return fn
+        ROUTES.append((method, re.compile(pattern), fn, cache, bucket, cdn)); return fn
     return deco
 
 
@@ -127,10 +129,12 @@ class Req:
         return d
 
 
-def respond(start, status: int, body=None, ctype="application/json", req: Req = None, extra=(), cache: str = None):
+def respond(start, status: int, body=None, ctype="application/json", req: Req = None, extra=(), cache: str = None, cdn: str = None):
     """`cache`: the Cache-Control of an answer that is the same for every visitor (status, static files). One a cache may reuse
     without asking again never sets the session cookie, which a shared cache would hand to the next visitor; the pages (no-cache) do,
-    so the cookie is set before any script runs. JSON is otherwise no-store."""
+    so the cookie is set before any script runs. JSON is otherwise no-store. `cdn`: a Vercel-CDN-Cache-Control for an answer built
+    only from the deployment's own files, so Vercel's CDN can answer a first visit without starting the function (a new deploy clears
+    that cache; the browser still gets `cache`). Sent only on a 200 that sets no cookie."""
     text = {200: "OK", 202: "Accepted", 204: "No Content", 400: "Bad Request", 401: "Unauthorized", 403: "Forbidden", 404: "Not Found",
             405: "Method Not Allowed", 409: "Conflict", 415: "Unsupported Media Type", 422: "Unprocessable Entity", 429: "Too Many Requests",
             500: "Internal Server Error", 503: "Service Unavailable"}
@@ -143,6 +147,8 @@ def respond(start, status: int, body=None, ctype="application/json", req: Req = 
     if req is not None and req.new_cookie and (not cache or any(d in cache for d in ("no-cache", "private", "no-store"))):
         hdrs.append(("Set-Cookie", f"{COOKIE}={req.new_cookie}; Path=/; HttpOnly; SameSite=Lax; Max-Age={ledger.VISITOR_TTL_S}"
                      + ("; Secure" if req.secure else "")))
+    elif cdn and status == 200:
+        hdrs.append(("Vercel-CDN-Cache-Control", cdn))
     start(f"{status} {text.get(status, '')}", hdrs)
     return [data]
 
@@ -223,7 +229,7 @@ def paused_forecast(query: str) -> dict:
     return {**out, "recipe": r, "fallback": jobs.fallback(r), "chip": stations.chip(r["clip_id"]), "end_line": stations.end_line(r["clip_id"])}
 
 
-@route("GET", "/api/evidence")
+@route("GET", "/api/evidence", cdn=CDN_DAY)                          # committed results files only: the same until the next deploy
 def evidence(req, m):
     return 200, stations.evidence()
 
@@ -330,13 +336,13 @@ def app(env, start):
         return respond(start, 403, {"error": "host"})
     req, where = Req(env), "static"
     try:
-        for method, rx, fn, cache, limit in ROUTES:
+        for method, rx, fn, cache, limit, cdn in ROUTES:
             m = rx.fullmatch(req.path)
             if m and req.method == method:
                 where, b = rx.pattern, globals()[limit] if limit else None
                 code, body = (method == "POST" and refused_post(req)) or (
                     (429, slowed(req)) if b and not b.take(ledger._address(req.ip)) else fn(req, m))
-                return respond(start, code, body, req=req, cache=cache)
+                return respond(start, code, body, req=req, cache=cache, cdn=cdn)
         if req.path.startswith("/api/"):
             return respond(start, 404 if not any(rx.fullmatch(req.path) for _, rx, *_ in ROUTES) else 405, {"error": "not_found"}, req=req)
         if req.method != "GET":
@@ -352,4 +358,4 @@ def app(env, start):
     csp = ("default-src 'self'; img-src 'self' data:; media-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; "
            "frame-ancestors 'none'; base-uri 'none'")
     cache = "no-cache" if s[1].startswith("text/html") else "max-age=86400"   # assets and media: named by content hash where linked
-    return respond(start, 200, s[0], ctype=s[1], req=req, cache=cache, extra=[("Content-Security-Policy", csp)])
+    return respond(start, 200, s[0], ctype=s[1], req=req, cache=cache, cdn=CDN_DAY, extra=[("Content-Security-Policy", csp)])

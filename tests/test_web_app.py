@@ -1241,6 +1241,21 @@ def test_static_files_are_cached_a_day_and_the_pages_are_not(web):
     code, h, _ = call(app, "GET", "/no-such-file.txt"); assert code == 404 and "Cache-Control" not in h
 
 
+def test_only_answers_built_from_the_deployments_own_files_let_the_cdn_keep_them(web):
+    """Static files and the evidence panels (committed results only) carry Vercel-CDN-Cache-Control, so a first visit is answered by
+    the CDN without starting the function; the browser's Cache-Control is unchanged. Nothing per visitor, live or failed carries it:
+    status, every POST, a 404, and an answer that sets the cookie."""
+    app, jobs, ledger, stations, store = web
+    for p in ("/", "/receipt.html", "/app.js", "/hero.png", "/media/old_bug.wav", "/api/evidence"):
+        code, h, _ = call(app, "GET", p, cookie="")
+        assert code == 200 and h.get("Vercel-CDN-Cache-Control") == "max-age=86400" and "Set-Cookie" not in h, p
+    assert call(app, "GET", "/api/evidence", cookie="")[1]["Cache-Control"] == "no-store"
+    for method, p, body in (("GET", "/api/status", None), ("POST", "/api/visitor", {}), ("POST", "/api/plan", {"text": "x"}),
+                            ("GET", "/no-such-file.txt", None), ("GET", "/api/receipt/0000000000000000", None)):
+        code, h, _ = call(app, method, p, body, cookie="")
+        assert "Vercel-CDN-Cache-Control" not in h, (method, p, code)
+
+
 def test_visitor_ids_come_from_the_pages_first_call(web, monkeypatch):
     """Items 3 and 5 of the third review and item 3 of the fourth: a page load touches no store and issues nothing, so crawlers and
     scripts that never run the page's script spend no ids. Each page's first call (POST /api/visitor) gets a fresh id (SET NX on its
