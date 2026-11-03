@@ -27,8 +27,8 @@
 > **StillHere forecasts both before anyone is scanned**, with Meta's TRIBE v2, live on a laptop. It has been tested only in healthy
 > volunteers.
 
-What it has shown, in healthy listeners and public scans, each by a rule committed before the brain data was read:
-- **Which stories drive language areas harder:** across 37 story families, TRIBE's predicted response strength ranked the stories the
+What it has shown, in healthy listeners and public scans; each line says how it was tested (pre-registered, exploratory or held out):
+- **Which stories drive language areas harder** (pre-registered): across 37 story families, TRIBE's predicted response strength ranked the stories the
   way listeners' language areas responded (rho 0.54, p = 0.0007), and still did with word rate and loudness controlled (rho 0.63,
   p = 0.0005).
 - **Which minutes to play in a short scan** (exploratory): on another public story, the 7 minutes TRIBE ranked highest gave listeners'
@@ -36,9 +36,9 @@ What it has shown, in healthy listeners and public scans, each by a rule committ
   alone did not (8 of 22).
 - **A healthy reference from a forecast:** on a story outside TRIBE v2's training and evaluation sets (Paranoia, 22 listeners;
   exploratory), the forecast was worth **about 3 real volunteers, and at least 1**, and reached 59% of what the other listeners' average
-  reaches; on a held-out section of an audiobook from TRIBE v2's own evaluation sets, about 5 and at least 2 (49 listeners); and it
-  followed the story's structure: intact beat sentence-shuffled on 22 real listeners (p = 0.00516).
-- **Where it is weaker:** on one of the two stories outside its training and evaluation sets (a public audiobook), it tracked the
+  reaches; on a held-out section of an audiobook from TRIBE v2's own evaluation sets, about 5 and at least 2 (49 listeners; held out); and it
+  followed the story's structure: intact beat sentence-shuffled on 22 real listeners (pre-registered; p = 0.00516).
+- **Where it is weaker:** on one of the two stories outside its training and evaluation sets (a public audiobook; exploratory), it tracked the
   listeners but was worth less than one volunteer at its lower bound; it has never been tested in children or patients, and it does not
   map left versus right.
 
@@ -130,9 +130,9 @@ is the sound envelope alone, language areas, 145-volume window (p = 0.13), which
 
 <sup>6</sup> S3b, whether the ranking is the words' content and not just their timing, was pre-registered but not run in the scored
 record. The scored parts were fresh extractions, so per-word vectors existed when the scored forecasts were made; S3b was left out
-because no control was built, not because the data were missing. It is pre-registered, run late (Oct 31-Nov 2, after S1-S3 were seen),
-by `docs/rules/s3b_late_rule.md`: decided after the scored record was read, including S4, the wall and the approximate frame-level
-version (descriptive, partial rho 0.56, p 0.0012). It is reported beside S1-S3 whatever it shows and changes nothing above.
+because no control was built, not because the data were missing. A late run was pre-registered in `docs/rules/s3b_late_rule.md`,
+decided after the scored record was read, including S4, the wall and the approximate frame-level version (descriptive, partial rho
+0.56, p 0.0012); none of its parts finished. S3b: pre-registered, not run (not finished by its cutoff, Nov 3, 06:00 UTC).
 
 ### Reading the results
 

@@ -295,7 +295,8 @@ def picker_html(sts: list, runs_doc) -> tuple:
             for rw in st["rewordings"]:
                 rf = cards_for(runs, rw)
                 if "spark-1.3" in rf:
-                    body.append(f'<h3>Round {E(str(rw.get("round") or 2))}, reworded: <q>{E(rw["text"])}</q></h3>'
+                    body.append(f'<p class="small">{E(ROUND_CAPTION)}</p>'                  # cloud ruling of Nov 3, 19:05 UTC, item 7
+                                f'<h3>Round {E(str(rw.get("round") or 2))}, reworded: <q>{E(rw["text"])}</q></h3>'
                                 + (f'<p class="small">{E(rw["why"])}.</p>' if rw.get("why") else "") + cards_html(rf))
             body.append(f'<p class="small">{E(DISPLAY_NOTE)}</p>')
             P.append(panel("".join(body), nd=False))
@@ -539,6 +540,11 @@ def wall_not_run(why=None) -> str:
     return f"pre-registered, not run{f' ({why})' if why else ''}; no partial scoring"
 
 
+ROUND_CAPTION = "Round 1 wording was declined; round 2 reworded it."
+S3B_LINE = "S3b: pre-registered, not run (not finished by its cutoff, Nov 3, 06:00 UTC)."      # cloud ruling of Nov 3, 19:05 UTC, item 5
+S3B_WHAT = "S3b is the story picker's check that its ranking follows the words' content, not just their timing."
+
+
 def wall_html(d, now: datetime.datetime = None) -> str:
     """No relative days (ruling of Oct 30, 07:40 UTC, b): pending until the wall's frozen cutoff; not run as soon as the slot holds a
     not-run record ({"not_run": true, "why": ...}), or once the cutoff passes with nothing in the slot."""
@@ -551,7 +557,8 @@ def wall_html(d, now: datetime.datetime = None) -> str:
     guards = (d.get("lines") or {}).get("guards") or []
     return panel(f'<h3>{badge("pass" if ok else "fail", "bar met" if ok else "bar not reached")}Story wall, Narratives and LPP</h3>'
                  + (f"<p>{E(ln)}</p>" if ln else "") + f'<p class="small">{w["N"]} of {w["M"]} story families; the pre-set bar is two-thirds.'
-                 + "".join(f" {E(g)}." for g in guards) + f' <code>{SLOTS["story_wall"]}</code>.</p>')
+                 + "".join(f" {E(g)}." for g in guards) + f' <code>{SLOTS["story_wall"]}</code>.</p>'
+                 + f'<p class="small">{E(S3B_LINE)} {E(S3B_WHAT)}</p>')
 
 
 D20_PASS = ("With zero same-clip controls, stock TRIBE v2's language readout was stronger when the same healthy listeners heard a public "

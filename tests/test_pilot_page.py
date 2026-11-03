@@ -362,6 +362,17 @@ def test_story_wall_is_pending_until_its_frozen_cutoff_then_not_run():
     assert BP.WALL_CUTOFF_UTC.isoformat() == "2026-11-01T18:00:00+00:00"
 
 
+def test_cloud_ruling_of_nov_3_lines_on_the_pages():
+    """Ruling of Nov 3, 19:05 UTC: item 5, the S3b record line beside the wall (the page's picker companion) and in README footnote 6;
+    item 7, the round caption on the static page and the planner dropdown's Spark Open label."""
+    wall = BP.wall_html(BP.load("results/picker/tierD_picker_wall.json"))
+    line = "S3b: pre-registered, not run (not finished by its cutoff, Nov 3, 06:00 UTC)."
+    assert line in wall and line in " ".join((REPO / "README.md").read_text().split())
+    page = (REPO / "demo/index.html").read_text()
+    assert page.count("Round 1 wording was declined; round 2 reworded it.") >= 1
+    assert '<option value="spark-open">Spark Open (missed the 5% false-accept bar)</option>' in (REPO / "web/public/index.html").read_text()
+
+
 def test_film_station_says_why_and_reads_the_face_test_slot():
     """Ruling of Oct 30, 07:40 UTC, c: the purpose line word for word, and one status line per state of results/face_map.json. Its
     count corrected Nov 3 from 28 to 16: the scored face test used 16 viewers (results/face_map.json; 28 was the runs kept)."""

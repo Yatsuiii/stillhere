@@ -168,3 +168,28 @@ about 18 in run 1, 5.15 this morning, 9.58 in run 2 by then, at a measured 1.37 
 is 80). Parts 1 and 2 run until about 16:30 UTC (about 6.6 more units), so the projected total is about 46. Section 5's "Oct 31-Nov 2"
 changes to "Oct 31-Nov 3" only if a part lands after 00:00 UTC Nov 3. Nothing else changes: the gate, the one scoring run, and the
 advance scoring go with its conditions.
+
+Dated note, Nov 3 2026 (cloud ruling of Nov 3, 19:05 UTC, item 5; the text above is unchanged): S3b is not run by this rule. Nothing
+reached origin by its cutoff, Tue Nov 3, 06:00 UTC (the note of Nov 2 above), so it is not scored and no output is opened. No part made an
+output: every run was stopped, lost or crashed before its gate (the run list, `d22/picker_pred/s3b/RUNS.md` in the analysis tree: run 1 of
+parts 1 and 2 stopped by hand about 08:35 UTC Nov 1; Nov 2's morning start never reached a runtime; run 2's part 2 crashed out of RAM
+about 13:55 UTC and part 1 was lost about 14:09 UTC; part 2's High-RAM rerun was lost about 15:09 UTC; part 3 never started). The parts'
+files are therefore their inputs, listed by name, size and SHA-256 (hashed, not opened):
+
+| File | Bytes | SHA-256 |
+|---|---|---|
+| s3b_part1_colab.ipynb | 88,197 | 2c1fd59b4df43b5d040432372d10a1f1523f746e47b8027cafc4b5c06441a66c |
+| s3b_part2_colab.ipynb | 88,189 | 19c786b1d6630540b021f544cf3cdb90a88e5dda5d6d15634401182a13e52560 |
+| s3b_part3_colab.ipynb | 87,979 | 9f87e4dd57ab80185cc8e3295bd428298dc7877e5fb062d611eca79976b871a9 |
+| kernels/s3b_part1.py | 68,981 | d2bcf8303f2cb7d376190e659ffd67dacd66a2bdce1c70851213d8444dd871e0 |
+| kernels/s3b_part2.py | 68,972 | be45a2b03e25150d14cbf10e9e16b4d582f5aeb92524fc29e305fb99b31d7a21 |
+| kernels/s3b_part3.py | 68,876 | 61987fb388668b0574d52e0ad0fea09f29abafffd280aca1674a259bf589a368 |
+| s3b_refs.zip (the parts' shared reference input) | 84,731,366 | 64db8a2e8a4ff9b2853644b9cd5959b1147cbe200571c5a9ea34211b103ac651 |
+| harness_s3b.py | 7,689 | 5d32584c3f1924552a8eae4343a62647759a0b8c3f8cf65ceb6b44aa3866a9b2 |
+| make_s3b_colab.py | 10,486 | 6ac203964c8eed79e4c698681787dd06de158bceb401524384cae2e0ca20a563 |
+
+Units used: about 32.7 Colab compute units by about 14:05 UTC Nov 2 (Colab's balance: 100 at the month's start, 67.26 available
+then); the part 2 High-RAM run after that (about 26 minutes) was not recorded, so the total is about 33 plus that run's units, which
+are unknown; under the 50-unit cap.
+
+Record: "S3b: pre-registered, not run (not finished by its cutoff, Nov 3, 06:00 UTC)."
