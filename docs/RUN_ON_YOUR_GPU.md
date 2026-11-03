@@ -22,8 +22,10 @@ TRIBE v2 (Meta FAIR, CC BY-NC 4.0) is not in this repository: the setup script d
 - Llama 3.2 3B is gated: accept Meta's licence at https://huggingface.co/meta-llama/Llama-3.2-3B, then log in with `hf auth login`.
   The setup script checks this before it downloads any model (the TRIBE packages install first) and stops with one sentence if
   access is missing.
-- RAM: the live worker runs in an 11 GB memory cap on a 14 GB laptop. On the laptop, under a 7 GB memory cap, the full stage of story
-  1 ran out of RAM (the audio-only stage finished); we did not measure the RAM route 4 needs, and made the forecasts on Kaggle T4s.
+- RAM: the live worker runs in an 11 GB memory cap on a 14 GB laptop. Route 4a's forecasts need more: on that laptop, with its
+  desktop running, story 1's three stages and story 2's audio-only and full stages finished (story 1's full stage peaked at about
+  9.7 GB), but story 2's shuffled stage was killed out of memory at about 10 GB of RAM plus 4 GB of swap. Use a machine with 32 GB
+  of RAM for route 4a; we made our forecasts on Kaggle T4s (about 30 GB). Route 4b's scoring peaked at about 5.7 GB.
 
 ## 1. The page, no GPU
 
@@ -92,8 +94,10 @@ From a fresh clone in a new folder, with a new venv and a new models folder (lin
 - Route 2: `judge_gpu_setup.sh` (STILLHERE_HF_SOURCE set): 16 model files, 9.47 GB, audit clean, in 15 s. `verify` on the RTX 4050
   Laptop GPU: PASS for all four conditions, largest difference at most 0.0002 against our saved forecasts, r 1.00000; jobs 52 to 61 s
   (reversed 13 s), peak 5.29 GB. A second run with `--out`: PASS again, largest difference 0.0003; its file, to compare yours with,
-  is `docs/proof/verify_rtx4050_laptop.json` (driver 615.78.08, CUDA 12.4, torch 2.6.0, tribev2 at af58661). Not exercised: installing `requirements-tribe.txt` from scratch (about 3 GB at 287 KB/s); the new venv
-  reused the tested packages, and all 131 pinned lines equal them.
+  is `docs/proof/verify_rtx4050_laptop.json` (driver 615.78.08, CUDA 12.4, torch 2.6.0, tribev2 at af58661). On Nov 3, `judge_gpu_setup.sh` installed `requirements-tribe.txt` from scratch into a new venv
+  (about 3 GB of wheels; two attempts hit network timeouts, after which the script's longer timeout and resumable venv carried the
+  third run through in 20 minutes): torch 2.6.0+cu124 saw the GPU, the models' audit was clean, and `verify` on that venv passed
+  again (largest difference 0.0004, r 1.00000, jobs 47 to 53 s).
 - Route 3: `run_local_gpu.sh` with an empty HOME and no keys: "Live models: off", the default plan's recorded run opened FORECAST,
   "Running on local GPU", then "Forecast, live" on the RTX 4050 in 46 s; the job token was 0600 in a 0700 folder. Again after the
   review fixes (8eca1d3), from another fresh clone: "Forecast, live" in 54 s under the chip "Forecast only · audio-only, your GPU"
