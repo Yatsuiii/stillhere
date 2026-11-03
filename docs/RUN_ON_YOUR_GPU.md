@@ -95,8 +95,8 @@ From a fresh clone in a new folder, with a new venv and a new models folder (lin
   Laptop GPU: PASS for all four conditions, largest difference at most 0.0002 against our saved forecasts, r 1.00000; jobs 52 to 61 s
   (reversed 13 s), peak 5.29 GB. A second run with `--out`: PASS again, largest difference 0.0003; its file, to compare yours with,
   is `docs/proof/verify_rtx4050_laptop.json` (driver 615.78.08, CUDA 12.4, torch 2.6.0, tribev2 at af58661). On Nov 3,
-  `judge_gpu_setup.sh` installed `requirements-tribe.txt` from scratch into a new venv (about 3 GB of wheels; two attempts hit network timeouts, after which the script's longer timeout and resumable venv carried the
-  third run through in 20 minutes): torch 2.6.0+cu124 saw the GPU, the models' audit was clean, and `verify` on that venv passed
+  `judge_gpu_setup.sh` installed `requirements-tribe.txt` from scratch into a new venv (about 3 GB of wheels; two attempts hit
+  network timeouts, after which the script's longer timeout and resumable venv carried the third run through in 20 minutes): torch 2.6.0+cu124 saw the GPU, the models' audit was clean, and `verify` on that venv passed
   again (largest difference 0.0004, r 1.00000, jobs 47 to 53 s).
 - Route 3: `run_local_gpu.sh` with an empty HOME and no keys: "Live models: off", the default plan's recorded run opened FORECAST,
   "Running on local GPU", then "Forecast, live" on the RTX 4050 in 46 s; the job token was 0600 in a 0700 folder. Again after the
