@@ -3,9 +3,11 @@
 ## Summary
 
 StillHere runs stock TRIBE v2 (Meta FAIR; d'Ascoli et al. 2026, arXiv 2605.04326) to forecast the healthy-adult brain response to a
-story or a film. On a held-out audiobook (Le Petit Prince, section 8, 49 listeners), the forecast was worth **about 5 real
-volunteers, and at least 2**. On a different story with real listeners, its pre-registered intact-versus-shuffled test passed
-(Narratives notthefall, 22 listeners, p = 0.00516).
+story or a film. On a story outside TRIBE v2's training and evaluation sets (Paranoia, 22 listeners; exploratory), the forecast was
+worth **about 3 real volunteers, and at least 1**, and the minutes it ranked highest gave listeners' language areas a closer match than
+the minutes it ranked lowest for 17 of 22 listeners (p = 0.0004). On a held-out audiobook from TRIBE v2's own evaluation sets (Le
+Petit Prince, section 8, 49 listeners), it was worth about 5, and at least 2. On a different story with real listeners, its
+pre-registered intact-versus-shuffled test passed (Narratives notthefall, 22 listeners, p = 0.00516).
 
 StillHere is a research tool, tested only in healthy volunteers. It is not a medical device. Not a diagnosis or medical advice.
 TRIBE v2 is CC BY-NC 4.0 and is not included in this repository.
@@ -45,8 +47,12 @@ motion too).
 |---|---|---|---|
 | Le Petit Prince (ds003643), section 8 | held-out audiobook | 49 listeners | about 5 real volunteers' worth, at least 2 (first measured Oct 22-23; LPP is one of TRIBE v2's own evaluation sets) |
 | Narratives (ds002345), notthefall | intact vs sentence-shuffled, pre-registered (D20) | 22 listeners | pass, p = 0.00516; the secondary did not reach p < 0.05 |
-| Narratives and Le Petit Prince | story wall and story picker, pre-registered (D19) | 42 stories | scored once, from Sat Oct 31 |
-| Emo-FilM (ds004892, ds004872), Tears of Steel | face test | 28 viewers | scored once, by a rule committed before any viewer's brain data was read |
+| Paranoia (ds001338, Finn et al. 2018) | a story outside TRIBE v2's training and evaluation sets, the whole story (R2) | 22 listeners | about 3 real volunteers' worth, at least 1; 59% of what the other listeners' average reaches; beaten baselines 4 of 4 (exploratory) |
+| Paranoia, the same listeners | which minutes to play in a short scan (R5) | 22 listeners | TRIBE's 7 top-ranked minutes against its 7 bottom-ranked: 17 of 22, p = 0.0004; word rate alone 8 of 22, p = 0.94 (exploratory) |
+| The Alice Datasets (ds002322), chapter 1 | a second audiobook outside TRIBE v2's training and evaluation sets | 22 listeners | tracked the listeners' language areas (z 1.42, p = 6e-05), but worth less than one real volunteer at its lower bound (exploratory) |
+| Narratives and Le Petit Prince | story picker and story wall, pre-registered (PREREG section 9, D19) | 37 story families in 4 blocks | picker: S1 rho 0.54, p = 0.0007; S3 partial rho 0.63, p = 0.0005; S4 did not pass. Wall: 29 of 33 families, bar met, descriptive (wrong-label check 6 of 33, above its 7% limit) |
+| Emo-FilM (ds004892, ds004872), Tears of Steel | intact film | 16 viewers | followed hearing (median z 3.23) and visual areas (2.77) more closely than sound, brightness or motion; no better than word rate in language areas (0.80); worth less than one real viewer in every area (exploratory) |
+| Emo-FilM, Tears of Steel | face test | 16 viewers | missed the spin test (12 of 16 above 0, 12 needed; spin p = 0.092): fail (exploratory) |
 
 ## Limitations
 
@@ -56,6 +62,7 @@ motion too).
 - For notthefall, each version also had its own TRIBE forecast, so a pass does not separate a change in the listeners' brains from a
   change in TRIBE's forecast, and the run order is not public, so it cannot be separated from an order or repeat-listening effect.
 - Cheap baselines carry much of what a forecast seems to capture, so every result is shown beside them.
+- Never tested in children or patients; it does not map left versus right.
 - The live forecast runs on one 6 GB laptop GPU, in set hours only.
 
 Cite with `CITATION.cff`. Every result and its file: the README's "Results so far".
