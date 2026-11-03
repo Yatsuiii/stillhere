@@ -144,3 +144,43 @@ the repository. It refuses before 2026-10-29 16:00 UTC (the D22 rule forbade pri
 this rule file has uncommitted changes or no commit, or if the frozen per-listener file's SHA-256 differs. It prints only counts,
 shapes and timings. `tests/test_ghostline.py` checks the data file against this rule (draw order, chip text, labels, short view = crop,
 z-scoring, the five IDs, no banned words, no verdict words on the single listener).
+
+## Paranoia ghost line (dated addition, written Nov 3 2026, after R2 was scored on Nov 1; cloud ruling of Nov 3, 19:05 UTC, item 2)
+
+Disclosure first. A draft of this picture was drawn on Nov 3, before this section existed (outside the repository, from the public
+scans route 4b downloaded). Its first version z-scored the 120 s crop rather than the whole window and was redrawn to the LPP
+section's steps. So this section makes no choice of its own: every step below is the LPP section's, applied to R2's committed reading
+of Paranoia, and the picture adds no number. Nothing above this section is changed; where the sections above say "only" (the chip
+table, the numbers on screen), this section adds one line, Paranoia's, and nothing else.
+
+- Data: Paranoia (Finn et al. 2018, OpenNeuro ds001338) story 1, the 22 listeners R2 scored, read with R2's scorer's own functions
+  (`scripts/r2_paranoia.py`: `load_run`, `coverage`, `medial_wall`; `scripts/alice_heldout.py`: `kept_parcels`, `parcel_series`, as R2
+  calls them) from the public files whose SHA-256 are in `results/r2_bold_SHA256.json` and `results/r2_paranoia_SHA256.json`; the
+  stock full forecast `pred_stock_story1_full.npz` as pinned in `scripts/r2_paranoia.py` (FORECAST_PINS). No other data.
+- Region: R2's language parcels as R2 keeps them (LANG, 19 parcels), not redefined.
+- Segment: R2's scored window for story 1 (volumes 20 to the end recorded in `results/r2_paranoia.json`, window.volumes.story1), TR
+  1.0 s. Short view: the LPP section's own window step, not a choice made here: as LPP's short view is the first 120 s of its scored
+  window, cropped after cleaning and z-scoring, this one is the first 120 s of R2's window (volumes 20 to 139), cropped after cleaning
+  and z-scoring, never re-cleaned or re-scaled. Story 1 only: R2 joins three runs, a time course needs one time axis, and story 1 is
+  the first and the longest.
+- Forecast read: R2's (`pred_parcels` at shift 0: volume j reads story time j - 2 - 5 s, R2's FORECAST_READ). No lag search.
+- Cleaning: R2's `clean` on the window, per parcel row (linear detrend, 0.03 Hz high-pass, z-score with ddof 1); forecast rows the
+  per-parcel vertex means, cleaned the same way.
+- One line per source: the mean over the language parcels of the cleaned rows, z-scored over the window (ddof 1). The group line: the
+  mean of the 22 listeners' lines, z-scored over the window, labelled "22 public listeners (average)". No smaller-group line and no
+  single listener: R2 publishes no per-listener file in this repository, so only the forecast and the group are drawn.
+- Smoothing: none. Axes: z units; seconds of story 1's scan. Title: "Paranoia, story 1 (outside TRIBE v2's training and evaluation
+  sets)". No word of the story on screen.
+- Draw order: the gray dashed forecast, then the chip, then the group line.
+- Caption: R2's committed numbers only, read from `results/r2_paranoia.json` (models.stock) and never recomputed: "~3 volunteers'
+  worth (at least 1). Group level. Volunteer equivalent 3.0, lower bound 1.88; 59% of what the other listeners' average reaches."
+  (point_k, lower_k, claim_k and the reference share, rounded as R2's line rounds them). It appears only beside this line, labelled
+  exploratory; no other number or sentence is added to the picture.
+- Chip: short "Checked: Paranoia (outside TRIBE's sets)"; long "rule and forecasts committed before the brain data was downloaded
+  (R2) · {r2_commit}", where {r2_commit} is the last public commit touching `docs/rules/r2_paranoia_rule.md` before the first
+  Paranoia brain file was downloaded: the scoring kernel's start in `results/r2_run/r2_score_run.json` (its first step is the
+  download; Nov 1, 08:48:07 UTC), which makes it fc16400 (Nov 1, 08:31 UTC); the script resolves it from the repository and that
+  file.
+- Data file: `results/ghostline_paranoia_s1.json`, written by `scripts/ghostline_paranoia.py` only after this section is on main; it
+  refuses if this file has uncommitted changes or if any input's SHA-256 differs from the committed hashes, and prints only counts,
+  shapes and timings.
