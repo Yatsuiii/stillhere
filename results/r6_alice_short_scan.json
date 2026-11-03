@@ -1,0 +1,182 @@
+{
+ "label": "Exploratory; the Alice scans were read on Oct 30 for the held-out test",
+ "rule": "docs/rules/r6_alice_short_scan_rule.md",
+ "dataset": "OpenNeuro ds002322 v1.0.4 (CC0), chapter 1",
+ "inputs_sha256": {
+  "stimulus": "bb8003578d0667cd45fbce932c45dcfa3abee4be40da98c0a83dea80516aeefe",
+  "annotations": "6e25b0d85a1457a75c608f2a298dbef97172f83270eb35a82b43c92229d0e46c",
+  "pred_alice_full": "0a47d825a521f643fc5b298942fde7049679b070381bc97330ffd11a25d30ae3",
+  "pred_alice_audio": "d747d74f16231b249e1288da14f48ed0b57e434bd356edfb2836cdc7f166859b",
+  "bold_and_events": "equal to alice/bold/SHA256.json"
+ },
+ "listeners_language": 22,
+ "lang_parcels_kept": 19,
+ "window_volumes": [
+  10,
+  371
+ ],
+ "tribe": {
+  "n": 22,
+  "k_above_0": 12,
+  "kstar": 16,
+  "wilcoxon_p": 0.3394315242767334,
+  "median": 0.017975391884782525,
+  "pass": false
+ },
+ "word_rate": {
+  "n": 22,
+  "k_above_0": 16,
+  "kstar": 16,
+  "wilcoxon_p": 0.09910941123962402,
+  "median": 0.04077927178780115,
+  "pass": false
+ },
+ "envelope": {
+  "n": 22,
+  "k_above_0": 13,
+  "kstar": 16,
+  "wilcoxon_p": 0.09348821640014648,
+  "median": 0.023663133522604372,
+  "pass": false
+ },
+ "tribe_top_vs_word_rate_top": {
+  "n": 22,
+  "k_above_0": 9,
+  "kstar": 16,
+  "wilcoxon_p": 0.8147344589233398,
+  "median": -0.021576756424976327,
+  "pass": false
+ },
+ "minutes_each_side": 4,
+ "windows": {
+  "n": 12,
+  "kept_each_end": 4,
+  "volumes": [
+   [
+    10,
+    39
+   ],
+   [
+    40,
+    69
+   ],
+   [
+    70,
+    99
+   ],
+   [
+    100,
+    129
+   ],
+   [
+    130,
+    159
+   ],
+   [
+    160,
+    189
+   ],
+   [
+    190,
+    219
+   ],
+   [
+    220,
+    249
+   ],
+   [
+    250,
+    279
+   ],
+   [
+    280,
+    309
+   ],
+   [
+    310,
+    339
+   ],
+   [
+    340,
+    369
+   ]
+  ],
+  "stimulus_seconds": [
+   [
+    20,
+    80
+   ],
+   [
+    80,
+    140
+   ],
+   [
+    140,
+    200
+   ],
+   [
+    200,
+    260
+   ],
+   [
+    260,
+    320
+   ],
+   [
+    320,
+    380
+   ],
+   [
+    380,
+    440
+   ],
+   [
+    440,
+    500
+   ],
+   [
+    500,
+    560
+   ],
+   [
+    560,
+    620
+   ],
+   [
+    620,
+    680
+   ],
+   [
+    680,
+    740
+   ]
+  ],
+  "tribe_top": [
+   2,
+   3,
+   5,
+   11
+  ],
+  "tribe_bottom": [
+   6,
+   7,
+   8,
+   9
+  ],
+  "pula": [
+   0.7406742940467045,
+   0.7952819697703764,
+   0.8922397244104782,
+   1.03160697861168,
+   0.8717576538409143,
+   1.0260196598843758,
+   0.5549827041182125,
+   0.6228722962630876,
+   0.5947033685356198,
+   0.5662809735753543,
+   0.7644835457686108,
+   1.0369248062006715
+  ]
+ },
+ "line": "Exploratory; the Alice scans were read on Oct 30 for the held-out test. A replication attempt of R5: on a second public story outside TRIBE v2's training and evaluation sets (the Alice Datasets, chapter 1; 22 listeners), the minutes TRIBE's forecast ranked highest did not reliably give a closer language-area match than the minutes it ranked lowest (12 of 22 listeners, one-sided p = 0.34). R5's Paranoia result is not replicated here. We show it because we said we would."
+}
