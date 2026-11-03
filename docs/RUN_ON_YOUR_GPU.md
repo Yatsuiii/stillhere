@@ -87,15 +87,15 @@ your numbers print beside ours (volunteer-equivalent, lower bound, share, baseli
 T4s with every model on the GPU; `run_r2_forecast.py` keeps the sound and brain models on the CPU, so small numeric differences are
 possible. Our own scoring took 69 minutes on a Kaggle CPU (R5 another 2), after a 4-minute download.
 
-## What we ran ourselves, on the laptop (Nov 2 2026)
+## What we ran ourselves, on the laptop (Nov 2-3 2026)
 
 From a fresh clone in a new folder, with a new venv and a new models folder (linked from an existing download):
 
 - Route 2: `judge_gpu_setup.sh` (STILLHERE_HF_SOURCE set): 16 model files, 9.47 GB, audit clean, in 15 s. `verify` on the RTX 4050
   Laptop GPU: PASS for all four conditions, largest difference at most 0.0002 against our saved forecasts, r 1.00000; jobs 52 to 61 s
   (reversed 13 s), peak 5.29 GB. A second run with `--out`: PASS again, largest difference 0.0003; its file, to compare yours with,
-  is `docs/proof/verify_rtx4050_laptop.json` (driver 615.78.08, CUDA 12.4, torch 2.6.0, tribev2 at af58661). On Nov 3, `judge_gpu_setup.sh` installed `requirements-tribe.txt` from scratch into a new venv
-  (about 3 GB of wheels; two attempts hit network timeouts, after which the script's longer timeout and resumable venv carried the
+  is `docs/proof/verify_rtx4050_laptop.json` (driver 615.78.08, CUDA 12.4, torch 2.6.0, tribev2 at af58661). On Nov 3,
+  `judge_gpu_setup.sh` installed `requirements-tribe.txt` from scratch into a new venv (about 3 GB of wheels; two attempts hit network timeouts, after which the script's longer timeout and resumable venv carried the
   third run through in 20 minutes): torch 2.6.0+cu124 saw the GPU, the models' audit was clean, and `verify` on that venv passed
   again (largest difference 0.0004, r 1.00000, jobs 47 to 53 s).
 - Route 3: `run_local_gpu.sh` with an empty HOME and no keys: "Live models: off", the default plan's recorded run opened FORECAST,
@@ -108,6 +108,9 @@ From a fresh clone in a new folder, with a new venv and a new models folder (lin
   language z 4.01, baselines beaten 4 of 4; R5 17 of 22, p = 0.0004, word rate 8 of 22, p = 0.94, PASS. Scoring took about 17 minutes
   on the laptop's CPU. The download ran across two connections (at about 160 KB/s, then about 3 MB/s); one dropped transfer resumed
   where it stopped.
+- Route 4a (the same steps with the forecasts made on the RTX 4050): 5 of the 9 stages finished (story 1's three, story 2's
+  audio-only and full; 282 to 1,786 s each); story 2's shuffled stage was killed out of memory (see RAM above), so route 4a was not
+  scored on the laptop.
 
 ## What cannot be reproduced here
 
