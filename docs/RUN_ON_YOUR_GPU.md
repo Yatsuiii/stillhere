@@ -98,9 +98,10 @@ bash scripts/rank_minutes.sh story.wav ~/minutes       # route 2's setup and STI
 R5's ranking (`scripts/rank_minutes.py`) for a story nobody has scanned: stock TRIBE v2's audio-only and full forecasts of your
 recording (`r2/run_story_forecast.py`: R2's harness with the Paranoia pins removed, words from TRIBE v2's own speech-to-text), then
 each minute scored by R5's predictor, PULA, and the top and bottom third of the minutes printed, with the same minutes ranked by word
-rate beside them. It reads no brain data. Exploratory: R5 checked this ranking once, on Paranoia, where 17 of 22 listeners followed
-the top-ranked minutes more closely than the bottom-ranked (word rate alone: 8 of 22); there it ranked minutes of a whole-story scan,
-and a scan that plays only the chosen minutes was not tested. The ranking is R5's own code: `python scripts/rank_minutes.py check-r5
+rate beside them. It reads no brain data. Exploratory: on Paranoia (R5) 17 of 22 listeners followed the top-ranked minutes more
+closely than the bottom-ranked (word rate alone: 8 of 22); on a second story, the Alice Datasets (R6), it did not replicate (12 of 22
+listeners, one-sided p = 0.34; word rate alone 16 of 22, p = 0.099). Both ranked minutes of a whole-story scan; a scan that plays only
+the chosen minutes was not tested. The ranking is R5's own code: `python scripts/rank_minutes.py check-r5
 DATA_DIR` (route 4's data) recomputes R5's 20 window scores through it, with R5's 19 language parcels, and gets R5's picks and scores.
 
 What we ran on the laptop (Nov 3): the first 8 minutes of a LibriVox reading of The Tell-tale Heart (public domain, read by Don

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Which minutes of your own story to play (scripts/rank_minutes.py; exploratory, forecast only): stock TRIBE v2's audio-only and full
-# forecasts of WAV on your NVIDIA GPU (r2/run_story_forecast.py, R2's harness), then R5's ranking of its 60 s windows. R5 checked this
-# ranking once, on Paranoia, as minutes of a whole-story scan; a scan of only the chosen minutes was not tested.
+# forecasts of WAV on your NVIDIA GPU (r2/run_story_forecast.py, R2's harness), then R5's ranking of its 60 s windows. It held on
+# Paranoia (R5) and failed to replicate on the Alice Datasets (R6), both as minutes of a whole-story scan; a scan of only the chosen
+# minutes was not tested.
 # Needs route 2's setup (scripts/judge_gpu_setup.sh: STILLHERE_TRIBE_PYTHON, STILLHERE_MODELS_DIR, with the Llama 3.2 access step), uv
 # for TRIBE v2's speech-to-text (uvx whisperx large-v3, unless STILLHERE_WORDS_TSV gives a word table), and STILLHERE_SCORE_PYTHON with
 # requirements-score.txt. A 6 GB GPU: STILLHERE_ASR_BATCH=4. WAV: an English story recording, at least 80 s; stages already done are kept.
@@ -9,7 +10,7 @@
 # usage: scripts/rank_minutes.sh WAV DATA_DIR [PART]   (PART: a short name for the story; default: the file's name)
 set -euo pipefail
 
-[ $# -ge 2 ] || { sed -n '9p' "$0" | sed 's/^# //' >&2; exit 2; }
+[ $# -ge 2 ] || { sed -n '10p' "$0" | sed 's/^# //' >&2; exit 2; }
 REPO=$(cd "$(dirname "$0")/.." && pwd -P)
 WAV=$(realpath "$1"); DATA=$(realpath -m "$2")
 PART=${3:-$(basename "$WAV" | sed 's/\.[^.]*$//; s/[^A-Za-z0-9_-]/_/g' | cut -c1-40)}

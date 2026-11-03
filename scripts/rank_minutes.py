@@ -1,7 +1,7 @@
 """Which minutes of a story to play: R5's ranking (docs/rules/r5_short_scan_rule.md) for a lab's own story, from stock TRIBE v2's
 forecasts alone (no brain data). Forecast only, exploratory: R5 checked this ranking once, on Paranoia (17 of 22 listeners followed the
-top-ranked minutes more closely than the bottom-ranked; word rate alone: 8 of 22), and there it ranked minutes of a whole-story scan.
-A scan that plays only the chosen minutes was not tested.
+top-ranked minutes more closely than the bottom-ranked; word rate alone: 8 of 22); R6's replication on the Alice Datasets failed (12 of
+22, p = 0.34). Both ranked minutes of a whole-story scan; a scan that plays only the chosen minutes was not tested.
 
 The method is R5's own code, imported, not restated: a virtual scan of each story part at TR 1 s with the story starting 2 s in and the
 first 20 volumes dropped (R2's section 5); stock TRIBE v2's full and audio-only forecasts read as R2 reads them (volume j at story time
@@ -31,9 +31,10 @@ import r2_paranoia as R2  # noqa: E402
 import r5_short_scan as R5  # noqa: E402
 from stillhere import heldout as H  # noqa: E402
 
-CAVEAT = ("Forecast only, exploratory. R5 checked this ranking once, on Paranoia: 17 of 22 listeners followed the top-ranked minutes more "
-          "closely than the bottom-ranked (word rate alone: 8 of 22). There it ranked minutes of a whole-story scan; a scan that plays only "
-          "these minutes was not tested. Healthy adults only. Not a diagnosis or medical advice.")
+CAVEAT = ("Forecast only, exploratory. On Paranoia (R5) 17 of 22 listeners followed the top-ranked minutes more closely than the "
+          "bottom-ranked (word rate alone: 8 of 22); on a second story, the Alice Datasets (R6), it did not replicate (12 of 22, p = 0.34). "
+          "Both ranked minutes of a whole-story scan; a scan that plays only these minutes was not tested. Healthy adults only. Not a "
+          "diagnosis or medical advice.")
 
 
 MINUTES = ("Each minute is 60 volumes of a whole-story scan at TR 1 s with the story starting 2 s in and the first 20 volumes dropped "

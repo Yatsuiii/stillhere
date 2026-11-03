@@ -33,7 +33,7 @@ What it has shown, in healthy listeners and public scans; each line says how it 
   p = 0.0005).
 - **Which minutes to play in a short scan** (exploratory): on another public story, the 7 minutes TRIBE ranked highest gave listeners'
   language areas a closer match than the 7 it ranked lowest, for 17 of 22 listeners (p = 0.0004); ranking the same minutes by word rate
-  alone did not (8 of 22).
+  alone did not (8 of 22). On a second story (the Alice Datasets) it did not replicate: 12 of 22 listeners, p = 0.34.
 - **A healthy reference from a forecast:** on a story outside TRIBE v2's training and evaluation sets (Paranoia, 22 listeners;
   exploratory), the forecast was worth **about 3 real volunteers, and at least 1**, and reached 59% of what the other listeners' average
   reaches; on a held-out section of an audiobook from TRIBE v2's own evaluation sets, about 5 and at least 2 (49 listeners; held out); and it
