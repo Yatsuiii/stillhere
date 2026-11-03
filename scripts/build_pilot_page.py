@@ -72,7 +72,7 @@ padding:3px 10px}} nav a:hover{{color:{INK};border-color:{INK}}}
 margin-right:8px;vertical-align:2px}}
 .b-pass{{color:{PASS}}} .b-fail{{color:{FAIL}}} .b-wait{{color:{WAIT}}} .b-info{{color:{MUTED}}}
 .pending{{border:1px dashed #5a5650;background:#202020}}
-.big{{font-size:1.42rem;font-weight:400;color:#f6f3ec;line-height:1.38}}
+.big{{font-size:1.06rem;font-weight:400;color:#f6f3ec;line-height:1.5}}
 .beat{{font-size:.9rem;color:{MUTED};border-left:1px solid {LINE};padding-left:12px}}
 .picker{{display:flex;flex-direction:column;gap:8px}} .picker input{{position:absolute;opacity:0;pointer-events:none}}
 .picker label{{display:block;cursor:pointer;background:{PANEL};border:1px solid {LINE};padding:10px 14px;font-style:italic}}
