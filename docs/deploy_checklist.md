@@ -193,7 +193,7 @@ video or any post before then; every response is `noindex`. Repeat checks 1, 2, 
 ## Redeploys
 
 Git is not connected, so nothing deploys on a push. After any commit the hosted app needs (a results file from the Saturday chain
-included: `results/story_wall.json`, `results/face_map.json`, `results/emofilm_film_score.json`), in `~/stillhere-deploy`:
+included: `results/picker/tierD_picker_wall.json`, `results/face_map.json`, `results/emofilm_film_score.json`), in `~/stillhere-deploy`:
 `git pull --ff-only`, `vercel deploy` (a preview; check what changed through `vercel curl`), then `vercel deploy --prod`.
 
 ## Nov 3: listing the URL (ruling of Oct 30, 07:40 UTC, a), in this order

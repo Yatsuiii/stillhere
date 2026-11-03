@@ -18,6 +18,7 @@ script) that walks one demo study through StillHere, with wording from docs/capt
 Standard library only, so a clean clone builds it. The build refuses banned wording.
 usage: python scripts/build_pilot_page.py [--single OUT.html]   (--single also writes a copy with the media inlined, for hosting)"""
 import argparse
+import ast
 import base64
 import datetime
 import html
@@ -130,8 +131,31 @@ DISPLAY_NOTE = ("Display wording: the stored cards use code names (for example c
                 "them in plain words. The records are unchanged in results/demo_runs.json.")
 
 
+SPEC_WORDS = {"healthy_adults": "healthy adults", "english": "English", "auditory": "hearing areas", "sentence_scramble": "sentences shuffled",
+              "word_scramble": "words shuffled", "reversed": "played backwards", "librivox_audiobook": "a LibriVox audiobook",
+              "le_petit_prince": "Le Petit Prince", "forecast_tribe_stock": "TRIBE v2's stock forecast"}
+SPEC_LABELS = {"brain_areas": "brain areas"}
+
+
+def plain_spec(line: str) -> str:
+    """A stored "StudySpec: key=value, ..." line in words (lists joined, code names spelled out); any line it cannot read is kept."""
+    body = line[len("StudySpec: "):].rstrip().rstrip(".")
+    pairs = re.findall(r"(\w+)=(\[[^\]]*\]|[^,]+)(?:, |$)", body)
+    if not pairs or ", ".join(f"{k}={v}" for k, v in pairs) != body:
+        return line
+    def words(v):
+        vals = ast.literal_eval(v) if v.startswith("[") else [v]
+        return ", ".join(SPEC_WORDS.get(x, str(x).replace("_", " ")) for x in vals)
+    try:
+        return "Study plan: " + "; ".join(f"{SPEC_LABELS.get(k, k.replace('_', ' '))}: {words(v)}" for k, v in pairs) + "."
+    except (ValueError, SyntaxError):
+        return line
+
+
 def plain(text: str) -> str:
-    """Stored wording in plain words: decline codes, the planner's fixed sentences, the forecast label."""
+    """Stored wording in plain words: decline codes, the planner's fixed sentences, the forecast label, the StudySpec line."""
+    if text.startswith("StudySpec: "):
+        text = plain_spec(text)
     text = re.sub(r"Declined: ([a-z_]+)\.", lambda m: f"Declined: {REASONS.get(m.group(1), m.group(1).replace('_', ' '))}.", text)
     for rx, new in DISPLAY:
         text = rx.sub(new, text)

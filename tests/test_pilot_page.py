@@ -169,6 +169,16 @@ def test_recorded_plans_fill_with_rounds_and_the_decline_wording_rule(monkeypatc
     assert "Nearest validated option" not in page and "analysis_not_offered" not in t and BP.DISPLAY_NOTE in t
     assert "intact kept 99% of its words, pass." in t and "zzz secret words" not in page
     assert "tools run: list_stimuli, check_conditions" in t and "Shows: a decline" in t
+    assert "Study plan: population: healthy adults." in t and "StudySpec:" not in t
+
+
+def test_studyspec_lines_are_shown_in_words_and_unreadable_ones_are_kept():
+    line = ("StudySpec: population=healthy_adults, language=english, brain_areas=['auditory'], conditions=['intact', 'reversed'], "
+            "stimulus=le_petit_prince, analysis=forecast_tribe_stock.")
+    assert BP.plain(line) == ("Study plan: population: healthy adults; language: English; brain areas: hearing areas; conditions: intact, "
+                              "played backwards; stimulus: Le Petit Prince; analysis: TRIBE v2's stock forecast.")
+    for kept in ("StudySpec: ...", "StudySpec: x=[unclosed, y=2.", "StudySpec: a=[1+], b=2."):
+        assert BP.plain(kept) == kept
 
 
 SPARK = BP.load("results/edit_check_spark_open.json")
@@ -353,12 +363,13 @@ def test_story_wall_is_pending_until_its_frozen_cutoff_then_not_run():
 
 
 def test_film_station_says_why_and_reads_the_face_test_slot():
-    """Ruling of Oct 30, 07:40 UTC, c: the purpose line word for word, and one status line per state of results/face_map.json."""
+    """Ruling of Oct 30, 07:40 UTC, c: the purpose line word for word, and one status line per state of results/face_map.json. Its
+    count corrected Nov 3 from 28 to 16: the scored face test used 16 viewers (results/face_map.json; 28 was the runs kept)."""
     page = " ".join((REPO / "web/public/index.html").read_text().split())
     assert ("Why this station: the face test in Evidence asks how TRIBE's forecast changes when the faces in a film are filled in. SAM 3.1 "
             "masked the faces in the first 190 s of Tears of Steel; StillHere filled them with the surrounding colour, and filled a same-size "
             "patch elsewhere in each frame as a control. TRIBE forecasts all three versions, and the face test compares the forecast's face "
-            "map with face maps from the scans of 28 people who watched the film. Type \"face\", or another word, to make the same edit on "
+            "map with face maps from the scans of 16 people who watched the film. Type \"face\", or another word, to make the same edit on "
             "three frames here.") in page
     assert 'id="film-status"' in page
     assert BP.film_status(None) == {"text": "Face test: not scored yet.", "href": None}
