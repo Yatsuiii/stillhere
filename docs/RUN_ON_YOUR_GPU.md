@@ -1,6 +1,7 @@
 # Run StillHere on your own machine
 
-For judges and labs who want to check our numbers without our laptop. Four routes, from no GPU to Paranoia end to end. Research use;
+For judges and labs who want to check our numbers without our laptop. Four routes, from no GPU to Paranoia end to end, and a fifth for a
+lab's own story. Research use;
 healthy volunteers and public data only. Not a diagnosis or medical advice.
 
 TRIBE v2 (Meta FAIR, CC BY-NC 4.0) is not in this repository: the setup script downloads it from Hugging Face at the pinned revision.
@@ -14,6 +15,7 @@ TRIBE v2 (Meta FAIR, CC BY-NC 4.0) is not in this repository: the setup script d
 | 3. The page on your GPU | as route 2 | as route 2 | as route 2 |
 | 4a. Paranoia with your forecasts | as route 2 (we used 16 GB T4s) | route 2 plus 2.6 GB of public data | as route 2 |
 | 4b. Paranoia re-scored (`--no-gpu`) | none | 2.9 GB: the public scans and our released forecasts | none |
+| 5. Which minutes of your own story | as route 2 | route 2, plus about 4.7 GB for TRIBE v2's speech-to-text on first use and 0.5 GB per 8-minute story | as route 2 |
 
 - Python 3.12 for the page (`requirements-dev.txt`) and the scorers (`requirements-score.txt`, the R2 and R5 scoring kernel's pins),
   Python 3.11 for TRIBE v2 (`requirements-tribe.txt`, the laptop
@@ -86,6 +88,28 @@ forecasts with `r2/run_r2_forecast.py`, then scores them with `scripts/r2_parano
 your numbers print beside ours (volunteer-equivalent, lower bound, share, baselines; R5's k of 22 and p). Our forecasts ran on Kaggle
 T4s with every model on the GPU; `run_r2_forecast.py` keeps the sound and brain models on the CPU, so small numeric differences are
 possible. Our own scoring took 69 minutes on a Kaggle CPU (R5 another 2), after a 4-minute download.
+
+## 5. Which minutes of your own story to play
+
+```sh
+bash scripts/rank_minutes.sh story.wav ~/minutes       # route 2's setup and STILLHERE_SCORE_PYTHON as in route 4; 6 GB GPU: STILLHERE_ASR_BATCH=4
+```
+
+R5's ranking (`scripts/rank_minutes.py`) for a story nobody has scanned: stock TRIBE v2's audio-only and full forecasts of your
+recording (`r2/run_story_forecast.py`: R2's harness with the Paranoia pins removed, words from TRIBE v2's own speech-to-text), then
+each minute scored by R5's predictor, PULA, and the top and bottom third of the minutes printed, with the same minutes ranked by word
+rate beside them. It reads no brain data. Exploratory: R5 checked this ranking once, on Paranoia, where 17 of 22 listeners followed
+the top-ranked minutes more closely than the bottom-ranked (word rate alone: 8 of 22); there it ranked minutes of a whole-story scan,
+and a scan that plays only the chosen minutes was not tested. The ranking is R5's own code: `python scripts/rank_minutes.py check-r5
+DATA_DIR` (route 4's data) recomputes R5's 20 window scores through it, with R5's 19 language parcels, and gets R5's picks and scores.
+
+What we ran on the laptop (Nov 3): the first 8 minutes of a LibriVox reading of The Tell-tale Heart (public domain, read by Don
+Morgan; the live menu's source file), a recording no StillHere test has scored, with `STILLHERE_ASR_BATCH=4`. The audio-only forecast
+took 200 s and the full forecast 1,500 s on the RTX 4050 Laptop (TRIBE v2's speech-to-text: whisperx 3.8.6, 884 words, every word
+check passed; peak GPU memory 4.5 GB); the ranking took 3 s. First use downloaded whisperx with its own torch (3.4 GB in uv's cache)
+and its 1.26 GB alignment model; set `UV_CACHE_DIR` and `TORCH_HOME` to choose where they go. Of the 7 minutes, TRIBE's PULA put
+6:18-7:18 and 3:18-4:18 on top and 5:18-6:18 and 0:18-1:18 (no word transcribed before 0:33) at the bottom; word rate alone would have
+put 4:18-5:18 and 5:18-6:18 on top. A forecast, not a result: nobody has been scanned hearing this recording.
 
 ## What we ran ourselves, on the laptop (Nov 2-3 2026)
 

@@ -5,9 +5,10 @@ results/r2_paranoia_SHA256.json for the atlas, which our scoring run read), neve
 counts and hashes, never word text.
   sizes DATA [--no-gpu]        what a run fetches, in bytes, and how long our runs took
   fetch-public DATA            the three ds001338 recordings, the full text and the Schaefer atlas, each checked
+  fetch-atlas DATA             the Schaefer atlas alone, checked (scripts/rank_minutes.sh)
   fetch-release DEST [--forecasts]   our word tables and surprisal (and with --forecasts our nine stock forecasts) from the release
   common DATA                  DATA/k2/tribe_common.py from the R2 forecast kernel's embedded COMMON, after its SHA-256 check
-  layout DATA                  the runner and the Alice harness it imports, copied into DATA's analysis-tree layout
+  layout DATA                  the runners (R2's and rank_minutes.sh's) and the Alice harness, copied into DATA's analysis-tree layout
   seed-words DATA SRC          our word tables as each full stage's stim.tsv, so TRIBE's speech-to-text does not run
   stage-release SRC OUT [--surprisal PATH] [--copy]   our forecasts and word tables checked against the pins, with SHA256SUMS and a README
 usage: python3 scripts/paranoia_files.py COMMAND ..."""
@@ -118,6 +119,12 @@ def fetch_public(data):
     p = pins()
     for f in [f"{s}_audio.wav" for s in STORIES] + ["story_fulltext.txt"]:
         fetch(STIM_URL + f, os.path.join(data, "r2/stimuli", f), p[f])
+    fetch_atlas(data)
+
+
+def fetch_atlas(data):
+    """The Schaefer atlas alone (scripts/rank_minutes.sh), checked against the pins our scoring run read."""
+    p = pins()
     for a in ATLAS:
         fetch(ATLAS_URL + a, os.path.join(data, "atlas", a), p[a])
 
@@ -153,7 +160,8 @@ def common(data):
 
 def layout(data):
     """r2/run_r2_forecast.py runs from an analysis tree (r2/ beside alice/ and k2/); copy it and the harness it imports into DATA."""
-    for rel in ("r2/run_r2_forecast.py", "alice/forecast/run_alice_forecast.py", "alice/forecast/run_alice_forecast_tuned.py"):
+    for rel in ("r2/run_r2_forecast.py", "r2/run_story_forecast.py", "alice/forecast/run_alice_forecast.py",
+                "alice/forecast/run_alice_forecast_tuned.py"):
         os.makedirs(os.path.join(data, os.path.dirname(rel)), exist_ok=True)
         shutil.copyfile(os.path.join(REPO, rel), os.path.join(data, rel))
     print("runner and harness copied into", data, flush=True)
@@ -220,6 +228,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(); sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("sizes"); s.add_argument("data"); s.add_argument("--no-gpu", action="store_true")
     sub.add_parser("fetch-public").add_argument("data")
+    sub.add_parser("fetch-atlas").add_argument("data")
     r = sub.add_parser("fetch-release"); r.add_argument("dest"); r.add_argument("--forecasts", action="store_true")
     sub.add_parser("common").add_argument("data")
     sub.add_parser("layout").add_argument("data")
@@ -227,7 +236,7 @@ def main(argv=None):
     g = sub.add_parser("stage-release"); g.add_argument("src"); g.add_argument("out"); g.add_argument("--surprisal")
     g.add_argument("--copy", action="store_true")
     a = ap.parse_args(argv)
-    {"sizes": lambda: sizes(a.data, a.no_gpu), "fetch-public": lambda: fetch_public(a.data),
+    {"sizes": lambda: sizes(a.data, a.no_gpu), "fetch-public": lambda: fetch_public(a.data), "fetch-atlas": lambda: fetch_atlas(a.data),
      "fetch-release": lambda: fetch_release(a.dest, a.forecasts), "common": lambda: common(a.data), "layout": lambda: layout(a.data),
      "seed-words": lambda: seed_words(a.data, a.src), "stage-release": lambda: stage_release(a.src, a.out, a.surprisal, a.copy)}[a.cmd]()
 
