@@ -26,7 +26,8 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(REPO / "scripts"), str(REPO)]
 SCENES = REPO / "video/scenes_v4.json"
 GHOST = REPO / "results/ghostline_lpp_s8.json"
-FILM_GHOST = REPO / "results/ghostline_film.json"                         # the film ghost line (display rule, film section), Sunday
+FILM_GHOST = REPO / "results/ghostline_film.json"
+PARANOIA_GHOST = REPO / "results/ghostline_paranoia_s1.json"            # display rule, Paranoia section (ruling of Nov 3, 19:05 UTC)                         # the film ghost line (display rule, film section), Sunday
 FILM = REPO.parent / "stillhere/pilot/film/film_stim_v2"                   # seg_intact.mp4, faces_removed_v2.mp4, area_matched_v2.mp4
 RC_FILES = (REPO / "results/face_map_RC.json", REPO.parent / "stillhere-pilot-public/results/face_map_RC.json")
 MENU = REPO / "stillhere/live_menu.json"                                 # the live menu; its screen summary fills {n_screened}
@@ -183,10 +184,10 @@ def ghost_svg(doc: dict, view: str, show: list, size: str = "full") -> str:
     assert list(show) == list(GHOST_ORDER[: len(show)]), f"ghost steps must follow the display rule's draw order: {show}"
     t = np.array(doc["time_s"]); i0, i1 = doc["short_view"]["index"] if view == "short" else (0, len(t))
     W, H, x0, y0, w, h = {"full": (1712, 560, 70, 70, 1612, 400), "half": (820, 470, 30, 110, 770, 250),
-                          "tile": (600, 420, 20, 104, 560, 190)}[size]
-    half = size != "full"
+                          "tile": (600, 420, 20, 104, 560, 190), "strip": (1712, 400, 70, 64, 1612, 220)}[size]
+    half = size in ("half", "tile")
     xs = t[i0:i1]; L = doc["lines"]; xr = (xs[0], xs[-1])
-    top = max(abs(v) for k in ("forecast", "group", "five", "one") for v in L[k]["values"][i0:i1] if v is not None)
+    top = max(abs(v) for k in ("forecast", "group", "five", "one") if k in L for v in L[k]["values"][i0:i1] if v is not None)
     yr = (-max(3.2, top + 0.2), max(3.2, top + 0.2))                       # one axis for every step; the values are never rescaled
     parts = [f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Helvetica,Arial">',
              f'<text x="{x0}" y="36" font-size="28" fill="#1d1f23" font-weight="600">{E(doc["title"])}</text>',
@@ -195,7 +196,7 @@ def ghost_svg(doc: dict, view: str, show: list, size: str = "full") -> str:
     shown = [k for k in ("forecast", "group", "five", "one") if k in show]
     for k in shown:
         parts.append(f'<path d="{_path(xs, L[k]["values"][i0:i1], x0, y0, w, h, xr, yr)}" {STYLE[k]}/>')
-    per_row = {"full": 4, "half": 2, "tile": 1}[size]
+    per_row = {"full": 4, "half": 2, "tile": 1, "strip": 4}[size]
     for n, k in enumerate(shown):
         lx = x0 + (n % per_row) * (w / per_row); ly = y0 + h + 70 + (n // per_row) * 34
         parts.append(f'<line x1="{lx:.0f}" y1="{ly - 8}" x2="{lx + 44:.0f}" y2="{ly - 8}" {STYLE[k]}/>'
@@ -445,6 +446,8 @@ def item_html(it: dict, values: dict, ctx: dict) -> str:
         out = ghost_svg(ctx["ghost"], it["view"], it["show"], "half" if it.get("half") else "full")
         assert "five" not in it["show"] or it.get("frozen_line"), "the 5-listener line only where the about-5 line is shown"
         return out + (frozen_html(ctx["ghost"]) if it.get("frozen_line") and not it.get("half") else "")
+    if k == "pghost":                                                   # Paranoia: its short view, drawn only once its file exists
+        return ghost_svg(ctx["pghost"], "short", it["show"], "strip") if ctx.get("pghost") else ""
     if k == "curve":
         return curve_svg(it["show"])
     if k == "livetc":
@@ -508,6 +511,8 @@ def scene_html(sc: dict, items: list, values: dict, spec: dict, ctx: dict) -> st
         foot.append(spec["research"])
     if any(i["kind"] == "ghost" or (i["kind"] == "endscreen" and i["pair"] == "lpp") for i in items):
         foot.append("Checked: held-out LPP: " + ctx["ghost"]["chip"]["long"] + ".")
+    if any(i["kind"] == "pghost" for i in items) and ctx.get("pghost"):
+        foot.append(ctx["pghost"]["chip"]["short"] + ": " + ctx["pghost"]["chip"]["long"] + ".")
     if any(i["kind"] == "chip" and i["text"].startswith("Film: rule") for i in items):
         foot.append("Film: rule {film_commit}: rule committed before any viewer's scan was read · {film_commit}.")
     if sc.get("film"):
@@ -729,7 +734,8 @@ def main(argv=None) -> None:
     values = {**auto_values(), **(json.loads(a.values.read_text()) if a.values else {})}
     work = a.work or Path(tempfile.mkdtemp(prefix="stillhere-v4-")); work.mkdir(parents=True, exist_ok=True)
     endings.setdefault("live", "inset")                                     # the plan; "cut" is the fallback if the inset reads badly
-    ctx = {"ghost": ghost_doc(), "film_ghost": film_ghost_doc(), "maps": render_maps_for(spec, work), "d20_line": d20_line(spec),
+    ctx = {"ghost": ghost_doc(), "film_ghost": film_ghost_doc(),
+           "pghost": json.loads(PARANOIA_GHOST.read_text()) if PARANOIA_GHOST.exists() else None, "maps": render_maps_for(spec, work), "d20_line": d20_line(spec),
            "live": {k: cache_entry(spec, k) for k in ("entry", "reversed")},
            "cards": {it["clip"]: story_card_text(it["clip"]) for sc in spec["scenes"] for it in sc.get("items", []) if it["kind"] == "storycard"}}
     ctx["live"]["live"] = ctx["live"]["entry"]

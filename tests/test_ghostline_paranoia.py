@@ -82,3 +82,15 @@ def test_the_pages_paranoia_panel_draws_the_short_view_in_the_rules_order_with_t
     assert i_f < i_c < i_g and 'class="g-one"' not in html and 'class="g-five"' not in html
     assert html.count("<polyline") == 2 and DOC["caption"]["text"].replace("'", "&#x27;") in html and DOC["chip"]["long"] in html
     assert BP.short_view(DOC)["time_s"] == DOC["time_s"][:120] and BP.paranoia_html(r2, r5) == BP.paranoia_html(r2, r5, None)
+
+
+def test_the_video_draws_the_short_view_as_a_strip_in_the_rules_order():
+    spec = importlib.util.spec_from_file_location("rv4_paranoia", ROOT / "scripts/render_video_v4.py")
+    V = importlib.util.module_from_spec(spec); spec.loader.exec_module(V)
+    full = V.item_html({"kind": "pghost", "show": ["forecast", "chip", "group"]}, {}, {"pghost": DOC})
+    assert full.count("<path") == 2 and DOC["chip"]["short"].replace("'", "&#x27;") in full and 'width="1712" height="400"' in full
+    assert "seconds of the scan: 20 to 139" in full                                     # the short view, not the whole window
+    first = V.item_html({"kind": "pghost", "show": ["forecast", "chip"]}, {}, {"pghost": DOC})
+    assert first.count("<path") == 1 and V.item_html({"kind": "pghost", "show": ["forecast"]}, {}, {"pghost": None}) == ""
+    with pytest.raises(AssertionError):
+        V.item_html({"kind": "pghost", "show": ["forecast", "group"]}, {}, {"pghost": DOC})          # never skips the chip step
