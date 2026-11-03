@@ -491,8 +491,8 @@ entrypoint) with Upstash Redis for receipts, budgets and jobs. Git is not connec
 preview first, checked, then promoted. Every step, the environment variables and the smoke checks are in
 [docs/deploy_checklist.md](docs/deploy_checklist.md).
 
-**Try it:** the hosted page's address is listed here on Nov 3. Until then, open `demo/index.html` from a clone: the static,
-replay-only Pilot page, no script and no network.
+**Try it:** https://stillhere-deploy.vercel.app. Offline, open `demo/index.html` from a clone: the static, replay-only Pilot page,
+no script and no network.
 
 ## Project layout
 
