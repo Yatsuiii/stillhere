@@ -15,7 +15,13 @@ Deployed on Vercel (`docs/deploy_checklist.md`); its address is listed from Nov 
 ```sh
 python web/serve.py                       # http://127.0.0.1:8780/, in-memory store
 STILLHERE_LIVE=0 python web/serve.py      # every station shows its recorded run
+bash scripts/run_local_gpu.sh             # the page with live forecasts on your own GPU (docs/RUN_ON_YOUR_GPU.md, route 3)
 ```
+
+`web/serve.py` answers only requests addressed to 127.0.0.1, localhost or ::1 (a page elsewhere that rebinds its name to this
+machine gets 403), and uses `web/server_question_blocklist.txt` when no question list is configured and `~/.config/stillhere/` has
+none. In local GPU mode (`STILLHERE_LOCAL_GPU=1`, set by `run_local_gpu.sh`, refused on Vercel) FORECAST runs live on a recorded
+plan and never falls back to the committed precompute.
 
 Live calls happen only where keys are in the environment: `MODEL_API_KEY` (or the laptop's Muse config) for Spark 1.3, Voice
 Transcribe and SAM 3.1; `FIREWORKS_API_KEY` for Spark Open. FILM also needs opencv and meta-sam-parser (the root `requirements.txt`).

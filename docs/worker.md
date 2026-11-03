@@ -172,3 +172,13 @@ systemctl list-timers stillhere-worker.timer                # next start: Wed No
 sudo systemctl start stillhere-worker                       # by hand inside the hours; stop with: sudo systemctl stop stillhere-worker
 sudo bash worker/uninstall_worker.sh                        # removes the timer, the units, /opt/stillhere-worker, the token and the state
 ```
+
+## On another machine (Nov 2)
+
+`worker/tribe_worker.py run --clip ID --condition C [--seed N] [--out f.json]` runs one recipe in the foreground (no hours, token or
+network) and compares it with `data/forecast_cache.json`; `verify [--out f.json]` runs one cached recipe per condition and exits 1 if
+any is out of tolerance (largest difference 0.002, r 0.9999). `STILLHERE_MODELS_DIR` points them at a judge's models (they then set
+`HF_HUB_CACHE` and `HF_HUB_OFFLINE=1` themselves), `CUDA_VISIBLE_DEVICES` defaults to 0, and `STILLHERE_WORKER_LABEL` names the worker
+on the page (our service sets "the laptop"). Setup and routes: `docs/RUN_ON_YOUR_GPU.md`; our laptop's verify file:
+`docs/proof/verify_rtx4050_laptop.json`.
+
