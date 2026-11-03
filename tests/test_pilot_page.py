@@ -76,7 +76,7 @@ def test_no_banned_wording_em_dash_scripts_or_remote_resources():
 def test_results_panels_carry_the_footer_and_film_frames_the_credit():
     results = PAGE[PAGE.index('id="check"'):PAGE.index("<footer")]
     ps = panels(results)
-    assert len(ps) == 11                                                              # check, film, Glimmer, forecast, LPP, R2, R5, Alice, wall, D20, film
+    assert len(ps) == 12                                                              # check, film, Glimmer, forecast, LPP, R2, R5, R6, Alice, wall, D20, film
     for p in ps:
         assert p.rstrip().endswith(f'<p class="nd">{html.escape(BP.ND)}</p></div>'), re.sub(r"<[^>]+>", " ", p)[:120]
     for p in panels(PAGE):
@@ -405,3 +405,12 @@ def test_alice_panel_carries_both_lines_byte_for_byte(monkeypatch):
     real = BP.load
     monkeypatch.setattr(BP, "load", lambda rel: None if rel == BP.ALICE[0] else real(rel))
     assert "The Alice Datasets, chapter 1" not in BP.build()
+
+
+def test_r6_sits_under_r5_wherever_r5_appears():
+    """Cloud ruling of Nov 3, ~21:45 UTC, item 5: R6 (R5's replication attempt on Alice) right after R5's panel, its rule's line byte for
+    byte, on the static page and in the hosted evidence."""
+    r6 = BP.load(BP.R6); page = (REPO / "demo/index.html").read_text()
+    i5, i6 = page.find("Which minutes to play in a short"), page.find("Which minutes to play, a second story")
+    assert 0 < i5 < i6 and BP.E(r6["line"], quote=False) in page and "12 of 22 listeners above 0 (bar 16)" in page
+    assert BP.r6_html(None) == ""

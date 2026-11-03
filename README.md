@@ -33,7 +33,7 @@ What it has shown, in healthy listeners and public scans; each line says how it 
   p = 0.0005).
 - **Which minutes to play in a short scan** (exploratory): on another public story, the 7 minutes TRIBE ranked highest gave listeners'
   language areas a closer match than the 7 it ranked lowest, for 17 of 22 listeners (p = 0.0004); ranking the same minutes by word rate
-  alone did not (8 of 22). On a second story (the Alice Datasets) it did not replicate: 12 of 22 listeners, p = 0.34.
+  alone did not (8 of 22). Not replicated on a second story, Alice: 12 of 22, p = 0.34; exploratory.
 - **A healthy reference from a forecast:** on a story outside TRIBE v2's training and evaluation sets (Paranoia, 22 listeners;
   exploratory), the forecast was worth **about 3 real volunteers, and at least 1**, and reached 59% of what the other listeners' average
   reaches; on a held-out section of an audiobook from TRIBE v2's own evaluation sets, about 5 and at least 2 (49 listeners; held out); and it
@@ -47,9 +47,9 @@ stimulus before anyone is scanned (Muse Voice Transcribe), and forecasts the hea
 
 **Research use. Healthy volunteers and public data only. Not a diagnosis or medical advice.**
 
-| 12-15 | $5-15k | about 3 | p = 0.00516 |
+| 12-15 | $5-15k | about 3 | 89 s |
 |:---:|:---:|:---:|:---:|
-| healthy volunteers scanned before a new story can be used | of scanner time per stimulus, per language | real volunteers' worth from the forecast, on a story outside TRIBE v2's training and evaluation sets (at least 1; exploratory) | pre-registered pass, intact vs shuffled, 22 real listeners |
+| healthy volunteers scanned before a new story can be used | of scanner time per stimulus, per language | real volunteers' worth from the forecast, on a story outside TRIBE v2's training and evaluation sets (at least 1; exploratory) | a full live run, plan to forecast, on a laptop |
 
 Built during the Meta Global AI Developer Hackathon (building period Oct 27 to Nov 4, 2026): Indie developer track, theme Push the
 Frontier. MIT licence for our code; TRIBE v2 is CC BY-NC 4.0 and is not included.

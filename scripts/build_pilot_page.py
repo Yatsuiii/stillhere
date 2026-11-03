@@ -502,6 +502,7 @@ def alice_html(d) -> str:
 
 
 PARANOIA = ("results/r2_paranoia.json", "results/r5_short_scan.json", "results/ghostline_paranoia_s1.json")
+R6 = "results/r6_alice_short_scan.json"
 PARANOIA_CITE = ("Finn, Corlett, Chen, Bandettini and Constable, Nature Communications 2018; OpenNeuro ds001338 v1.0.0, CC BY-NC 4.0; "
                  "the fMRIPrep fsaverage5 derivative.")
 
@@ -541,6 +542,20 @@ def paranoia_html(r2, r5, ghost: dict = None) -> str:
                      f'scan</h3><p class="big">{E(r5["line"], quote=False)}</p><p class="small">{E(small)}</p>'
                      f'<p class="small"><code>{PARANOIA[1]}</code>.</p>')
     return out
+
+
+def r6_html(r6) -> str:
+    """R6, R5's replication attempt on the Alice Datasets (docs/rules/r6_alice_short_scan_rule.md), right under R5's panel wherever R5
+    appears (cloud ruling of Nov 3, ~21:45 UTC, item 5): its rule's line from its results file, byte for byte, then the numbers."""
+    if not r6:
+        return ""
+    t, w, e = r6["tribe"], r6["word_rate"], r6["envelope"]
+    small = (f'{t["k_above_0"]} of {t["n"]} listeners above 0 (bar {t["kstar"]}), one-sided p = {t["wilcoxon_p"]:.2f}. Ranked by word rate: '
+             f'{w["k_above_0"]} of {w["n"]}, p = {w["wilcoxon_p"]:.3f}; by the sound envelope: p = {e["wilcoxon_p"]:.3f} ({e["k_above_0"]} '
+             f'listeners above 0). {r6["minutes_each_side"]} minutes each side, ranked by the forecast alone.')
+    return panel(f'<h3>{badge("pass" if t["pass"] else "fail", "pass" if t["pass"] else "fail")}Which minutes to play, a second story '
+                 f'(the Alice Datasets)</h3><p class="big">{E(r6["line"], quote=False)}</p><p class="small">{E(small)}</p>'
+                 f'<p class="small"><code>{R6}</code>, <code>results/r6_run/RUN.md</code>.</p>')
 
 
 WALL_CUTOFF_UTC = datetime.datetime(2026, 11, 1, 18, 0, tzinfo=datetime.timezone.utc)   # saturday_chain.sh: 42/42 predictions by then
@@ -807,7 +822,7 @@ def build(inline: bool = False) -> str:
     P.append('<h2 id="held">6. Did the forecasts hold up?</h2><p class="muted">Each forecast against real scans it never saw. Results land one '
              'at a time; a slot without its file says so.</p>')
     P.append(lpp_html(load("results/section8.json"), load("results/section8_baselines.json"), load("results/ghostline_lpp_s8.json")))
-    P.append(paranoia_html(load(PARANOIA[0]), load(PARANOIA[1]), load(PARANOIA[2])) + alice_html(load(ALICE[0])))
+    P.append(paranoia_html(load(PARANOIA[0]), load(PARANOIA[1]), load(PARANOIA[2])) + r6_html(load(R6)) + alice_html(load(ALICE[0])))
     P.append(wall_html(sl["story_wall"]) + d20_html(sl["d20"])
              + film_result_html(sl["face_map"], sl["film_score"], load("results/ghostline_film.json")))
     P.append(f'<p class="small" id="sedation">Sedation case study (not in the video): <a href="{SEDATION_URL}">the write-up, '
