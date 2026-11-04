@@ -6,7 +6,7 @@
 
 ### A healthy-brain reference for a new story, before anyone is scanned
 
-**Demo video (2:48):** https://youtu.be/mp4ZFYGdSDI  ·  **Try it:** https://stillhere-deploy.vercel.app
+**Demo video (2:48):** https://youtu.be/E6ZR4D6lnxs  ·  **Try it:** https://stillhere-deploy.vercel.app
 
 [![tests](https://github.com/Yatsuiii/stillhere/actions/workflows/tests.yml/badge.svg)](https://github.com/Yatsuiii/stillhere/actions/workflows/tests.yml)
 [![licence: MIT](https://img.shields.io/badge/licence-MIT-lightgrey.svg)](LICENSE)
