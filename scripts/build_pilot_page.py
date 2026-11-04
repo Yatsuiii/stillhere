@@ -819,7 +819,7 @@ def build(inline: bool = False) -> str:
     P.append(f'<h2 id="check">3. Check the stimulus before anyone is scanned</h2>{conditions_html(load("results/conditions_manipulation_check.json"))}')
     P.append(f'<h2 id="film">4. The same loop on video: the film edit</h2>{film_html(media, spark, sl["glimmer"])}')
     P.append(f'<h2 id="forecast">5. The forecast</h2>{forecast_html(load("results/live_tribe_librivox.json"), sl["live_conditions"])}')
-    P.append('<h2 id="held">6. Did the forecasts hold up?</h2><p class="muted">Each forecast against real scans it never saw. Results land one '
+    P.append('<h2 id="held">6. Did the forecasts hold up?</h2><p class="muted">Each forecast against real public scans, scored by a rule written down first. Results land one '
              'at a time; a slot without its file says so.</p>')
     P.append(lpp_html(load("results/section8.json"), load("results/section8_baselines.json"), load("results/ghostline_lpp_s8.json")))
     P.append(paranoia_html(load(PARANOIA[0]), load(PARANOIA[1]), load(PARANOIA[2])) + r6_html(load(R6)) + alice_html(load(ALICE[0])))

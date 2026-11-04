@@ -266,7 +266,7 @@ def why_line(code: str, shown: str = "this station shows its recorded run") -> s
 
 
 # ---- PLAN -----------------------------------------------------------------------------------------------------------------------
-SCOREBOARD = "Planner v2 · 62 unseen requests · 2.3% vs 7.6% / 6.8% (5% bar)"
+SCOREBOARD = "Planner v2 · 62 held-out requests · 2.3% vs 7.6% / 6.8% (5% bar)"
 
 
 def menu() -> dict:
