@@ -1047,6 +1047,7 @@ def test_no_true_hour_reserves_more_than_the_station_caps_allow(live, monkeypatc
     caps allow (PLAN 120 x $0.05 + BUILD 70 x $0.10 + FILM 10 x 3 x $0.50 = $28.00, of which PLAN's $6.00 settles to its tokens).
     That is more than a configured Meta day, so with FILM unpriced the daily cap, not the hourly caps, stops many addresses."""
     (app, jobs, ledger, stations, store), paid = live
+    monkeypatch.setenv("META_CREDIT_END_UTC", "2099-01-01T00:00:00Z")   # the credit period, whatever the real date: no after-credit cap
     caps, R = ledger.STATION_RUNS_PER_HOUR, stations.RESERVE
     bound = caps["plan"] * R["plan"] + caps["build"] * R["transcribe"] + caps["film"] * 3 * R["sam"]
     monkeypatch.setitem(ledger.DAILY_CAP, "meta", 1e6); monkeypatch.setitem(ledger.TOTAL_CAP, "meta", 1e6)   # only the hours bind
@@ -2256,6 +2257,7 @@ def test_reserve_and_settle_move_every_bound_or_none(web, monkeypatch):
     write leaves every bound moved or none: the failed call raises StoreError and no key changed (key by key, the earlier keys
     stayed counted)."""
     app, jobs, ledger, stations, store = web
+    monkeypatch.setenv("META_CREDIT_END_UTC", "2099-01-01T00:00:00Z")   # the credit period, whatever the real date: no after-credit cap
     monkeypatch.setattr(ledger, "_day", lambda: "d1")
     writes, nth = [], [0]
 
