@@ -1,8 +1,24 @@
+# StillHere
+
+**Pre-registered result:** In 22 healthy listeners from public Narratives *notthefall* data,
+TRIBE v2's language readout was stronger for the intact story than for its sentence-shuffled
+version (**p = 0.00516**; [result](results/d20_notthefall.json), [protocol](PREREG.md)).
+
+StillHere helps brain-imaging labs plan story-listening studies, build and check control
+recordings, and forecast healthy-adult fMRI responses before scanning. Its evidence comes
+from public healthy-listener scans.
+
+**Claim boundary:** Each condition used its own forecast; run order is unpublished. The result
+does not isolate listener changes from forecast changes, or exclude order/repeat-listening
+effects. The pre-registered coarser-scramble secondary failed
+([p = 0.0735](results/d20_notthefall.json)).
+
+**Research use. Healthy volunteers and public data only. Not a diagnosis or medical advice.**
+It has not been tested in children or patients and does not map left versus right.
+
 <p align="center">
   <img src="docs/assets/stillhere-hero.png" alt="StillHere. Panel A: the menu's two brain areas, hearing and language, on a contour-line drawing of the left cortex. Panel B: TRIBE v2's forecast as a gray dashed line and 49 public listeners as a coloured line, Le Petit Prince section 8, held out." width="100%">
 </p>
-
-# StillHere
 
 ### A healthy-brain reference for a new story, before anyone is scanned
 
@@ -12,6 +28,8 @@
 [![licence: MIT](https://img.shields.io/badge/licence-MIT-lightgrey.svg)](LICENSE)
 [![pre-registered: D0-D27](https://img.shields.io/badge/pre--registered-D0--D27-lightgrey.svg)](PREREG.md)
 [![forecast card](https://img.shields.io/badge/forecast%20card-TRIBE%20v2-lightgrey.svg)](docs/MODEL_CARD.md)
+
+## Background and additional findings
 
 > Two kinds of brain scan rest on a person simply listening to a story.
 >
@@ -56,8 +74,8 @@ stimulus before anyone is scanned (Muse Voice Transcribe), and forecasts the hea
 Built during the Meta Global AI Developer Hackathon (building period Oct 27 to Nov 4, 2026): Indie developer track, theme Push the
 Frontier. MIT licence for our code; TRIBE v2 is CC BY-NC 4.0 and is not included.
 
-[The problem](#the-problem) · [Results at a glance](#results-at-a-glance) · [Who it's for](#who-its-for) ·
-[A worked example](#a-worked-example) · [What it does](#what-it-does) · [Results so far](#results-so-far) · [Key features](#key-features) ·
+[The problem](#the-problem) · [Results](#results) · [Who it's for](#who-its-for) ·
+[A worked example](#a-worked-example) · [What it does](#what-it-does) · [Key features](#key-features) ·
 [Meta models](#meta-models-and-the-job-of-each) · [Limitations](#limitations) · [Built during the event](#built-during-the-event) ·
 [Architecture](#architecture) · [Keeping our own rules](#keeping-our-own-rules) · [Quickstart](#quickstart) · [Deployment](#deployment) ·
 [Project layout](#project-layout) · [Documentation](#documentation)
@@ -95,143 +113,26 @@ real viewer in every area (exploratory).
 
 A first healthy reference for a new story, before any scans, and evidence for how far to trust it.
 
-## Results at a glance
+## Results
 
-Not a diagnosis or medical advice.
+Not a diagnosis or medical advice. Exploratory unless marked pre-registered or held out.
+
+Open a section for its results, limits and supporting checks. Failures and no-gos are included; source files are named beside the relevant tables.
+
+<details>
+<summary><strong>Intact versus shuffled stories: primary pass, secondary failed</strong></summary>
 
 | Test | In plain words | Number | Scope / limits | Status |
 |---|---|---|---|---|
-| Held-out audiobook · Le Petit Prince, section 8 · 49 listeners | TRIBE's forecast predicted each listener's language-area response about as well as averaging **5 other real listeners' scans** (at least 2). | volunteer-equivalent 5.0, lower bound 2.58; language result 1.76 z | one of TRIBE v2's own evaluation sets | Held out |
-| Held-out audiobook · the Alice Datasets, chapter 1 · 22 listeners | On a different public audiobook, outside TRIBE v2's training and evaluation sets (the Alice Datasets, 22 listeners), the forecast tracked the listeners' language areas (z 1.42, p = 6e-05), but at its lower bound it was worth less than one real volunteer (about 2 at the point estimate).<br>What it had to beat: word rate and the sound envelope (beaten in 8 of 8 comparisons). | volunteer-equivalent 1.6, lower bound 0; language result 1.42 z; full length, the rule's second window: 2.14 z | one chapter; the dataset's own preprocessing; 1 listener's file corrupt at the source, excluded | Exploratory · volume mapping corrected after the first run; both runs in the repository <sup>4</sup> |
-| Fine-tuned TRIBE v2 · the same Alice chapter · 22 listeners | Fine-tuned TRIBE v2: On a different public audiobook, outside TRIBE v2's training and evaluation sets (the Alice Datasets, 22 listeners), the forecast tracked the listeners' language areas (z 1.40, p = 0.00015), but at its lower bound it was worth less than one real volunteer (about 1 at the point estimate).<br>Fine-tuned TRIBE v2: What it had to beat: word rate and the sound envelope (beaten in 7 of 8 comparisons). | volunteer-equivalent 1.4, lower bound 0; language result 1.40 z; full length, the rule's second window: 2.19 z; fine-tuned minus stock -0.02 z, higher for 8 of 22 listeners (p = 0.59, descriptive) | our fine-tune of TRIBE v2 on LPP sections 2-7 and 9 and Narratives, never Alice; stock stays the primary model (D3) | Exploratory · rule committed Oct 31, 10:45 UTC, before any fine-tuned Alice forecast (R1) <sup>5</sup> |
-| Story outside training and evaluation sets · Paranoia (Finn et al. 2018) · 22 listeners | On another public story, outside TRIBE v2's training and evaluation sets (Paranoia, Finn et al. 2018; 22 listeners, the whole story: 1,250 volumes = 20.8 minutes at TR 1 s), stock TRIBE v2's forecast was worth about 3 real volunteers, and at least 1. It reached 59% of what the other listeners' average reaches.<br>What it had to beat: word rate and the sound envelope (beaten in 4 of 4 comparisons).<br>Fine-tuned TRIBE v2: rule committed, not run (the stock runs' Llama features were not kept). | volunteer-equivalent 3.0, lower bound 1.88; language result 4.01 z; the other listeners' average 6.83 z (share 59%) | the whole story, 20.8 minutes at TR 1 s; fMRIPrep's fsaverage5 derivative; z is not compared across datasets with different scan timing; the share is. | Exploratory · rule committed before the brain data was downloaded (R2) |
-| Which minutes to play · the same Paranoia listeners · 22 listeners | Exploratory. On another public story (Paranoia, Finn et al. 2018; 22 listeners, outside TRIBE v2's training and evaluation sets), listeners' language areas followed TRIBE's forecast more closely in the 7 minutes it ranked highest than in the 7 minutes it ranked lowest (17 of 22 listeners, one-sided p = 0.0004). Ranking the same minutes by word rate alone: 8 of 22, p = 0.94. | 17 of 22 listeners (bar 16), one-sided p = 0.0004; word rate 8 of 22, p = 0.94; sound envelope 11 of 22, p = 0.23 | 7 minutes each side, ranked by the forecast alone; healthy listeners; it says nothing about anyone who cannot respond | **Pass** · exploratory (R5), rule committed before the brain data was downloaded |
-| Which minutes to play, a second story · the Alice Datasets, chapter 1 · 22 listeners | Exploratory; the Alice scans were read on Oct 30 for the held-out test. A replication attempt of R5: on a second public story outside TRIBE v2's training and evaluation sets (the Alice Datasets, chapter 1; 22 listeners), the minutes TRIBE's forecast ranked highest did not reliably give a closer language-area match than the minutes it ranked lowest (12 of 22 listeners, one-sided p = 0.34). R5's Paranoia result is not replicated here. We show it because we said we would. | 12 of 22 listeners (bar 16), one-sided p = 0.34; word rate 16 of 22, p = 0.099; sound envelope 13 of 22, p = 0.093 | 4 minutes each side, ranked by the forecast alone; healthy listeners; it says nothing about anyone who cannot respond | Fail · Exploratory; the Alice scans were read on Oct 30 for the held-out test (R6, a replication attempt of R5) |
-| Forecast variants · LPP section 1, English to develop, French to confirm | R3 (rule committed Oct 31, 10:46 UTC), the average of the stock and fine-tuned forecasts: not adopted. English, development: +0.07 z against the default. French, confirmation: +0.09 z, higher for 21 of 28 listeners, one-sided p = 0.00024.<br>R3 (rule committed Oct 31, 10:46 UTC), the stock forecast smoothed on the surface (3 passes): not adopted. English, development: +0.00 z against the default. French, confirmation: +0.01 z, higher for 20 of 28 listeners, one-sided p = 0.016.<br>Adopted for R2: none. | bar: +0.20 z and p < 0.05 on the language not used to choose (PREREG line 38) | PREREG's development section (LPP section 1), already scored for stock; 19 of the 28 French listeners' other sections were in the fine-tune's training targets (the 9 who were not are reported on their own); "confirm" means PREREG line 38's other-language check, not unseen data | Exploratory · variants not adopted |
 | Intact vs sentence-shuffled · Narratives notthefall · 22 listeners | TRIBE's forecast matched real listeners' language areas more closely when the story was intact than when its sentences were shuffled. | HL 0.0356 [95% CI 0.0125, 0.0588], p = 0.00516 | each version had its own TRIBE forecast; run order not public | **Pass** · pre-registered (D20, words from D27) |
 | Intact vs the coarser scramble · the same story · 21 listeners | The same comparison against a coarser scramble did not pass. | HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735; did not reach p < 0.05 | each version had its own TRIBE forecast; run order not public | Fail · the pre-registered secondary, the result of record |
 | Cheap baselines · notthefall and Le Petit Prince, section 8 | On the intact-vs-shuffled test, simple stand-ins (how fast the words come, how loud the sound is) did not show the effect; TRIBE did. | p = 0.0037 for TRIBE, 0.61 for word rate, 0.93 for the sound envelope; 8 of 8 comparisons on section 8 | on the coarser scramble, word rate alone also reached p = 0.041 | Exploratory |
-| Planner v2 · 62 held-out requests | Asked 62 requests it had never seen, three times each, planner v2 wrongly accepted 3 of the 132 answers that should have been declines (2.3%), under the 5% bar set before the run. | 2.3% false accepts (3 of 132; exact 95% upper bound 6.5%) | Muse Spark 1.3; Spark Open missed this bar; the live v2.1 is not re-measured | False-accept bar met; first-answer validity missed (83.3%, bar 85%) |
-| Planner R4 · 62 new held-out requests | Planner R4 (rule committed Oct 31, 11:11 UTC), 62 new held-out requests, three repeats, Muse Spark 1.3: first-answer validity 100% with the new prompt against 87.1% with v2's (bar 85%). An improvement by the rule set before the run. | first-answer validity 100% vs 87.1%; decision accuracy 99.5% vs 95.2%; false accepts 0.8% vs 3.0%; decline-reason accuracy 99.2% vs 97.7%; rule-made declines 0% vs 2.2% | one prompt sentence about the analysis field, plus two clarifications, changed on development requests only and frozen before this run; plan calls only; the live v2.1 is not changed yet | Exploratory · requests committed before any prompt change |
-| Stimulus check · Voice Transcribe | Our first word-shuffled control kept only 16% of the story's words; Voice Transcribe caught it before it was used. | 16% of words heard (intact 99%) | LibriVox Alice chapter 1, 75 s | Caught before scanning, not used |
-| Film edit check · Tears of Steel · 62 frames per version | If the edit check fails, the film test does not run. | faces filled: no face seen in 62 of 62 (Glimmer, which decides; Spark Open also 62 of 62) | the control covers 89% of the face area TRIBE's video model sees; the 51 largest close-ups, and faces outside that view, have none | **Pass** · all four bars (Glimmer, Oct 31; run outside its chain slot, it reads only the frames) |
-| Order map go/no-go · 3 LibriVox Alice clips | The order map did not pass its own rule, so it is not shown. | 1 of 3 clips (bar: 3 of 3) | forecast only, no brain data | No-go · bar set before any forecast |
-| Story picker · Narratives and Le Petit Prince · 37 story families in 4 blocks | TRIBE's predicted response strength ranked the stories with listeners' language readouts (S1), and still did after word rate and the sound envelope were partialled out (S3). | S1 rho 0.54, p = 0.0007; S3 partial rho 0.63, p = 0.0005; S2 (a model-free yardstick from other listeners) rho 0.33, p = 0.031; S4 (each block's top third against all its stories) +0.31 z, 95% CI -0.07 to 0.58 | ranks only within a dataset, language and scanner; 41 of the 42 stories were used before the rule; without the development section, S1 rho 0.58 | **Pass** · S1 and S3 (co-primary) and S2, pre-registered (PREREG section 9); S4 did not pass; S3b <sup>6</sup> |
-| Story wall · the same stories · 33 counted story families | With zero same-clip controls, stock TRIBE v2's language readout followed the story each healthy listener group heard, more than other stories from the same dataset, on 29 of 33 story families not individually scored before this test (English and French; LPP sections counted once per language; 2 public datasets, 4 blocks, 1210 listeners, 2.7-55.6 minutes = 106-2222 TRs per story; wrong-label check 6 of 33). | 29 of 33 (bar: two-thirds); wrong-label check 6 of 33 = 18% | every story we scored stays on the wall, weak ones too; the wrong-label check is above its 7% limit | Bar met · descriptive, write-up only (wrong-label check above 7%) · pre-registered (D19) |
-| Film face test · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. TRIBE's forecast of the filled faces did not line up with where 16 real viewers' brains tracked faces: it missed the spin test (12 of 16 viewers above 0, 12 needed; Wilcoxon p = 0.017; spin p = 0.092). We show it because we said we would. | B1: 12 of 16 above 0 (12 needed), Wilcoxon p = 0.017, spin p = 0.092; gate 1 passed; B2 (more than the control) 13 of 16, p = 0.0002, spin p = 0.016, not used once B1 fails; part of B2's margin came from the control's map running opposite to the viewers' (rho with the viewers' average map: R 0.20, C -0.11; on the descriptive controlled-grid maps, R 0.02, C -0.31; descriptive, never decides); both maps, C especially, are concentrated in the seconds around the 51 uncontrolled close-ups (61-67 s) | 28 runs kept; 11 dropped by the volume check (the preprocessed image has 1 or 2 more volumes than the raw run), 1 excluded for motion; the control covers 89% of the face area TRIBE's video model sees; the 51 largest close-ups, and faces outside that view, have none | **Fail** · Exploratory · scored once, Nov 1 |
-| Intact film · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. On a film clip in neither TRIBE v2's training list nor its evaluation list (Tears of Steel, film seconds 10-185; Emo-FilM, 16 viewers), TRIBE v2's forecast followed the viewers' hearing areas (median z 3.23) and visual areas (2.77) more closely than the sound envelope, brightness or motion did. In language areas (0.80) it did no better than word rate. In every area it was worth less than one real viewer.<br>What it had to beat: word rate, the sound envelope, brightness and motion (beaten in 3 of 4 primary comparisons; every pair in `results/emofilm_film_score.json`). | median z: hearing 3.23, visual 2.77, language 0.80; worth less than one real viewer in each | film seconds 10-185; 28 kept, 11 dropped by the volume check, 1 for motion | Exploratory · `docs/rules/emofilm_rule.md` |
-| Sedation case study · OpenNeuro ds003171 | No sedation stage line: two of the three co-primary bars did not pass. | language fell in 9 of 12 (needed 10) | a case study, not a headline | Pre-registered; exploratory variants in the [write-up](docs/writeup_sedation.md) |
 
-<sup>4</sup> A first run used the dataset README's 10-volume offset, which the files do not follow; it is kept in
-`results/alice_heldout_first_run.json`. The listener-to-listener yardstick uses the other listeners' scans as recorded, while the forecast is shifted
-to each listener's own onset (0 to 0.84 s); this can lower the yardstick slightly and so raise the point estimate, but the lower bound,
-z and p do not depend on it.
-
-<sup>5</sup> Each model's volunteer figure sits on its own listener curve, which controls for that model's audio-only forecast; on
-stock's curve the fine-tuned point estimate is 1.50. "About 1" and "about 2" are 1.37 and 1.55 rounded. The one comparison not beaten
-is the sound envelope alone, language areas, 145-volume window (p = 0.13), which stock beat.
-
-<sup>6</sup> S3b, whether the ranking is the words' content and not just their timing, was pre-registered but not run in the scored
-record. The scored parts were fresh extractions, so per-word vectors existed when the scored forecasts were made; S3b was left out
-because no control was built, not because the data were missing. A late run was pre-registered in `docs/rules/s3b_late_rule.md`,
-decided after the scored record was read, including S4, the wall and the approximate frame-level version (descriptive, partial rho
-0.56, p 0.0012); none of its parts finished. S3b: pre-registered, not run (not finished by its cutoff, Nov 3, 06:00 UTC).
-
-### Reading the results
-
-| Term | What it means |
-|---|---|
-| fMRI | a brain scan that tracks blood-oxygen changes, a slow stand-in for brain activity; one brain volume every second or two |
-| TRIBE v2 | Meta FAIR's model that forecasts the fMRI response of a healthy adult brain to a film, a sound or a story |
-| Held out | brain data the forecast was not tuned on |
-| Pre-registered | the test, its bar and its scoring code were committed before the brain data was read; scored once, pass or fail |
-| "Worth about 5 real volunteers" | the forecast predicted each listener about as well as averaging 5 other real listeners' scans |
-| p | how likely a difference at least this large would be if there were no real difference; our pre-registered bar is p < 0.05 |
-| HL | the typical size of the difference between the two versions, with its 95% interval |
-| Gray and colour | on every chart, gray dashed is TRIBE's forecast; colour is real people |
-
-## Who it's for
-
-| Who | What they do | What they get |
-|---|---|---|
-| A lab adding a new story to a listening study | types the study; Muse Spark 1.3 plans it from the tested menu | a forecast of the healthy response before booking scanner time, and the evidence for how far to trust it |
-| A researcher building a control condition | builds the sentence shuffle; Muse Voice Transcribe reads it back | a control that is what it claims to be, or a blocked build (the check caught our own broken word scramble) |
-| A reviewer deciding whether to trust a forecast | opens Evidence | how forecasts held up on real public scans, beside cheap baselines, misses included |
-
-Not for: anything about one patient's scan. The planner declines it, with the reason.
-
-## A worked example
-
-The first story on the live menu, as the page runs it:
-
-1. **Plan.** The researcher picks or types: *"Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: The Black
-   Cat, intact versus sentences shuffled, in the language network."* Muse Spark 1.3 returns the plan card:
-   *"Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network;
-   analysis: stock TRIBE v2 forecast."* The story card beside it lists what is in the story, each note timed and linked to the audio:
-   *"The Black Cat, read by Tom Yates: one of 4 screened public stories · 1 voice heard · 6 sentences · notes: death or dying (0:43),
-   alcohol or drugs (5:08), injury or illness (5:37), violence (6:04), ... Not a full review; listen before you use a story."*
-2. **Build and check.** StillHere cuts the clip at sentence boundaries and shuffles the sentences; Muse Voice Transcribe reads the
-   built audio back and fills the checklist (words kept, order changed). A failed check blocks the build.
-3. **Audit.** Muse Spark Open reads the plan and leaves notes. Advisory: it never blocks anything.
-4. **Forecast.** The laptop worker runs TRIBE v2 stage by stage (w2v-BERT for sound, Llama 3.2 for words in context) and the page
-   shows each lane as it runs. It ends on the gray forecast alone: "No public scan of this clip. Forecast, not a scan."
-5. **Evidence.** Below it, held-out forecasts are drawn against real listeners, beside cheap baselines, so the researcher can see how
-   such forecasts held up on real scans.
-
-## What it does
-
-The Pilot page is a rail of six stations. Five of them call a Meta model live; Evidence replays committed results. A live station
-shows its recorded run, labelled so, when live calls are off or a budget is spent.
-
-| | Station | What happens | Meta model |
-|---|---|---|---|
-| 1 | **Plan** | The researcher types a study. The planner turns it into a strict study spec from a tested menu (a JSON schema built from the stimuli, controls and analyses we have evidence for), or declines with a reason code and the nearest tested option. Ask about one patient's scan, and it declines, with the reason. A request can name content notes to avoid; code, not the model, filters the menu on the story cards. | Muse Spark 1.3 (default); Muse Spark Open on Fireworks or Baseten (private mode) |
-| 2 | **Build and check** | StillHere cuts the story at sentence boundaries with short crossfades. Muse Voice Transcribe reads the built audio back and fills the checklist: words kept and word order decide whether a control is what it claims to be. A failed check blocks the build. "Rebuild with the old bug" replays the broken word scramble the check caught. | Muse Voice Transcribe |
-| 3 | **Audit** | Spark Open reads the plan and leaves notes. Advisory check, not measured: it never blocks anything. | Muse Spark Open |
-| 4 | **Forecast** | A judge picks one of 4 screened public stories, a condition and a seed. TRIBE v2 forecasts the brain response, stage by stage, on the laptop GPU, with its Llama 3.2 text lane on (fp16). A saved forecast is shown whenever one exists for your choice. New seeds run live on the laptop, 10:00-14:00 ET, Nov 4-9. Every live run ends on the gray forecast, with no real line drawn over it. We found no public scan of the 4 screened stories; Alice chapter 1 has one (OpenNeuro ds002322), and its end line says so. | TRIBE v2 (V-JEPA 2, w2v-BERT, Llama 3.2 inside) |
-| 5 | **Evidence** | Did the forecasts hold up? Each forecast against real public scans it never saw. These panels replay committed results files, each beside its cheap baselines. | TRIBE v2 |
-| 6 | **Film** | The same loop on video. SAM 3.1 masked the faces in the first 190 s of Tears of Steel; StillHere filled them with the surrounding colour, and filled a same-size patch elsewhere in each frame as a control. Type "face", or another word, to make the same edit on three frames. | SAM 3.1, Muse Glimmer 30B, Muse Spark Open |
-
-The live menu (`docs/rules/story_menu_rule.md`, exploratory; rule committed before any story was downloaded): 4 screened public
-LibriVox stories, then the Alice chapters as backup. The screen runs Muse Voice Transcribe with diarization: one voice, no silence
-over 5 s, and agreement with the word table TRIBE reads. Spark Open read every screened story and noted what is in it, with the line
-and the time. The notes are the union of word-for-word quotes found in the transcript over 3 calls at temperature 0.6. Not a full
-review; listen before you use a story.
-
-## Results so far
-
-Not a diagnosis or medical advice. Exploratory unless pre-registered; reported as it came. Each table names the committed file its
-numbers come from.
-
-### Forecasts against real brains
-
-| Test | In plain words | Numbers | Status |
-|---|---|---|---|
-| Held-out audiobook · Le Petit Prince, section 8 · 49 listeners | TRIBE's forecast predicted each listener's language-area response about as well as averaging **5 other real listeners' scans** (at least 2). | volunteer-equivalent 5.0, lower bound 2.58; language result 1.76 z | Held out <sup>1</sup> |
-| Story outside training and evaluation sets · Paranoia (Finn et al. 2018) · 22 listeners | On another public story, outside TRIBE v2's training and evaluation sets (Paranoia, Finn et al. 2018; 22 listeners, the whole story: 1,250 volumes = 20.8 minutes at TR 1 s), stock TRIBE v2's forecast was worth about 3 real volunteers, and at least 1. It reached 59% of what the other listeners' average reaches.<br>What it had to beat: word rate and the sound envelope (beaten in 4 of 4 comparisons).<br>Fine-tuned TRIBE v2: rule committed, not run (the stock runs' Llama features were not kept). | volunteer-equivalent 3.0, lower bound 1.88; language result 4.01 z; the other listeners' average 6.83 z (share 59%) | Exploratory · rule committed before the brain data was downloaded (R2) |
-| Which minutes to play · the same Paranoia listeners · 22 listeners | Exploratory. On another public story (Paranoia, Finn et al. 2018; 22 listeners, outside TRIBE v2's training and evaluation sets), listeners' language areas followed TRIBE's forecast more closely in the 7 minutes it ranked highest than in the 7 minutes it ranked lowest (17 of 22 listeners, one-sided p = 0.0004). Ranking the same minutes by word rate alone: 8 of 22, p = 0.94. | 17 of 22 listeners (bar 16), one-sided p = 0.0004; word rate 8 of 22, p = 0.94; sound envelope 11 of 22, p = 0.23 | **Pass** · exploratory (R5), rule committed before the brain data was downloaded |
-| Which minutes to play, a second story · the Alice Datasets, chapter 1 · 22 listeners | Exploratory; the Alice scans were read on Oct 30 for the held-out test. A replication attempt of R5: on a second public story outside TRIBE v2's training and evaluation sets (the Alice Datasets, chapter 1; 22 listeners), the minutes TRIBE's forecast ranked highest did not reliably give a closer language-area match than the minutes it ranked lowest (12 of 22 listeners, one-sided p = 0.34). R5's Paranoia result is not replicated here. We show it because we said we would. | 12 of 22 listeners (bar 16), one-sided p = 0.34; word rate 16 of 22, p = 0.099; sound envelope 13 of 22, p = 0.093 | Fail · Exploratory; the Alice scans were read on Oct 30 for the held-out test (R6, a replication attempt of R5) |
-| Intact vs sentence-shuffled · Narratives notthefall · 22 listeners | TRIBE's forecast matched real listeners' language areas more closely when the story was intact than when its sentences were shuffled. | HL 0.0356 [95% CI 0.0125, 0.0588], p = 0.00516 | **Pass** · pre-registered (D20, words from D27) <sup>2</sup> |
-| Intact vs the coarser scramble · the same story · 21 listeners | The same comparison against a coarser scramble did not pass. | HL 0.0215 [95% CI -0.0068, 0.0538], p = 0.0735; did not reach p < 0.05 | Fail · the pre-registered secondary, the result of record |
-| Story picker · Narratives and Le Petit Prince · 37 story families in 4 blocks | TRIBE's predicted response strength ranked the stories with listeners' language readouts (S1), and still did after word rate and the sound envelope were partialled out (S3). | S1 rho 0.54, p = 0.0007; S3 partial rho 0.63, p = 0.0005; S2 (a model-free yardstick from other listeners) rho 0.33, p = 0.031; S4 (each block's top third against all its stories) +0.31 z, 95% CI -0.07 to 0.58; S4 did not pass | **Pass** · S1 and S3 (co-primary) and S2, pre-registered (PREREG section 9) <sup>3</sup> |
-| Story wall · the same stories · 33 counted story families | With zero same-clip controls, stock TRIBE v2's language readout followed the story each healthy listener group heard, more than other stories from the same dataset, on 29 of 33 story families not individually scored before this test (English and French; LPP sections counted once per language; 2 public datasets, 4 blocks, 1210 listeners, 2.7-55.6 minutes = 106-2222 TRs per story; wrong-label check 6 of 33). | 29 of 33 (bar: two-thirds); wrong-label check 6 of 33 = 18%, above its 7% limit | Bar met · descriptive, write-up only · pre-registered (D19) <sup>3</sup> |
-| Film face test · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. TRIBE's forecast of the filled faces did not line up with where 16 real viewers' brains tracked faces: it missed the spin test (12 of 16 viewers above 0, 12 needed; Wilcoxon p = 0.017; spin p = 0.092). We show it because we said we would. | B1: 12 of 16 above 0 (12 needed), Wilcoxon p = 0.017, spin p = 0.092 | **Fail** · Exploratory · scored once, Nov 1 |
-| Intact film · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. On a film clip in neither TRIBE v2's training list nor its evaluation list (Tears of Steel, film seconds 10-185; Emo-FilM, 16 viewers), TRIBE v2's forecast followed the viewers' hearing areas (median z 3.23) and visual areas (2.77) more closely than the sound envelope, brightness or motion did. In language areas (0.80) it did no better than word rate. In every area it was worth less than one real viewer.<br>What it had to beat: word rate, the sound envelope, brightness and motion (beaten in 3 of 4 primary comparisons; every pair in `results/emofilm_film_score.json`). | median z: hearing 3.23, visual 2.77, language 0.80 | Exploratory · `docs/rules/emofilm_rule.md` |
-
-<sup>1</sup> Held out; first measured Oct 22-23. LPP is one of TRIBE v2's own evaluation sets. TRIBE v2 was not trained on Le Petit
-Prince or Narratives; its authors used both as held-out test sets, scored on group averages (d'Ascoli et al. 2026, Table 1). Our tests
-score each listener. Emo-FilM is in neither list.<br>
 <sup>2</sup> PREREG D20: "With zero same-clip controls, stock TRIBE v2's language readout was stronger when the same healthy listeners
 heard a public story intact than when they heard its sentences shuffled (Narratives notthefall, 22 listeners, 9.1 minutes = 365 TRs
 per version; the order of their two runs is not public)." For notthefall, each version also had its own TRIBE forecast, so a pass does
 not separate a change in the listeners' brains from a change in TRIBE's forecast, and the run order is not public, so it cannot be
 separated from an order or repeat-listening effect.<br>
-<sup>3</sup> The story wall's scoring rule was committed Oct 28 (340b74b); 41 of the 42 stories were used before then, for development
-or to tune a second model; scored once, Oct 31, 12:45-12:54 UTC (SCORED.lock 12:45:21Z, 529 s; `results/picker/`).
-
-Files: `results/section8.json` · `results/r2_paranoia.json` and `results/r5_short_scan.json` (run record `results/r2_run/RUN.md`) ·
-`results/d20_notthefall.json` · `results/picker/` (the picker and the wall) · `results/face_map.json`
-(run list `results/face_map_runs.json`).
 
 ### Cheap baselines beside every result
 
@@ -251,6 +152,67 @@ Against the coarser scramble, word rate alone also reached p = 0.041, so this ca
 the result of record. On Le Petit Prince, section 8, the forecast beat word rate and the sound envelope in 8 of 8 comparisons, and in
 language areas it beat a simple word-rate model in 43 of 49 listeners (exploratory: that rule was written after section 8 was first
 measured). Files: `results/d20_notthefall.json` · `results/section8_baselines.json`.
+
+</details>
+
+<details>
+<summary><strong>Forecasts against real listeners</strong></summary>
+
+| Test | In plain words | Number | Scope / limits | Status |
+|---|---|---|---|---|
+| Held-out audiobook · Le Petit Prince, section 8 · 49 listeners | TRIBE's forecast predicted each listener's language-area response about as well as averaging **5 other real listeners' scans** (at least 2). | volunteer-equivalent 5.0, lower bound 2.58; language result 1.76 z | one of TRIBE v2's own evaluation sets | Held out |
+| Held-out audiobook · the Alice Datasets, chapter 1 · 22 listeners | On a different public audiobook, outside TRIBE v2's training and evaluation sets (the Alice Datasets, 22 listeners), the forecast tracked the listeners' language areas (z 1.42, p = 6e-05), but at its lower bound it was worth less than one real volunteer (about 2 at the point estimate).<br>What it had to beat: word rate and the sound envelope (beaten in 8 of 8 comparisons). | volunteer-equivalent 1.6, lower bound 0; language result 1.42 z; full length, the rule's second window: 2.14 z | one chapter; the dataset's own preprocessing; 1 listener's file corrupt at the source, excluded | Exploratory · volume mapping corrected after the first run; both runs in the repository <sup>4</sup> |
+| Fine-tuned TRIBE v2 · the same Alice chapter · 22 listeners | Fine-tuned TRIBE v2: On a different public audiobook, outside TRIBE v2's training and evaluation sets (the Alice Datasets, 22 listeners), the forecast tracked the listeners' language areas (z 1.40, p = 0.00015), but at its lower bound it was worth less than one real volunteer (about 1 at the point estimate).<br>Fine-tuned TRIBE v2: What it had to beat: word rate and the sound envelope (beaten in 7 of 8 comparisons). | volunteer-equivalent 1.4, lower bound 0; language result 1.40 z; full length, the rule's second window: 2.19 z; fine-tuned minus stock -0.02 z, higher for 8 of 22 listeners (p = 0.59, descriptive) | our fine-tune of TRIBE v2 on LPP sections 2-7 and 9 and Narratives, never Alice; stock stays the primary model (D3) | Exploratory · rule committed Oct 31, 10:45 UTC, before any fine-tuned Alice forecast (R1) <sup>5</sup> |
+| Story outside training and evaluation sets · Paranoia (Finn et al. 2018) · 22 listeners | On another public story, outside TRIBE v2's training and evaluation sets (Paranoia, Finn et al. 2018; 22 listeners, the whole story: 1,250 volumes = 20.8 minutes at TR 1 s), stock TRIBE v2's forecast was worth about 3 real volunteers, and at least 1. It reached 59% of what the other listeners' average reaches.<br>What it had to beat: word rate and the sound envelope (beaten in 4 of 4 comparisons).<br>Fine-tuned TRIBE v2: rule committed, not run (the stock runs' Llama features were not kept). | volunteer-equivalent 3.0, lower bound 1.88; language result 4.01 z; the other listeners' average 6.83 z (share 59%) | the whole story, 20.8 minutes at TR 1 s; fMRIPrep's fsaverage5 derivative; z is not compared across datasets with different scan timing; the share is. | Exploratory · rule committed before the brain data was downloaded (R2) |
+| Forecast variants · LPP section 1, English to develop, French to confirm | R3 (rule committed Oct 31, 10:46 UTC), the average of the stock and fine-tuned forecasts: not adopted. English, development: +0.07 z against the default. French, confirmation: +0.09 z, higher for 21 of 28 listeners, one-sided p = 0.00024.<br>R3 (rule committed Oct 31, 10:46 UTC), the stock forecast smoothed on the surface (3 passes): not adopted. English, development: +0.00 z against the default. French, confirmation: +0.01 z, higher for 20 of 28 listeners, one-sided p = 0.016.<br>Adopted for R2: none. | bar: +0.20 z and p < 0.05 on the language not used to choose (PREREG line 38) | PREREG's development section (LPP section 1), already scored for stock; 19 of the 28 French listeners' other sections were in the fine-tune's training targets (the 9 who were not are reported on their own); "confirm" means PREREG line 38's other-language check, not unseen data | Exploratory · variants not adopted |
+
+<sup>1</sup> Held out; first measured Oct 22-23. LPP is one of TRIBE v2's own evaluation sets. TRIBE v2 was not trained on Le Petit
+Prince or Narratives; its authors used both as held-out test sets, scored on group averages (d'Ascoli et al. 2026, Table 1). Our tests
+score each listener. Emo-FilM is in neither list.<br>
+
+<sup>4</sup> A first run used the dataset README's 10-volume offset, which the files do not follow; it is kept in
+`results/alice_heldout_first_run.json`. The listener-to-listener yardstick uses the other listeners' scans as recorded, while the forecast is shifted
+to each listener's own onset (0 to 0.84 s); this can lower the yardstick slightly and so raise the point estimate, but the lower bound,
+z and p do not depend on it.
+
+<sup>5</sup> Each model's volunteer figure sits on its own listener curve, which controls for that model's audio-only forecast; on
+stock's curve the fine-tuned point estimate is 1.50. "About 1" and "about 2" are 1.37 and 1.55 rounded. The one comparison not beaten
+is the sound envelope alone, language areas, 145-volume window (p = 0.13), which stock beat.
+
+</details>
+
+<details>
+<summary><strong>Choosing stories and scan minutes</strong></summary>
+
+| Test | In plain words | Number | Scope / limits | Status |
+|---|---|---|---|---|
+| Which minutes to play · the same Paranoia listeners · 22 listeners | Exploratory. On another public story (Paranoia, Finn et al. 2018; 22 listeners, outside TRIBE v2's training and evaluation sets), listeners' language areas followed TRIBE's forecast more closely in the 7 minutes it ranked highest than in the 7 minutes it ranked lowest (17 of 22 listeners, one-sided p = 0.0004). Ranking the same minutes by word rate alone: 8 of 22, p = 0.94. | 17 of 22 listeners (bar 16), one-sided p = 0.0004; word rate 8 of 22, p = 0.94; sound envelope 11 of 22, p = 0.23 | 7 minutes each side, ranked by the forecast alone; healthy listeners; it says nothing about anyone who cannot respond | **Pass** · exploratory (R5), rule committed before the brain data was downloaded |
+| Which minutes to play, a second story · the Alice Datasets, chapter 1 · 22 listeners | Exploratory; the Alice scans were read on Oct 30 for the held-out test. A replication attempt of R5: on a second public story outside TRIBE v2's training and evaluation sets (the Alice Datasets, chapter 1; 22 listeners), the minutes TRIBE's forecast ranked highest did not reliably give a closer language-area match than the minutes it ranked lowest (12 of 22 listeners, one-sided p = 0.34). R5's Paranoia result is not replicated here. We show it because we said we would. | 12 of 22 listeners (bar 16), one-sided p = 0.34; word rate 16 of 22, p = 0.099; sound envelope 13 of 22, p = 0.093 | 4 minutes each side, ranked by the forecast alone; healthy listeners; it says nothing about anyone who cannot respond | Fail · Exploratory; the Alice scans were read on Oct 30 for the held-out test (R6, a replication attempt of R5) |
+| Story picker · Narratives and Le Petit Prince · 37 story families in 4 blocks | TRIBE's predicted response strength ranked the stories with listeners' language readouts (S1), and still did after word rate and the sound envelope were partialled out (S3). | S1 rho 0.54, p = 0.0007; S3 partial rho 0.63, p = 0.0005; S2 (a model-free yardstick from other listeners) rho 0.33, p = 0.031; S4 (each block's top third against all its stories) +0.31 z, 95% CI -0.07 to 0.58 | ranks only within a dataset, language and scanner; 41 of the 42 stories were used before the rule; without the development section, S1 rho 0.58 | **Pass** · S1 and S3 (co-primary) and S2, pre-registered (PREREG section 9); S4 did not pass; S3b <sup>6</sup> |
+| Story wall · the same stories · 33 counted story families | With zero same-clip controls, stock TRIBE v2's language readout followed the story each healthy listener group heard, more than other stories from the same dataset, on 29 of 33 story families not individually scored before this test (English and French; LPP sections counted once per language; 2 public datasets, 4 blocks, 1210 listeners, 2.7-55.6 minutes = 106-2222 TRs per story; wrong-label check 6 of 33). | 29 of 33 (bar: two-thirds); wrong-label check 6 of 33 = 18% | every story we scored stays on the wall, weak ones too; the wrong-label check is above its 7% limit | Bar met · descriptive, write-up only (wrong-label check above 7%) · pre-registered (D19) |
+
+<sup>3</sup> The story wall's scoring rule was committed Oct 28 (340b74b); 41 of the 42 stories were used before then, for development
+or to tune a second model; scored once, Oct 31, 12:45-12:54 UTC (SCORED.lock 12:45:21Z, 529 s; `results/picker/`).
+
+
+<sup>6</sup> S3b, whether the ranking is the words' content and not just their timing, was pre-registered but not run in the scored
+record. The scored parts were fresh extractions, so per-word vectors existed when the scored forecasts were made; S3b was left out
+because no control was built, not because the data were missing. A late run was pre-registered in `docs/rules/s3b_late_rule.md`,
+decided after the scored record was read, including S4, the wall and the approximate frame-level version (descriptive, partial rho
+0.56, p 0.0012); none of its parts finished. S3b: pre-registered, not run (not finished by its cutoff, Nov 3, 06:00 UTC).
+
+</details>
+
+<details>
+<summary><strong>Planner and stimulus checks</strong></summary>
+
+| Test | In plain words | Number | Scope / limits | Status |
+|---|---|---|---|---|
+| Planner v2 · 62 held-out requests | Asked 62 requests it had never seen, three times each, planner v2 wrongly accepted 3 of the 132 answers that should have been declines (2.3%), under the 5% bar set before the run. | 2.3% false accepts (3 of 132; exact 95% upper bound 6.5%) | Muse Spark 1.3; Spark Open missed this bar; the live v2.1 is not re-measured | False-accept bar met; first-answer validity missed (83.3%, bar 85%) |
+| Planner R4 · 62 new held-out requests | Planner R4 (rule committed Oct 31, 11:11 UTC), 62 new held-out requests, three repeats, Muse Spark 1.3: first-answer validity 100% with the new prompt against 87.1% with v2's (bar 85%). An improvement by the rule set before the run. | first-answer validity 100% vs 87.1%; decision accuracy 99.5% vs 95.2%; false accepts 0.8% vs 3.0%; decline-reason accuracy 99.2% vs 97.7%; rule-made declines 0% vs 2.2% | one prompt sentence about the analysis field, plus two clarifications, changed on development requests only and frozen before this run; plan calls only; the live v2.1 is not changed yet | Exploratory · requests committed before any prompt change |
+| Stimulus check · Voice Transcribe | Our first word-shuffled control kept only 16% of the story's words; Voice Transcribe caught it before it was used. | 16% of words heard (intact 99%) | LibriVox Alice chapter 1, 75 s | Caught before scanning, not used |
+| Film edit check · Tears of Steel · 62 frames per version | If the edit check fails, the film test does not run. | faces filled: no face seen in 62 of 62 (Glimmer, which decides; Spark Open also 62 of 62) | the control covers 89% of the face area TRIBE's video model sees; the 51 largest close-ups, and faces outside that view, have none | **Pass** · all four bars (Glimmer, Oct 31; run outside its chain slot, it reads only the frames) |
+| Order map go/no-go · 3 LibriVox Alice clips | The order map did not pass its own rule, so it is not shown. | 1 of 3 clips (bar: 3 of 3) | forecast only, no brain data | No-go · bar set before any forecast |
 
 ### Planner v2 on 62 held-out requests
 
@@ -316,9 +278,94 @@ not run. Glimmer passed all four bars (Oct 31, 05:15 to 06:41 UTC; two of its 21
 
 File: `results/order_map_gonogo.json`.
 
+</details>
+
+<details>
+<summary><strong>Film and sedation</strong></summary>
+
+| Test | In plain words | Number | Scope / limits | Status |
+|---|---|---|---|---|
+| Film face test · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. TRIBE's forecast of the filled faces did not line up with where 16 real viewers' brains tracked faces: it missed the spin test (12 of 16 viewers above 0, 12 needed; Wilcoxon p = 0.017; spin p = 0.092). We show it because we said we would. | B1: 12 of 16 above 0 (12 needed), Wilcoxon p = 0.017, spin p = 0.092; gate 1 passed; B2 (more than the control) 13 of 16, p = 0.0002, spin p = 0.016, not used once B1 fails; part of B2's margin came from the control's map running opposite to the viewers' (rho with the viewers' average map: R 0.20, C -0.11; on the descriptive controlled-grid maps, R 0.02, C -0.31; descriptive, never decides); both maps, C especially, are concentrated in the seconds around the 51 uncontrolled close-ups (61-67 s) | 28 runs kept; 11 dropped by the volume check (the preprocessed image has 1 or 2 more volumes than the raw run), 1 excluded for motion; the control covers 89% of the face area TRIBE's video model sees; the 51 largest close-ups, and faces outside that view, have none | **Fail** · Exploratory · scored once, Nov 1 |
+| Intact film · Emo-FilM, Tears of Steel · 16 viewers | Exploratory. On a film clip in neither TRIBE v2's training list nor its evaluation list (Tears of Steel, film seconds 10-185; Emo-FilM, 16 viewers), TRIBE v2's forecast followed the viewers' hearing areas (median z 3.23) and visual areas (2.77) more closely than the sound envelope, brightness or motion did. In language areas (0.80) it did no better than word rate. In every area it was worth less than one real viewer.<br>What it had to beat: word rate, the sound envelope, brightness and motion (beaten in 3 of 4 primary comparisons; every pair in `results/emofilm_film_score.json`). | median z: hearing 3.23, visual 2.77, language 0.80; worth less than one real viewer in each | film seconds 10-185; 28 kept, 11 dropped by the volume check, 1 for motion | Exploratory · `docs/rules/emofilm_rule.md` |
+| Sedation case study · OpenNeuro ds003171 | No sedation stage line: two of the three co-primary bars did not pass. | language fell in 9 of 12 (needed 10) | a case study, not a headline | Pre-registered; exploratory variants in the [write-up](docs/writeup_sedation.md) |
+
 ### Sedation case study
 
 Frozen group statistics, with exploratory variants labelled: [docs/writeup_sedation.md](docs/writeup_sedation.md).
+
+</details>
+
+### Source files
+
+Files: `results/section8.json` · `results/r2_paranoia.json` and `results/r5_short_scan.json` (run record `results/r2_run/RUN.md`) ·
+`results/d20_notthefall.json` · `results/picker/` (the picker and the wall) · `results/face_map.json`
+(run list `results/face_map_runs.json`).
+
+<details>
+<summary>Reading the results: terms and notation</summary>
+
+### Reading the results
+
+| Term | What it means |
+|---|---|
+| fMRI | a brain scan that tracks blood-oxygen changes, a slow stand-in for brain activity; one brain volume every second or two |
+| TRIBE v2 | Meta FAIR's model that forecasts the fMRI response of a healthy adult brain to a film, a sound or a story |
+| Held out | brain data the forecast was not tuned on |
+| Pre-registered | the test, its bar and its scoring code were committed before the brain data was read; scored once, pass or fail |
+| "Worth about 5 real volunteers" | the forecast predicted each listener about as well as averaging 5 other real listeners' scans |
+| p | how likely a difference at least this large would be if there were no real difference; our pre-registered bar is p < 0.05 |
+| HL | the typical size of the difference between the two versions, with its 95% interval |
+| Gray and colour | on every chart, gray dashed is TRIBE's forecast; colour is real people |
+
+</details>
+
+## Who it's for
+
+| Who | What they do | What they get |
+|---|---|---|
+| A lab adding a new story to a listening study | types the study; Muse Spark 1.3 plans it from the tested menu | a forecast of the healthy response before booking scanner time, and the evidence for how far to trust it |
+| A researcher building a control condition | builds the sentence shuffle; Muse Voice Transcribe reads it back | a control that is what it claims to be, or a blocked build (the check caught our own broken word scramble) |
+| A reviewer deciding whether to trust a forecast | opens Evidence | how forecasts held up on real public scans, beside cheap baselines, misses included |
+
+Not for: anything about one patient's scan. The planner declines it, with the reason.
+
+## A worked example
+
+The first story on the live menu, as the page runs it:
+
+1. **Plan.** The researcher picks or types: *"Plan an exploratory stock TRIBE forecast for healthy English-speaking adults: The Black
+   Cat, intact versus sentences shuffled, in the language network."* Muse Spark 1.3 returns the plan card:
+   *"Plan (v2.1): healthy adults, English, LibriVox audiobook; conditions intact, sentences shuffled; brain areas language network;
+   analysis: stock TRIBE v2 forecast."* The story card beside it lists what is in the story, each note timed and linked to the audio:
+   *"The Black Cat, read by Tom Yates: one of 4 screened public stories · 1 voice heard · 6 sentences · notes: death or dying (0:43),
+   alcohol or drugs (5:08), injury or illness (5:37), violence (6:04), ... Not a full review; listen before you use a story."*
+2. **Build and check.** StillHere cuts the clip at sentence boundaries and shuffles the sentences; Muse Voice Transcribe reads the
+   built audio back and fills the checklist (words kept, order changed). A failed check blocks the build.
+3. **Audit.** Muse Spark Open reads the plan and leaves notes. Advisory: it never blocks anything.
+4. **Forecast.** The laptop worker runs TRIBE v2 stage by stage (w2v-BERT for sound, Llama 3.2 for words in context) and the page
+   shows each lane as it runs. It ends on the gray forecast alone: "No public scan of this clip. Forecast, not a scan."
+5. **Evidence.** Below it, held-out forecasts are drawn against real listeners, beside cheap baselines, so the researcher can see how
+   such forecasts held up on real scans.
+
+## What it does
+
+The Pilot page is a rail of six stations. Five of them call a Meta model live; Evidence replays committed results. A live station
+shows its recorded run, labelled so, when live calls are off or a budget is spent.
+
+| | Station | What happens | Meta model |
+|---|---|---|---|
+| 1 | **Plan** | The researcher types a study. The planner turns it into a strict study spec from a tested menu (a JSON schema built from the stimuli, controls and analyses we have evidence for), or declines with a reason code and the nearest tested option. Ask about one patient's scan, and it declines, with the reason. A request can name content notes to avoid; code, not the model, filters the menu on the story cards. | Muse Spark 1.3 (default); Muse Spark Open on Fireworks or Baseten (private mode) |
+| 2 | **Build and check** | StillHere cuts the story at sentence boundaries with short crossfades. Muse Voice Transcribe reads the built audio back and fills the checklist: words kept and word order decide whether a control is what it claims to be. A failed check blocks the build. "Rebuild with the old bug" replays the broken word scramble the check caught. | Muse Voice Transcribe |
+| 3 | **Audit** | Spark Open reads the plan and leaves notes. Advisory check, not measured: it never blocks anything. | Muse Spark Open |
+| 4 | **Forecast** | A judge picks one of 4 screened public stories, a condition and a seed. TRIBE v2 forecasts the brain response, stage by stage, on the laptop GPU, with its Llama 3.2 text lane on (fp16). A saved forecast is shown whenever one exists for your choice. New seeds run live on the laptop, 10:00-14:00 ET, Nov 4-9. Every live run ends on the gray forecast, with no real line drawn over it. We found no public scan of the 4 screened stories; Alice chapter 1 has one (OpenNeuro ds002322), and its end line says so. | TRIBE v2 (V-JEPA 2, w2v-BERT, Llama 3.2 inside) |
+| 5 | **Evidence** | Did the forecasts hold up? Each forecast against real public scans it never saw. These panels replay committed results files, each beside its cheap baselines. | TRIBE v2 |
+| 6 | **Film** | The same loop on video. SAM 3.1 masked the faces in the first 190 s of Tears of Steel; StillHere filled them with the surrounding colour, and filled a same-size patch elsewhere in each frame as a control. Type "face", or another word, to make the same edit on three frames. | SAM 3.1, Muse Glimmer 30B, Muse Spark Open |
+
+The live menu (`docs/rules/story_menu_rule.md`, exploratory; rule committed before any story was downloaded): 4 screened public
+LibriVox stories, then the Alice chapters as backup. The screen runs Muse Voice Transcribe with diarization: one voice, no silence
+over 5 s, and agreement with the word table TRIBE reads. Spark Open read every screened story and noted what is in it, with the line
+and the time. The notes are the union of word-for-word quotes found in the transcript over 3 calls at temperature 0.6. Not a full
+review; listen before you use a story.
 
 ## Key features
 
