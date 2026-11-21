@@ -1,0 +1,3 @@
+pytest tests/test_failure_injections.py, 21 Nov 2026, scorer at the section 1 definition of 'beats':
+FAILED tests/test_failure_injections.py::test_f2_word_rate_in_disguise - assert not r['baselines']['word_rate']['beaten'] (was True)
+1 failed, 8 passed

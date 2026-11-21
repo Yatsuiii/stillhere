@@ -49,3 +49,15 @@ them pass, and none may be loosened afterwards without a new entry here.
 - F7 Scale: multiplying the forecast by 10 or adding a constant changes no number.
 - F8 Inputs: mismatched lengths, NaNs or fewer than 3 people raise an error instead of returning a number.
 - F9 Determinism: the same inputs and seed give byte-identical JSON.
+
+## 3. Amendment before freezing (21 Nov 2026): F2 failed, so "beats a baseline" got stricter
+
+With the section 1 definition, F2 failed: a forecast that is word rate plus a little noise "beat" the word-rate baseline, because its
+per-person z differed from word rate's by tiny amounts in a consistent direction and the signed-rank test called that significant.
+That is the exact mistake the scorer exists to catch, so the definition changes, not the test.
+
+New definition: the model beats a baseline only if (a) its group mean z is higher, (b) the Holm-corrected one-sided Wilcoxon p on the
+per-person differences is below 0.05, and (c) its beyond-baselines z is above zero for the group (one-sided Wilcoxon p < 0.05). Part
+(c) asks whether the forecast carries anything the baselines do not. The F1 to F9 tests are unchanged.
+
+The failing run is kept: `results/dev_f2_failure.txt`.
