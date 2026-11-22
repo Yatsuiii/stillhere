@@ -43,3 +43,11 @@ committed R2 numbers.
 - If any step fails: "R8: rule committed, not run ({reason})."
 
 Healthy volunteers only. Not a diagnosis or medical advice.
+
+## Dated amendment, 22 Nov 2026 (before any training scan is downloaded)
+
+- Training scans: the dataset's own fMRIPrep **fsaverage5** surface files (`space-fsaverage5`, found on the bucket after the rule was
+  committed), in place of the first 10,242 fsaverage6 vertices. Paranoia's scorer reads fMRIPrep fsaverage5 too, so this matches it.
+- One run per listener: a listener's first run of a story (pieman has a second hearing for some listeners, which is not used).
+- spaCy: the `en_core_web_md` 3.7.1 vectors are read with spaCy 3.8.7 (3.7 has no build for this machine's Python 3.13). Only the
+  vector table is used, not the pipeline.
