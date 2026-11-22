@@ -180,16 +180,23 @@ def fit(data):
         mu = np.vstack([v[name] for v in sets.values()]).mean(0); sd = np.vstack([v[name] for v in sets.values()]).std(0); sd[sd == 0] = 1
         Xs = {s: delay((v[name] - mu) / sd) for s, v in sets.items()}
         Ys = {s: H.zrow(v["Y"].T).T for s, v in sets.items()}
+        folds = {}
+        for held in STORIES:
+            Xtr = np.vstack([Xs[s] for s in STORIES if s != held]); Ytr = np.vstack([Ys[s] for s in STORIES if s != held])
+            U, sv, Vt = np.linalg.svd(Xtr, full_matrices=False)
+            folds[held] = (sv, Vt, (U.T @ Ytr))
+            del Xtr, Ytr, U
         cv = []
         for a in ALPHAS:
             rs = []
             for held in STORIES:
-                Xtr = np.vstack([Xs[s] for s in STORIES if s != held]); Ytr = np.vstack([Ys[s] for s in STORIES if s != held])
-                Wt = ridge_fit(Xtr, Ytr, a); P = Xs[held] @ Wt
+                sv, Vt, UtY = folds[held]
+                Wt = Vt.T @ ((sv / (sv ** 2 + a))[:, None] * UtY); P = Xs[held] @ Wt
                 Pz = (P - P.mean(0)) / (P.std(0) + 1e-9); Yz = (Ys[held] - Ys[held].mean(0)) / (Ys[held].std(0) + 1e-9)
                 rs.append(float(np.nanmean((Pz * Yz).mean(0))))
             cv.append(float(np.mean(rs)))
             print(name, f"alpha {a:.3g} cv r {cv[-1]:.4f}", flush=True)
+        del folds
         best = float(ALPHAS[int(np.argmax(cv))])
         Wt = ridge_fit(np.vstack(list(Xs.values())), np.vstack(list(Ys.values())), best)
         np.savez(f"{data}/ridge_{name}.npz", W=Wt.astype(np.float32), mu=mu, sd=sd)

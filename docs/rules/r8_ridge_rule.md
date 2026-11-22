@@ -51,3 +51,11 @@ Healthy volunteers only. Not a diagnosis or medical advice.
 - One run per listener: a listener's first run of a story (pieman has a second hearing for some listeners, which is not used).
 - spaCy: the `en_core_web_md` 3.7.1 vectors are read with spaCy 3.8.7 (3.7 has no build for this machine's Python 3.13). Only the
   vector table is used, not the pipeline.
+
+## Result, 22 Nov 2026 (exploratory)
+
+Exploratory. On Paranoia (22 listeners), a ridge model on word vectors, trained on 8 Narratives stories, was worth about 0 real
+listeners in language areas (at least 0; language z -0.03, p = 0.66; beat word rate and the envelope in 1 of 4 comparisons). Stock
+TRIBE v2, scored the same way: about 3 (at least 1.9). Leave-one-story-out correlation in training was low (0.037, alpha at the top of
+the grid, 10^6), and the ridge forecast correlates only about 0.07 to 0.10 with TRIBE v2's over time, so this reads as a weak model, not
+a file or timing error. Files: `results/r8_ridge_paranoia.json`, `results/r8_ridge_fit.json`.
