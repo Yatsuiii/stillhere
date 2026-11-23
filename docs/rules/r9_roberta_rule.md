@@ -36,3 +36,13 @@ Everything is as in R8 (`docs/rules/r8_ridge_rule.md` with its amendment, `scrip
 - If any step fails: "R9: rule committed, not run ({reason})."
 
 Healthy volunteers only. Not a diagnosis or medical advice.
+
+## Result, 23 Nov 2026 (exploratory)
+
+Exploratory. On Paranoia (22 listeners), a ridge model on RoBERTa-base features, trained on 8 Narratives stories, was worth about 0
+real listeners in language areas (at least 0). Stock TRIBE v2, scored the same way: about 3 (at least 1.9). Word-vector ridge (R8):
+about 0. Beyond that headline, RoBERTa did better than R8's word vectors: its forecast tracked the listeners' language areas above
+chance (language z 0.84, p = 0.0001, though under the bar the scorer sets, and only 3 of 22 listeners detected one at a time), it
+followed the intact story better than the shuffled one (p = 0.02), its share of the real-volunteer reference was 12% (TRIBE v2 59%,
+R8 0%), and it beat word rate (15 of 22 listeners, p = 0.004) but not the envelope or surprisal (1 of 4 baselines). Leave-one-story-out
+training correlation 0.037 at alpha 10^4.5. Files: `results/r9_roberta_paranoia.json`, `results/r9_roberta_fit.json`.
