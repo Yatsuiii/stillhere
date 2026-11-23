@@ -50,6 +50,9 @@ So the forecast plus 1 volunteer does about the job of 5, and the forecast plus 
 ## Next
 
 - Done (exploratory, R8): a ridge model on word vectors, trained on 8 Narratives stories and scored the same way on Paranoia, was worth about 0 real listeners, against about 3 for TRIBE v2. So the brain model is doing real work that a simple word-vector model does not.
+- Done (exploratory, R9): the standard encoding model, ridge on RoBERTa-base features with the same training and scoring, also came out
+  at about 0 real listeners (12% of the real-volunteer reference, against 59% for TRIBE v2), though it did track the story above chance
+  and followed the intact story better than the shuffled one.
 - Run the same per-person test on every public story-listening dataset, one row per story and lab.
 - Run the Mandarin Le Petit Prince section, so only the language changes.
 
