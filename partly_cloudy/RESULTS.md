@@ -66,7 +66,7 @@ In adults, detection is still rising at the full film length. In 3-4 year olds i
 | sub-pixar136 | .09 (.24) | .09 (.26) | 3 | 0 of 2 / **2 of 2** |
 | sub-pixar141 | -.05 (.61) | .13 (.14) | 0 | 0 of 2 / 0 of 2 |
 | sub-pixar149 | -.13 (.78) | .32 (.005) | 10 | 0 of 2 / 1 of 2 |
-| sub-pixar155 | .20 (.135) | .58 (.001) | 3 | 1 of 2 / 1 of 2 |
+| sub-pixar155 | .20 (.135) | .58 (<.001) | 3 | 1 of 2 / 1 of 2 |
 
 - Personal ROIs (top 50 voxels picked on the other half) rescue one adult (136) in both halves. That adult's pain network is also flat, so misregistration fits as well as ROI placement.
 - At half length, adult detection is 65% with spheres and 76% with personal ROIs. Children show no consistent gain.
