@@ -44,3 +44,12 @@ for i,(lo,hi) in enumerate([(-1,q[0]),(q[0],q[1]),(q[1],1e9)]):
     G=[r for r in K if lo<r['spikes']<=hi]
     print(f"children motion tercile {i+1} (spikes {lo:.0f}-{hi:.0f}]: n={len(G)} ToM det {np.mean([r['tom_p']<.05 for r in G]):.0%}")
 print("ToM specificity >0 by group:",{g:f"{np.mean([r['tom_spec']>0 for r in rows if r['grp']==g]):.0%}" for g in grps})
+
+# EXPLORATORY (added after seeing primary results, not in PREREG): reference = same-age-group mean, leave-self-out
+print("\nEXPLORATORY same-age reference")
+fa_all=np.mean([r['tom_rev_p']<.05 for r in rows]); print(f"overall ToM reversed-reference false alarms: {fa_all:.1%} of {len(rows)}")
+for g in grps:
+    G=[s for s in S if S[s]['grp']==g]; det=[];rev=[]
+    for s in G:
+        r=z(np.mean([S[o]['tom'] for o in G if o!=s],0)); det.append(test(S[s]['tom'],r)[1]<.05); rev.append(test(S[s]['tom'],r[::-1])[1]<.05)
+    print(f"{g:7s} ToM det vs own age group {np.mean(det):.0%}  reversed FA {np.mean(rev):.0%}")
