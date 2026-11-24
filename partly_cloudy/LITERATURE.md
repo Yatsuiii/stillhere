@@ -1,0 +1,22 @@
+# What's already known (checked 24 Nov 2026)
+
+- **Jacoby, Bruneau, Koster-Hale & Saxe (2016), NeuroImage 126:39-48.**
+  - Partly Cloudy works as a localiser: each ToM and pain fROI was found individually in at least 70% of participants (n = 17), from one ~5.6 minute run.
+  - Detection rule: at least 10 voxels at p < .005 in the individual.
+  - Only one movie run, so no movie test-retest.
+  - **Overlap:** per-person identification from one viewing is already established, at a similar rate (≥70% vs 79% here). This work measures something different: time-course tracking against the group with a calibrated false-alarm rate, rather than GLM activation. It must not be presented as the first per-person rate.
+- **Richardson, Lisandrelli, Riobueno-Naylor & Saxe (2018), Nature Communications 9:1027.**
+  - Each child's time course was correlated with the adult average ("functional maturity").
+  - Reported as age-bin r and per-child regressions. No per-child significance counts, no per-person null, no test-retest, no data-length analysis.
+  - **Overlap:** the per-child correlation with adults is theirs. What's added here is the per-person test with a calibrated false-alarm rate, and the minutes-needed curve.
+- **Richardson & Saxe (2019), Developmental Science, e12863.**
+  - 56 children aged 3.5-7 watched Partly Cloudy twice.
+  - Older children's ToM regions respond earlier on the second viewing (anticipation).
+  - No per-person reliability or detection reported. Data on OSF (osf.io/5jvwf).
+- **Richardson (2019), Developmental Cognitive Neuroscience** (DOI 10.1016/j.dcn.2018.11.002). A confirmatory replication with "The Present". Group-level only.
+- **Schmälzle et al. (bioRxiv 10.1101/158188).**
+  - With 3 viewings, averaging raised visual-cortex ISC (0.35 to 0.48) and split-half reliability (0.87 to 0.93).
+  - Group-level, not ToM, not per-person detection.
+  - **Overlap:** that averaging viewings raises reliability is known in general. What's new here is putting a number on the per-person detection gain in ToM regions.
+- Not read (pages blocked): Hasson et al. 2010, "Reliability of cortical activity during natural stimulation"; the 2025 IMAG movie-as-localiser paper (DOI 10.1162/IMAG.a.1209).
+- **Aly, Chen, Turk-Browne & Hasson (2018), J Neurosci** (ds001545). Repeated viewing of a clip changes responses in the posterior medial network (anticipation). Our per-person ToM and pain detection on that data also falls with repetition.

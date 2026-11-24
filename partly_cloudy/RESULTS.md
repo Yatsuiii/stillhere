@@ -55,6 +55,7 @@ In adults, detection is still rising at the full film length. In 3-4 year olds i
 - Two 3 minute viewings (87-90%) beat one 5.3 minute viewing (79-83%) for about the same total scan time.
 - With only 12 people, the intervals overlap.
 - Localiser-defined personal ROIs and group spheres perform about the same.
+- **Did not replicate at larger n:** in 30 adults who watched a 90 s clip 6 times (ds001545), a second viewing added almost nothing (ToM 37% → 40%, pain 53% → 53%). Tracking fell with each repeat, and the pain network fell fastest (53% on viewing 1, 23% on viewing 2). See [../repeat_viewing_ds001545/RESULTS.md](../repeat_viewing_ds001545/RESULTS.md).
 
 ## 4. The missed adults (ds000228)
 
@@ -82,5 +83,6 @@ In adults, detection is still rising at the full film length. In 3-4 year olds i
 
 ## What this means for a passive test
 - A negative result from one ~5 minute viewing doesn't show that processing is absent: about 1 healthy adult in 5 is missed.
-- Showing the same film twice and averaging looks like the cheapest fix.
-- Testing that in children needs a dataset where each child saw the film twice.
+- Repeating the film is not a reliable fix. It helped in IBC (12 adults, a long film) but not in ds001545 (30 adults, a short clip shown 6 times), and the first viewing carries the most signal.
+- A longer first viewing looks like the safer lever: adult detection was still rising at the end of Partly Cloudy.
+- Whether children behave the same way needs the 2019 repeat-viewing data.
