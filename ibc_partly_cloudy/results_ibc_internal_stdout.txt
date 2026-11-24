@@ -1,0 +1,19 @@
+subjects=12 viewings=24 run TRs=178; alignment offset k=16 (group pain r=0.46; next best 0.45)
+alignment curve r by k: [np.float64(-0.1), np.float64(-0.12), np.float64(-0.14), np.float64(-0.1), np.float64(-0.05), np.float64(0.01), np.float64(0.04), np.float64(0.07), np.float64(0.13), np.float64(0.23), np.float64(0.32), np.float64(0.4), np.float64(0.43), np.float64(0.42), np.float64(0.45), np.float64(0.45), np.float64(0.46), np.float64(0.44), np.float64(0.39), np.float64(0.31), np.float64(0.26)]
+ToM group-mean curve by k: [np.float64(-0.09), np.float64(-0.14), np.float64(-0.21), np.float64(-0.26), np.float64(-0.22), np.float64(-0.14), np.float64(0.0), np.float64(0.14), np.float64(0.26), np.float64(0.32), np.float64(0.32), np.float64(0.29), np.float64(0.27), np.float64(0.27), np.float64(0.29), np.float64(0.31), np.float64(0.33), np.float64(0.34), np.float64(0.29), np.float64(0.25), np.float64(0.22)]
+tom_grp: detected 19/24, reversed FA 1/24, median r 0.30
+tom_ind: detected 20/24, reversed FA 1/24, median r 0.29
+pain_grp: detected 20/24, reversed FA 1/24, median r 0.22
+per-subject internal-ref detection (ap, pa) for tom_ind and tom_grp:
+  sub-01 ind ['0.26*', '0.44*'] grp ['0.30*', '0.38*']
+  sub-04 ind ['0.33*', '-0.04 '] grp ['0.25*', '-0.14 ']
+  sub-05 ind ['0.33*', '0.31*'] grp ['0.31*', '0.32*']
+  sub-06 ind ['0.42*', '0.44*'] grp ['0.31*', '0.43*']
+  sub-07 ind ['0.17 ', '0.29*'] grp ['0.15*', '0.35*']
+  sub-08 ind ['0.28*', '0.25*'] grp ['0.16*', '0.38*']
+  sub-09 ind ['0.24*', '0.22*'] grp ['0.17*', '0.19*']
+  sub-11 ind ['0.45*', '0.43*'] grp ['0.47*', '0.36*']
+  sub-12 ind ['0.29*', '0.22*'] grp ['0.14*', '0.19*']
+  sub-13 ind ['0.41*', '0.17*'] grp ['0.31*', '0.18*']
+  sub-14 ind ['0.39*', '0.01 '] grp ['0.42*', '0.05 ']
+  sub-15 ind ['0.12 ', '0.39*'] grp ['0.15 ', '0.42*']

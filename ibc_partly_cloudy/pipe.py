@@ -24,8 +24,10 @@ def run(s):
     if os.path.exists(out): return
     keys=[k for k in open(f'{W}/keys.txt').read().split() if f'/{s}/' in k]
     rd=f'{W}/raw_{s}'; os.makedirs(rd,exist_ok=True)
+    cache=f'{W}/cache_{s}'
     for k in keys:
         f=f'{rd}/{os.path.basename(k)}'
+        if os.path.exists(cache+'/done') and k.endswith('_bold.nii.gz'): continue
         if not os.path.exists(f): urllib.request.urlretrieve('https://s3.amazonaws.com/openneuro.org/'+k,f)
     cache=f'{W}/cache_{s}'
     if os.path.exists(cache+'/done'):
@@ -44,11 +46,11 @@ def run(s):
           mc[tag]=r['motion_corrected'].numpy(); mp[tag]=np.array([np.ravel(ants.read_transform(q[0] if isinstance(q,(list,tuple)) else q).parameters) for q in r['motion_parameters']])
       epi=ants.from_numpy(np.mean(mc['PainMovie_dir-ap'],3),origin=ref.origin,spacing=ref.spacing,direction=ref.direction)
       t1=ants.image_read(glob.glob(f'{rd}/*T1w.nii.gz')[0]); T=tpl()
-      aff=ants.registration(fixed=T,moving=t1,type_of_transform='Affine')
-      bm=ants.apply_transforms(fixed=t1,moving=ants.threshold_image(T,T.mean()*0.3,1e9),transformlist=aff['invtransforms'],whichtoinvert=[True],interpolator='nearestNeighbor')
-      t1b=t1*ants.morphology(bm,'dilate',3)
+      r1=ants.registration(fixed=epi,moving=t1,type_of_transform='Rigid') # EPI pts -> T1 pts
+      em=ants.morphology(ants.threshold_image(epi,float(np.percentile(epi.numpy(),55)),1e9),'dilate',2)
+      bm=ants.apply_transforms(fixed=t1,moving=em,transformlist=r1['invtransforms'],whichtoinvert=[True],interpolator='nearestNeighbor')
+      t1b=t1*bm
       r2=ants.registration(fixed=t1b,moving=T,type_of_transform='SyN')    # T1 pts -> MNI pts
-      r1=ants.registration(fixed=epi,moving=t1b,type_of_transform='Rigid') # EPI pts -> T1 pts
       tl=r2['fwdtransforms']+r1['fwdtransforms']
 
       import shutil; os.makedirs(cache,exist_ok=True); tl2=[]
