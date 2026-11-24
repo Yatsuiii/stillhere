@@ -1,0 +1,22 @@
+tom: group  n  split-half r [95% CI]  Spearman-Brown  SD(full score)  mean full score
+  3yo     17  0.19 [-0.44, 0.64]   0.32 [-1.60, 0.78]   0.15   0.11
+  4yo     14  -0.26 [-0.74, 0.23]   -0.71 [-5.66, 0.38]   0.08   0.15
+  5yo     34  0.37 [0.08, 0.63]   0.54 [0.14, 0.77]   0.14   0.29
+  7yo     23  0.09 [-0.36, 0.51]   0.16 [-1.13, 0.67]   0.13   0.38
+  8-12yo  34  0.45 [0.01, 0.71]   0.62 [0.01, 0.83]   0.17   0.37
+  Adult   33  0.40 [0.06, 0.65]   0.58 [0.11, 0.79]   0.21   0.36
+pain: group  n  split-half r [95% CI]  Spearman-Brown  SD(full score)  mean full score
+  3yo     17  0.23 [-0.34, 0.70]   0.38 [-1.02, 0.83]   0.13   0.17
+  4yo     14  0.05 [-0.60, 0.69]   0.09 [-2.97, 0.81]   0.12   0.24
+  5yo     34  0.26 [-0.02, 0.54]   0.41 [-0.04, 0.70]   0.12   0.32
+  7yo     23  0.24 [-0.07, 0.52]   0.39 [-0.14, 0.69]   0.13   0.40
+  8-12yo  34  0.38 [0.04, 0.62]   0.55 [0.08, 0.77]   0.12   0.46
+  Adult   33  0.45 [0.12, 0.68]   0.62 [0.21, 0.81]   0.14   0.46
+
+EXPLORATORY pooled children (age-group means removed):
+  tom 3-4yo        n= 31 split-half r 0.08 [-0.38, 0.43]  Spearman-Brown 0.14
+  tom 5-12yo       n= 91 split-half r 0.35 [0.12, 0.53]  Spearman-Brown 0.52
+  tom all children n=122 split-half r 0.29 [0.08, 0.46]  Spearman-Brown 0.45
+  pain 3-4yo        n= 31 split-half r 0.16 [-0.24, 0.54]  Spearman-Brown 0.27
+  pain 5-12yo       n= 91 split-half r 0.29 [0.13, 0.44]  Spearman-Brown 0.45
+  pain all children n=122 split-half r 0.25 [0.09, 0.41]  Spearman-Brown 0.40

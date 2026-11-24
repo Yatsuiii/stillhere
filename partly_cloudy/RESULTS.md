@@ -73,6 +73,25 @@ In adults, detection is still rising at the full film length. In 3-4 year olds i
 - At half length, adult detection is 65% with spheres and 76% with personal ROIs. Children show no consistent gain.
 - sub-pixar132 is the clearest case: no spikes, a normal pain response, and ToM running against the other adults throughout.
 
+## 5. How reliable is a per-child maturity score? (rules: [PREREG6.md](PREREG6.md); code: [reliability.py](reliability.py); output: [reliability_stdout.txt](reliability_stdout.txt))
+
+Richardson et al. 2018 score each child by correlating their ToM time course with the adult average ("functional maturity"). Here the score is computed separately on each half of the film (79 TRs each) and the two halves are correlated across people.
+
+| Group | n | ToM split-half r [95% CI] | ToM full length (Spearman-Brown) | Pain full length |
+|---|---|---|---|---|
+| 3 | 17 | .19 [-.44, .64] | .32 | .38 |
+| 4 | 14 | -.26 [-.74, .23] | (undefined) | .09 |
+| 5 | 34 | .37 [.08, .63] | .54 | .41 |
+| 7 | 23 | .09 [-.36, .51] | .16 | .39 |
+| 8-12 | 34 | .45 [.01, .71] | .62 | .55 |
+| Adults | 33 | .40 [.06, .65] | .58 | .62 |
+
+Exploratory, pooling children after removing age-group means: ToM reliability is **.14 in 3-4 year olds** (n = 31, split-half r .08 [-.38, .43]), .52 at ages 5-12 and .45 across all 122 children. Pain is .27, .45 and .40.
+
+**What this implies.** The 2018 false-belief composite has α = .71. Suppose the true correlation between ToM maturity and behaviour were .30. With these reliabilities you would observe only about .17 across children, which needs about 270 children for 80% power. In 3-4 year olds you would observe about .10, which needs about 870. So a null brain-behaviour result in this age range can't tell "no relation" apart from "unreliable score".
+
+Caveat: the two halves contain different scenes, so these numbers are a lower bound on true test-retest reliability. A second run of the same film per child would give the real number.
+
 ## What failed or was corrected (kept visible)
 - **First estimator:** the first pass drew 1000 circular shifts with replacement from only 139 possible. That was noisy, and borderline subjects flipped with the seed. An independent re-check caught it ([independent_review/](independent_review/)), and everything above uses the fixed null. Old numbers: [RESULTS_v1_superseded.md](RESULTS_v1_superseded.md).
 - **Withdrawn claim:** "No IBC adult is missed on both viewings." With a 1-in-5 miss rate, chance predicts that for 12 people. With the fixed null, sub-09 is in fact missed on both viewings using spheres.
