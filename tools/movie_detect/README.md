@@ -24,3 +24,5 @@ python movie_detect.py tsv/ --tr 2 --regions DMPFC,MMPFC,VMPFC,PC,LTPJ,RTPJ --ou
 ## Check
 On the 33 ds000228 adults (Partly Cloudy, cleaned with the shared ART and CompCor regressors), the tool detects **27/33 (82%, CI 66-91%)**.
 The full analysis ([final.py](../../partly_cloudy/final.py)) gives 26/33. The difference is one borderline adult, sub-pixar127 (p ≈ .05). Its result depends on which pool the cutoff is calibrated on: adults only here, all 155 people in the full analysis.
+
+`extract.py` was checked on sub-pixar123: with no confounds and nilearn spheres, its region series correlate 0.81-0.92 with the SPM-voxel extraction plus ART/CompCor used in the analysis. Pass your own confounds file to get closer.
