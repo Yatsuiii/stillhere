@@ -16,6 +16,14 @@ Here the question is per person: from one 5.6 minute scan, in how many individua
 - Significance: 1000 circular shifts of the subject's own series, p < .05 one-sided.
 - False-alarm check: the same test against the time-reversed adult average. This should come out near 5%.
 
+## Update (follow-up checks, rules in [PREREG2.md](PREREG2.md))
+
+- **False alarms:** the 15% in 8-12 year olds was one noisy draw per person. Against 20 mismatched references per person, the false-alarm rate is 6.4-7.6% in every age group. So p < .05 on the circular-shift null is a little liberal, and p < .033 gives 5%. At that threshold, ToM detection is: 3 yo 41%, 4 yo 29%, 5 yo 68%, 7 yo 87%, 8-12 yo 85%, adults 79%.
+- **Motion:** removing spike-flagged TRs changes nothing (adults 85%, 7 yo 91%). None of the 6 missed adults is rescued by scrubbing (sub-pixar134 becomes borderline, p = .039).
+- **Timing:** taking each person's lag from the pain network and applying it to ToM rescues none of the 6 missed adults. Their pain lag is 0 in 4 of the 6.
+- **Personal ROIs, split half:** choosing the top 50 voxels per region on one half and testing on the other raises adult detection from 64% to 73% at half length. Children don't gain. Of the 6 missed adults, only sub-pixar136 is rescued in both halves (r = .43 and .46 vs .08 and .06 with spheres). sub-pixar155 is rescued in one half. sub-pixar132 is negative in both halves with both ROI types (r = -.18 to -.30), while its pain network tracks normally, with no motion and no timing offset.
+- **Replication on IBC** (12 adults, two viewings each, false-belief localiser): about 1 in 5 single viewings miss, localiser ROIs don't fix it, and no one is missed on both viewings. See [../ibc_partly_cloudy/RESULTS.md](../ibc_partly_cloudy/RESULTS.md).
+
 ## Result (preregistered)
 
 | Age group | n | ToM detected | Pain detected | ToM false alarms (reversed) | Pain false alarms (reversed) | Median ToM r |

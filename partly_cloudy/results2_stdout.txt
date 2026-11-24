@@ -1,0 +1,37 @@
+A. split-half detection (both halves pooled, % of 2n tests): group sphere | personal top-50 | personal vs REVERSED ref (selection false alarms)
+  3yo     n= 17  grp 29%  per 24%  per-rev 6%  grp-rev 6%
+  4yo     n= 14  grp 29%  per 18%  per-rev 7%  grp-rev 14%
+  5yo     n= 34  grp 49%  per 50%  per-rev 1%  grp-rev 7%
+  7yo     n= 23  grp 76%  per 70%  per-rev 2%  grp-rev 9%
+  8-12yo  n= 34  grp 69%  per 74%  per-rev 6%  grp-rev 9%
+  Adult   n= 33  grp 64%  per 73%  per-rev 6%  grp-rev 6%
+  missed adults:
+    sub-pixar132 {'A_true_grp_h0': np.float64(-0.3), 'A_true_grp_h1': np.float64(-0.21), 'A_true_per_h0': np.float64(-0.18), 'A_true_per_h1': np.float64(-0.28)} p [np.float64(0.856), np.float64(1.0)]
+    sub-pixar134 {'A_true_grp_h0': np.float64(-0.03), 'A_true_grp_h1': np.float64(0.38), 'A_true_per_h0': np.float64(0.01), 'A_true_per_h1': np.float64(0.06)} p [np.float64(0.483), np.float64(0.422)]
+    sub-pixar136 {'A_true_grp_h0': np.float64(0.08), 'A_true_grp_h1': np.float64(0.06), 'A_true_per_h0': np.float64(0.43), 'A_true_per_h1': np.float64(0.46)} p [np.float64(0.015), np.float64(0.001)]
+    sub-pixar141 {'A_true_grp_h0': np.float64(0.09), 'A_true_grp_h1': np.float64(-0.1), 'A_true_per_h0': np.float64(0.23), 'A_true_per_h1': np.float64(-0.03)} p [np.float64(0.063), np.float64(0.538)]
+    sub-pixar149 {'A_true_grp_h0': np.float64(0.21), 'A_true_grp_h1': np.float64(-0.24), 'A_true_per_h0': np.float64(0.37), 'A_true_per_h1': np.float64(-0.2)} p [np.float64(0.001), np.float64(0.974)]
+    sub-pixar155 {'A_true_grp_h0': np.float64(-0.02), 'A_true_grp_h1': np.float64(0.37), 'A_true_per_h0': np.float64(0.11), 'A_true_per_h1': np.float64(0.49)} p [np.float64(0.413), np.float64(0.001)]
+B. false alarms over 20 mismatched refs per person:
+  3yo     7.1%
+  4yo     6.4%
+  5yo     7.1%
+  7yo     7.6%
+  8-12yo  7.1%
+  Adult   6.4%
+C. scrubbed detection:
+  3yo     35%  (median kept TRs 156)
+  4yo     43%  (median kept TRs 152)
+  5yo     74%  (median kept TRs 153)
+  7yo     91%  (median kept TRs 153)
+  8-12yo  85%  (median kept TRs 152)
+  Adult   85%  (median kept TRs 157)
+  missed adults scrubbed: [('sub-pixar132', np.float64(-0.25), np.float64(0.923)), ('sub-pixar134', np.float64(0.22), np.float64(0.039)), ('sub-pixar136', np.float64(0.09), np.float64(0.305)), ('sub-pixar141', np.float64(-0.05), np.float64(0.659)), ('sub-pixar149', np.float64(-0.14), np.float64(0.895)), ('sub-pixar155', np.float64(0.2), np.float64(0.062))]
+D. best lag distribution:
+  3yo     [(-3, 5), (-2, 2), (-1, 2), (0, 5), (1, 1), (2, 2)]
+  4yo     [(-3, 3), (-2, 2), (-1, 3), (0, 3), (1, 2), (2, 1)]
+  5yo     [(-3, 2), (-2, 2), (-1, 12), (0, 12), (1, 4), (3, 2)]
+  7yo     [(-3, 1), (-2, 1), (-1, 10), (0, 8), (1, 3)]
+  8-12yo  [(-3, 1), (-2, 1), (-1, 6), (0, 21), (1, 5)]
+  Adult   [(-3, 3), (-1, 3), (0, 22), (1, 4), (3, 1)]
+  missed adults lag: [('sub-pixar132', 3), ('sub-pixar134', -3), ('sub-pixar136', 0), ('sub-pixar141', -3), ('sub-pixar149', -1), ('sub-pixar155', -3)]

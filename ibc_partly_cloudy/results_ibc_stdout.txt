@@ -1,0 +1,19 @@
+subjects=12 viewings=24 run TRs=178; alignment offset k=16 (group pain r=0.46; next best 0.45)
+tom_grp      detected 11/24  median r 0.13
+tom_ind      detected 7/24  median r 0.10
+tom_grp_rev  detected 1/24  median r 0.02
+tom_ind_rev  detected 1/24  median r -0.03
+pain_grp     detected 14/24  median r 0.17
+McNemar: personal-only 2, group-only 6, exact p=0.289
+sub-01 retest grp 0.2 ind 0.15 | r ap/pa grp [np.float64(0.23), np.float64(0.16)] ind [np.float64(0.27), np.float64(0.1)] | loc t grp/ind 0.4 2.5
+sub-04 retest grp 0.16 ind 0.19 | r ap/pa grp [np.float64(0.23), np.float64(-0.13)] ind [np.float64(0.29), np.float64(-0.09)] | loc t grp/ind 0.9 3.4
+sub-05 retest grp 0.3 ind 0.28 | r ap/pa grp [np.float64(0.13), np.float64(0.2)] ind [np.float64(0.21), np.float64(0.22)] | loc t grp/ind 0.4 2.2
+sub-06 retest grp 0.34 ind 0.35 | r ap/pa grp [np.float64(0.23), np.float64(0.22)] ind [np.float64(0.24), np.float64(0.24)] | loc t grp/ind 1.1 3.0
+sub-07 retest grp 0.13 ind 0.14 | r ap/pa grp [np.float64(0.14), np.float64(0.12)] ind [np.float64(0.11), np.float64(0.02)] | loc t grp/ind 0.1 2.0
+sub-08 retest grp 0.27 ind 0.2 | r ap/pa grp [np.float64(0.07), np.float64(0.28)] ind [np.float64(0.09), np.float64(0.08)] | loc t grp/ind 0.3 2.3
+sub-09 retest grp 0.13 ind 0.13 | r ap/pa grp [np.float64(0.19), np.float64(0.08)] ind [np.float64(0.11), np.float64(0.06)] | loc t grp/ind 0.2 2.6
+sub-11 retest grp 0.29 ind 0.29 | r ap/pa grp [np.float64(0.09), np.float64(0.23)] ind [np.float64(0.06), np.float64(0.25)] | loc t grp/ind 0.5 2.8
+sub-12 retest grp -0.0 ind 0.15 | r ap/pa grp [np.float64(-0.04), np.float64(0.05)] ind [np.float64(0.12), np.float64(0.08)] | loc t grp/ind 0.7 2.6
+sub-13 retest grp 0.14 ind 0.12 | r ap/pa grp [np.float64(0.06), np.float64(0.13)] ind [np.float64(0.13), np.float64(-0.05)] | loc t grp/ind 1.5 4.1
+sub-14 retest grp 0.08 ind 0.01 | r ap/pa grp [np.float64(0.22), np.float64(0.02)] ind [np.float64(0.07), np.float64(0.07)] | loc t grp/ind 1.0 2.8
+sub-15 retest grp 0.2 ind 0.22 | r ap/pa grp [np.float64(0.04), np.float64(0.18)] ind [np.float64(0.12), np.float64(0.09)] | loc t grp/ind 0.8 3.2
