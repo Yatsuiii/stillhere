@@ -1,0 +1,41 @@
+calibrated cutoffs: {30: 0.0505, 60: 0.0465, 90: 0.051, 120: 0.046, 158: 0.0529}  FA at .05: {30: np.float64(0.05), 60: np.float64(0.054), 90: np.float64(0.049), 120: np.float64(0.055), 158: np.float64(0.048)}
+
+1. full length (5.3 min), detection by group at calibrated cutoff [Wilson 95%] | at p<.05
+  3yo     5/17 = 29% [13%-53%] | 5/17
+  4yo     3/14 = 21% [8%-48%] | 3/14
+  5yo     24/34 = 71% [54%-83%] | 24/34
+  7yo     20/23 = 87% [68%-95%] | 20/23
+  8-12yo  30/34 = 88% [73%-95%] | 30/34
+  Adult   26/33 = 79% [62%-89%] | 26/33
+  missed adults:
+   sub-pixar127: ToM r=0.18 p=0.058; pain r=0.28 p=0.001; spikes(TR11-168)=2; VMPFC vox=198
+   sub-pixar132: ToM r=-0.25 p=0.936; pain r=0.26 p=0.017; spikes(TR11-168)=0; VMPFC vox=198
+   sub-pixar134: ToM r=0.22 p=0.105; pain r=0.43 p=0.001; spikes(TR11-168)=0; VMPFC vox=198
+   sub-pixar136: ToM r=0.09 p=0.235; pain r=0.09 p=0.256; spikes(TR11-168)=3; VMPFC vox=198
+   sub-pixar141: ToM r=-0.05 p=0.614; pain r=0.13 p=0.136; spikes(TR11-168)=0; VMPFC vox=198
+   sub-pixar149: ToM r=-0.13 p=0.780; pain r=0.32 p=0.005; spikes(TR11-168)=10; VMPFC vox=198
+   sub-pixar155: ToM r=0.20 p=0.135; pain r=0.58 p=0.000; spikes(TR11-168)=3; VMPFC vox=198
+
+2. by length: mean share of windows detected (calibrated) [bootstrap 95% CI over people]
+   group   1.0min  2.0min  3.0min  4.0min  5.3min
+   3yo     12%[7%-19%]  26%[14%-39%]  27%[13%-44%]  31%[13%-51%]  29%[12%-53%]
+   4yo     18%[11%-26%]  21%[11%-34%]  21%[8%-36%]  25%[9%-43%]  21%[0%-43%]
+   5yo     26%[19%-34%]  40%[29%-50%]  53%[40%-66%]  51%[35%-66%]  71%[56%-85%]
+   7yo     43%[36%-52%]  71%[60%-81%]  85%[73%-95%]  89%[76%-99%]  87%[74%-100%]
+   8-12yo  45%[38%-52%]  62%[50%-73%]  74%[61%-85%]  79%[67%-90%]  88%[76%-97%]
+   Adult   42%[34%-51%]  62%[50%-74%]  68%[55%-80%]  77%[63%-89%]  79%[64%-91%]
+
+4. split-half (half length), calibrated cutoffs {'per': 0.0834, 'grp': 0.0806}
+   3yo     sphere 26%  personal 26%
+   4yo     sphere 29%  personal 21%
+   5yo     sphere 54%  personal 54%
+   7yo     sphere 80%  personal 76%
+   8-12yo  sphere 76%  personal 81%
+   Adult   sphere 65%  personal 76%
+    sub-pixar127 {'grph0': '0.11', 'grph1': '0.27*', 'perh0': '0.20', 'perh1': '0.35*'}
+    sub-pixar132 {'grph0': '-0.30', 'grph1': '-0.21', 'perh0': '-0.18', 'perh1': '-0.28'}
+    sub-pixar134 {'grph0': '-0.03', 'grph1': '0.38', 'perh0': '0.01', 'perh1': '0.06'}
+    sub-pixar136 {'grph0': '0.08', 'grph1': '0.06', 'perh0': '0.43*', 'perh1': '0.46*'}
+    sub-pixar141 {'grph0': '0.09', 'grph1': '-0.10', 'perh0': '0.23', 'perh1': '-0.03'}
+    sub-pixar149 {'grph0': '0.21', 'grph1': '-0.24', 'perh0': '0.37*', 'perh1': '-0.20'}
+    sub-pixar155 {'grph0': '-0.02', 'grph1': '0.37*', 'perh0': '0.11', 'perh1': '0.49*'}
