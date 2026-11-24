@@ -19,3 +19,4 @@
   - Group-level, not ToM, not per-person detection.
   - **Overlap:** that averaging viewings raises reliability is known in general. What's new here is putting a number on the per-person detection gain in ToM regions.
 - Not read (pages blocked): Hasson et al. 2010, "Reliability of cortical activity during natural stimulation"; the 2025 IMAG movie-as-localiser paper (DOI 10.1162/IMAG.a.1209).
+- **Aly, Chen, Turk-Browne & Hasson (2018), J Neurosci** (ds001545). Repeated viewing of a clip changes responses in the posterior medial network (anticipation). Our per-person ToM and pain detection on that data also falls with repetition.
