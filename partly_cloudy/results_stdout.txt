@@ -1,0 +1,21 @@
+n=155 subjects; adults=33
+group   n  ToM_det  pain_det  ToM_FA(rev)  pain_FA(rev)  median_ToM_r  median_spikes
+3yo     17     47%      53%        6%          6%       0.16         7
+4yo     14     36%      71%        7%          7%       0.15         10
+5yo     34     71%      88%        6%          9%       0.30         9
+7yo     23     91%      96%        0%          4%       0.40         5
+8-12yo  34     85%      97%       15%          3%       0.39         8
+Adult   33     82%      94%        6%          0%       0.40         1
+children motion tercile 1 (spikes -1-4]: n=44 ToM det 75%
+children motion tercile 2 (spikes 4-11]: n=37 ToM det 73%
+children motion tercile 3 (spikes 11-1000000000]: n=41 ToM det 66%
+ToM specificity >0 by group: {'3yo': '88%', '4yo': '71%', '5yo': '94%', '7yo': '100%', '8-12yo': '100%', 'Adult': '88%'}
+
+EXPLORATORY same-age reference
+overall ToM reversed-reference false alarms: 7.1% of 155
+3yo     ToM det vs own age group 59%  reversed FA 6%
+4yo     ToM det vs own age group 36%  reversed FA 14%
+5yo     ToM det vs own age group 85%  reversed FA 15%
+7yo     ToM det vs own age group 91%  reversed FA 0%
+8-12yo  ToM det vs own age group 79%  reversed FA 3%
+Adult   ToM det vs own age group 85%  reversed FA 6%
