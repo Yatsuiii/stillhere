@@ -54,6 +54,7 @@ So the forecast plus 1 volunteer does about the job of 5, and the forecast plus 
   at about 0 real listeners (12% of the real-volunteer reference, against 59% for TRIBE v2), though it did track the story above chance
   and followed the intact story better than the shuffled one.
 - Run the same per-person test on every public story-listening dataset, one row per story and lab.
-- Run the Mandarin Le Petit Prince section, so only the language changes.
+- Preregistered (R10, 25 Nov 2026): the per-person test on Le Petit Prince in Mandarin, 35 listeners no one in this project has
+  opened, with the pass bar, wrong-story guard and sample-size reasoning fixed in advance: [docs/rules/r10_lppcn_prereg.md](rules/r10_lppcn_prereg.md).
 
 If your data is in here and something looks wrong, please open an issue. I'd rather fix it before the release.
