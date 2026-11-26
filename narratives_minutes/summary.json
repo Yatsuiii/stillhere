@@ -1,0 +1,394 @@
+{
+ "LANG 1min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.054695304695304696,
+  "detect": 0.3495575221238938,
+  "miss": 0.6504424778761062,
+  "wilson_detect": [
+   0.2903746853888765,
+   0.41376938600637997
+  ],
+  "person_boot_detect": [
+   0.2875,
+   0.41739130434782606
+  ],
+  "uncal_detect": 0.336283185840708,
+  "uncal_wrong_story": 0.046460176991150445,
+  "wrong_story_n": 1356,
+  "median_r": 0.3227188311047306,
+  "per_story": {
+   "black": "20% of 46",
+   "forgot": "30% of 46",
+   "merlin": "43% of 35",
+   "sherlock": "31% of 36",
+   "tunnel": "71% of 21",
+   "21styear": "28% of 25",
+   "slumlord": "47% of 17"
+  }
+ },
+ "LANG 2min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.055944055944055944,
+  "detect": 0.6415929203539823,
+  "miss": 0.3584070796460177,
+  "wilson_detect": [
+   0.5771857135981591,
+   0.7012669250886583
+  ],
+  "person_boot_detect": [
+   0.57847533632287,
+   0.7050691244239631
+  ],
+  "uncal_detect": 0.6283185840707964,
+  "uncal_wrong_story": 0.046460176991150445,
+  "wrong_story_n": 1356,
+  "median_r": 0.3659919756907466,
+  "per_story": {
+   "black": "52% of 46",
+   "forgot": "63% of 46",
+   "merlin": "57% of 35",
+   "sherlock": "72% of 36",
+   "tunnel": "95% of 21",
+   "21styear": "60% of 25",
+   "slumlord": "65% of 17"
+  }
+ },
+ "LANG 3min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.04295704295704296,
+  "detect": 0.7079646017699115,
+  "miss": 0.2920353982300885,
+  "wilson_detect": [
+   0.6456011490476701,
+   0.7633761640235928
+  ],
+  "person_boot_detect": [
+   0.6462814468446882,
+   0.7702866412668175
+  ],
+  "uncal_detect": 0.7389380530973452,
+  "uncal_wrong_story": 0.056784660766961655,
+  "wrong_story_n": 1356,
+  "median_r": 0.37899067497536654,
+  "per_story": {
+   "black": "76% of 46",
+   "forgot": "63% of 46",
+   "merlin": "57% of 35",
+   "sherlock": "72% of 36",
+   "tunnel": "95% of 21",
+   "21styear": "68% of 25",
+   "slumlord": "76% of 17"
+  }
+ },
+ "LANG 5min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.047702297702297704,
+  "detect": 0.8185840707964602,
+  "miss": 0.18141592920353977,
+  "wilson_detect": [
+   0.763154619459732,
+   0.8633638175856072
+  ],
+  "person_boot_detect": [
+   0.7639406944986344,
+   0.8727292663476873
+  ],
+  "uncal_detect": 0.831858407079646,
+  "uncal_wrong_story": 0.05309734513274336,
+  "wrong_story_n": 1356,
+  "median_r": 0.3688705818788318,
+  "per_story": {
+   "black": "80% of 46",
+   "forgot": "72% of 46",
+   "merlin": "71% of 35",
+   "sherlock": "83% of 36",
+   "tunnel": "90% of 21",
+   "21styear": "100% of 25",
+   "slumlord": "94% of 17"
+  }
+ },
+ "LANG 7min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.05344655344655345,
+  "detect": 0.911504424778761,
+  "miss": 0.08849557522123896,
+  "wilson_detect": [
+   0.8672696232619951,
+   0.9419833579215678
+  ],
+  "person_boot_detect": [
+   0.8727176015473888,
+   0.9473684210526315
+  ],
+  "uncal_detect": 0.9070796460176991,
+  "uncal_wrong_story": 0.048672566371681415,
+  "wrong_story_n": 1356,
+  "median_r": 0.355879154502695,
+  "per_story": {
+   "black": "96% of 46",
+   "forgot": "80% of 46",
+   "merlin": "91% of 35",
+   "sherlock": "89% of 36",
+   "tunnel": "100% of 21",
+   "21styear": "96% of 25",
+   "slumlord": "94% of 17"
+  }
+ },
+ "LANG 10min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.060939060939060936,
+  "detect": 0.9380530973451328,
+  "miss": 0.06194690265486724,
+  "wilson_detect": [
+   0.898718057243324,
+   0.9627447936940172
+  ],
+  "person_boot_detect": [
+   0.9066666666666666,
+   0.9652173913043478
+  ],
+  "uncal_detect": 0.9336283185840708,
+  "uncal_wrong_story": 0.03982300884955752,
+  "wrong_story_n": 1356,
+  "median_r": 0.3620364560911876,
+  "per_story": {
+   "black": "96% of 46",
+   "forgot": "87% of 46",
+   "merlin": "94% of 35",
+   "sherlock": "92% of 36",
+   "tunnel": "100% of 21",
+   "21styear": "100% of 25",
+   "slumlord": "94% of 17"
+  }
+ },
+ "LANG 13min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.059940059940059943,
+  "detect": 0.9601769911504425,
+  "miss": 0.03982300884955747,
+  "wilson_detect": [
+   0.9260609558836387,
+   0.9789101198485178
+  ],
+  "person_boot_detect": [
+   0.933920704845815,
+   0.9824561403508771
+  ],
+  "uncal_detect": 0.9557522123893806,
+  "uncal_wrong_story": 0.04277286135693215,
+  "wrong_story_n": 1356,
+  "median_r": 0.3596843265895211,
+  "per_story": {
+   "black": "98% of 46",
+   "forgot": "89% of 46",
+   "merlin": "94% of 35",
+   "sherlock": "97% of 36",
+   "tunnel": "100% of 21",
+   "21styear": "100% of 25",
+   "slumlord": "100% of 17"
+  }
+ },
+ "AUD 1min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.03496503496503497,
+  "detect": 0.6283185840707964,
+  "miss": 0.37168141592920356,
+  "wilson_detect": [
+   0.5636604870089156,
+   0.6886872168010126
+  ],
+  "person_boot_detect": [
+   0.5654154815115807,
+   0.6891891891891891
+  ],
+  "uncal_detect": 0.6902654867256637,
+  "uncal_wrong_story": 0.07890855457227139,
+  "wrong_story_n": 1356,
+  "median_r": 0.488121359823134,
+  "per_story": {
+   "black": "63% of 46",
+   "forgot": "85% of 46",
+   "merlin": "66% of 35",
+   "sherlock": "53% of 36",
+   "tunnel": "90% of 21",
+   "21styear": "24% of 25",
+   "slumlord": "41% of 17"
+  }
+ },
+ "AUD 2min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.05444555444555445,
+  "detect": 0.915929203539823,
+  "miss": 0.08407079646017701,
+  "wilson_detect": [
+   0.8724346746238731,
+   0.9455199515186528
+  ],
+  "person_boot_detect": [
+   0.8716814159292036,
+   0.9553571428571429
+  ],
+  "uncal_detect": 0.8982300884955752,
+  "uncal_wrong_story": 0.0471976401179941,
+  "wrong_story_n": 1356,
+  "median_r": 0.502480596367621,
+  "per_story": {
+   "black": "93% of 46",
+   "forgot": "91% of 46",
+   "merlin": "91% of 35",
+   "sherlock": "81% of 36",
+   "tunnel": "95% of 21",
+   "21styear": "96% of 25",
+   "slumlord": "100% of 17"
+  }
+ },
+ "AUD 3min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.03871128871128871,
+  "detect": 0.9292035398230089,
+  "miss": 0.07079646017699115,
+  "wilson_detect": [
+   0.8881035393257503,
+   0.9559560216936648
+  ],
+  "person_boot_detect": [
+   0.8923645618712883,
+   0.9626168224299065
+  ],
+  "uncal_detect": 0.9380530973451328,
+  "uncal_wrong_story": 0.06489675516224189,
+  "wrong_story_n": 1356,
+  "median_r": 0.5126833145117382,
+  "per_story": {
+   "black": "100% of 46",
+   "forgot": "91% of 46",
+   "merlin": "91% of 35",
+   "sherlock": "78% of 36",
+   "tunnel": "100% of 21",
+   "21styear": "96% of 25",
+   "slumlord": "100% of 17"
+  }
+ },
+ "AUD 5min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.057942057942057944,
+  "detect": 0.9734513274336283,
+  "miss": 0.026548672566371723,
+  "wilson_detect": [
+   0.9432989021306509,
+   0.9877771084783945
+  ],
+  "person_boot_detect": [
+   0.9521739130434783,
+   0.9913802353115289
+  ],
+  "uncal_detect": 0.9646017699115044,
+  "uncal_wrong_story": 0.043510324483775814,
+  "wrong_story_n": 1356,
+  "median_r": 0.510279130770054,
+  "per_story": {
+   "black": "100% of 46",
+   "forgot": "96% of 46",
+   "merlin": "97% of 35",
+   "sherlock": "92% of 36",
+   "tunnel": "100% of 21",
+   "21styear": "100% of 25",
+   "slumlord": "100% of 17"
+  }
+ },
+ "AUD 7min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.07067932067932067,
+  "detect": 0.9867256637168141,
+  "miss": 0.013274336283185861,
+  "wilson_detect": [
+   0.9617054197295362,
+   0.9954755257563984
+  ],
+  "person_boot_detect": [
+   0.9696936758893281,
+   1.0
+  ],
+  "uncal_detect": 0.9867256637168141,
+  "uncal_wrong_story": 0.03171091445427729,
+  "wrong_story_n": 1356,
+  "median_r": 0.5093794242196324,
+  "per_story": {
+   "black": "100% of 46",
+   "forgot": "100% of 46",
+   "merlin": "97% of 35",
+   "sherlock": "94% of 36",
+   "tunnel": "100% of 21",
+   "21styear": "100% of 25",
+   "slumlord": "100% of 17"
+  }
+ },
+ "AUD 10min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.053696303696303696,
+  "detect": 0.995575221238938,
+  "miss": 0.004424778761061954,
+  "wilson_detect": [
+   0.9753657248859432,
+   0.9992185105179175
+  ],
+  "person_boot_detect": [
+   0.9859154929577465,
+   1.0
+  ],
+  "uncal_detect": 0.995575221238938,
+  "uncal_wrong_story": 0.0471976401179941,
+  "wrong_story_n": 1356,
+  "median_r": 0.4970498169777088,
+  "per_story": {
+   "black": "100% of 46",
+   "forgot": "100% of 46",
+   "merlin": "100% of 35",
+   "sherlock": "97% of 36",
+   "tunnel": "100% of 21",
+   "21styear": "100% of 25",
+   "slumlord": "100% of 17"
+  }
+ },
+ "AUD 13min": {
+  "n": 226,
+  "people": 142,
+  "cutoff": 0.06493506493506493,
+  "detect": 1.0,
+  "miss": 0.0,
+  "wilson_detect": [
+   0.9832858803628236,
+   0.9999999999999999
+  ],
+  "person_boot_detect": [
+   1.0,
+   1.0
+  ],
+  "uncal_detect": 0.995575221238938,
+  "uncal_wrong_story": 0.03392330383480826,
+  "wrong_story_n": 1356,
+  "median_r": 0.4936370183502331,
+  "per_story": {
+   "black": "100% of 46",
+   "forgot": "100% of 46",
+   "merlin": "100% of 35",
+   "sherlock": "100% of 36",
+   "tunnel": "100% of 21",
+   "21styear": "100% of 25",
+   "slumlord": "100% of 17"
+  }
+ }
+}

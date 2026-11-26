@@ -1,0 +1,17 @@
+P1 sample n=65; S1 sample n=122
+P1 3-5yo FB_Composite | tom | age: partial rho -0.013 [-0.260, +0.243]  p=0.9206
+P1 3-5yo FB_Composite | tom | age+motion: partial rho -0.047 [-0.290, +0.209]  p=0.7087
+P1 3-5yo FB_Composite | pain | age: partial rho +0.146 [-0.088, +0.381]  p=0.2444
+P1 3-5yo FB_Composite | pain | age+motion: partial rho +0.148 [-0.091, +0.379]  p=0.2380
+S1 3-12yo Booklet-NOFB | tom | age: partial rho +0.065 [-0.130, +0.275]  p=0.4810
+S1 3-12yo Booklet-NOFB | tom | age+motion: partial rho +0.059 [-0.141, +0.273]  p=0.5116
+S1 3-12yo Booklet-NOFB | pain | age: partial rho +0.069 [-0.110, +0.252]  p=0.4442
+S1 3-12yo Booklet-NOFB | pain | age+motion: partial rho +0.071 [-0.105, +0.255]  p=0.4370
+S2 P1 ToM minus pain: -0.159 [-0.457, +0.118]
+S2 S1 ToM minus pain: -0.004 [-0.213, +0.210]
+S4 brain reliability (3-5yo, SB) 0.386 [-0.024, 0.626]; ceiling sqrt(rel*.71) = 0.523
+S4 disattenuated: not estimable (reliability CI includes 0)
+S5 true r 0.2: observable 0.105, n for 80% power ~ 714
+S5 true r 0.3: observable 0.157, n for 80% power ~ 316
+S5 true r 0.5: observable 0.262, n for 80% power ~ 112
+FB_Composite distribution 3-5yo: (array([0., 1., 2., 3., 4., 5., 6.]), array([ 3,  9,  3, 12,  8, 18, 12]))

@@ -1,0 +1,29 @@
+{'black': 46, 'forgot': 46, 'merlin': 35, 'sherlock': 36, 'tunnel': 21, '21styear': 25, 'slumlord': 17} runs 226
+LANG  1 min  n=226 (142 people)  detect 35.0%  miss 65.0%  Wilson [58.6%, 71.0%] miss  person-boot miss [58.3%, 71.2%]  cutoff p<=0.0547  uncal p<.05: 34% (wrong story 4.6%)  median r 0.32
+      per story: {'black': '20% of 46', 'forgot': '30% of 46', 'merlin': '43% of 35', 'sherlock': '31% of 36', 'tunnel': '71% of 21', '21styear': '28% of 25', 'slumlord': '47% of 17'}
+LANG  2 min  n=226 (142 people)  detect 64.2%  miss 35.8%  Wilson [29.9%, 42.3%] miss  person-boot miss [29.5%, 42.2%]  cutoff p<=0.0559  uncal p<.05: 63% (wrong story 4.6%)  median r 0.37
+      per story: {'black': '52% of 46', 'forgot': '63% of 46', 'merlin': '57% of 35', 'sherlock': '72% of 36', 'tunnel': '95% of 21', '21styear': '60% of 25', 'slumlord': '65% of 17'}
+LANG  3 min  n=226 (142 people)  detect 70.8%  miss 29.2%  Wilson [23.7%, 35.4%] miss  person-boot miss [23.0%, 35.4%]  cutoff p<=0.0430  uncal p<.05: 74% (wrong story 5.7%)  median r 0.38
+      per story: {'black': '76% of 46', 'forgot': '63% of 46', 'merlin': '57% of 35', 'sherlock': '72% of 36', 'tunnel': '95% of 21', '21styear': '68% of 25', 'slumlord': '76% of 17'}
+LANG  5 min  n=226 (142 people)  detect 81.9%  miss 18.1%  Wilson [13.7%, 23.7%] miss  person-boot miss [12.7%, 23.6%]  cutoff p<=0.0477  uncal p<.05: 83% (wrong story 5.3%)  median r 0.37
+      per story: {'black': '80% of 46', 'forgot': '72% of 46', 'merlin': '71% of 35', 'sherlock': '83% of 36', 'tunnel': '90% of 21', '21styear': '100% of 25', 'slumlord': '94% of 17'}
+LANG  7 min  n=226 (142 people)  detect 91.2%  miss  8.8%  Wilson [5.8%, 13.3%] miss  person-boot miss [5.3%, 12.7%]  cutoff p<=0.0534  uncal p<.05: 91% (wrong story 4.9%)  median r 0.36
+      per story: {'black': '96% of 46', 'forgot': '80% of 46', 'merlin': '91% of 35', 'sherlock': '89% of 36', 'tunnel': '100% of 21', '21styear': '96% of 25', 'slumlord': '94% of 17'}
+LANG 10 min  n=226 (142 people)  detect 93.8%  miss  6.2%  Wilson [3.7%, 10.1%] miss  person-boot miss [3.5%, 9.3%]  cutoff p<=0.0609  uncal p<.05: 93% (wrong story 4.0%)  median r 0.36
+      per story: {'black': '96% of 46', 'forgot': '87% of 46', 'merlin': '94% of 35', 'sherlock': '92% of 36', 'tunnel': '100% of 21', '21styear': '100% of 25', 'slumlord': '94% of 17'}
+LANG 13 min  n=226 (142 people)  detect 96.0%  miss  4.0%  Wilson [2.1%, 7.4%] miss  person-boot miss [1.8%, 6.6%]  cutoff p<=0.0599  uncal p<.05: 96% (wrong story 4.3%)  median r 0.36
+      per story: {'black': '98% of 46', 'forgot': '89% of 46', 'merlin': '94% of 35', 'sherlock': '97% of 36', 'tunnel': '100% of 21', '21styear': '100% of 25', 'slumlord': '100% of 17'}
+AUD   1 min  n=226 (142 people)  detect 62.8%  miss 37.2%  Wilson [31.1%, 43.6%] miss  person-boot miss [31.1%, 43.5%]  cutoff p<=0.0350  uncal p<.05: 69% (wrong story 7.9%)  median r 0.49
+      per story: {'black': '63% of 46', 'forgot': '85% of 46', 'merlin': '66% of 35', 'sherlock': '53% of 36', 'tunnel': '90% of 21', '21styear': '24% of 25', 'slumlord': '41% of 17'}
+AUD   2 min  n=226 (142 people)  detect 91.6%  miss  8.4%  Wilson [5.4%, 12.8%] miss  person-boot miss [4.5%, 12.8%]  cutoff p<=0.0544  uncal p<.05: 90% (wrong story 4.7%)  median r 0.50
+      per story: {'black': '93% of 46', 'forgot': '91% of 46', 'merlin': '91% of 35', 'sherlock': '81% of 36', 'tunnel': '95% of 21', '21styear': '96% of 25', 'slumlord': '100% of 17'}
+AUD   3 min  n=226 (142 people)  detect 92.9%  miss  7.1%  Wilson [4.4%, 11.2%] miss  person-boot miss [3.7%, 10.8%]  cutoff p<=0.0387  uncal p<.05: 94% (wrong story 6.5%)  median r 0.51
+      per story: {'black': '100% of 46', 'forgot': '91% of 46', 'merlin': '91% of 35', 'sherlock': '78% of 36', 'tunnel': '100% of 21', '21styear': '96% of 25', 'slumlord': '100% of 17'}
+AUD   5 min  n=226 (142 people)  detect 97.3%  miss  2.7%  Wilson [1.2%, 5.7%] miss  person-boot miss [0.9%, 4.8%]  cutoff p<=0.0579  uncal p<.05: 96% (wrong story 4.4%)  median r 0.51
+      per story: {'black': '100% of 46', 'forgot': '96% of 46', 'merlin': '97% of 35', 'sherlock': '92% of 36', 'tunnel': '100% of 21', '21styear': '100% of 25', 'slumlord': '100% of 17'}
+AUD   7 min  n=226 (142 people)  detect 98.7%  miss  1.3%  Wilson [0.5%, 3.8%] miss  person-boot miss [0.0%, 3.0%]  cutoff p<=0.0707  uncal p<.05: 99% (wrong story 3.2%)  median r 0.51
+      per story: {'black': '100% of 46', 'forgot': '100% of 46', 'merlin': '97% of 35', 'sherlock': '94% of 36', 'tunnel': '100% of 21', '21styear': '100% of 25', 'slumlord': '100% of 17'}
+AUD  10 min  n=226 (142 people)  detect 99.6%  miss  0.4%  Wilson [0.1%, 2.5%] miss  person-boot miss [0.0%, 1.4%]  cutoff p<=0.0537  uncal p<.05: 100% (wrong story 4.7%)  median r 0.50
+      per story: {'black': '100% of 46', 'forgot': '100% of 46', 'merlin': '100% of 35', 'sherlock': '97% of 36', 'tunnel': '100% of 21', '21styear': '100% of 25', 'slumlord': '100% of 17'}
+AUD  13 min  n=226 (142 people)  detect 100.0%  miss  0.0%  Wilson [0.0%, 1.7%] miss  person-boot miss [0.0%, 0.0%]  cutoff p<=0.0649  uncal p<.05: 100% (wrong story 3.4%)  median r 0.49
+      per story: {'black': '100% of 46', 'forgot': '100% of 46', 'merlin': '100% of 35', 'sherlock': '100% of 36', 'tunnel': '100% of 21', '21styear': '100% of 25', 'slumlord': '100% of 17'}
