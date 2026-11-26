@@ -27,3 +27,7 @@ MNE 1.10.2. The 61 EEG channels, average reference, FIR band-pass 0.1-30 Hz, epo
 - If corrected onsets don't help: reported as such, and the shift claim is re-examined before anything is said to anyone.
 
 Never "the paper is wrong". The 2019 results are not re-tested here beyond M3, which uses our pipeline, not his.
+
+## Deviations (added after the onset check was rerun, before any epoching)
+
+1. In all 8 shifted recordings, segment 1's audio started before the recording, so its placement is "undetermined" (envelope r about 0.27, second-peak ratio about 0.88) and the measured start is meaningless. Words of any segment whose placement is undetermined are dropped from both the released and the corrected version for that subject, so both versions score the same words.
