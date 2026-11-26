@@ -1,0 +1,65 @@
+sub-001 words 2129 
+sub-002 words 1813 shifted
+sub-003 words 2129 
+sub-005 words 2129 
+sub-006 words 2129 
+sub-007 words 2129 
+sub-008 words 2129 
+sub-009 words 2129 
+sub-010 words 2129 
+sub-011 words 2129 
+sub-012 words 2129 
+sub-013 words 2129 
+sub-014 words 2129 
+sub-015 words 2129 
+sub-017 words 2129 
+sub-018 words 2129 
+sub-019 words 2129 
+sub-020 words 2129 
+sub-021 words 2129 
+sub-022 words 2129 
+sub-023 words 2129 
+sub-025 words 2129 
+sub-026 words 1807 shifted
+sub-027 words 1810 shifted
+sub-030 words 1984 shifted
+sub-032 words 1799 shifted
+sub-034 words 1808 shifted
+sub-035 words 1802 shifted
+sub-036 words 1805 shifted
+sub-037 words 2128 
+sub-038 words 2129 
+sub-039 words 2129 
+sub-040 words 2129 
+sub-041 words 2129 
+sub-042 words 2129 
+sub-043 words 2129 
+sub-044 words 2129 
+sub-045 words 2129 
+sub-048 words 2129 
+
+M1 word ERP: consistent subjects (leave-self-out) median 0.03, 10-90% [-0.21, 0.11]
+  sub-002 (no): released +0.11  corrected +0.10
+  sub-026 (yes): released -0.09  corrected -0.10
+  sub-027 (no): released +0.06  corrected -0.09
+  sub-030 (no): released +0.57  corrected +0.10
+  sub-032 (no): released -0.04  corrected +0.16
+  sub-034 (yes): released +0.03  corrected -0.14
+  sub-035 (yes): released -0.16  corrected -0.23
+  sub-036 (yes): released +0.06  corrected +0.10
+
+M2 NGRAM beta map: consistent subjects (leave-self-out) median -0.01, 10-90% [-0.14, 0.12]
+  sub-002 (no): released -0.11  corrected +0.10
+  sub-026 (yes): released -0.22  corrected +0.07
+  sub-027 (no): released +0.02  corrected -0.11
+  sub-030 (no): released -0.33  corrected -0.30
+  sub-032 (no): released +0.10  corrected +0.05
+  sub-034 (yes): released +0.13  corrected -0.08
+  sub-035 (yes): released -0.11  corrected +0.19
+  sub-036 (yes): released +0.07  corrected +0.02
+
+M3: analyzed n=31, analyzed consistent n=27
+  NGRAM ch 10 650-700 ms, released: mean beta -26.592 uV, t(30) = -1.19, p = 0.2437
+  NGRAM ch 10 650-700 ms, corrected: mean beta -26.412 uV, t(30) = -1.18, p = 0.2468
+  CFG ch 10 350-400 ms, released: mean beta +80.919 uV, t(30) = +1.45, p = 0.1587
+  CFG ch 10 350-400 ms, corrected: mean beta +77.572 uV, t(30) = +1.38, p = 0.1774
